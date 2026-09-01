@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { memo, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Database, Code2, Loader2, Filter, ChevronRight } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import type { FilterQuestion } from '@/services/resource-search/types';
+import { memo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Database, Code2, Loader2, Filter, ChevronRight } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import type { FilterQuestion } from "@/services/resource-search/types";
 
 interface SearchStatsProps {
   totalResults: number;
@@ -32,21 +32,21 @@ const SearchStatsComponent = ({
 
   return (
     <div
-      className={cn(className, isLoading && 'opacity-60 transition-opacity')}
+      className={cn(className, isLoading && "opacity-60 transition-opacity")}
     >
       <div className="space-y-3">
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             {isLoading ? (
-              <Loader2 className="h-4 w-4 text-primary animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
             ) : (
               <Database className="h-4 w-4 text-muted-foreground" />
             )}
             <span>
               <span className="font-semibold text-foreground">
                 {totalResults}
-              </span>{' '}
-              {totalResults === 1 ? 'resource' : 'resources'} found
+              </span>{" "}
+              {totalResults === 1 ? "resource" : "resources"} found
             </span>
           </div>
 
@@ -66,11 +66,11 @@ const SearchStatsComponent = ({
         </div>
 
         {filterQuestions && filterQuestions.length > 0 && (
-          <Card className="p-3 bg-muted/50">
+          <Card className="bg-muted/50 p-3">
             <div className="flex items-start gap-2">
-              <Filter className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-muted-foreground mb-2">
+              <Filter className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+              <div className="min-w-0 flex-1">
+                <div className="mb-2 text-xs font-medium text-muted-foreground">
                   LLM Filter Questions:
                   {filterExplanation && (
                     <span className="ml-2 font-normal text-muted-foreground/80">
@@ -78,8 +78,8 @@ const SearchStatsComponent = ({
                     </span>
                   )}
                 </div>
-                <ol className="space-y-1.5 list-decimal list-inside">
-                  {filterQuestions.map(fq => (
+                <ol className="list-inside list-decimal space-y-1.5">
+                  {filterQuestions.map((fq) => (
                     <li key={fq.index} className="text-xs text-foreground">
                       {fq.question}
                     </li>
@@ -91,11 +91,11 @@ const SearchStatsComponent = ({
         )}
 
         {keywords && keywords.length > 0 && (
-          <Card className="p-3 bg-muted/50">
+          <Card className="bg-muted/50 p-3">
             <div className="flex items-start gap-2">
-              <Code2 className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-muted-foreground mb-2">
+              <Code2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+              <div className="min-w-0 flex-1">
+                <div className="mb-2 text-xs font-medium text-muted-foreground">
                   Search Keywords:
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -114,16 +114,16 @@ const SearchStatsComponent = ({
           <Card className="bg-muted/50">
             <button
               onClick={() => setIsSqlExpanded(!isSqlExpanded)}
-              className="w-full p-3 flex items-start gap-2 hover:bg-muted/70 transition-colors"
+              className="flex w-full items-start gap-2 p-3 transition-colors hover:bg-muted/70"
             >
               <ChevronRight
                 className={cn(
-                  'h-4 w-4 text-primary mt-0.5 flex-shrink-0 transition-transform',
-                  isSqlExpanded && 'rotate-90'
+                  "h-4 w-4 text-primary mt-0.5 flex-shrink-0 transition-transform",
+                  isSqlExpanded && "rotate-90"
                 )}
               />
-              <Database className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0 text-left">
+              <Database className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+              <div className="min-w-0 flex-1 text-left">
                 <div className="text-xs font-medium text-muted-foreground">
                   SQL WHERE Clause
                 </div>
@@ -131,7 +131,7 @@ const SearchStatsComponent = ({
             </button>
             {isSqlExpanded && (
               <div className="px-3 pb-3">
-                <pre className="text-xs text-foreground font-mono bg-background/50 p-2 rounded border overflow-x-auto">
+                <pre className="overflow-x-auto rounded border bg-background/50 p-2 font-mono text-xs text-foreground">
                   {sqlCondition}
                 </pre>
               </div>
@@ -143,6 +143,6 @@ const SearchStatsComponent = ({
   );
 };
 
-SearchStatsComponent.displayName = 'SearchStats';
+SearchStatsComponent.displayName = "SearchStats";
 
 export const SearchStats = memo(SearchStatsComponent);

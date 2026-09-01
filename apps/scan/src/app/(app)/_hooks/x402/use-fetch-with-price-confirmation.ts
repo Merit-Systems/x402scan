@@ -1,16 +1,16 @@
-import { useState, useCallback, useRef } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod';
+import { useState, useCallback, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
 
-import type { UseMutationOptions } from '@tanstack/react-query';
-import type { X402FetchResponse, FetchWithPaymentWrapper } from './types';
+import type { UseMutationOptions } from "@tanstack/react-query";
+import type { X402FetchResponse, FetchWithPaymentWrapper } from "./types";
 
 interface UseX402FetchWithPriceConfirmationParams<TData = unknown> {
   wrapperFn: FetchWithPaymentWrapper;
   targetUrl: string;
   initialMaxValue: bigint;
   init?: RequestInit;
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
+  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
   fetchFn: typeof fetch;
 }
 
@@ -24,8 +24,8 @@ interface PriceIncreaseInfo {
  * Amounts arrive as strings or numbers depending on the x402 version.
  */
 const x402AmountSchema = z.union([
-  z.string().transform(value => BigInt(value)),
-  z.number().transform(value => BigInt(Math.floor(value))),
+  z.string().transform((value) => BigInt(value)),
+  z.number().transform((value) => BigInt(Math.floor(value))),
 ]);
 
 /**
@@ -97,7 +97,7 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
             oldPrice: initialMaxValue,
             newPrice: actualPrice,
           });
-          throw new Error('PRICE_CONFIRMATION_REQUIRED');
+          throw new Error("PRICE_CONFIRMATION_REQUIRED");
         }
       }
 
@@ -114,32 +114,32 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
       setPriceIncreaseInfo(null);
       confirmedRef.current = false;
 
-      const contentType = response.headers.get('content-type') ?? '';
+      const contentType = response.headers.get("content-type") ?? "";
       let result: X402FetchResponse<TData>;
-      if (contentType.includes('application/json')) {
+      if (contentType.includes("application/json")) {
         try {
           result = {
             data: (await response.json()) as TData,
-            type: 'json' as const,
+            type: "json" as const,
             paymentResponse: null,
           };
         } catch {
           result = {
             data: await response.text(),
-            type: 'unknown' as const,
+            type: "unknown" as const,
             paymentResponse: null,
           };
         }
-      } else if (contentType.includes('text/')) {
+      } else if (contentType.includes("text/")) {
         result = {
           data: await response.text(),
-          type: 'text' as const,
+          type: "text" as const,
           paymentResponse: null,
         };
       } else {
         result = {
           data: await response.text(),
-          type: 'unknown' as const,
+          type: "unknown" as const,
           paymentResponse: null,
         };
       }
@@ -153,7 +153,7 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
       // Don't call the original onError for price confirmation required
       if (
         error instanceof Error &&
-        error.message === 'PRICE_CONFIRMATION_REQUIRED'
+        error.message === "PRICE_CONFIRMATION_REQUIRED"
       ) {
         return;
       }
@@ -224,7 +224,7 @@ async function checkPrice(
         const amounts: bigint[] = data.accepts
           // Support v1 (maxAmountRequired) and v2 (amount) formats
           .map(
-            accept =>
+            (accept) =>
               accept.amount ??
               accept.maxAmountRequired ??
               accept.max_amount_required

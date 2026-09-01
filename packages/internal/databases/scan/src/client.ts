@@ -1,9 +1,9 @@
-import { PrismaClient } from '../generated/prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
+import { PrismaClient } from "../generated/prisma/client";
+import { PrismaNeon } from "@prisma/adapter-neon";
 
-import { neonConfig } from '@neondatabase/serverless';
+import { neonConfig } from "@neondatabase/serverless";
 
-import ws from 'ws';
+import ws from "ws";
 
 neonConfig.webSocketConstructor = ws;
 
@@ -17,7 +17,7 @@ const globalForPrisma = global as typeof globalThis & {
 const scanDbAdapter =
   globalForPrisma.scanDbAdapter ??
   new PrismaNeon({ connectionString: process.env.SCAN_DATABASE_URL! });
-if (process.env.NODE_ENV !== 'production')
+if (process.env.NODE_ENV !== "production")
   globalForPrisma.scanDbAdapter = scanDbAdapter;
 
 export const scanDb =
@@ -27,4 +27,4 @@ export const scanDb =
     omit: { resourceOrigin: { email: true } },
   });
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.scanDb = scanDb;
+if (process.env.NODE_ENV !== "production") globalForPrisma.scanDb = scanDb;

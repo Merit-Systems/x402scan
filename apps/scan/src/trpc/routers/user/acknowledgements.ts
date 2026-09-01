@@ -1,8 +1,8 @@
-import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
+import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
 import {
   hasUserAcknowledgedComposer,
   upsertUserAcknowledgement,
-} from '@/services/db/user/acknowledgements';
+} from "@/services/db/user/acknowledgements";
 
 export const userAcknowledgementsRouter = createTRPCRouter({
   hasAcknowledged: protectedProcedure.query(async ({ ctx }) => {

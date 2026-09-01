@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { format } from 'date-fns';
+import { useMemo } from "react";
+import { format } from "date-fns";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import type { ChartData } from '@/components/ui/charts/chart/types';
+} from "@/components/ui/card";
+import type { ChartData } from "@/components/ui/charts/chart/types";
 import {
   BaseBarChart,
   LoadingBarChart,
-} from '@/components/ui/charts/chart/bar';
-import { api } from '@/trpc/client';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+} from "@/components/ui/charts/chart/bar";
+import { api } from "@/trpc/client";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
 type ResourceKey = `${string}-tool_calls`;
 
@@ -33,8 +33,8 @@ const seededRandom = (seed: string) => {
 // Generate a perturbed color based on base hue
 const generatePerturbedColor = (baseHue: number, seed: string) => {
   const rand = seededRandom(seed);
-  const rand2 = seededRandom(seed + 'sat');
-  const rand3 = seededRandom(seed + 'light');
+  const rand2 = seededRandom(seed + "sat");
+  const rand3 = seededRandom(seed + "light");
 
   // Perturb hue by ±20 degrees
   const hue = (baseHue + (rand * 40 - 20) + 360) % 360;
@@ -75,9 +75,9 @@ export const ResourceToolCallsByResourceChart = ({
   const chartData = useMemo<ChartData<Record<ResourceKey, number>>[]>(() => {
     if (!toolCallsByResourcesData) return [];
 
-    const dateFormat = isLessThan7Days ? 'MMM d HH:mm' : 'MMM d';
+    const dateFormat = isLessThan7Days ? "MMM d HH:mm" : "MMM d";
 
-    return toolCallsByResourcesData.map(item => {
+    return toolCallsByResourcesData.map((item) => {
       const numericData: Record<string, number> = {};
 
       Object.entries(item.resources).forEach(([resourceId, resource]) => {
@@ -96,8 +96,8 @@ export const ResourceToolCallsByResourceChart = ({
     if (!toolCallsByResourcesData) return new Set<string>();
 
     const ids = new Set<string>();
-    toolCallsByResourcesData.forEach(item => {
-      Object.keys(item.resources).forEach(resourceId => ids.add(resourceId));
+    toolCallsByResourcesData.forEach((item) => {
+      Object.keys(item.resources).forEach((resourceId) => ids.add(resourceId));
     });
     return ids;
   }, [toolCallsByResourcesData]);
@@ -107,7 +107,7 @@ export const ResourceToolCallsByResourceChart = ({
     if (!allResources || resourceIdsInData.size === 0) return [];
 
     // Filter resources that have data
-    const resourcesWithData = allResources.filter(resource =>
+    const resourcesWithData = allResources.filter((resource) =>
       resourceIdsInData.has(resource.id)
     );
 
@@ -127,7 +127,7 @@ export const ResourceToolCallsByResourceChart = ({
     if (!allResources || resourceIdsInData.size === 0) return [];
 
     // Filter resources that have data
-    const resourcesWithData = allResources.filter(resource =>
+    const resourcesWithData = allResources.filter((resource) =>
       resourceIdsInData.has(resource.id)
     );
 
@@ -165,8 +165,8 @@ export const ResourceToolCallsByResourceChart = ({
         <CardTitle>Usage by Tool</CardTitle>
         <CardDescription>
           {bars.length > 0
-            ? 'Tool calls breakdown by individual tools in selected tags'
-            : 'No tool calls found for selected tags'}
+            ? "Tool calls breakdown by individual tools in selected tags"
+            : "No tool calls found for selected tags"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -184,7 +184,7 @@ export const ResourceToolCallsByResourceChart = ({
             tooltipRows={tooltipRows}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-[450px] text-center text-muted-foreground space-y-2">
+          <div className="flex h-[450px] flex-col items-center justify-center space-y-2 text-center text-muted-foreground">
             <p className="text-sm">
               No tool calls found for the selected tags in this time range
             </p>

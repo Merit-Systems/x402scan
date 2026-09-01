@@ -1,20 +1,20 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
 import {
   LatestTransactionsTable,
   LoadingLatestTransactionsTable,
-} from '@/app/(app)/(home)/_components/transactions';
+} from "@/app/(app)/(home)/_components/transactions";
 
-import { Section } from '@/app/_components/layout/page-utils';
+import { Section } from "@/app/_components/layout/page-utils";
 
-import { TransfersSortingProvider } from '@/app/(app)/_contexts/sorting/transfers/provider';
-import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
+import { TransfersSortingProvider } from "@/app/(app)/_contexts/sorting/transfers/provider";
+import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 interface Props {
   chain?: Chain;

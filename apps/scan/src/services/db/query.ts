@@ -1,7 +1,7 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import type z from 'zod';
-import type { Prisma } from '@x402scan/scan-db';
+import type z from "zod";
+import type { Prisma } from "@x402scan/scan-db";
 
 export const queryRaw = async <T>(
   sql: Prisma.Sql,
@@ -13,7 +13,7 @@ export const queryRaw = async <T>(
 
   if (!parseResult.success) {
     // console.error(parseResult.error.issues);
-    throw new Error('Invalid result: ' + parseResult.error.message);
+    throw new Error("Invalid result: " + parseResult.error.message);
   }
 
   return parseResult.data;

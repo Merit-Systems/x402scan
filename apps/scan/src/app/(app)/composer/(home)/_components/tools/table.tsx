@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { useToolsSorting } from '@/app/(app)/_contexts/sorting/tools/hook';
+import { useToolsSorting } from "@/app/(app)/_contexts/sorting/tools/hook";
 
-import { columns } from './columns';
+import { columns } from "./columns";
 
-import { api } from '@/trpc/client';
-import { useState } from 'react';
+import { api } from "@/trpc/client";
+import { useState } from "react";
 
 export const ToolsTable = () => {
   const { sorting } = useToolsSorting();

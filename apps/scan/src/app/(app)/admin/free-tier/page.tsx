@@ -1,18 +1,18 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { auth } from '@/auth';
-import { forbidden } from 'next/navigation';
-import { freeTierWallets } from '@/services/cdp/server-wallet/free-tier';
-import { formatCurrency } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CHAIN_LABELS, SUPPORTED_CHAINS } from '@/types/chain';
-import { usdc } from '@/lib/tokens/usdc';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { auth } from "@/auth";
+import { forbidden } from "next/navigation";
+import { freeTierWallets } from "@/services/cdp/server-wallet/free-tier";
+import { formatCurrency } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CHAIN_LABELS, SUPPORTED_CHAINS } from "@/types/chain";
+import { usdc } from "@/lib/tokens/usdc";
 
-import type { SupportedChain } from '@/types/chain';
+import type { SupportedChain } from "@/types/chain";
 
 export default async function FreeTierWalletPage() {
   const session = await auth();
 
-  if (session?.user.role !== 'admin') {
+  if (session?.user.role !== "admin") {
     forbidden();
   }
 
@@ -23,7 +23,7 @@ export default async function FreeTierWalletPage() {
         description="Monitor the balance of the free tier wallet used for subsidizing user transactions."
       />
       <Body>
-        {SUPPORTED_CHAINS.map(chain => (
+        {SUPPORTED_CHAINS.map((chain) => (
           <ChainWalletInformation chain={chain} key={chain} />
         ))}
       </Body>
@@ -41,10 +41,10 @@ const ChainWalletInformation = async ({ chain }: { chain: SupportedChain }) => {
           <CardTitle>{CHAIN_LABELS[chain]} Wallet Address</CardTitle>
         </CardHeader>
         <CardContent>
-          <code className="text-sm bg-muted p-2 rounded block break-all">
+          <code className="block rounded bg-muted p-2 text-sm break-all">
             {await wallet.address().match(
-              ok => ok,
-              err => err.message
+              (ok) => ok,
+              (err) => err.message
             )}
           </code>
         </CardContent>
@@ -58,8 +58,8 @@ const ChainWalletInformation = async ({ chain }: { chain: SupportedChain }) => {
           <div className="space-y-2">
             <p className="text-3xl font-bold">
               {await wallet.getTokenBalance({ token: usdc(chain) }).match(
-                ok => formatCurrency(ok),
-                err => err.message
+                (ok) => formatCurrency(ok),
+                (err) => err.message
               )}
             </p>
           </div>

@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { format } from 'date-fns';
+import { useMemo } from "react";
+import { format } from "date-fns";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   BaseBarChart,
   LoadingBarChart,
-} from '@/components/ui/charts/chart/bar';
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { api } from '@/trpc/client';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+} from "@/components/ui/charts/chart/bar";
+import type { ChartData } from "@/components/ui/charts/chart/types";
+import { api } from "@/trpc/client";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
 type ToolCallData = {
   total_tool_calls: number;
@@ -44,9 +44,9 @@ export const ToolCallsChart = ({
   }, [timeframe]);
 
   const toolCallsChartData = useMemo<ChartData<ToolCallData>[]>(() => {
-    const dateFormat = isLessThan7Days ? 'MMM d HH:mm' : 'MMM d';
+    const dateFormat = isLessThan7Days ? "MMM d HH:mm" : "MMM d";
     return (
-      toolCallsData?.map(item => ({
+      toolCallsData?.map((item) => ({
         timestamp: format(new Date(item.bucket_start), dateFormat),
         total_tool_calls: item.total_tool_calls,
       })) ?? []
@@ -75,8 +75,8 @@ export const ToolCallsChart = ({
             data={toolCallsChartData}
             bars={[
               {
-                dataKey: 'total_tool_calls',
-                color: 'hsl(200, 71.90%, 34.90%)',
+                dataKey: "total_tool_calls",
+                color: "hsl(200, 71.90%, 34.90%)",
               },
             ]}
             height={300}
@@ -90,9 +90,9 @@ export const ToolCallsChart = ({
             }}
             tooltipRows={[
               {
-                key: 'total_tool_calls',
-                label: 'Tool Calls',
-                getValue: value => value.toLocaleString(),
+                key: "total_tool_calls",
+                label: "Tool Calls",
+                getValue: (value) => value.toLocaleString(),
               },
             ]}
           />

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { ArrowLeftRight, DollarSign, Server, Users } from 'lucide-react';
+import { ArrowLeftRight, DollarSign, Server, Users } from "lucide-react";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { formatTokenAmount } from '@/lib/token';
+import { formatTokenAmount } from "@/lib/token";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from "lucide-react";
 
 interface Props {
   id: string;
@@ -22,10 +22,10 @@ interface Stat {
 }
 
 const stats: Stat[] = [
-  { title: 'Requests', Icon: ArrowLeftRight },
-  { title: 'Volume', Icon: DollarSign },
-  { title: 'Buyers', Icon: Users },
-  { title: 'Sellers', Icon: Server },
+  { title: "Requests", Icon: ArrowLeftRight },
+  { title: "Volume", Icon: DollarSign },
+  { title: "Buyers", Icon: Users },
+  { title: "Sellers", Icon: Server },
 ];
 
 export const StatsCardsContent: React.FC<Props> = ({ id }) => {
@@ -38,18 +38,18 @@ export const StatsCardsContent: React.FC<Props> = ({ id }) => {
     overallStats.total_transactions.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-      notation: 'compact',
+      notation: "compact",
     }),
     formatTokenAmount(BigInt(overallStats.total_amount)),
     overallStats.unique_buyers.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-      notation: 'compact',
+      notation: "compact",
     }),
     overallStats.unique_sellers.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-      notation: 'compact',
+      notation: "compact",
     }),
   ];
 
@@ -63,7 +63,7 @@ export const StatsCardsContent: React.FC<Props> = ({ id }) => {
 };
 
 export const LoadingStatsCards = () => {
-  return stats.map(stat => <LoadingStatCard {...stat} key={stat.title} />);
+  return stats.map((stat) => <LoadingStatCard {...stat} key={stat.title} />);
 };
 
 type StatsCardProps = {
@@ -73,7 +73,7 @@ type StatsCardProps = {
 const StatCard = ({ value, ...stat }: StatsCardProps) => {
   return (
     <BaseStatCard {...stat}>
-      <div className="text-lg font-bold font-mono">{value}</div>
+      <div className="font-mono text-lg font-bold">{value}</div>
     </BaseStatCard>
   );
 };
@@ -81,7 +81,7 @@ const StatCard = ({ value, ...stat }: StatsCardProps) => {
 const LoadingStatCard = (stat: Stat) => {
   return (
     <BaseStatCard {...stat}>
-      <Skeleton className="w-16 h-[28px]" />
+      <Skeleton className="h-[28px] w-16" />
     </BaseStatCard>
   );
 };
@@ -94,12 +94,12 @@ const BaseStatCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex justify-between flex-1 px-4 gap-2 py-1">
+    <div className="flex flex-1 justify-between gap-2 px-4 py-1">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Icon className="size-4 shrink-0" />
         <span className="text-xs font-medium tracking-wider">{title}</span>
       </div>
-      <div className="gap-1 flex items-center">{children}</div>
+      <div className="flex items-center gap-1">{children}</div>
     </div>
   );
 };

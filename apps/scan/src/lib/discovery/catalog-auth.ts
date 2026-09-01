@@ -16,13 +16,13 @@ export function isOpenApiDeclaredFree(
   source: string | undefined
 ): boolean {
   return (
-    (authMode === 'unprotected' || authMode === 'apiKey') &&
-    source === 'openapi'
+    (authMode === "unprotected" || authMode === "apiKey") &&
+    source === "openapi"
   );
 }
 
 /** Auth modes that always register regardless of discovery source. */
-const ALWAYS_REGISTRABLE = new Set(['paid', 'apiKey+paid', 'siwx']);
+const ALWAYS_REGISTRABLE = new Set(["paid", "apiKey+paid", "siwx"]);
 
 export function isRegistrableEndpoint(
   authMode: string | undefined,

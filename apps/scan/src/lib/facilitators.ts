@@ -1,11 +1,11 @@
-import { allFacilitators, Network as FacilitatorsNetwork } from 'facilitators';
+import { allFacilitators, Network as FacilitatorsNetwork } from "facilitators";
 
-import { mixedAddressSchema } from './schemas';
+import { mixedAddressSchema } from "./schemas";
 
-import { Chain } from '@/types/chain';
+import { Chain } from "@/types/chain";
 
-import type { FacilitatorMetadata } from 'facilitators';
-import type { MixedAddress } from '@/types/address';
+import type { FacilitatorMetadata } from "facilitators";
+import type { MixedAddress } from "@/types/address";
 
 // NOTE(shafu): Minimum number of transactions required for a facilitator to be displayed
 export const MIN_FACILITATOR_TRANSACTIONS = 100;
@@ -26,15 +26,15 @@ function parseFacilitatorAddress(address: string): MixedAddress | null {
   return parsed.success ? parsed.data : null;
 }
 
-export const facilitators: Facilitator[] = allFacilitators.map(f => ({
+export const facilitators: Facilitator[] = allFacilitators.map((f) => ({
   id: f.id,
   ...f.metadata,
-  image: `/${f.metadata.image.split('/').pop()}`,
+  image: `/${f.metadata.image.split("/").pop()}`,
   addresses: Object.entries(f.addresses).reduce<
     Partial<Record<Chain, MixedAddress[]>>
   >((acc, [network, configs]) => {
     const scanChain = chainMap[network as FacilitatorsNetwork];
-    acc[scanChain] = configs.flatMap(c => {
+    acc[scanChain] = configs.flatMap((c) => {
       const address = parseFacilitatorAddress(c.address);
       return address ? [address] : [];
     });
@@ -42,12 +42,12 @@ export const facilitators: Facilitator[] = allFacilitators.map(f => ({
   }, {}),
 }));
 
-type FacilitatorId = (typeof facilitators)[number]['id'];
+type FacilitatorId = (typeof facilitators)[number]["id"];
 
 export const facilitatorIdMap = new Map<FacilitatorId, Facilitator>(
-  facilitators.map(f => [f.id, f])
+  facilitators.map((f) => [f.id, f])
 );
 
-export const facilitatorAddresses = facilitators.flatMap(f =>
+export const facilitatorAddresses = facilitators.flatMap((f) =>
   Object.values(f.addresses).flat()
 );

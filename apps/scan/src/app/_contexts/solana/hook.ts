@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
+import { useContext } from "react";
 
-import { SolanaWalletContext } from './context';
+import { SolanaWalletContext } from "./context";
 
 export function useSolanaWallet() {
   const context = useContext(SolanaWalletContext);
   if (context === undefined) {
     throw new Error(
-      'useSolanaWallet must be used within a SolanaWalletProvider'
+      "useSolanaWallet must be used within a SolanaWalletProvider"
     );
   }
   return context;

@@ -1,19 +1,19 @@
-import z from 'zod';
+import z from "zod";
 
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
-import { getOriginFromUrl } from '@/lib/url';
-import { jsonObjectSchema, type JsonObject } from '@/lib/json';
-import { scrapeOriginData } from '@/services/scraper';
-import type { FailedResource, TestedResource } from '@/types/batch-test';
-import { probeX402Endpoint } from '@/lib/discovery/probe';
-import { validateResource } from '@/lib/resources';
-import { fetchDiscoveryDocument } from '@/services/discovery';
-import { deduplicateWarnings } from '@/lib/discovery/utils';
+import { getOriginFromUrl } from "@/lib/url";
+import { jsonObjectSchema, type JsonObject } from "@/lib/json";
+import { scrapeOriginData } from "@/services/scraper";
+import type { FailedResource, TestedResource } from "@/types/batch-test";
+import { probeX402Endpoint } from "@/lib/discovery/probe";
+import { validateResource } from "@/lib/resources";
+import { fetchDiscoveryDocument } from "@/services/discovery";
+import { deduplicateWarnings } from "@/lib/discovery/utils";
 import {
   createProbeSession,
   cacheProbeResult,
-} from '@/lib/discovery/probe-cache';
+} from "@/lib/discovery/probe-cache";
 
 /**
  * Test a single resource by probing it and running the same validation
@@ -32,7 +32,7 @@ async function testSingleResource(
       try {
         candidate = JSON.parse(sampleBody);
       } catch (e) {
-        const message = e instanceof SyntaxError ? e.message : 'Invalid JSON';
+        const message = e instanceof SyntaxError ? e.message : "Invalid JSON";
         return {
           success: false as const,
           url,
@@ -81,17 +81,17 @@ async function testSingleResource(
     // SCHEMA_OUTPUT_MISSING: always suppressed — validateResource() has its
     //   own MISSING_OUTPUT_SCHEMA check that includes bazaar fallback, so
     //   the discovery-level warning would be a duplicate or less precise.
-    const probeWarnings = result.warnings.filter(w => {
-      if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
+    const probeWarnings = result.warnings.filter((w) => {
+      if (w.code === "SCHEMA_INPUT_MISSING" && advisory.inputSchema)
         return false;
-      if (w.code === 'SCHEMA_OUTPUT_MISSING') return false;
+      if (w.code === "SCHEMA_OUTPUT_MISSING") return false;
       return true;
     });
 
     return {
       success: true as const,
       url,
-      method: advisory.method as TestedResource['method'],
+      method: advisory.method as TestedResource["method"],
       description: advisory.summary ?? null,
       parsed: advisory,
       warnings: deduplicateWarnings([...probeWarnings, ...validation.warnings]),
@@ -100,7 +100,7 @@ async function testSingleResource(
     return {
       success: false as const,
       url,
-      error: err instanceof Error ? err.message : 'Fetch failed',
+      error: err instanceof Error ? err.message : "Fetch failed",
     };
   }
 }
@@ -111,7 +111,7 @@ export const developerRouter = createTRPCRouter({
     .query(async ({ input }) => {
       // Strip query params to mirror registration flow
       const urlObj = new URL(input.url);
-      urlObj.search = '';
+      urlObj.search = "";
       const cleanUrl = urlObj.toString();
 
       const origin = getOriginFromUrl(cleanUrl);
@@ -131,7 +131,7 @@ export const developerRouter = createTRPCRouter({
         og?.ogDescription ??
         openApiInfo?.description ??
         null;
-      const ogImages = (og?.ogImage ?? []).map(image => ({
+      const ogImages = (og?.ogImage ?? []).map((image) => ({
         url: image.url,
         height: image.height,
         width: image.width,
@@ -165,21 +165,21 @@ export const developerRouter = createTRPCRouter({
               url: z.string().url(),
               method: z
                 .enum([
-                  'GET',
-                  'POST',
-                  'PUT',
-                  'PATCH',
-                  'DELETE',
-                  'HEAD',
-                  'OPTIONS',
-                  'TRACE',
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "PATCH",
+                  "DELETE",
+                  "HEAD",
+                  "OPTIONS",
+                  "TRACE",
                 ])
                 .optional(),
               /** Auth classification from discovery. SIWX routes are skipped
                *  because they are identity-gated, not x402-paid — probing them
                *  would incorrectly mark them as failed. */
               authMode: z
-                .enum(['paid', 'siwx', 'apiKey', 'apiKey+paid', 'unprotected'])
+                .enum(["paid", "siwx", "apiKey", "apiKey+paid", "unprotected"])
                 .optional(),
               /** If true, this resource is invalid and should not be tested */
               invalid: z.boolean().optional(),
@@ -198,19 +198,19 @@ export const developerRouter = createTRPCRouter({
 
       // Separate invalid resources from valid ones
       const invalidResults: FailedResource[] = input.resources
-        .filter(r => r.invalid)
-        .map(r => ({
+        .filter((r) => r.invalid)
+        .map((r) => ({
           success: false as const,
           url: r.url,
-          error: r.invalidReason ?? 'Invalid resource format',
+          error: r.invalidReason ?? "Invalid resource format",
         }));
 
       // Probe endpoints that are x402-paid or unclassified (might be paid but
       // discovery didn't detect it). Skip SIWX (identity-gated, not x402) and
       // explicitly non-paid (unprotected, apiKey).
-      const skipModes = new Set(['siwx', 'unprotected', 'apiKey']);
+      const skipModes = new Set(["siwx", "unprotected", "apiKey"]);
       const probeableResources = input.resources.filter(
-        r => !r.invalid && (r.authMode == null || !skipModes.has(r.authMode))
+        (r) => !r.invalid && (r.authMode == null || !skipModes.has(r.authMode))
       );
       // Probe sequentially to avoid overwhelming the merchant's server.
       // Concurrent probes to the same origin can trigger rate limiting (503s).

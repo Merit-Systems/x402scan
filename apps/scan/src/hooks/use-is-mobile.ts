@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -18,10 +18,10 @@ export function useIsMobile(defaultValue = false) {
     };
 
     // Add event listener
-    mql.addEventListener('change', onChange);
+    mql.addEventListener("change", onChange);
 
     // Cleanup
-    return () => mql.removeEventListener('change', onChange);
+    return () => mql.removeEventListener("change", onChange);
   }, []);
 
   return isMobile;

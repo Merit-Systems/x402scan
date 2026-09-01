@@ -1,25 +1,25 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { baseBucketedQuerySchema } from '../../schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { baseBucketedQuerySchema } from "../../schemas";
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 export const bucketedSellerStatisticsMVInputSchema = baseBucketedQuerySchema;
 
 // Map timeframe suffix to bucket interval for new sellers calculation
 // Must match the bucket intervals used in the recipient_stats_bucketed MVs
 const bucketIntervalByTimeframe = new Map<string, string>([
-  ['1d', '30 minutes'],
-  ['7d', '3 hours 30 minutes'],
-  ['14d', '7 hours'],
-  ['30d', '15 hours'],
-  ['0d', '1 day'],
+  ["1d", "30 minutes"],
+  ["7d", "3 hours 30 minutes"],
+  ["14d", "7 hours"],
+  ["30d", "15 hours"],
+  ["0d", "1 day"],
 ]);
 
 const getBucketInterval = (mvTimeframe: string): string =>
-  bucketIntervalByTimeframe.get(mvTimeframe) ?? '1 day';
+  bucketIntervalByTimeframe.get(mvTimeframe) ?? "1 day";
 
 const bucketedSellerResultSchema = z.array(
   z.object({
@@ -83,11 +83,11 @@ const getBucketedSellerStatisticsMVUncached = async (
 
   const statsWhereClause = Prisma.join(
     [Prisma.sql`WHERE 1=1`, ...statsConditions],
-    ' '
+    " "
   );
   const newSellersWhereClause = Prisma.join(
     [Prisma.sql`WHERE 1=1`, ...newSellersConditions],
-    ' '
+    " "
   );
 
   // Query bucketed stats with new_sellers computed from recipient_first_seen
@@ -131,8 +131,8 @@ const getBucketedSellerStatisticsMVUncached = async (
 
 export const getBucketedSellerStatisticsMV = createCachedArrayQuery({
   queryFn: getBucketedSellerStatisticsMVUncached,
-  cacheKeyPrefix: 'bucketed-seller-statistics-mv',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
-  tags: ['statistics', 'sellers'],
+  cacheKeyPrefix: "bucketed-seller-statistics-mv",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
+  tags: ["statistics", "sellers"],
 });

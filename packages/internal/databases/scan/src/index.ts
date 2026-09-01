@@ -1,5 +1,5 @@
 // Explicitly export Prisma types and enums instead of using export *
-export { Prisma } from '../generated/prisma/client';
+export { Prisma } from "../generated/prisma/client";
 export type {
   User,
   Account,
@@ -29,7 +29,7 @@ export type {
   ResourceMetrics,
   InviteCode,
   InviteRedemption,
-} from '../generated/prisma/client';
+} from "../generated/prisma/client";
 export {
   Role,
   ResourceType,
@@ -39,5 +39,5 @@ export {
   Visibility,
   InviteCodeStatus,
   RedemptionStatus,
-} from '../generated/prisma/client';
-export { scanDb } from './client';
+} from "../generated/prisma/client";
+export { scanDb } from "./client";

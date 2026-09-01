@@ -1,5 +1,5 @@
-import Redis from 'ioredis';
-import { env } from '@/env';
+import Redis from "ioredis";
+import { env } from "@/env";
 
 /**
  * Redis client singleton for distributed caching
@@ -15,16 +15,16 @@ export function getRedisClient(): Redis | null {
     try {
       redis = new Redis(env.REDIS_URL, {
         maxRetriesPerRequest: 3,
-        retryStrategy: times => {
+        retryStrategy: (times) => {
           if (times > 3) {
-            console.error('[Redis] Max retries reached, giving up');
+            console.error("[Redis] Max retries reached, giving up");
             return null;
           }
           const delay = Math.min(times * 100, 2000);
           return delay;
         },
-        reconnectOnError: err => {
-          const targetError = 'READONLY';
+        reconnectOnError: (err) => {
+          const targetError = "READONLY";
           if (err.message.includes(targetError)) {
             return true;
           }
@@ -32,15 +32,15 @@ export function getRedisClient(): Redis | null {
         },
       });
 
-      redis.on('error', err => {
-        console.error('[Redis] Connection error:', err.message);
+      redis.on("error", (err) => {
+        console.error("[Redis] Connection error:", err.message);
       });
 
-      redis.on('connect', () => {
-        console.log('[Redis] Connected successfully');
+      redis.on("connect", () => {
+        console.log("[Redis] Connected successfully");
       });
     } catch (err) {
-      console.error('[Redis] Failed to initialize:', err);
+      console.error("[Redis] Failed to initialize:", err);
       redis = null;
     }
   }

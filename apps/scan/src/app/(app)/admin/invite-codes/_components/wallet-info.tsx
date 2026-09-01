@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { AlertTriangle, Copy, Check } from 'lucide-react';
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import { formatCurrency } from '@/lib/utils';
-import { api } from '@/trpc/client';
-import { CHAIN_LABELS } from '@/types/chain';
+import { AlertTriangle, Copy, Check } from "lucide-react";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/utils";
+import { api } from "@/trpc/client";
+import { CHAIN_LABELS } from "@/types/chain";
 
 export const WalletInfo = () => {
   const { data, isLoading } = api.admin.inviteCodes.walletInfo.useQuery();
@@ -58,13 +58,13 @@ export const WalletInfo = () => {
 
   if (!data.configured) {
     return (
-      <div className="flex items-start gap-3 p-4 border border-destructive/50 bg-destructive/10 rounded-lg">
-        <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+      <div className="flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
         <div>
           <p className="font-medium text-destructive">Wallet Not Configured</p>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             {data.error ??
-              'The invite wallet is not configured. Set the INVITE_WALLET_NAME environment variable.'}
+              "The invite wallet is not configured. Set the INVITE_WALLET_NAME environment variable."}
           </p>
         </div>
       </div>
@@ -80,13 +80,13 @@ export const WalletInfo = () => {
           <CardTitle>{CHAIN_LABELS[data.chain]} Invite Wallet</CardTitle>
         </CardHeader>
         <CardContent>
-          <code className="text-sm bg-muted p-2 rounded flex items-center gap-2">
-            <span className="break-all flex-1">{data.address}</span>
+          <code className="flex items-center gap-2 rounded bg-muted p-2 text-sm">
+            <span className="flex-1 break-all">{data.address}</span>
             <Button
               variant="ghost"
               size="icon"
               onClick={copyAddress}
-              className="shrink-0 h-6 w-6"
+              className="h-6 w-6 shrink-0"
             >
               {copied ? (
                 <Check className="h-3 w-3" />
@@ -105,12 +105,12 @@ export const WalletInfo = () => {
           <p className="text-3xl font-bold">
             {formatCurrency(data.usdcBalance ?? 0)}
           </p>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             Available for invite code redemptions
           </p>
         </CardContent>
       </Card>
-      <Card className={lowEth ? 'border-destructive/50' : undefined}>
+      <Card className={lowEth ? "border-destructive/50" : undefined}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             ETH Balance
@@ -121,10 +121,10 @@ export const WalletInfo = () => {
           <p className="text-3xl font-bold">
             {(data.ethBalance ?? 0).toFixed(6)} ETH
           </p>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             {lowEth
-              ? 'Low balance - fund wallet for gas fees'
-              : 'Available for gas fees'}
+              ? "Low balance - fund wallet for gas fees"
+              : "Available for gas fees"}
           </p>
         </CardContent>
       </Card>

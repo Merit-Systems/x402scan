@@ -1,11 +1,11 @@
-import { MessageContent } from '@/components/ai-elements/message';
-import { Response } from '@/components/ai-elements/response';
-import { toast } from 'sonner';
-import { Fragment } from 'react';
-import { Action, Actions } from '@/components/ai-elements/actions';
-import { CopyIcon } from 'lucide-react';
+import { MessageContent } from "@/components/ai-elements/message";
+import { Response } from "@/components/ai-elements/response";
+import { toast } from "sonner";
+import { Fragment } from "react";
+import { Action, Actions } from "@/components/ai-elements/actions";
+import { CopyIcon } from "lucide-react";
 
-import type { TextUIPart } from 'ai';
+import type { TextUIPart } from "ai";
 
 interface Props {
   part: TextUIPart;
@@ -25,10 +25,10 @@ export const TextPart: React.FC<Props> = ({ part, showActions }) => {
               void navigator.clipboard
                 .writeText(part.text)
                 .then(() => {
-                  toast.success('Copied to clipboard');
+                  toast.success("Copied to clipboard");
                 })
                 .catch(() => {
-                  toast.error('Failed to copy to clipboard');
+                  toast.error("Failed to copy to clipboard");
                 })
             }
             label="Copy"

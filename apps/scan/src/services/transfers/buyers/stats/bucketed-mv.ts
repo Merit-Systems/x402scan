@@ -1,10 +1,10 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { baseBucketedQuerySchema } from '../../schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { baseBucketedQuerySchema } from "../../schemas";
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 export const bucketedBuyerStatisticsMVInputSchema = baseBucketedQuerySchema;
 
@@ -48,7 +48,7 @@ const getBucketedBuyerStatisticsMVUncached = async (
 
   const statsWhereClause = Prisma.join(
     [Prisma.sql`WHERE 1=1`, ...statsConditions],
-    ' '
+    " "
   );
 
   // Query bucketed stats — new_buyers omitted for now (requires sender_first_seen MV)
@@ -69,7 +69,7 @@ const getBucketedBuyerStatisticsMVUncached = async (
   try {
     return await queryRaw(sql, bucketedBuyerResultSchema);
   } catch (error) {
-    if (String(error).includes('does not exist')) {
+    if (String(error).includes("does not exist")) {
       console.warn(
         `[buyer-stats] MV ${tableName} not yet available, returning empty`
       );
@@ -81,8 +81,8 @@ const getBucketedBuyerStatisticsMVUncached = async (
 
 export const getBucketedBuyerStatisticsMV = createCachedArrayQuery({
   queryFn: getBucketedBuyerStatisticsMVUncached,
-  cacheKeyPrefix: 'bucketed-buyer-statistics-mv',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
-  tags: ['statistics', 'buyers'],
+  cacheKeyPrefix: "bucketed-buyer-statistics-mv",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
+  tags: ["statistics", "buyers"],
 });

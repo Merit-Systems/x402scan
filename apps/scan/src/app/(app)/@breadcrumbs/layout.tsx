@@ -1,4 +1,4 @@
-import { Breadcrumb } from './_components/breadcrumb';
+import { Breadcrumb } from "./_components/breadcrumb";
 
 export default function BreadcrumbLayout({
   children,

@@ -1,10 +1,10 @@
-import { setCookie, getCookie } from 'cookies-next/client';
+import { setCookie, getCookie } from "cookies-next/client";
 
-import { COOKIE_KEYS } from './keys';
+import { COOKIE_KEYS } from "./keys";
 
-import { parseChain } from '@/app/(app)/_lib/chain/parse';
+import { parseChain } from "@/app/(app)/_lib/chain/parse";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 export const setDataChainCookieClient = (chain: Chain | undefined): void => {
   setCookie(COOKIE_KEYS.DATA_CHAIN, chain);

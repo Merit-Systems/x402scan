@@ -1,27 +1,27 @@
-import { cache } from 'react';
+import { cache } from "react";
 
-import NextAuth from 'next-auth';
-import { encode as defaultEncode } from 'next-auth/jwt';
+import NextAuth from "next-auth";
+import { encode as defaultEncode } from "next-auth/jwt";
 
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import { v4 as uuid } from 'uuid';
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { v4 as uuid } from "uuid";
 
-import { scanDb } from '@x402scan/scan-db';
-import { providers } from './providers';
+import { scanDb } from "@x402scan/scan-db";
+import { providers } from "./providers";
 
-import { SIWE_PROVIDER_ID } from './providers/siwe/constants';
-import { SIWS_PROVIDER_ID } from './providers/siws/constants';
+import { SIWE_PROVIDER_ID } from "./providers/siwe/constants";
+import { SIWS_PROVIDER_ID } from "./providers/siws/constants";
 
-import type { DefaultSession } from 'next-auth';
-import type { Account, Role } from '@x402scan/scan-db/types';
+import type { DefaultSession } from "next-auth";
+import type { Account, Role } from "@x402scan/scan-db/types";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: {
       id: string;
       role: Role;
       accounts: Account[];
-    } & DefaultSession['user'];
+    } & DefaultSession["user"];
   }
 
   interface AdapterUser {
@@ -42,7 +42,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
   providers,
   adapter: {
     ...PrismaAdapter(scanDb as Parameters<typeof PrismaAdapter>[0]),
-    getUser: async id => {
+    getUser: async (id) => {
       const user = await scanDb.user.findUnique({
         where: { id },
         include: { accounts: true },
@@ -52,10 +52,10 @@ const { handlers, auth: uncachedAuth } = NextAuth({
       }
       return {
         ...user,
-        email: user?.email ?? '',
+        email: user?.email ?? "",
       };
     },
-    getSessionAndUser: async sessionToken => {
+    getSessionAndUser: async (sessionToken) => {
       const session = await scanDb.session.findUnique({
         where: { sessionToken },
         include: { user: true },
@@ -74,7 +74,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
         session,
         user: {
           ...user,
-          email: user.email ?? '',
+          email: user.email ?? "",
         },
       };
     },
@@ -103,7 +103,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
         const sessionToken = uuid();
 
         if (!params.token.sub) {
-          throw new Error('No user ID found in token');
+          throw new Error("No user ID found in token");
         }
 
         const createdSession = await scanDb.session.create({
@@ -115,7 +115,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
         });
 
         if (!createdSession) {
-          throw new Error('Failed to create session');
+          throw new Error("Failed to create session");
         }
 
         return sessionToken;

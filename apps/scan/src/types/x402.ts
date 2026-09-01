@@ -1,11 +1,11 @@
-import type { JsonObject } from '@/lib/json';
+import type { JsonObject } from "@/lib/json";
 
 export enum Methods {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
-  PATCH = 'PATCH',
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  DELETE = "DELETE",
+  PATCH = "PATCH",
 }
 
 /**
@@ -13,7 +13,7 @@ export enum Methods {
  * (v1HttpMethodSchema) also accepts OPTIONS and HEAD, which are displayed
  * but have no dedicated UI treatment in the Methods enum.
  */
-export type BazaarMethod = Methods | 'OPTIONS' | 'HEAD';
+export type BazaarMethod = Methods | "OPTIONS" | "HEAD";
 
 export interface FieldDefinition {
   name: string;

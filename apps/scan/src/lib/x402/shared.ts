@@ -1,6 +1,6 @@
-import { z as z3 } from 'zod3';
+import { z as z3 } from "zod3";
 
-import type { JsonValue } from '@/lib/json';
+import type { JsonValue } from "@/lib/json";
 
 /**
  * zod3 counterpart of `jsonValueSchema` from `@/lib/json`, for schemas that
@@ -36,7 +36,7 @@ export const FieldDefSchema: z3.ZodType<FieldDef, z3.ZodTypeDef, unknown> =
   z3.lazy(() =>
     z3.union([
       // Shorthand: a bare string is the field's type, e.g. `"string"`.
-      z3.string().transform(type => ({ type })),
+      z3.string().transform((type) => ({ type })),
       z3.object({
         type: z3.string().optional(),
         required: z3.union([z3.boolean(), z3.array(z3.string())]).optional(),

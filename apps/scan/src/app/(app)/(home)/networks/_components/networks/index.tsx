@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { columns } from './columns';
-import { useNetworksSorting } from '@/app/(app)/_contexts/sorting/networks/hook';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
+import { columns } from "./columns";
+import { useNetworksSorting } from "@/app/(app)/_contexts/sorting/networks/hook";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
 
 export const NetworksTable: React.FC = () => {
   const { sorting } = useNetworksSorting();

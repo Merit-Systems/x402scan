@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import type { SortingContext } from './context';
-import type { SortType } from './types';
+import type { SortingContext } from "./context";
+import type { SortType } from "./types";
 
 export const SortingProvider = <SortKey extends string>({
   context,

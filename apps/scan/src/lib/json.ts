@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * The JSON value domain: what any JSON.parse result or JSON-serializable

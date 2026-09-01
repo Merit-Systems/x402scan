@@ -1,11 +1,11 @@
-import { z } from 'zod';
-import { createTRPCRouter, adminProcedure } from '../../trpc';
+import { z } from "zod";
+import { createTRPCRouter, adminProcedure } from "../../trpc";
 import {
   listPartners,
   createPartner,
   createPartnerSchema,
   searchPartners,
-} from '@/services/db/partners';
+} from "@/services/db/partners";
 
 export const adminPartnersRouter = createTRPCRouter({
   list: adminProcedure.query(async () => {

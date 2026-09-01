@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import { Bot } from 'lucide-react';
+import { Bot } from "lucide-react";
 
-import { Card } from '@/components/ui/card';
+import { Card } from "@/components/ui/card";
 
-import { EmptyMessages, LoadingMessages, Messages } from './messages';
-import { LoadingPromptInputSection, PromptInputSection } from './input';
+import { EmptyMessages, LoadingMessages, Messages } from "./messages";
+import { LoadingPromptInputSection, PromptInputSection } from "./input";
 
-import type { Message } from '@x402scan/scan-db/types';
-import type { ChatConfig } from '../../_types/chat-config';
-import type { RouterOutputs } from '@/trpc/client';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Suggestion, Suggestions } from '@/components/ai-elements/suggestion';
-import { useChat } from '../../_hooks/use-chat';
+import type { Message } from "@x402scan/scan-db/types";
+import type { ChatConfig } from "../../_types/chat-config";
+import type { RouterOutputs } from "@/trpc/client";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import { useChat } from "../../_hooks/use-chat";
 
 interface Props {
   id: string;
@@ -22,7 +22,7 @@ interface Props {
   isReadOnly?: boolean;
   initialConfig?: ChatConfig;
   storeConfig?: boolean;
-  agentConfig?: RouterOutputs['public']['agents']['get'];
+  agentConfig?: RouterOutputs["public"]["agents"]["get"];
 }
 
 export const ChatContent: React.FC<Props> = ({
@@ -54,8 +54,8 @@ export const ChatContent: React.FC<Props> = ({
   });
 
   return (
-    <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
-      <SidebarTrigger className="absolute top-2 left-2 bg-card z-2 md:hidden" />
+    <div className="relative flex h-0 flex-1 flex-col overflow-hidden">
+      <SidebarTrigger className="absolute top-2 left-2 z-2 bg-card md:hidden" />
       <Messages
         messages={messages}
         status={status}
@@ -67,21 +67,21 @@ export const ChatContent: React.FC<Props> = ({
         emptyState={
           agentConfig
             ? {
-                title: agentConfig.name || 'Untitled Agent',
+                title: agentConfig.name || "Untitled Agent",
                 description:
                   agentConfig.description && agentConfig.description.length > 0
                     ? agentConfig.description
-                    : 'No description',
+                    : "No description",
                 icon: agentConfig.image ? (
                   <Image
                     src={agentConfig.image}
                     alt={agentConfig.name}
                     width={96}
                     height={96}
-                    className="size-12 md:size-16 rounded-md overflow-hidden"
+                    className="size-12 overflow-hidden rounded-md md:size-16"
                   />
                 ) : (
-                  <Card className="p-2 border">
+                  <Card className="border p-2">
                     <Bot className="size-8 md:size-12" />
                   </Card>
                 ),
@@ -92,17 +92,17 @@ export const ChatContent: React.FC<Props> = ({
 
       {!isReadOnly && (
         <div className="pb-2 md:pb-4">
-          <div className="mx-auto max-w-4xl px-2 flex flex-col">
+          <div className="mx-auto flex max-w-4xl flex-col px-2">
             {agentConfig?.starterPrompts !== undefined &&
               agentConfig.starterPrompts.length > 0 &&
               messages.length === 0 && (
                 <Suggestions className="px-2 pb-2">
-                  {agentConfig.starterPrompts.map(prompt => (
+                  {agentConfig.starterPrompts.map((prompt) => (
                     <Suggestion
                       key={prompt}
                       suggestion={prompt}
                       onClick={() => {
-                        setInput('');
+                        setInput("");
                         sendChatMessage(prompt);
                       }}
                     />
@@ -129,7 +129,7 @@ export const ChatContent: React.FC<Props> = ({
 
 export const LoadingEmptyChat = () => {
   return (
-    <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
+    <div className="relative flex h-0 flex-1 flex-col overflow-hidden">
       <EmptyMessages />
       <div className="pb-2 md:pb-4">
         <div className="mx-auto max-w-4xl px-2">
@@ -142,7 +142,7 @@ export const LoadingEmptyChat = () => {
 
 export const LoadingMessagesChat = () => {
   return (
-    <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
+    <div className="relative flex h-0 flex-1 flex-col overflow-hidden">
       <LoadingMessages />
       <div className="pb-2 md:pb-4">
         <div className="mx-auto max-w-4xl px-2">

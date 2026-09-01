@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { AgentForm } from './form';
+import { AgentForm } from "./form";
 
-import type { RouterOutputs } from '@/trpc/client';
+import type { RouterOutputs } from "@/trpc/client";
 
 interface Props {
-  agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
+  agentConfiguration: NonNullable<RouterOutputs["public"]["agents"]["get"]>;
 }
 
 export const EditAgentForm: React.FC<Props> = ({ agentConfiguration }) => {
@@ -20,19 +20,19 @@ export const EditAgentForm: React.FC<Props> = ({ agentConfiguration }) => {
 
   const { mutate: createAgent, isPending } =
     api.user.agentConfigurations.update.useMutation({
-      onSuccess: async agentConfiguration => {
-        toast.success('Agent configuration updated successfully');
+      onSuccess: async (agentConfiguration) => {
+        toast.success("Agent configuration updated successfully");
         await utils.public.agents.get.invalidate(agentConfiguration.id);
         router.push(`/composer/agent/${agentConfiguration.id}`);
       },
-      onError: error => {
+      onError: (error) => {
         toast.error(error.message);
       },
     });
 
   return (
     <AgentForm
-      onSubmit={data => {
+      onSubmit={(data) => {
         createAgent({
           ...data,
           id: agentConfiguration.id,
@@ -40,8 +40,8 @@ export const EditAgentForm: React.FC<Props> = ({ agentConfiguration }) => {
       }}
       isSubmitting={isPending}
       submitText={{
-        default: 'Update Agent',
-        submitting: 'Updating...',
+        default: "Update Agent",
+        submitting: "Updating...",
       }}
       defaultValues={{
         name: agentConfiguration.name,
@@ -50,7 +50,9 @@ export const EditAgentForm: React.FC<Props> = ({ agentConfiguration }) => {
         model: agentConfiguration.model ?? undefined,
         systemPrompt: agentConfiguration.systemPrompt,
         visibility: agentConfiguration.visibility,
-        resourceIds: agentConfiguration.resources.map(resource => resource.id),
+        resourceIds: agentConfiguration.resources.map(
+          (resource) => resource.id
+        ),
         starterPrompts: agentConfiguration.starterPrompts,
       }}
     />

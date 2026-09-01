@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import { Calendar, DollarSign, Globe, Hash, Server } from 'lucide-react';
+import { Calendar, DollarSign, Globe, Hash, Server } from "lucide-react";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
 
-import { Address } from '@/components/ui/address';
+import { Address } from "@/components/ui/address";
 
-import { formatCompactAgo } from '@/lib/utils';
-import { formatTokenAmount } from '@/lib/token';
+import { formatCompactAgo } from "@/lib/utils";
+import { formatTokenAmount } from "@/lib/token";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
-import { TransfersSortingContext } from '@/app/(app)/_contexts/sorting/transfers/context';
-import { Chains } from '@/app/(app)/_components/chains';
-import { Facilitator } from '@/app/(app)/_components/facilitator';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
+import { TransfersSortingContext } from "@/app/(app)/_contexts/sorting/transfers/context";
+import { Chains } from "@/app/(app)/_components/chains";
+import { Facilitator } from "@/app/(app)/_components/facilitator";
 
-type ColumnType = RouterOutputs['public']['transfers']['list']['items'][number];
+type ColumnType = RouterOutputs["public"]["transfers"]["list"]["items"][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
-    accessorKey: 'recipient',
+    accessorKey: "recipient",
     header: () => (
       <HeaderCell Icon={Server} label="Recipient" className="mr-auto" />
     ),
@@ -32,15 +32,15 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         <Address
           address={row.original.recipient}
           disableCopy
-          className="text-xs block text-left hover:underline"
+          className="block text-left text-xs hover:underline"
         />
       </Link>
     ),
     size: 150,
-    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+    loading: () => <Skeleton className="mr-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'amount',
+    accessorKey: "amount",
     header: () => (
       <HeaderCell
         Icon={DollarSign}
@@ -48,7 +48,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         className="mx-auto"
         sorting={{
           sortContext: TransfersSortingContext,
-          sortKey: 'amount',
+          sortKey: "amount",
         }}
       />
     ),
@@ -58,10 +58,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'block_timestamp',
+    accessorKey: "block_timestamp",
     header: () => (
       <HeaderCell
         Icon={Calendar}
@@ -69,7 +69,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         className="mx-auto"
         sorting={{
           sortContext: TransfersSortingContext,
-          sortKey: 'block_timestamp',
+          sortKey: "block_timestamp",
         }}
       />
     ),
@@ -79,10 +79,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'chains',
+    accessorKey: "chains",
     header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
     cell: ({ row }) => (
       <Chains
@@ -92,10 +92,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 100,
-    loading: () => <Skeleton className="size-4 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto size-4" />,
   },
   {
-    accessorKey: 'facilitator',
+    accessorKey: "facilitator",
     header: () => (
       <HeaderCell Icon={Server} label="Facilitator" className="mx-auto" />
     ),
@@ -106,20 +106,20 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 150,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'transaction_hash',
+    accessorKey: "transaction_hash",
     header: () => (
       <HeaderCell Icon={Hash} label="Transaction Hash" className="mx-auto" />
     ),
     cell: ({ row }) => (
       <Address
         address={row.original.tx_hash}
-        className="text-xs block text-center"
+        className="block text-center text-xs"
       />
     ),
     size: 150,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
 ];

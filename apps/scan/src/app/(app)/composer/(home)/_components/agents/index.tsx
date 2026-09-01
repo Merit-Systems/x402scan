@@ -1,7 +1,7 @@
-import { Suspense } from 'react';
-import { Section } from '@/app/_components/layout/page-utils';
-import { LoadingAgentCard } from '../lib/agent-card';
-import { AgentsContent } from './content';
+import { Suspense } from "react";
+import { Section } from "@/app/_components/layout/page-utils";
+import { LoadingAgentCard } from "../lib/agent-card";
+import { AgentsContent } from "./content";
 
 // Note: No HydrateClient here - parent page.tsx provides it
 export const Agents = () => {
@@ -39,7 +39,7 @@ const AgentsContainer = ({ children }: { children: React.ReactNode }) => {
       description="Try out the most popular agents"
       href="/composer/agents"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
         {children}
       </div>
     </Section>

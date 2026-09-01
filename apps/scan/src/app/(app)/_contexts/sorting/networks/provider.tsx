@@ -1,8 +1,8 @@
-import { SortingProvider } from '../base/provider';
-import { NetworksSortingContext } from './context';
+import { SortingProvider } from "../base/provider";
+import { NetworksSortingContext } from "./context";
 
-import type { NetworksSortId } from '@/services/transfers/networks/list';
-import type { SortType } from '../base/types';
+import type { NetworksSortId } from "@/services/transfers/networks/list";
+import type { SortType } from "../base/types";
 
 export const NetworksSortingProvider = ({
   children,

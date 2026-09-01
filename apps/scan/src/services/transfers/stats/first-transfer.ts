@@ -1,14 +1,14 @@
-import z from 'zod';
+import z from "zod";
 
-import { Prisma } from '@x402scan/transfers-db';
+import { Prisma } from "@x402scan/transfers-db";
 
-import { baseQuerySchema } from '../schemas';
+import { baseQuerySchema } from "../schemas";
 
-import { queryRaw } from '@/services/transfers/client';
-import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
+import { queryRaw } from "@/services/transfers/client";
+import { createCachedQuery, createStandardCacheKey } from "@/lib/cache";
 
-import { transfersWhereClause } from '../query-utils';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { transfersWhereClause } from "../query-utils";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 export const getFirstTransferTimestampInputSchema = baseQuerySchema.omit({
   timeframe: true,
@@ -39,10 +39,10 @@ const getFirstTransferTimestampUncached = async (
 
 const getFirstTransferTimestampCached = createCachedQuery({
   queryFn: getFirstTransferTimestampUncached,
-  cacheKeyPrefix: 'first-transfer-timestamp',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['timestamp'],
-  tags: ['transfers'],
+  cacheKeyPrefix: "first-transfer-timestamp",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["timestamp"],
+  tags: ["transfers"],
 });
 
 export const getFirstTransferTimestamp = async (

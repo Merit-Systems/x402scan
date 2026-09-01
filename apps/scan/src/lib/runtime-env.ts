@@ -6,5 +6,5 @@
  * these to gate server-only imports — unlike `typeof window`, bundlers cannot
  * dead-code-eliminate branches on these values.
  */
-export const isBrowser = 'window' in globalThis;
+export const isBrowser = "window" in globalThis;
 export const isServer = !isBrowser;

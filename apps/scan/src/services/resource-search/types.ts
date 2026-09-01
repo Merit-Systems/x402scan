@@ -47,6 +47,6 @@ export type CombinedRefinedResult = {
   rerankerIndex: number | null;
 } & FilteredSearchResult;
 
-export type RefinementMode = 'none' | 'llm' | 'reranker' | 'both';
+export type RefinementMode = "none" | "llm" | "reranker" | "both";
 
-export type QueryMode = 'keywords' | 'sql' | 'sql-parallel';
+export type QueryMode = "keywords" | "sql" | "sql-parallel";

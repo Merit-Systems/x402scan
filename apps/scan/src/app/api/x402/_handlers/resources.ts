@@ -1,10 +1,10 @@
-import type { resourcesListQuerySchema } from '@/app/api/x402/_lib/schemas';
-import { paginatedResponse } from '@/app/api/x402/_lib/utils';
-import { listResourcesWithPagination } from '@/services/db/resources/resource';
-import { serializeAccepts } from '@/lib/token';
+import type { resourcesListQuerySchema } from "@/app/api/x402/_lib/schemas";
+import { paginatedResponse } from "@/app/api/x402/_lib/utils";
+import { listResourcesWithPagination } from "@/services/db/resources/resource";
+import { serializeAccepts } from "@/lib/token";
 
-import type { z } from 'zod';
-import type { SupportedChain } from '@/types/chain';
+import type { z } from "zod";
+import type { SupportedChain } from "@/types/chain";
 
 export async function handleResources(
   query: z.infer<typeof resourcesListQuerySchema>
@@ -21,7 +21,7 @@ export async function handleResources(
   return paginatedResponse(
     {
       ...result,
-      items: result.items.map(item => ({
+      items: result.items.map((item) => ({
         ...item,
         accepts: serializeAccepts(item.accepts),
       })),

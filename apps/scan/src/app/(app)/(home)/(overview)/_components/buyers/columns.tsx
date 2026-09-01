@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
+import { Calendar, DollarSign, Globe, Hash, Server, User } from "lucide-react";
 
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
 
-import { Address } from '@/components/ui/address';
-import { Facilitators } from '@/app/(app)/_components/facilitator';
-import { BuyerTopServers, LoadingBuyerTopServers } from './top-servers';
+import { Address } from "@/components/ui/address";
+import { Facilitators } from "@/app/(app)/_components/facilitator";
+import { BuyerTopServers, LoadingBuyerTopServers } from "./top-servers";
 
-import { formatTokenAmount } from '@/lib/token';
-import { formatCompactAgo } from '@/lib/utils';
+import { formatTokenAmount } from "@/lib/token";
+import { formatCompactAgo } from "@/lib/utils";
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
-import { BuyersSortingContext } from '../../../../_contexts/sorting/buyers/context';
-import { Chains } from '@/app/(app)/_components/chains';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
+import { BuyersSortingContext } from "../../../../_contexts/sorting/buyers/context";
+import { Chains } from "@/app/(app)/_components/chains";
 
 type ColumnType =
-  RouterOutputs['public']['buyers']['all']['list']['items'][number];
+  RouterOutputs["public"]["buyers"]["all"]["list"]["items"][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
-    accessorKey: 'sender',
+    accessorKey: "sender",
     header: () => (
       <HeaderCell Icon={User} label="Buyer" className="justify-start" />
     ),
@@ -42,7 +42,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-32" />,
   },
   {
-    accessorKey: 'top_servers',
+    accessorKey: "top_servers",
     header: () => (
       <HeaderCell Icon={Server} label="Servers" className="mx-auto" />
     ),
@@ -51,14 +51,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <LoadingBuyerTopServers />,
   },
   {
-    accessorKey: 'tx_count',
+    accessorKey: "tx_count",
     header: () => (
       <HeaderCell
         Icon={Hash}
         label="Txns"
         sorting={{
           sortContext: BuyersSortingContext,
-          sortKey: 'tx_count',
+          sortKey: "tx_count",
         }}
         className="mx-auto"
       />
@@ -66,17 +66,17 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.tx_count.toLocaleString(undefined, {
-          notation: 'compact',
+          notation: "compact",
           maximumFractionDigits: 2,
           minimumFractionDigits: 0,
         })}
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'total_amount',
+    accessorKey: "total_amount",
     header: () => (
       <HeaderCell
         Icon={DollarSign}
@@ -84,7 +84,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         className="mx-auto"
         sorting={{
           sortContext: BuyersSortingContext,
-          sortKey: 'total_amount',
+          sortKey: "total_amount",
         }}
       />
     ),
@@ -94,17 +94,17 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'unique_sellers',
+    accessorKey: "unique_sellers",
     header: () => (
       <HeaderCell
         Icon={Hash}
         label="Sellers"
         sorting={{
           sortContext: BuyersSortingContext,
-          sortKey: 'unique_sellers',
+          sortKey: "unique_sellers",
         }}
         className="mx-auto"
       />
@@ -112,24 +112,24 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.unique_sellers.toLocaleString(undefined, {
-          notation: 'compact',
+          notation: "compact",
           maximumFractionDigits: 2,
           minimumFractionDigits: 0,
         })}
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'latest_block_timestamp',
+    accessorKey: "latest_block_timestamp",
     header: () => (
       <HeaderCell
         Icon={Calendar}
         label="Latest"
         sorting={{
           sortContext: BuyersSortingContext,
-          sortKey: 'latest_block_timestamp',
+          sortKey: "latest_block_timestamp",
         }}
         className="mx-auto"
       />
@@ -138,14 +138,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <div className="text-center font-mono text-xs">
         {row.original.latest_block_timestamp
           ? formatCompactAgo(row.original.latest_block_timestamp)
-          : '–'}
+          : "–"}
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'chains',
+    accessorKey: "chains",
     header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
     cell: ({ row }) => (
       <Chains
@@ -155,10 +155,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 100,
-    loading: () => <Skeleton className="size-4 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto size-4" />,
   },
   {
-    accessorKey: 'facilitator_ids',
+    accessorKey: "facilitator_ids",
     header: () => (
       <HeaderCell Icon={User} label="Facilitator" className="mx-auto" />
     ),
@@ -169,6 +169,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
 ];

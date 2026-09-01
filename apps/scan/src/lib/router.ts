@@ -1,29 +1,29 @@
-import { createRouter } from '@agentcash/router';
+import { createRouter } from "@agentcash/router";
 
-import { env } from '@/env';
+import { env } from "@/env";
 
-import type { NextRequest } from 'next/server';
+import type { NextRequest } from "next/server";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers':
-    'Content-Type, X-Payment, SIGN-IN-WITH-X, PAYMENT-REQUIRED',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "Content-Type, X-Payment, SIGN-IN-WITH-X, PAYMENT-REQUIRED",
 };
 
 export const router = createRouter({
   baseUrl: env.NEXT_PUBLIC_APP_URL,
   payeeAddress:
-    env.X402_PAYEE_ADDRESS ?? '0x0000000000000000000000000000000000000001',
-  network: 'eip155:8453',
+    env.X402_PAYEE_ADDRESS ?? "0x0000000000000000000000000000000000000001",
+  network: "eip155:8453",
   discovery: {
-    title: 'x402scan',
-    version: '1.0.0',
+    title: "x402scan",
+    version: "1.0.0",
     description:
-      'Query indexed x402 payment data and send USDC on Base and Solana.',
+      "Query indexed x402 payment data and send USDC on Base and Solana.",
     contact: {
-      name: 'Merit Systems',
-      url: 'https://merit.systems',
+      name: "Merit Systems",
+      url: "https://merit.systems",
     },
     guidance: `x402scan is a payment data explorer and registry for the x402 protocol.
 
@@ -57,21 +57,21 @@ export const router = createRouter({
 export const solanaRouter = createRouter({
   baseUrl: env.NEXT_PUBLIC_APP_URL,
   payeeAddress:
-    env.X402_PAYEE_ADDRESS ?? '0x0000000000000000000000000000000000000001',
-  network: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+    env.X402_PAYEE_ADDRESS ?? "0x0000000000000000000000000000000000000001",
+  network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
   discovery: {
-    title: 'x402scan',
-    version: '1.0.0',
+    title: "x402scan",
+    version: "1.0.0",
     description:
-      'Query indexed x402 payment data and send USDC on Base and Solana.',
+      "Query indexed x402 payment data and send USDC on Base and Solana.",
   },
 });
 
 export function withCors(
   handler: (req: NextRequest) => Promise<Response>
 ): (req: NextRequest) => Promise<Response> {
-  return async req => {
-    if (req.method === 'OPTIONS') {
+  return async (req) => {
+    if (req.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
     const response = await handler(req);

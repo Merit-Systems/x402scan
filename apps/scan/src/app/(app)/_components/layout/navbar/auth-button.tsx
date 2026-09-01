@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { Wallet } from 'lucide-react';
+import { Wallet } from "lucide-react";
 
-import { useAccount } from 'wagmi';
+import { useAccount } from "wagmi";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { OnrampSessionDialog } from '@/app/(app)/_components/wallet/onramp-session-dialog';
+import { OnrampSessionDialog } from "@/app/(app)/_components/wallet/onramp-session-dialog";
 
-import { WalletDialog } from '../../../_components/wallet/dialog';
+import { WalletDialog } from "../../../_components/wallet/dialog";
 
 export const NavbarAuthButton = () => {
   const { address } = useAccount();

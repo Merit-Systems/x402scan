@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import type { FieldDef, OutputSchemaV1 } from '@/lib/x402';
+import type { FieldDef, OutputSchemaV1 } from "@/lib/x402";
 
 function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
   let zodType: z.ZodTypeAny;
@@ -9,14 +9,14 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
     zodType = z.enum(fieldDef.enum as [string, ...string[]]);
   } else {
     switch (fieldDef.type) {
-      case 'number':
-      case 'integer':
+      case "number":
+      case "integer":
         zodType = z.number();
         break;
-      case 'boolean':
+      case "boolean":
         zodType = z.boolean();
         break;
-      case 'object':
+      case "object":
         if (fieldDef.properties) {
           const fields: Record<string, z.ZodTypeAny> = {};
           for (const [key, subField] of Object.entries(fieldDef.properties)) {
@@ -27,7 +27,7 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
           zodType = z.record(z.string(), z.unknown());
         }
         break;
-      case 'array':
+      case "array":
         if (fieldDef.items) {
           zodType = z.array(fieldDefToZodType(fieldDef.items));
         } else {
@@ -51,13 +51,13 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
 }
 
 export const inputSchemaToZodSchema = (
-  inputSchema: OutputSchemaV1['input']
+  inputSchema: OutputSchemaV1["input"]
 ) => {
-  const method = (inputSchema.method ?? 'GET').toUpperCase();
+  const method = (inputSchema.method ?? "GET").toUpperCase();
   const fields: Record<string, z.ZodTypeAny> = {};
 
   // For GET/HEAD/OPTIONS: use query params
-  if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+  if (method === "GET" || method === "HEAD" || method === "OPTIONS") {
     if (inputSchema.queryParams) {
       for (const [key, fieldDef] of Object.entries(inputSchema.queryParams)) {
         fields[key] = fieldDefToZodType(fieldDef);

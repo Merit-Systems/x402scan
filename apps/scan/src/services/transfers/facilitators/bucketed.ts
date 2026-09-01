@@ -1,14 +1,14 @@
-import z from 'zod';
+import z from "zod";
 
-import { Prisma } from '@x402scan/transfers-db';
+import { Prisma } from "@x402scan/transfers-db";
 
-import { baseBucketedQuerySchema } from '../schemas';
+import { baseBucketedQuerySchema } from "../schemas";
 
-import { queryRaw } from '@/services/transfers/client';
+import { queryRaw } from "@/services/transfers/client";
 
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { facilitators, MIN_FACILITATOR_TRANSACTIONS } from '@/lib/facilitators';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { facilitators, MIN_FACILITATOR_TRANSACTIONS } from "@/lib/facilitators";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
@@ -21,10 +21,10 @@ const getBucketedFacilitatorsStatisticsUncached = async (
   const tableName = `stats_buckets_${mvTimeframe}`;
 
   const chainFacilitators = chain
-    ? facilitators.filter(f => f.addresses[chain] !== undefined)
+    ? facilitators.filter((f) => f.addresses[chain] !== undefined)
     : facilitators;
 
-  const facilitatorIds = chainFacilitators.map(f => f.id);
+  const facilitatorIds = chainFacilitators.map((f) => f.id);
 
   // Build WHERE clause for materialized view
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
@@ -41,7 +41,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     conditions.push(Prisma.sql`AND chain = ${input.chain}`);
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   // Query the appropriate materialized view
   const sql = Prisma.sql`
@@ -155,8 +155,8 @@ const getBucketedFacilitatorsStatisticsUncached = async (
 
 export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({
   queryFn: getBucketedFacilitatorsStatisticsUncached,
-  cacheKeyPrefix: 'bucketed-facilitators-statistics',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
-  tags: ['facilitators-statistics'],
+  cacheKeyPrefix: "bucketed-facilitators-statistics",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
+  tags: ["facilitators-statistics"],
 });

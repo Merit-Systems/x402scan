@@ -15,6 +15,6 @@ export interface RegistrationError {
 export function getRegistrationErrorMessage(error: RegistrationError): string {
   const details = error.parseErrors ?? error.upsertErrors ?? [];
   return details.length > 0
-    ? `${error.type}: ${details.join(', ')}`
+    ? `${error.type}: ${details.join(", ")}`
     : error.type;
 }

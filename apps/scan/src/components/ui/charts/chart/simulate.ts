@@ -1,6 +1,6 @@
-import { subDays, format } from 'date-fns';
+import { subDays, format } from "date-fns";
 
-import type { ChartData } from './types';
+import type { ChartData } from "./types";
 
 interface Props {
   baseValue?: number;
@@ -24,7 +24,7 @@ export const simulateChartData = ({
       currentValue += increment;
     }
     data.push({
-      timestamp: format(date, 'MMM dd'),
+      timestamp: format(date, "MMM dd"),
       value: Math.max(0, Math.round(currentValue)),
     });
   }

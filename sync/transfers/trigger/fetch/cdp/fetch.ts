@@ -4,9 +4,9 @@ import type {
   TransferEventData,
   FacilitatorConfig,
   CdpTransferRow,
-} from '@/trigger/types';
-import { runCdpSqlQuery } from './helpers';
-import { logger } from '@trigger.dev/sdk/v3';
+} from "@/trigger/types";
+import { runCdpSqlQuery } from "./helpers";
+import { logger } from "@trigger.dev/sdk/v3";
 
 export async function fetchCDP(
   config: SyncConfig,

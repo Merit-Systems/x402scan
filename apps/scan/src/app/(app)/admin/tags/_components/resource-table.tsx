@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { DataTable } from '@/components/ui/data-table';
-import { createColumns } from './columns';
-import { api, type RouterOutputs } from '@/trpc/client';
-import { EditTagModal } from './edit-tag-modal';
-import { ResourceExecutorModal } from './resource-executor-modal';
-import { ControlMenu } from './control-menu';
-import { TagFilter } from './tag-filter';
-import { useResourcesSorting } from '@/app/(app)/_contexts/sorting/resource-tags/hook';
-import type { RowSelectionState } from '@tanstack/react-table';
+import { useState, useMemo } from "react";
+import { DataTable } from "@/components/ui/data-table";
+import { createColumns } from "./columns";
+import { api, type RouterOutputs } from "@/trpc/client";
+import { EditTagModal } from "./edit-tag-modal";
+import { ResourceExecutorModal } from "./resource-executor-modal";
+import { ControlMenu } from "./control-menu";
+import { TagFilter } from "./tag-filter";
+import { useResourcesSorting } from "@/app/(app)/_contexts/sorting/resource-tags/hook";
+import type { RowSelectionState } from "@tanstack/react-table";
 
 type Resource =
-  RouterOutputs['public']['resources']['list']['paginated']['items'][number];
+  RouterOutputs["public"]["resources"]["list"]["paginated"]["items"][number];
 
 const PAGE_SIZE = 25;
 
 type ModalState =
-  | { type: 'none' }
-  | { type: 'tags'; resource: Resource }
-  | { type: 'executor'; resource: Resource };
+  | { type: "none" }
+  | { type: "tags"; resource: Resource }
+  | { type: "executor"; resource: Resource };
 
 export const ResourceTable = () => {
-  const [modalState, setModalState] = useState<ModalState>({ type: 'none' });
+  const [modalState, setModalState] = useState<ModalState>({ type: "none" });
   const [page, setPage] = useState(0);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
@@ -51,21 +51,21 @@ export const ResourceTable = () => {
   const hasNextPage = data?.hasNextPage ?? false;
 
   const selectedResources = Object.keys(rowSelection)
-    .filter(key => rowSelection[key])
-    .map(id => resources.find((r: Resource) => r.id === id))
+    .filter((key) => rowSelection[key])
+    .map((id) => resources.find((r: Resource) => r.id === id))
     .filter(Boolean) as Resource[];
 
   const columns = useMemo(
     () =>
       createColumns({
-        onTagsClick: resource => setModalState({ type: 'tags', resource }),
+        onTagsClick: (resource) => setModalState({ type: "tags", resource }),
       }),
     []
   );
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <TagFilter
           selectedTagIds={selectedTagIds}
           onSelectedTagIdsChange={setSelectedTagIds}
@@ -82,8 +82,8 @@ export const ResourceTable = () => {
         data={resources}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        onRowClick={row =>
-          setModalState({ type: 'executor', resource: row.original })
+        onRowClick={(row) =>
+          setModalState({ type: "executor", resource: row.original })
         }
         page={page}
         onPageChange={setPage}
@@ -94,10 +94,10 @@ export const ResourceTable = () => {
         getRowId={(row, index) => row?.id ?? `loading-${index}`}
       />
 
-      {modalState.type === 'tags' && (
+      {modalState.type === "tags" && (
         <EditTagModal
           open={true}
-          onOpenChange={open => !open && setModalState({ type: 'none' })}
+          onOpenChange={(open) => !open && setModalState({ type: "none" })}
           resourceId={modalState.resource.id}
           resourceName={modalState.resource.resource}
           pagination={{
@@ -109,10 +109,10 @@ export const ResourceTable = () => {
         />
       )}
 
-      {modalState.type === 'executor' && (
+      {modalState.type === "executor" && (
         <ResourceExecutorModal
           open={true}
-          onOpenChange={open => !open && setModalState({ type: 'none' })}
+          onOpenChange={(open) => !open && setModalState({ type: "none" })}
           resourceId={modalState.resource.id}
         />
       )}

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Check, Filter, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import { Check, Filter, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -15,11 +15,11 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
-import { api } from '@/trpc/client';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { type Tag } from '@x402scan/scan-db';
+} from "@/components/ui/command";
+import { api } from "@/trpc/client";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { type Tag } from "@x402scan/scan-db";
 
 interface TagFilterProps {
   selectedTagIds: string[];
@@ -42,7 +42,7 @@ export const TagFilter: React.FC<TagFilterProps> = ({
 
   const handleToggleTag = (tagId: string) => {
     if (selectedTagIds.includes(tagId)) {
-      onSelectedTagIdsChange(selectedTagIds.filter(id => id !== tagId));
+      onSelectedTagIdsChange(selectedTagIds.filter((id) => id !== tagId));
     } else {
       onSelectedTagIdsChange([...selectedTagIds, tagId]);
     }
@@ -78,7 +78,7 @@ export const TagFilter: React.FC<TagFilterProps> = ({
             <CommandInput placeholder="Search tags..." />
             <CommandList>
               <CommandEmpty>
-                {isLoading ? 'Loading tags...' : 'No tags found.'}
+                {isLoading ? "Loading tags..." : "No tags found."}
               </CommandEmpty>
               <CommandGroup>
                 {tags?.map((tag: Tag) => {
@@ -91,17 +91,17 @@ export const TagFilter: React.FC<TagFilterProps> = ({
                     >
                       <div
                         className={cn(
-                          'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                           isSelected
-                            ? 'bg-primary text-primary-foreground'
-                            : 'opacity-50 [&_svg]:invisible'
+                            ? "bg-primary text-primary-foreground"
+                            : "opacity-50 [&_svg]:invisible"
                         )}
                       >
                         <Check className="h-3 w-3" />
                       </div>
-                      <div className="flex items-center gap-2 flex-1">
+                      <div className="flex flex-1 items-center gap-2">
                         <div
-                          className="w-3 h-3 rounded-full border"
+                          className="h-3 w-3 rounded-full border"
                           style={{
                             backgroundColor: tag.color,
                             borderColor: tag.color,
@@ -110,7 +110,10 @@ export const TagFilter: React.FC<TagFilterProps> = ({
                         <span className="text-sm">{tag.name}</span>
                       </div>
                       <span className="text-xs text-muted-foreground">
-                        {tags?.find(t => t.id === tag.id)?._count.resourcesTags}
+                        {
+                          tags?.find((t) => t.id === tag.id)?._count
+                            .resourcesTags
+                        }
                       </span>
                     </CommandItem>
                   );
@@ -123,7 +126,7 @@ export const TagFilter: React.FC<TagFilterProps> = ({
 
       {selectedTags.length > 0 && (
         <>
-          <div className="flex items-center gap-1 flex-wrap">
+          <div className="flex flex-wrap items-center gap-1">
             {selectedTags.map((tag: Tag) => (
               <Badge
                 key={tag.id}
@@ -131,13 +134,13 @@ export const TagFilter: React.FC<TagFilterProps> = ({
                 className="h-7 gap-1 pr-1"
               >
                 <div
-                  className="w-2 h-2 rounded-full"
+                  className="h-2 w-2 rounded-full"
                   style={{ backgroundColor: tag.color }}
                 />
                 {tag.name}
                 <button
                   onClick={() => handleToggleTag(tag.id)}
-                  className="ml-1 rounded-full hover:bg-muted p-0.5"
+                  className="ml-1 rounded-full p-0.5 hover:bg-muted"
                 >
                   <X className="h-3 w-3" />
                 </button>

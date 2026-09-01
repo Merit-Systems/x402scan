@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { format } from 'date-fns';
+import { useMemo } from "react";
+import { format } from "date-fns";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   BaseBarChart,
   LoadingBarChart,
-} from '@/components/ui/charts/chart/bar';
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { api } from '@/trpc/client';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+} from "@/components/ui/charts/chart/bar";
+import type { ChartData } from "@/components/ui/charts/chart/types";
+import { api } from "@/trpc/client";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
 type ResourceCreationData = {
   total_resources: number;
@@ -44,9 +44,9 @@ export const ResourceCreationsChart = ({
 
   // Transform creations data for chart
   const creationsChartData = useMemo<ChartData<ResourceCreationData>[]>(() => {
-    const dateFormat = isLessThan7Days ? 'MMM d HH:mm' : 'MMM d';
+    const dateFormat = isLessThan7Days ? "MMM d HH:mm" : "MMM d";
     return (
-      creationsData?.map(item => ({
+      creationsData?.map((item) => ({
         timestamp: format(new Date(item.bucket_start), dateFormat),
         total_resources: item.total_resources,
       })) ?? []
@@ -78,8 +78,8 @@ export const ResourceCreationsChart = ({
             data={creationsChartData}
             bars={[
               {
-                dataKey: 'total_resources',
-                color: 'hsl(210, 100%, 56%)',
+                dataKey: "total_resources",
+                color: "hsl(210, 100%, 56%)",
               },
             ]}
             height={450}
@@ -93,9 +93,9 @@ export const ResourceCreationsChart = ({
             }}
             tooltipRows={[
               {
-                key: 'total_resources',
-                label: 'Resources',
-                getValue: value => value.toLocaleString(),
+                key: "total_resources",
+                label: "Resources",
+                getValue: (value) => value.toLocaleString(),
               },
             ]}
           />

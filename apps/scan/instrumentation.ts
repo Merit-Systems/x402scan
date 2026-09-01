@@ -5,25 +5,25 @@ declare global {
 
 export async function register() {
   // prevent this from running in the edge runtime
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
+  if (process.env.NEXT_RUNTIME === "nodejs") {
     // ---- SigNoz (OTLP Logs) ----
     // We only export logs when explicitly configured via env.
     // This keeps instrumentation safe for local/dev without secrets.
-    const signozLogsUrl = 'https://ingest.us.signoz.cloud:443/v1/logs';
+    const signozLogsUrl = "https://ingest.us.signoz.cloud:443/v1/logs";
 
     const signozIngestionKey = process.env.SIGNOZ_INGESTION_KEY?.trim();
 
     if (signozIngestionKey) {
       if (!globalThis.__x402scanOtelLogsInitialized) {
         const { LoggerProvider, BatchLogRecordProcessor } =
-          await import('@opentelemetry/sdk-logs');
+          await import("@opentelemetry/sdk-logs");
         const { OTLPLogExporter } =
-          await import('@opentelemetry/exporter-logs-otlp-http');
-        const { logs } = await import('@opentelemetry/api-logs');
+          await import("@opentelemetry/exporter-logs-otlp-http");
+        const { logs } = await import("@opentelemetry/api-logs");
         const { resourceFromAttributes } =
-          await import('@opentelemetry/resources');
+          await import("@opentelemetry/resources");
         const { ATTR_SERVICE_NAME } =
-          await import('@opentelemetry/semantic-conventions');
+          await import("@opentelemetry/semantic-conventions");
 
         const serviceName = getServiceName();
 
@@ -36,7 +36,7 @@ export async function register() {
               new OTLPLogExporter({
                 url: signozLogsUrl,
                 headers: {
-                  'signoz-ingestion-key': signozIngestionKey,
+                  "signoz-ingestion-key": signozIngestionKey,
                 },
               })
             ),
@@ -49,7 +49,7 @@ export async function register() {
     }
 
     if (process.env.LMNR_PROJECT_API_KEY) {
-      const { Laminar } = await import('@lmnr-ai/lmnr');
+      const { Laminar } = await import("@lmnr-ai/lmnr");
 
       Laminar.initialize({
         projectApiKey: process.env.LMNR_PROJECT_API_KEY,
@@ -59,14 +59,14 @@ export async function register() {
 }
 
 function getServiceName(): string {
-  let serviceName = process.env.OTEL_SERVICE_NAME ?? 'x402scan-scan-api';
+  let serviceName = process.env.OTEL_SERVICE_NAME ?? "x402scan-scan-api";
 
   if (
-    process.env.NODE_ENV === 'production' ||
-    process.env.VERCEL_ENV === 'production'
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "production"
   ) {
     serviceName = `${serviceName}-prod`;
-  } else if (process.env.VERCEL_ENV === 'preview') {
+  } else if (process.env.VERCEL_ENV === "preview") {
     serviceName = `${serviceName}-preview`;
   } else {
     serviceName = `${serviceName}-dev`;

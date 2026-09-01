@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { formatCurrency, USDC_ADDRESS } from '@/lib/utils';
-import { jsonValueSchema } from '@/lib/json';
-import { Methods } from '@/types/x402';
+import { formatCurrency, USDC_ADDRESS } from "@/lib/utils";
+import { jsonValueSchema } from "@/lib/json";
+import { Methods } from "@/types/x402";
 
-import type { BazaarMethod } from '@/types/x402';
-import type { Accepts } from '@x402scan/scan-db/types';
+import type { BazaarMethod } from "@/types/x402";
+import type { Accepts } from "@x402scan/scan-db/types";
 
 interface PricingAccept {
   maxAmountRequired: number;
@@ -13,7 +13,7 @@ interface PricingAccept {
   asset?: string | null;
 }
 
-const UNKNOWN_PAID_LABEL = 'Paid';
+const UNKNOWN_PAID_LABEL = "Paid";
 
 function hasUsdPriceMarker(price: string): boolean {
   return /^\s*\$/.test(price) || /\bUSD\s*$/i.test(price);
@@ -59,10 +59,10 @@ function parseFixedUsdPriceString(price: string): number | null {
 
 function isKnownUsdcAccept(accept: PricingAccept): boolean {
   if (!accept.asset) return false;
-  if (accept.network === 'base') {
+  if (accept.network === "base") {
     return accept.asset.toLowerCase() === USDC_ADDRESS.base;
   }
-  if (accept.network === 'solana') {
+  if (accept.network === "solana") {
     return accept.asset === USDC_ADDRESS.solana;
   }
   return false;
@@ -71,7 +71,7 @@ function isKnownUsdcAccept(accept: PricingAccept): boolean {
 export function getMaxUsdcAmount(accepts: PricingAccept[]): number | null {
   const usdcAmounts = accepts
     .filter(isKnownUsdcAccept)
-    .map(a => a.maxAmountRequired)
+    .map((a) => a.maxAmountRequired)
     .filter(Number.isFinite);
   if (usdcAmounts.length === 0) return null;
   return Math.max(...usdcAmounts);
@@ -117,10 +117,10 @@ export function formatPricingLabel(opts: {
   return UNKNOWN_PAID_LABEL;
 }
 
-export { getResourceAuthMode, isFreeResource } from '@/lib/resource-auth';
+export { getResourceAuthMode, isFreeResource } from "@/lib/resource-auth";
 
 const methodsSchema = z.enum(Methods);
-const extendedMethodsSchema = z.enum(['OPTIONS', 'HEAD']);
+const extendedMethodsSchema = z.enum(["OPTIONS", "HEAD"]);
 
 /**
  * Parse a stored method string into a displayable method, honoring the
@@ -151,7 +151,7 @@ const bazaarMethodSchema = z.looseObject({
 });
 
 export function getBazaarMethod(
-  outputSchema: Accepts['outputSchema'] | undefined
+  outputSchema: Accepts["outputSchema"] | undefined
 ): BazaarMethod {
   const parsed = bazaarMethodSchema.safeParse(outputSchema);
   if (parsed.success) {
@@ -184,17 +184,17 @@ export function getBazaarMethod(
     // the actual payload fields (no `body` / `bodyFields` wrapper). In that case,
     // treat it as a request body and infer POST.
     const reservedKeys = new Set([
-      'method',
-      'body',
-      'bodyFields',
-      'queryParams',
-      'headerFields',
-      'headers',
-      'pathParams',
-      'params',
+      "method",
+      "body",
+      "bodyFields",
+      "queryParams",
+      "headerFields",
+      "headers",
+      "pathParams",
+      "params",
     ]);
     const nonReservedKeys = Object.keys(input).filter(
-      k => !reservedKeys.has(k)
+      (k) => !reservedKeys.has(k)
     );
     if (nonReservedKeys.length > 0) {
       return Methods.POST;

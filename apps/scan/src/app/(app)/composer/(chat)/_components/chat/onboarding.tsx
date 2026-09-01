@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 import {
   AlertDialog,
@@ -10,14 +10,14 @@ import {
   AlertDialogTitle,
   AlertDialogContent,
   AlertDialogDescription,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
-import { Logo } from '@/components/logo';
+import { Logo } from "@/components/logo";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export const Onboarding = () => {
   const utils = api.useUtils();
@@ -31,15 +31,15 @@ export const Onboarding = () => {
         void utils.user.acknowledgements.hasAcknowledged.invalidate();
       },
       onError: () => {
-        toast.error('There was an error finishing the onboarding process');
+        toast.error("There was an error finishing the onboarding process");
       },
     });
 
   return (
     <AlertDialog open={hasUserAcknowledgedComposer === false}>
-      <AlertDialogContent className="p-0 overflow-hidden gap-2 sm:max-w-sm">
-        <AlertDialogHeader className="bg-muted border-b p-4 gap-4">
-          <div className="flex flex-col gap-2 items-center">
+      <AlertDialogContent className="gap-2 overflow-hidden p-0 sm:max-w-sm">
+        <AlertDialogHeader className="gap-4 border-b bg-muted p-4">
+          <div className="flex flex-col items-center gap-2">
             <Logo className="size-8" />
             <AlertDialogTitle>Let&apos;s Get Started</AlertDialogTitle>
             <AlertDialogDescription className="hidden">
@@ -48,28 +48,28 @@ export const Onboarding = () => {
             </AlertDialogDescription>
           </div>
         </AlertDialogHeader>
-        <div className="p-4 flex flex-col gap-4 w-full max-w-full overflow-hidden">
-          <p className="text-sm text-center">
-            Please acknowledge our{' '}
+        <div className="flex w-full max-w-full flex-col gap-4 overflow-hidden p-4">
+          <p className="text-center text-sm">
+            Please acknowledge our{" "}
             <Link
               href="/tos"
-              className="underline text-primary font-bold"
+              className="font-bold text-primary underline"
               target="_blank"
             >
               Terms of Service
-            </Link>{' '}
-            and{' '}
+            </Link>{" "}
+            and{" "}
             <Link
               href="/privacy"
-              className="underline text-primary font-bold"
+              className="font-bold text-primary underline"
               target="_blank"
             >
               Privacy Policy
-            </Link>{' '}
+            </Link>{" "}
             to continue.
           </p>
         </div>
-        <div className="p-4 border-t bg-muted">
+        <div className="border-t bg-muted p-4">
           <Button
             onClick={() => acknowledgeComposerOnboarding()}
             disabled={isAcknowledging}

@@ -41,10 +41,7 @@
     "import/no-self-import": "error",
     "import/no-empty-named-blocks": "error",
     "promise/no-multiple-resolved": "error",
-    "unicorn/no-instanceof-builtins": [
-      "error",
-      { "exclude": ["Function"] }
-    ],
+    "unicorn/no-instanceof-builtins": ["error", { "exclude": ["Function"] }],
     "unicorn/require-post-message-target-origin": "error",
 
     // The app uses the automatic JSX runtime; React never needs importing.

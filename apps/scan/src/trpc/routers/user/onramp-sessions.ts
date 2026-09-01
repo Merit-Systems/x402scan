@@ -1,25 +1,25 @@
-import z from 'zod';
+import z from "zod";
 
-import { TRPCError } from '@trpc/server';
+import { TRPCError } from "@trpc/server";
 
-import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
+import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
 
-import { getOnrampTransactions } from '@/services/cdp/onramp/get-onramp-session';
+import { getOnrampTransactions } from "@/services/cdp/onramp/get-onramp-session";
 import {
   createOnrampSession,
   getOnrampSessionByToken,
   updateOnrampSession,
-} from '@/services/db/user/onramp-sessions';
+} from "@/services/db/user/onramp-sessions";
 import {
   createOnrampUrl,
   createOnrampUrlParamsSchema,
-} from '@/services/cdp/onramp/create-onramp-session';
+} from "@/services/cdp/onramp/create-onramp-session";
 
-import { getUserWallets } from '@/services/cdp/server-wallet/user';
-import { SessionStatus } from '@x402scan/scan-db';
-import { SIWE_PROVIDER_ID } from '@/auth/providers/siwe/constants';
-import { SIWS_PROVIDER_ID } from '@/auth/providers/siws/constants';
-import { Chain } from '@/types/chain';
+import { getUserWallets } from "@/services/cdp/server-wallet/user";
+import { SessionStatus } from "@x402scan/scan-db";
+import { SIWE_PROVIDER_ID } from "@/auth/providers/siwe/constants";
+import { SIWS_PROVIDER_ID } from "@/auth/providers/siws/constants";
+import { Chain } from "@/types/chain";
 
 export const onrampSessionsRouter = createTRPCRouter({
   get: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
@@ -29,11 +29,11 @@ export const onrampSessionsRouter = createTRPCRouter({
     );
 
     if (!onrampSession) {
-      throw new TRPCError({ code: 'NOT_FOUND' });
+      throw new TRPCError({ code: "NOT_FOUND" });
     }
 
     if (onrampSession.userId !== ctx.session.user.id) {
-      throw new TRPCError({ code: 'FORBIDDEN' });
+      throw new TRPCError({ code: "FORBIDDEN" });
     }
 
     if (
@@ -67,14 +67,14 @@ export const onrampSessionsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { defaultNetwork } = input;
       const account = ctx.session.user.accounts.find(
-        account =>
+        (account) =>
           account.provider ===
           (defaultNetwork === Chain.SOLANA
             ? SIWS_PROVIDER_ID
             : SIWE_PROVIDER_ID)
       );
       if (!account) {
-        throw new TRPCError({ code: 'NOT_FOUND' });
+        throw new TRPCError({ code: "NOT_FOUND" });
       }
       const address = account.providerAccountId;
       const { token, url } = await createOnrampUrl(address, input);
@@ -92,18 +92,18 @@ export const onrampSessionsRouter = createTRPCRouter({
       .mutation(async ({ ctx, input }) => {
         const { wallets, id } = await getUserWallets(ctx.session.user.id);
         if (!wallets[input.defaultNetwork]) {
-          throw new TRPCError({ code: 'NOT_FOUND' });
+          throw new TRPCError({ code: "NOT_FOUND" });
         }
         const addressResult = await wallets[input.defaultNetwork].address();
         if (addressResult.isErr()) {
           throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
+            code: "INTERNAL_SERVER_ERROR",
             message: addressResult.error.message,
           });
         }
         const { token, url } = await createOnrampUrl(addressResult.value, {
           ...input,
-          tokenKey: 'server_wallet_onramp_token',
+          tokenKey: "server_wallet_onramp_token",
         });
         await createOnrampSession({
           token,

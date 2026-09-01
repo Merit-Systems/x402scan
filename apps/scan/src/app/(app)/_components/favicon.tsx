@@ -1,10 +1,10 @@
-import { Globe } from 'lucide-react';
+import { Globe } from "lucide-react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { LucideIcon } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar } from '@/components/ui/avatar';
+import type { LucideIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar } from "@/components/ui/avatar";
 
 interface Props {
   url: string | null;
@@ -14,7 +14,7 @@ interface Props {
 
 export const Favicon = ({
   url,
-  className = 'size-6',
+  className = "size-6",
   Fallback = Globe,
 }: Props) => {
   return (
@@ -29,14 +29,14 @@ export const Favicon = ({
 interface FaviconsProps {
   favicons: (string | null)[];
   numToShow?: number;
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   containerClassName?: string;
   iconContainerClassName?: string;
 }
 
 export const Favicons: React.FC<FaviconsProps> = ({
   favicons,
-  orientation = 'horizontal',
+  orientation = "horizontal",
   containerClassName,
   iconContainerClassName,
   numToShow = 3,
@@ -46,10 +46,10 @@ export const Favicons: React.FC<FaviconsProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center',
+        "flex items-center",
         {
-          'flex-col pt-2': orientation === 'vertical',
-          'flex-row pl-2': orientation === 'horizontal',
+          "flex-col pt-2": orientation === "vertical",
+          "flex-row pl-2": orientation === "horizontal",
         },
         containerClassName
       )}
@@ -58,11 +58,11 @@ export const Favicons: React.FC<FaviconsProps> = ({
         return (
           <div
             className={cn(
-              'border bg-card rounded-full overflow-hidden',
+              "border bg-card rounded-full overflow-hidden",
               iconContainerClassName,
               {
-                '-mt-2': orientation === 'vertical',
-                '-ml-2': orientation === 'horizontal',
+                "-mt-2": orientation === "vertical",
+                "-ml-2": orientation === "horizontal",
               }
             )}
             key={`${favicon}-${index}`}
@@ -74,11 +74,11 @@ export const Favicons: React.FC<FaviconsProps> = ({
       {numToShow && favicons.length > numToShow && (
         <div
           className={cn(
-            'border bg-card rounded-full overflow-hidden flex items-center justify-center text-[10px]',
+            "border bg-card rounded-full overflow-hidden flex items-center justify-center text-[10px]",
             iconContainerClassName,
             {
-              '-mt-2': orientation === 'vertical',
-              '-ml-2': orientation === 'horizontal',
+              "-mt-2": orientation === "vertical",
+              "-ml-2": orientation === "horizontal",
             }
           )}
           key={`more`}
@@ -92,22 +92,22 @@ export const Favicons: React.FC<FaviconsProps> = ({
 
 export const LoadingFavicons = ({
   count,
-  orientation = 'horizontal',
+  orientation = "horizontal",
   containerClassName,
   iconContainerClassName,
 }: {
   count: number;
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   containerClassName?: string;
   iconContainerClassName?: string;
 }) => {
   return (
     <div
       className={cn(
-        'flex items-center',
+        "flex items-center",
         {
-          'flex-col pt-2': orientation === 'vertical',
-          'flex-row pl-2': orientation === 'horizontal',
+          "flex-col pt-2": orientation === "vertical",
+          "flex-row pl-2": orientation === "horizontal",
         },
         containerClassName
       )}
@@ -116,9 +116,9 @@ export const LoadingFavicons = ({
         return (
           <Skeleton
             key={index}
-            className={cn('rounded-full', iconContainerClassName, {
-              '-mt-2': orientation === 'vertical',
-              '-ml-2': orientation === 'horizontal',
+            className={cn("rounded-full", iconContainerClassName, {
+              "-mt-2": orientation === "vertical",
+              "-ml-2": orientation === "horizontal",
             })}
           />
         );

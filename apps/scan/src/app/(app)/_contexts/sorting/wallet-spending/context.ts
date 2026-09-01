@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { createSortingContext } from '../base/context';
+import { createSortingContext } from "../base/context";
 
 export type WalletSpendingSortId =
-  | 'walletName'
-  | 'totalToolCalls'
-  | 'uniqueResources'
-  | 'totalMaxAmount';
+  | "walletName"
+  | "totalToolCalls"
+  | "uniqueResources"
+  | "totalMaxAmount";
 
 export const WalletSpendingSortingContext =
   createSortingContext<WalletSpendingSortId>();

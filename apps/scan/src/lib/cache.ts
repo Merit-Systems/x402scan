@@ -1,9 +1,9 @@
-import { createHash } from 'crypto';
-import superjson from 'superjson';
-import { z } from 'zod';
-import type { PaginatedQueryParams } from './pagination';
-import { getRedisClient } from './redis';
-import { CACHE_DURATION_MINUTES } from './cache-constants';
+import { createHash } from "crypto";
+import superjson from "superjson";
+import { z } from "zod";
+import type { PaginatedQueryParams } from "./pagination";
+import { getRedisClient } from "./redis";
+import { CACHE_DURATION_MINUTES } from "./cache-constants";
 
 /**
  * Maximum Redis key length in bytes. Keys exceeding this are hashed to prevent
@@ -119,7 +119,7 @@ const deserializeDates = <T>(obj: T, dateKeys: (keyof T)[]): T => {
 /**
  * Sleep utility for polling
  */
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Redis-based cached query with distributed locking.
@@ -165,14 +165,14 @@ async function withRedisCache<T>(
   const lockAcquired = await redis.set(
     lockKey,
     Date.now().toString(),
-    'EX',
+    "EX",
     LOCK_TIMEOUT_SECONDS,
-    'NX'
+    "NX"
   );
 
-  if (lockAcquired === 'OK') {
+  if (lockAcquired === "OK") {
     console.log(
-      `[Cache] ${forceRefresh ? 'WARMING' : 'MISS'}: Executing query for ${fullCacheKey}`
+      `[Cache] ${forceRefresh ? "WARMING" : "MISS"}: Executing query for ${fullCacheKey}`
     );
     try {
       const result = await queryFn();
@@ -258,7 +258,7 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
     // Preserves the prefix for debuggability.
     const fullCacheKey =
       rawKey.length > MAX_KEY_LENGTH
-        ? `${config.cacheKeyPrefix}:hash:${createHash('sha256').update(rawKey).digest('hex')}`
+        ? `${config.cacheKeyPrefix}:hash:${createHash("sha256").update(rawKey).digest("hex")}`
         : rawKey;
     const ttl = config.revalidate ?? CACHE_TTL_SECONDS;
 
@@ -270,7 +270,7 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
       },
       ttl,
       ctx.isWarmingCache
-    ).then(result => config.deserialize(result));
+    ).then((result) => config.deserialize(result));
   };
 };
 
@@ -287,9 +287,9 @@ export const createCachedQuery = <TInput extends unknown[], TOutput>(config: {
 }) => {
   return createCachedQueryBase({
     ...config,
-    serialize: data =>
+    serialize: (data) =>
       serializeDates(data as NonNullable<TOutput>, config.dateFields),
-    deserialize: data =>
+    deserialize: (data) =>
       deserializeDates(data as NonNullable<TOutput>, config.dateFields),
   });
 };
@@ -310,10 +310,10 @@ export const createCachedArrayQuery = <
 }) => {
   return createCachedQueryBase({
     ...config,
-    serialize: data =>
-      data.map(item => serializeDates(item, config.dateFields)),
-    deserialize: data =>
-      data.map(item => deserializeDates(item, config.dateFields)),
+    serialize: (data) =>
+      data.map((item) => serializeDates(item, config.dateFields)),
+    deserialize: (data) =>
+      data.map((item) => deserializeDates(item, config.dateFields)),
   });
 };
 
@@ -350,11 +350,13 @@ export const createCachedPaginatedQuery = <
     ...config,
     serialize: (data: TResponse): TResponse => ({
       ...data,
-      items: data.items.map(item => serializeDates(item, config.dateFields)),
+      items: data.items.map((item) => serializeDates(item, config.dateFields)),
     }),
     deserialize: (data: TResponse): TResponse => ({
       ...data,
-      items: data.items.map(item => deserializeDates(item, config.dateFields)),
+      items: data.items.map((item) =>
+        deserializeDates(item, config.dateFields)
+      ),
     }),
     createCacheKey: (input, pagination) =>
       config.createCacheKey({
@@ -453,7 +455,7 @@ export const createStandardCacheKey = <T extends object>(params: T): string => {
     Object.fromEntries(
       Object.keys(normalized)
         .sort()
-        .map(key => [key, normalized[key]])
+        .map((key) => [key, normalized[key]])
     )
   );
 };

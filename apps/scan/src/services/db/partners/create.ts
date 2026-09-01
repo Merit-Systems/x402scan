@@ -1,7 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
-import z from 'zod';
-import { insertPartner } from '@x402scan/partners-db';
-import type { PartnerData } from '@x402scan/partners-db';
+import { v4 as uuidv4 } from "uuid";
+import z from "zod";
+import { insertPartner } from "@x402scan/partners-db";
+import type { PartnerData } from "@x402scan/partners-db";
 
 export const createPartnerSchema = z.object({
   name: z.string().min(1),
@@ -28,7 +28,7 @@ export const createPartner = async (
     await insertPartner(partnerData);
     return partnerData;
   } catch (error) {
-    console.error('Error creating partner:', error);
+    console.error("Error creating partner:", error);
     throw new Error(
       `Failed to create partner: ${error instanceof Error ? error.message : String(error)}`,
       { cause: error }

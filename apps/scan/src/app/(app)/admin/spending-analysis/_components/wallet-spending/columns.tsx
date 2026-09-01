@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { Wallet, DollarSign, Hash, Eye } from 'lucide-react';
-import { useState } from 'react';
+import { Wallet, DollarSign, Hash, Eye } from "lucide-react";
+import { useState } from "react";
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
-import { WalletSpendingSortingContext } from '@/app/(app)/_contexts/sorting/wallet-spending/context';
-import { Copyable } from '@/components/ui/copyable';
-import { Button } from '@/components/ui/button';
-import { api } from '@/trpc/client';
+import { Skeleton } from "@/components/ui/skeleton";
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
+import { WalletSpendingSortingContext } from "@/app/(app)/_contexts/sorting/wallet-spending/context";
+import { Copyable } from "@/components/ui/copyable";
+import { Button } from "@/components/ui/button";
+import { api } from "@/trpc/client";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
 
 type WalletSpending =
-  RouterOutputs['admin']['spending']['byWallet']['items'][number];
+  RouterOutputs["admin"]["spending"]["byWallet"]["items"][number];
 
 const formatAmount = (amount: string) => {
   const numericAmount = BigInt(amount);
@@ -42,7 +42,7 @@ const WalletCell = ({
         <Copyable
           value={address}
           toastMessage="Wallet address copied"
-          className="text-xs font-mono font-medium truncate max-w-[200px] block"
+          className="block max-w-[200px] truncate font-mono text-xs font-medium"
         >
           {address}
         </Copyable>
@@ -52,8 +52,8 @@ const WalletCell = ({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs font-medium truncate max-w-[150px]">
-        {isFreeTier ? 'Free Tier' : walletName}
+      <span className="max-w-[150px] truncate text-xs font-medium">
+        {isFreeTier ? "Free Tier" : walletName}
       </span>
       <Button
         size="sm"
@@ -72,7 +72,7 @@ export const createColumns = (
   freeTierWalletAddress?: string
 ): ExtendedColumnDef<WalletSpending>[] => [
   {
-    accessorKey: 'walletName',
+    accessorKey: "walletName",
     header: () => (
       <HeaderCell
         Icon={Wallet}
@@ -80,7 +80,7 @@ export const createColumns = (
         className="justify-start"
         sorting={{
           sortContext: WalletSpendingSortingContext,
-          sortKey: 'walletName',
+          sortKey: "walletName",
         }}
       />
     ),
@@ -102,7 +102,7 @@ export const createColumns = (
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'totalToolCalls',
+    accessorKey: "totalToolCalls",
     header: () => (
       <HeaderCell
         Icon={Hash}
@@ -110,20 +110,20 @@ export const createColumns = (
         className="mx-auto"
         sorting={{
           sortContext: WalletSpendingSortingContext,
-          sortKey: 'totalToolCalls',
+          sortKey: "totalToolCalls",
         }}
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center text-xs font-mono">
+      <div className="text-center font-mono text-xs">
         {row.original.totalToolCalls.toLocaleString()}
       </div>
     ),
     size: 120,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'uniqueResources',
+    accessorKey: "uniqueResources",
     header: () => (
       <HeaderCell
         Icon={Hash}
@@ -131,20 +131,20 @@ export const createColumns = (
         className="mx-auto"
         sorting={{
           sortContext: WalletSpendingSortingContext,
-          sortKey: 'uniqueResources',
+          sortKey: "uniqueResources",
         }}
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center text-xs font-mono">
+      <div className="text-center font-mono text-xs">
         {row.original.uniqueResources}
       </div>
     ),
     size: 120,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'totalMaxAmount',
+    accessorKey: "totalMaxAmount",
     header: () => (
       <HeaderCell
         Icon={DollarSign}
@@ -152,16 +152,16 @@ export const createColumns = (
         className="mx-auto"
         sorting={{
           sortContext: WalletSpendingSortingContext,
-          sortKey: 'totalMaxAmount',
+          sortKey: "totalMaxAmount",
         }}
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center text-xs font-mono font-medium">
+      <div className="text-center font-mono text-xs font-medium">
         {formatAmount(row.original.totalMaxAmount)}
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="h-4 w-20 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-20" />,
   },
 ];

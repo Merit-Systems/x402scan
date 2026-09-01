@@ -1,10 +1,10 @@
-import type { ProviderMetadata } from 'ai';
+import type { ProviderMetadata } from "ai";
 
 export enum LanguageModelCapability {
-  Vision = 'vision',
-  Reasoning = 'reasoning',
-  Pdf = 'pdf',
-  ToolCalling = 'tool-calling',
+  Vision = "vision",
+  Reasoning = "reasoning",
+  Pdf = "pdf",
+  ToolCalling = "tool-calling",
 }
 
 export interface LanguageModel {

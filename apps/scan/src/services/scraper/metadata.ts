@@ -18,42 +18,42 @@ const extractMetaContent = (
     // name attribute with double-quoted content
     new RegExp(
       `<meta\\s+[^>]*name\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*"([^"]*)"`,
-      'i'
+      "i"
     ),
     // name attribute with single-quoted content
     new RegExp(
       `<meta\\s+[^>]*name\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*'([^']*)'`,
-      'i'
+      "i"
     ),
     // content before name with double quotes
     new RegExp(
       `<meta\\s+[^>]*content\\s*=\\s*"([^"]*)"[^>]*name\\s*=\\s*["']${nameOrProperty}["']`,
-      'i'
+      "i"
     ),
     // content before name with single quotes
     new RegExp(
       `<meta\\s+[^>]*content\\s*=\\s*'([^']*)'[^>]*name\\s*=\\s*["']${nameOrProperty}["']`,
-      'i'
+      "i"
     ),
     // property attribute with double-quoted content
     new RegExp(
       `<meta\\s+[^>]*property\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*"([^"]*)"`,
-      'i'
+      "i"
     ),
     // property attribute with single-quoted content
     new RegExp(
       `<meta\\s+[^>]*property\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*'([^']*)'`,
-      'i'
+      "i"
     ),
     // content before property with double quotes
     new RegExp(
       `<meta\\s+[^>]*content\\s*=\\s*"([^"]*)"[^>]*property\\s*=\\s*["']${nameOrProperty}["']`,
-      'i'
+      "i"
     ),
     // content before property with single quotes
     new RegExp(
       `<meta\\s+[^>]*content\\s*=\\s*'([^']*)'[^>]*property\\s*=\\s*["']${nameOrProperty}["']`,
-      'i'
+      "i"
     ),
   ];
 
@@ -98,8 +98,8 @@ const extractCanonicalUrl = (html: string): string | null => {
  */
 export const parseMetadataFromHtml = (html: string): Metadata | null => {
   try {
-    const title = extractTitle(html) ?? extractMetaContent(html, 'title');
-    const description = extractMetaContent(html, 'description');
+    const title = extractTitle(html) ?? extractMetaContent(html, "title");
+    const description = extractMetaContent(html, "description");
     const url = extractCanonicalUrl(html);
 
     if (!title && !description && !url) {

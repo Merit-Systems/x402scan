@@ -1,17 +1,17 @@
-import { useWallets } from '@wallet-standard/react';
+import { useWallets } from "@wallet-standard/react";
 
-import { ConnectSVMInjectedWalletButtons } from '../../connect/injected/buttons/svm';
+import { ConnectSVMInjectedWalletButtons } from "../../connect/injected/buttons/svm";
 
 export const SVMNotConnected = () => {
   const allWallets = useWallets();
 
-  const wallets = allWallets.filter(wallet =>
+  const wallets = allWallets.filter((wallet) =>
     wallet.chains.includes(`solana:mainnet`)
   );
 
   if (wallets.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 text-xs p-2 bg-muted rounded-md">
+      <div className="flex flex-col items-center gap-2 rounded-md bg-muted p-2 text-xs">
         <p>No Solana wallets found</p>
       </div>
     );

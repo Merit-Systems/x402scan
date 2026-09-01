@@ -1,18 +1,18 @@
-import { NotFoundCard } from './_components/error/card';
+import { NotFoundCard } from "./_components/error/card";
 
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
-import '@/app/globals.css';
+import "@/app/globals.css";
 
 export const metadata: Metadata = {
-  title: 'Not Found',
-  description: 'The page you are looking for does not exist.',
+  title: "Not Found",
+  description: "The page you are looking for does not exist.",
 };
 
 export default function GlobalNotFound() {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased bg-card h-screen w-screen flex flex-col items-center justify-center">
+      <body className="flex h-screen w-screen flex-col items-center justify-center bg-card antialiased">
         <NotFoundCard />
       </body>
     </html>

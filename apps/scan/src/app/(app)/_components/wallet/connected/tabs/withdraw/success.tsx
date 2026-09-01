@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { formatAddress } from '@/lib/utils';
-import { CheckCircle } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { formatAddress } from "@/lib/utils";
+import { CheckCircle } from "lucide-react";
 
 interface Props {
   amount: number;
@@ -14,11 +14,11 @@ export const WithdrawSuccess: React.FC<Props> = ({
   onReset,
 }) => {
   return (
-    <div className="flex flex-col gap-4 items-center justify-center">
+    <div className="flex flex-col items-center justify-center gap-4">
       <CheckCircle className="size-10 text-green-600" />
       <p className="text-center">
-        You have successfully sent{' '}
-        <span className="font-bold">{amount} USDC</span> to{' '}
+        You have successfully sent{" "}
+        <span className="font-bold">{amount} USDC</span> to{" "}
         <span className="font-bold">{formatAddress(toAddress)}</span>
       </p>
       <Button onClick={onReset}>Send Again</Button>

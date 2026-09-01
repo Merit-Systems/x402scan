@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X } from "lucide-react";
 
-import { HeadingContainer } from '../../../../_components/layout/page-utils';
+import { HeadingContainer } from "../../../../_components/layout/page-utils";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Logo } from '@/components/logo';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Logo } from "@/components/logo";
 
-import { InlineSearchSuggestions } from '@/app/(app)/_components/search/inline-search-suggestions';
+import { InlineSearchSuggestions } from "@/app/(app)/_components/search/inline-search-suggestions";
 
 export const HomeHeading = () => {
   const router = useRouter();
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isFocused, setIsFocused] = useState(false);
 
   // The /all page has no body slot for full results, so submitting from here
@@ -32,48 +32,48 @@ export const HomeHeading = () => {
     <HeadingContainer className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
             <Logo className="size-8" />
-            <h1 className="text-2xl md:text-4xl font-bold font-mono">
+            <h1 className="font-mono text-2xl font-bold md:text-4xl">
               x402scan
             </h1>
           </div>
-          <Link href="/resources/register" className="hidden md:block shrink-0">
+          <Link href="/resources/register" className="hidden shrink-0 md:block">
             <Button size="sm" className="h-9">
               <Plus className="size-4" />
               Add your API
             </Button>
           </Link>
         </div>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           The x402 analytics dashboard and block explorer
         </p>
       </div>
       <div
         className="relative w-full"
-        onBlur={event => {
+        onBlur={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget)) {
             setIsFocused(false);
           }
         }}
         onFocus={() => setIsFocused(true)}
       >
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none z-10" />
+        <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
               e.preventDefault();
               submit();
             }
-            if (e.key === 'Escape' && input) {
+            if (e.key === "Escape" && input) {
               e.preventDefault();
-              setInput('');
+              setInput("");
             }
           }}
           placeholder="Try: send email, generate image, search the web, buy a mug…"
-          className="pl-9 pr-9 h-11 bg-transparent"
+          className="h-11 bg-transparent pr-9 pl-9"
           autoComplete="off"
           name="home-search"
           type="text"
@@ -81,8 +81,8 @@ export const HomeHeading = () => {
         {input ? (
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
-            onClick={() => setInput('')}
+            className="absolute top-1/2 right-3 z-10 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            onClick={() => setInput("")}
           >
             <X className="size-4" />
           </button>
@@ -94,7 +94,7 @@ export const HomeHeading = () => {
         />
       </div>
       <Link href="/resources/register" className="md:hidden">
-        <Button size="sm" className="w-full h-9">
+        <Button size="sm" className="h-9 w-full">
           <Plus className="size-4" />
           Add your API
         </Button>

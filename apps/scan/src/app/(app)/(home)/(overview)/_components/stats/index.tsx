@@ -1,23 +1,23 @@
-import React, { Suspense } from 'react';
+import React, { Suspense } from "react";
 
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary } from "react-error-boundary";
 
-import { Section } from '@/app/_components/layout/page-utils';
+import { Section } from "@/app/_components/layout/page-utils";
 
-import { OverallCharts, LoadingOverallCharts } from './charts';
+import { OverallCharts, LoadingOverallCharts } from "./charts";
 
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
 
-import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 
-import { ChartModeSelector } from '@/app/(app)/_contexts/chart-mode/component';
-import { ChartModeProvider } from '@/app/(app)/_contexts/chart-mode/provider';
+import { ChartModeSelector } from "@/app/(app)/_contexts/chart-mode/component";
+import { ChartModeProvider } from "@/app/(app)/_contexts/chart-mode/provider";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 interface Props {
   chain?: Chain;
@@ -77,7 +77,7 @@ const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
         </div>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {children}
       </div>
     </Section>

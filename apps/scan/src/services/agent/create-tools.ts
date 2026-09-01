@@ -1,20 +1,20 @@
-import { tool } from 'ai';
+import { tool } from "ai";
 
-import { listResourcesForTools } from '@/services/db/resources/resource';
+import { listResourcesForTools } from "@/services/db/resources/resource";
 
-import { inputSchemaToZodSchema } from './utils';
+import { inputSchemaToZodSchema } from "./utils";
 
-import { jsonObjectSchema } from '@/lib/json';
+import { jsonObjectSchema } from "@/lib/json";
 
 import {
   paymentRequirementsSchemaV1,
   outputSchemaV1,
   coerceAcceptForV1Schema,
   type OutputSchemaV1,
-} from '@/lib/x402';
+} from "@/lib/x402";
 
-import type { ResourceRequestMetadata } from '@x402scan/scan-db';
-import type { Tool } from 'ai';
+import type { ResourceRequestMetadata } from "@x402scan/scan-db";
+import type { Tool } from "ai";
 
 export async function createX402AITools(
   resourceIds: string[]
@@ -41,10 +41,10 @@ export async function createX402AITools(
         }
         const urlParts = new URL(resource.resource);
         const toolName = urlParts.pathname
-          .split('/')
+          .split("/")
           .filter(Boolean)
-          .join('_')
-          .replace(/[^a-zA-Z0-9_]/g, '_');
+          .join("_")
+          .replace(/[^a-zA-Z0-9_]/g, "_");
 
         const parametersSchema = inputSchemaToZodSchema(
           mergeInputSchemaAndRequestMetadata(
@@ -65,9 +65,9 @@ export async function createX402AITools(
 }
 
 const mergeInputSchemaAndRequestMetadata = (
-  inputSchema: OutputSchemaV1['input'],
+  inputSchema: OutputSchemaV1["input"],
   requestMetadata?: ResourceRequestMetadata
-): OutputSchemaV1['input'] => {
+): OutputSchemaV1["input"] => {
   // requestMetadata.inputSchema is stored as raw DB JSON — parse it at this
   // boundary before merging its overrides on top of the parsed input schema.
   const override = jsonObjectSchema.safeParse(requestMetadata?.inputSchema);

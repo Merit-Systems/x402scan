@@ -1,26 +1,26 @@
-import { Nav } from '../../_components/layout/nav';
+import { Nav } from "../../_components/layout/nav";
 
 export default async function RecipientLayout({
   params,
   children,
-}: LayoutProps<'/facilitator/[id]'>) {
+}: LayoutProps<"/facilitator/[id]">) {
   const { id } = await params;
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-1 flex-col">
       <Nav
         tabs={[
           {
-            label: 'Overview',
+            label: "Overview",
             href: `/facilitator/${id}`,
           },
           {
-            label: 'Transactions',
+            label: "Transactions",
             href: `/facilitator/${id}/transactions`,
           },
         ]}
       />
-      <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
+      <div className="flex flex-1 flex-col py-6 md:py-8">{children}</div>
     </div>
   );
 }

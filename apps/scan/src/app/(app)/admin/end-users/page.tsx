@@ -1,11 +1,11 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { EndUsersTable } from './_components/table';
-import { auth } from '@/auth';
-import { forbidden } from 'next/navigation';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { EndUsersTable } from "./_components/table";
+import { auth } from "@/auth";
+import { forbidden } from "next/navigation";
 
 export default async function EndUsersPage() {
   const session = await auth();
-  if (session?.user.role !== 'admin') {
+  if (session?.user.role !== "admin") {
     forbidden();
   }
 

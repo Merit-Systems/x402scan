@@ -1,35 +1,35 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
-import { toPaginatedResponse } from '@/lib/pagination';
+import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
+import { toPaginatedResponse } from "@/lib/pagination";
 
-import { baseListQuerySchema } from '../schemas';
+import { baseListQuerySchema } from "../schemas";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
-import { buildSellersOrderByColumn } from './order-by';
+} from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
+import { buildSellersOrderByColumn } from "./order-by";
 
-import type { paginatedQuerySchema } from '@/lib/pagination';
+import type { paginatedQuerySchema } from "@/lib/pagination";
 
 const SELLERS_SORT_IDS = [
-  'tx_count',
-  'total_amount',
-  'latest_block_timestamp',
-  'unique_buyers',
+  "tx_count",
+  "total_amount",
+  "latest_block_timestamp",
+  "unique_buyers",
   // Editorial order is materialized post-grouping in listBazaarOrigins;
   // the MV emits a stable recipient-keyed order and the bazaar layer re-sorts.
-  'editorial',
+  "editorial",
 ] as const;
 
 export type SellerSortId = (typeof SELLERS_SORT_IDS)[number];
 
 export const listTopSellersMVInputSchema = baseListQuerySchema({
   sortIds: SELLERS_SORT_IDS,
-  defaultSortId: 'tx_count',
+  defaultSortId: "tx_count",
 });
 
 // Exported for use in listBazaarOrigins to avoid double-caching
@@ -67,7 +67,7 @@ export const listTopSellersMVUncached = async (
     );
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   const t0 = performance.now();
   const offset = pagination.page * pagination.page_size;
@@ -164,8 +164,8 @@ export const listTopSellersMVUncached = async (
 
 export const listTopSellersMV = createCachedPaginatedQuery({
   queryFn: listTopSellersMVUncached,
-  cacheKeyPrefix: 'sellers-list-mv',
+  cacheKeyPrefix: "sellers-list-mv",
   createCacheKey: createStandardCacheKey,
-  dateFields: ['latest_block_timestamp'],
-  tags: ['sellers'],
+  dateFields: ["latest_block_timestamp"],
+  tags: ["sellers"],
 });

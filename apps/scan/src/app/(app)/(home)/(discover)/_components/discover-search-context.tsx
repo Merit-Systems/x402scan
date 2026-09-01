@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   createContext,
@@ -6,8 +6,8 @@ import {
   useContext,
   useEffect,
   useState,
-} from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+} from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface DiscoverSearchContextValue {
   input: string;
@@ -27,7 +27,7 @@ export const useDiscoverSearch = () => {
   const ctx = useContext(DiscoverSearchContext);
   if (!ctx)
     throw new Error(
-      'useDiscoverSearch must be used within DiscoverSearchProvider'
+      "useDiscoverSearch must be used within DiscoverSearchProvider"
     );
   return ctx;
 };
@@ -39,14 +39,14 @@ export const DiscoverSearchProvider = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get('q') ?? '';
+  const initialQuery = searchParams.get("q") ?? "";
 
   const [input, setInputRaw] = useState(initialQuery);
   const [query, setQuery] = useState(initialQuery);
 
   // Sync local state when URL search params change externally (e.g. home button click)
   useEffect(() => {
-    const urlQuery = searchParams.get('q') ?? '';
+    const urlQuery = searchParams.get("q") ?? "";
     if (urlQuery !== query) {
       setQuery(urlQuery);
       setInputRaw(urlQuery);
@@ -58,8 +58,8 @@ export const DiscoverSearchProvider = ({
     (value: string) => {
       setInputRaw(value);
       if (value.trim().length === 0 && query.length > 0) {
-        setQuery('');
-        router.replace('/', { scroll: false });
+        setQuery("");
+        router.replace("/", { scroll: false });
       }
     },
     [query, router]
@@ -74,9 +74,9 @@ export const DiscoverSearchProvider = ({
   }, [input, router]);
 
   const clear = useCallback(() => {
-    setInputRaw('');
-    setQuery('');
-    router.replace('/', { scroll: false });
+    setInputRaw("");
+    setQuery("");
+    router.replace("/", { scroll: false });
   }, [router]);
 
   const isSearching = query.length > 0;

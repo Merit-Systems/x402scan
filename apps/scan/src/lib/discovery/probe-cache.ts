@@ -1,11 +1,11 @@
-import { randomUUID } from 'crypto';
-import { z } from 'zod';
+import { randomUUID } from "crypto";
+import { z } from "zod";
 import type {
   AuditWarning,
   EndpointMethodAdvisory,
-} from '@agentcash/discovery';
-import { jsonObjectSchema } from '@/lib/json';
-import { getRedisClient } from '@/lib/redis';
+} from "@agentcash/discovery";
+import { jsonObjectSchema } from "@/lib/json";
+import { getRedisClient } from "@/lib/redis";
 
 /**
  * Server-side probe session cache.
@@ -18,7 +18,7 @@ import { getRedisClient } from '@/lib/redis';
  */
 
 const PROBE_SESSION_TTL_SECONDS = 5 * 60; // 5 minutes
-const KEY_PREFIX = 'probe-session';
+const KEY_PREFIX = "probe-session";
 
 interface CachedProbeResult {
   advisory: EndpointMethodAdvisory;
@@ -32,7 +32,7 @@ interface CachedProbeResult {
  */
 const cachedProbeResultSchema = z.object({
   advisory: z.custom<EndpointMethodAdvisory>(
-    value => jsonObjectSchema.safeParse(value).success
+    (value) => jsonObjectSchema.safeParse(value).success
   ),
   warnings: z.custom<AuditWarning[]>(Array.isArray).catch([]),
 });
@@ -61,7 +61,7 @@ export async function cacheProbeResult(
       JSON.stringify({ advisory, warnings } satisfies CachedProbeResult)
     );
   } catch (err) {
-    console.error('[probe-cache] Failed to cache probe result:', err);
+    console.error("[probe-cache] Failed to cache probe result:", err);
   }
 }
 
@@ -79,7 +79,7 @@ export async function getCachedProbeResult(
     if (!parsed.success) return null;
     return parsed.data;
   } catch (err) {
-    console.error('[probe-cache] Failed to read cached probe result:', err);
+    console.error("[probe-cache] Failed to read cached probe result:", err);
     return null;
   }
 }

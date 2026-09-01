@@ -1,6 +1,6 @@
-import { useAccount } from 'wagmi';
-import { useSolanaWallet } from '../../_contexts/solana/hook';
-import type { EthereumAddress, SolanaAddress } from '@/types/address';
+import { useAccount } from "wagmi";
+import { useSolanaWallet } from "../../_contexts/solana/hook";
+import type { EthereumAddress, SolanaAddress } from "@/types/address";
 
 interface NotConnectedWallets {
   isConnected: false;

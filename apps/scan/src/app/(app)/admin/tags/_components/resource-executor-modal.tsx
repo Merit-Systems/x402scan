@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { api } from '@/trpc/client';
-import { ResourceCard } from '@/app/(app)/_components/resources/resource-card';
-import { parseX402Response } from '@/lib/x402';
-import { Loader2 } from 'lucide-react';
-import { getBazaarMethod } from '@/app/(app)/_components/resources/utils';
+} from "@/components/ui/dialog";
+import { api } from "@/trpc/client";
+import { ResourceCard } from "@/app/(app)/_components/resources/resource-card";
+import { parseX402Response } from "@/lib/x402";
+import { Loader2 } from "lucide-react";
+import { getBazaarMethod } from "@/app/(app)/_components/resources/utils";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
+} from "@/components/ui/accordion";
 
 interface ResourceExecutorModalProps {
   open: boolean;
@@ -58,8 +58,8 @@ export function ResourceExecutorModal({
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             {!resource
-              ? 'Resource could not be loaded.'
-              : 'Resource has no response data.'}
+              ? "Resource could not be loaded."
+              : "Resource has no response data."}
           </p>
         </DialogContent>
       </Dialog>
@@ -76,7 +76,7 @@ export function ResourceExecutorModal({
             <DialogTitle>Parse Error</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Failed to parse X402 response: {parsedResponse.errors.join(', ')}
+            Failed to parse X402 response: {parsedResponse.errors.join(", ")}
           </p>
         </DialogContent>
       </Dialog>
@@ -84,22 +84,22 @@ export function ResourceExecutorModal({
   }
 
   const outputSchema = resource.accepts?.find(
-    accept => accept.outputSchema
+    (accept) => accept.outputSchema
   )?.outputSchema;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-7xl">
         <DialogHeader>
-          <DialogTitle className="text-sm font-mono break-all">
+          <DialogTitle className="font-mono text-sm break-all">
             {resource.resource}
           </DialogTitle>
         </DialogHeader>
         <ResourceCard
           resource={resource}
-          tags={resource.tags.map(tag => tag.tag)}
+          tags={resource.tags.map((tag) => tag.tag)}
           bazaarMethod={getBazaarMethod(
-            resource.accepts.find(accept => accept.outputSchema)?.outputSchema
+            resource.accepts.find((accept) => accept.outputSchema)?.outputSchema
           )}
           response={parsedResponse.data}
           className="bg-transparent"

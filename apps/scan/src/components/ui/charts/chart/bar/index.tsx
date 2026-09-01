@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { Bar } from 'recharts';
+import { Bar } from "recharts";
 
-import { BaseChart } from '../chart';
-import { simulateChartData } from '../simulate';
+import { BaseChart } from "../chart";
+import { simulateChartData } from "../simulate";
 
-import type { BarChartProps } from './types';
+import type { BarChartProps } from "./types";
 
 export const BaseBarChart = <
-  T extends Omit<Record<string, number>, 'timestamp'>,
+  T extends Omit<Record<string, number>, "timestamp">,
 >({
   data,
   children,
@@ -59,7 +59,7 @@ export const BaseBarChart = <
             key={dataKey as string}
             isAnimationActive={index === bars.length - 1}
             dataKey={dataKey as string}
-            stackId={stacked ? '1' : index.toString()}
+            stackId={stacked ? "1" : index.toString()}
             fill={solid ? color : `url(#${dataKey as string}-gradient)`}
             fillOpacity={solid ? 0.2 : undefined}
             stroke={color}
@@ -89,9 +89,9 @@ export const LoadingBarChart = ({
         data={simulatedData}
         bars={[
           {
-            dataKey: 'value',
+            dataKey: "value",
             color:
-              'color-mix(in oklab, var(--color-neutral-500) 20%, transparent)',
+              "color-mix(in oklab, var(--color-neutral-500) 20%, transparent)",
             isAnimationActive: false,
           },
         ]}

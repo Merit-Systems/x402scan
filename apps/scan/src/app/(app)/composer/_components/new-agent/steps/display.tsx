@@ -1,6 +1,6 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import { Controller } from 'react-hook-form';
+import { Controller } from "react-hook-form";
 
 import {
   Field,
@@ -10,17 +10,17 @@ import {
   FieldGroup,
   FieldLabel,
   FieldTitle,
-} from '@/components/ui/field';
-import type { NewAgentForm } from './types';
-import { Dropzone } from '@/components/ui/dropzone';
-import { toast } from 'sonner';
-import { api } from '@/trpc/client';
-import { cn } from '@/lib/utils';
-import { ArrowLeft, Bot, Loader2, Plus } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/field";
+import type { NewAgentForm } from "./types";
+import { Dropzone } from "@/components/ui/dropzone";
+import { toast } from "sonner";
+import { api } from "@/trpc/client";
+import { cn } from "@/lib/utils";
+import { ArrowLeft, Bot, Loader2, Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   form: NewAgentForm;
@@ -36,7 +36,7 @@ export const DisplayStep: React.FC<Props> = ({
   const { mutate: uploadImage, isPending: isUploading } =
     api.user.upload.image.useMutation({
       onSuccess: ({ url }) => {
-        form.setValue('image', url, {
+        form.setValue("image", url, {
           shouldValidate: true,
           shouldDirty: true,
           shouldTouch: true,
@@ -52,32 +52,32 @@ export const DisplayStep: React.FC<Props> = ({
             control={form.control}
             name="image"
             render={({ field }) => (
-              <Field className="shrink-0 h-[156px] w-[136px]">
+              <Field className="h-[156px] w-[136px] shrink-0">
                 <FieldLabel htmlFor="image">
                   <span>
-                    Image{' '}
-                    <span className="text-muted-foreground text-xs">
+                    Image{" "}
+                    <span className="text-xs text-muted-foreground">
                       (optional)
                     </span>
                   </span>
                 </FieldLabel>
                 <Dropzone
                   accept={{
-                    'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
+                    "image/*": [".jpg", ".jpeg", ".png", ".webp"],
                   }}
                   maxFiles={1}
                   maxSize={5 * 1024 * 1024}
-                  onDrop={files => {
+                  onDrop={(files) => {
                     if (files.length === 0) {
-                      toast.error('No file selected');
+                      toast.error("No file selected");
                       return;
                     }
                     uploadImage(files[0]!);
                   }}
                   disabled={isUploading}
                   className={cn(
-                    'flex-1 p-0 flex flex-col items-center justify-center gap-1 overflow-hidden bg-transparent',
-                    field.value && 'border-none shadow-none'
+                    "flex-1 p-0 flex flex-col items-center justify-center gap-1 overflow-hidden bg-transparent",
+                    field.value && "border-none shadow-none"
                   )}
                 >
                   {field.value ? (
@@ -86,7 +86,7 @@ export const DisplayStep: React.FC<Props> = ({
                       alt="Profile Picture"
                       width={96}
                       height={96}
-                      className="size-full rounded-md hover:opacity-80 transition-opacity"
+                      className="size-full rounded-md transition-opacity hover:opacity-80"
                       unoptimized
                     />
                   ) : (
@@ -104,8 +104,8 @@ export const DisplayStep: React.FC<Props> = ({
                 <Field>
                   <FieldLabel htmlFor="name">
                     <span>
-                      Name{' '}
-                      <span className="text-muted-foreground text-xs">
+                      Name{" "}
+                      <span className="text-xs text-muted-foreground">
                         (optional)
                       </span>
                     </span>
@@ -127,8 +127,8 @@ export const DisplayStep: React.FC<Props> = ({
                 <Field>
                   <FieldLabel htmlFor="description">
                     <span>
-                      Description{' '}
-                      <span className="text-muted-foreground text-xs">
+                      Description{" "}
+                      <span className="text-xs text-muted-foreground">
                         (optional)
                       </span>
                     </span>
@@ -161,17 +161,17 @@ export const DisplayStep: React.FC<Props> = ({
               >
                 {[
                   {
-                    value: 'public',
-                    title: 'Public',
+                    value: "public",
+                    title: "Public",
                     description:
-                      'Your agent will be discoverable by other users.',
+                      "Your agent will be discoverable by other users.",
                   },
                   {
-                    value: 'private',
-                    title: 'Private',
-                    description: 'Your agent will only be accessible to you.',
+                    value: "private",
+                    title: "Private",
+                    description: "Your agent will only be accessible to you.",
                   },
-                ].map(option => (
+                ].map((option) => (
                   <FieldLabel
                     key={option.value}
                     htmlFor={`form-rhf-radiogroup-${option.value}`}
@@ -200,7 +200,7 @@ export const DisplayStep: React.FC<Props> = ({
           )}
         />
       </FieldGroup>
-      <div className="flex justify-between p-4 border-t bg-muted">
+      <div className="flex justify-between border-t bg-muted p-4">
         <Button variant="outline" onClick={onPrevious}>
           <ArrowLeft className="size-4" />
           Back

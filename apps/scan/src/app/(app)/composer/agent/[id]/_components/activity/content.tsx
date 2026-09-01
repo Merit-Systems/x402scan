@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { api } from '@/trpc/client';
-import type { RouterOutputs } from '@/trpc/client';
-import { ActivityCharts } from './charts';
+import { api } from "@/trpc/client";
+import type { RouterOutputs } from "@/trpc/client";
+import { ActivityCharts } from "./charts";
 
 interface Props {
-  agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
+  agentConfiguration: NonNullable<RouterOutputs["public"]["agents"]["get"]>;
 }
 
 export const ActivityContent: React.FC<Props> = ({ agentConfiguration }) => {

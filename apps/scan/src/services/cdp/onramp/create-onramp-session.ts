@@ -1,17 +1,17 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { cdpFetch } from '../lib/fetch';
-import { ethereumAddressSchema, solanaAddressSchema } from '@/lib/schemas';
-import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+import { cdpFetch } from "../lib/fetch";
+import { ethereumAddressSchema, solanaAddressSchema } from "@/lib/schemas";
+import { Chain, SUPPORTED_CHAINS } from "@/types/chain";
 
 export const createOnrampUrlParamsSchema = z.object({
   redirect: z.url(),
   amount: z.number(),
-  experience: z.enum(['send', 'buy']).default('buy'),
+  experience: z.enum(["send", "buy"]).default("buy"),
   defaultNetwork: z.enum(SUPPORTED_CHAINS),
-  defaultAsset: z.literal('USDC').default('USDC'),
-  fiatCurrency: z.literal('USD').default('USD'),
-  tokenKey: z.string().default('onramp_token'),
+  defaultAsset: z.literal("USDC").default("USDC"),
+  fiatCurrency: z.literal("USD").default("USD"),
+  tokenKey: z.string().default("onramp_token"),
   redirectSearchParams: z.record(z.string(), z.string()).optional(),
 });
 
@@ -37,9 +37,9 @@ export const createOnrampUrl = async (
 
   const { token } = await cdpFetch(
     {
-      requestHost: 'api.developer.coinbase.com',
+      requestHost: "api.developer.coinbase.com",
       requestPath: `/onramp/v1/token`,
-      requestMethod: 'POST',
+      requestMethod: "POST",
     },
     z.object({
       token: z.string(),
@@ -59,7 +59,7 @@ export const createOnrampUrl = async (
 
   const redirectUrl = new URL(redirect);
   redirectUrl.searchParams.set(tokenKey, token);
-  redirectUrl.searchParams.set('network', defaultNetwork);
+  redirectUrl.searchParams.set("network", defaultNetwork);
 
   if (redirectSearchParams) {
     Object.entries(redirectSearchParams).forEach(([key, value]) => {

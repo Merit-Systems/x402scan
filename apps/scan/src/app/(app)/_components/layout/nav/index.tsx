@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from "lucide-react";
 
-import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react';
+import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
 
-import { MotionTab } from './motion-tab';
+import { MotionTab } from "./motion-tab";
 
-import type { Route } from 'next';
+import type { Route } from "next";
 
 interface Tab<T extends string> {
   label: string;
@@ -34,7 +34,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
   const paddingLeft = useTransform(scrollY, [0, 56], [0, 36]);
 
   useEffect(() => {
-    setButtonRefs(prev => prev.slice(0, tabs.length));
+    setButtonRefs((prev) => prev.slice(0, tabs.length));
   }, [tabs.length]);
 
   const navRef = useRef<HTMLDivElement>(null);
@@ -45,25 +45,25 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
     buttonRefs[hoveredTabIndex ?? -1]?.getBoundingClientRect();
 
   return (
-    <div className="w-full max-w-full overflow-x-auto overflow-y-hidden border-b px-2 md:px-6 pt-2.5 sticky top-0 z-10 bg-card no-scrollbar">
+    <div className="no-scrollbar sticky top-0 z-10 w-full max-w-full overflow-x-auto overflow-y-hidden border-b bg-card px-2 pt-2.5 md:px-6">
       <nav
-        className="bg-card w-full relative h-full"
+        className="relative h-full w-full bg-card"
         ref={navRef}
         onPointerLeave={() => setHoveredTabIndex(null)}
       >
         <motion.ul
-          className="list-none p-0 m-0 font-medium text-sm flex w-full h-full flex-nowrap md:flex-wrap"
+          className="m-0 flex h-full w-full list-none flex-nowrap p-0 text-sm font-medium md:flex-wrap"
           style={{ paddingLeft: paddingLeft }}
         >
           {tabs.map((tab, index) => (
-            <div className="relative z-11 pb-1 shrink-0" key={tab.label}>
+            <div className="relative z-11 shrink-0 pb-1" key={tab.label}>
               <Link
                 href={tab.href}
                 className="z-11"
                 onMouseEnter={() => setHoveredTabIndex(index)}
                 onMouseLeave={() => setHoveredTabIndex(null)}
                 onClick={() => setHoveredTabIndex(null)}
-                ref={el => {
+                ref={(el) => {
                   if (el) {
                     buttonRefs[index] = el;
                   }
@@ -74,7 +74,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                     {tab.label}
                     {tab.external && <ExternalLink className="size-4" />}
                     {tab.isNew && (
-                      <span className="text-xs bg-primary/20 border-primary text-primary border px-1.5 rounded-md">
+                      <span className="rounded-md border border-primary bg-primary/20 px-1.5 text-xs text-primary">
                         New
                       </span>
                     )}
@@ -88,7 +88,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
           {hoveredRect && navRect && (
             <motion.div
               key="hover"
-              className={`absolute z-10 top-0 left-0 rounded-md bg-accent`}
+              className={`absolute top-0 left-0 z-10 rounded-md bg-accent`}
               initial={{
                 ...getHoverAnimationProps(hoveredRect, navRect),
                 opacity: 0,
@@ -102,8 +102,8 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                 opacity: 0,
               }}
               transition={{
-                type: 'tween',
-                ease: 'easeOut',
+                type: "tween",
+                ease: "easeOut",
                 duration: 0.15,
               }}
             />

@@ -1,8 +1,8 @@
-import { Body } from '@/app/_components/layout/page-utils';
+import { Body } from "@/app/_components/layout/page-utils";
 
-import { LoadingHeaderCard } from './_components/header';
-import { LoadingTools } from './_components/tools';
-import { LoadingActivity } from './_components/activity';
+import { LoadingHeaderCard } from "./_components/header";
+import { LoadingTools } from "./_components/tools";
+import { LoadingActivity } from "./_components/activity";
 
 export default function LoadingAgentPage() {
   return (
