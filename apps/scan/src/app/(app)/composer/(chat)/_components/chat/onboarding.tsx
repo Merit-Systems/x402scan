@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-import { Logo } from "@/components/logo";
+import { Logo } from "@/components/ui/logo";
 
 import { api } from "@/trpc/client";
 

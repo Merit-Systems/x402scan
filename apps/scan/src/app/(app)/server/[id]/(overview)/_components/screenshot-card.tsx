@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Logo, type LogoProps } from "@/components/ui/logo";
 import { cleanExternalText, truncateAtDelimiter } from "@/lib/utils";
 import { isBrowser } from "@/lib/runtime-env";
 import type { RouterOutputs } from "@/trpc/client";
@@ -24,7 +25,12 @@ interface Props {
   faviconDataUrl?: string | null;
 }
 
-const X402_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268.14 304.26"><path fill="#0052ff" d="M124.07,143.76L19.84,39.54c-7.32-7.32-19.84-2.14-19.84,8.22v208.79c0,10.31,12.47,15.48,19.76,8.18l104.31-104.31c4.6-4.6,4.6-12.05,0-16.65Z"/><path fill="#0052ff" d="M143.76,180.19l-104.23,104.23c-7.32,7.32-2.14,19.84,8.22,19.84h208.79c10.31,0,15.48-12.47,8.18-19.76l-104.31-104.31c-4.6-4.6-12.05-4.6-16.65,0Z"/><path fill="#0052ff" d="M160.49,124.07l104.23-104.23c7.32-7.32,2.14-19.84-8.22-19.84H47.71c-10.31,0-15.48,12.47-8.18,19.76l104.31,104.31c4.6,4.6,12.05,4.6,16.65,0Z"/></svg>`;
+const SCREENSHOT_LOGO_STYLE = {
+  width: 40,
+  height: 40,
+  "--primary": "#0052ff",
+  "--foreground": "#0a0a0a",
+} satisfies NonNullable<LogoProps["style"]> & Record<`--${string}`, string>;
 
 function generateGrainDataUrl(): string {
   const size = 256;
@@ -171,8 +177,6 @@ export const ScreenshotCard: React.FC<Props> = ({
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     });
-
-  const logoDataUrl = `data:image/svg+xml;base64,${btoa(X402_LOGO_SVG)}`;
 
   const chartDataMap = {
     transactions: chartData.map((d) => d.transactions),
@@ -407,13 +411,7 @@ export const ScreenshotCard: React.FC<Props> = ({
                 gap: 12,
               }}
             >
-              <img
-                src={logoDataUrl}
-                alt=""
-                width={40}
-                height={40}
-                style={{ width: 40, height: 40 }}
-              />
+              <Logo style={SCREENSHOT_LOGO_STYLE} />
               <span
                 style={{
                   ...METRIC_VALUE_STYLE,

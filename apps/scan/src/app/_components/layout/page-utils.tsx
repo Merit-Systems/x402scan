@@ -59,7 +59,7 @@ export const Heading: React.FC<HeadingProps> = ({
   );
 };
 
-export const HeadingContainer = ({
+const HeadingContainer = ({
   children,
   className,
 }: {
