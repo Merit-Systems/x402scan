@@ -1,14 +1,7 @@
 {
-  "extends": "@x402scan/typescript-config/base.json",
+  "extends": "@merit-systems/typescript-config/bundled-library.json",
   "compilerOptions": {
-    "lib": ["ES2020"],
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "declaration": true,
-    "declarationMap": true,
-    "outDir": "./dist",
-    "rootDir": ".",
-    "forceConsistentCasingInFileNames": true
+    "types": ["node"]
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"]

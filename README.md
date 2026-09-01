@@ -48,6 +48,10 @@ pnpm dev
 pnpm dev:sync
 ```
 
+The scan app is available at `x402scan.localhost`. The Solana RPC worker uses
+`solana-rpc.x402scan.localhost`. Portless may prefix these hostnames in branch
+worktrees to keep concurrent checkouts isolated.
+
 ## Documentation
 
 - **[x402 Discovery Document Guide](./docs/DISCOVERY.md)** - Learn how to implement discovery for your x402 server to enable automatic resource registration

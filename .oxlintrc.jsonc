@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["./node_modules/@merit-systems/oxlint-config/next.jsonc"],
   "ignorePatterns": [
     "**/node_modules/**",
     "**/.next/**",
@@ -20,7 +21,15 @@
     "node"
   ],
   "options": {
+    // Foundation adoption is staged: inherited migration findings remain
+    // visible, but only the established and high-signal rules block this batch.
+    "denyWarnings": false,
     "typeAware": true
+  },
+  "settings": {
+    "tailwindcss": {
+      "entryPoint": "apps/scan/src/app/globals.css"
+    }
   },
   "categories": {
     "correctness": "error",
@@ -31,6 +40,51 @@
     { "name": "anti-slop", "specifier": "./tools/oxlint/anti-slop/index.ts" }
   ],
   "rules": {
+    // Existing debt exposed by Foundation. Keep these visible as warnings while
+    // the visual, route-ownership, environment, hook, and strictness migrations
+    // proceed in focused follow-up changes.
+    "hooks/set-state-in-effect": "warn",
+    "hooks/immutability": "warn",
+    "hooks/refs": "warn",
+    "hooks/static-components": "warn",
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/control-has-associated-label": "warn",
+    "jsx-a11y/heading-has-content": "warn",
+    "jsx-a11y/img-redundant-alt": "warn",
+    "jsx-a11y/label-has-associated-control": "warn",
+    "jsx-a11y/media-has-caption": "warn",
+    "jsx-a11y/no-noninteractive-element-interactions": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "jsx-a11y/prefer-tag-over-role": "warn",
+    "jsx-a11y/role-has-required-aria-props": "warn",
+    "merit-brand/no-arbitrary-typography": "warn",
+    "merit-brand/no-direct-primitive-imports": "warn",
+    "merit-brand/no-raw-theme-colors": "warn",
+    "merit-next/no-route-private-imports": "warn",
+    "merit-next/prefer-nearest-route-private-owner": "warn",
+    "merit-next/require-generated-route-props": "warn",
+    "merit-next/require-page-route-group": "warn",
+    "no-restricted-properties": "warn",
+    "no-useless-assignment": "warn",
+    "tailwindcss/no-conflicting-classes": "warn",
+    "typescript/consistent-type-definitions": "warn",
+    "typescript/no-confusing-void-expression": "warn",
+    "typescript/no-deprecated": "warn",
+    "typescript/no-non-null-assertion": "warn",
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-import-type-side-effects": "warn",
+    "typescript/no-unsafe-assignment": "warn",
+    "typescript/no-unnecessary-condition": "warn",
+    "typescript/no-unnecessary-type-arguments": "warn",
+    "typescript/no-unnecessary-type-assertion": "warn",
+    "typescript/prefer-optional-chain": "warn",
+    "typescript/restrict-plus-operands": "warn",
+    "typescript/restrict-template-expressions": "warn",
+    "typescript/return-await": "warn",
+    "typescript/use-unknown-in-catch-callback-variable": "warn",
+    "vitest/no-conditional-expect": "warn",
+    "vitest/require-mock-type-parameters": "warn",
+
     // Parity with the previous typescript-eslint config.
     "typescript/consistent-type-imports": [
       "error",

@@ -1,5 +1,5 @@
 {
-  "extends": "@x402scan/typescript-config/prisma.json",
+  "extends": "@merit-systems/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "./"

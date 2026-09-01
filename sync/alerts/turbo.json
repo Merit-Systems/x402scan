@@ -4,6 +4,8 @@
   "tasks": {
     "trigger:dev": {
       "description": "Start alert sync jobs in development mode",
+      "cache": false,
+      "persistent": true,
       "passThroughEnv": [
         "DISCORD_WEBHOOK_URL",
         "DISCORD_MERCHANT_HEALTH_WEBHOOK_URL",
@@ -13,6 +15,7 @@
     },
     "trigger:deploy": {
       "description": "Deploy alert sync jobs to Trigger.dev",
+      "cache": false,
       "passThroughEnv": ["TRIGGER_*"]
     }
   }

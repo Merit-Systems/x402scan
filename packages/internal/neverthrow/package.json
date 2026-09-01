@@ -14,8 +14,7 @@
     }
   },
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "tsdown",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
@@ -23,8 +22,9 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@x402scan/typescript-config": "workspace:*",
-    "tsup": "catalog:",
+    "@merit-systems/tsdown-config": "catalog:foundation",
+    "@merit-systems/typescript-config": "catalog:foundation",
+    "tsdown": "catalog:bundling",
     "typescript": "catalog:"
   }
 }
