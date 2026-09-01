@@ -1,7 +1,10 @@
 import type { BarProps } from "recharts";
-import type { ChartProps, Series } from "../types";
+import type { ChartData, ChartProps, Series } from "../types";
 
-export type Bar<T extends Record<string, number>> = Series<T, BarProps>;
+export type Bar<T extends Record<string, number>> = Series<
+  T,
+  BarProps<ChartData<T>, number>
+>;
 
 export type StackOffset = "expand" | "none" | "wiggle" | "silhouette";
 

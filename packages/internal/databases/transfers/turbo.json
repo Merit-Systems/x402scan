@@ -8,10 +8,13 @@
     },
     "db:migrate": {
       "description": "Create and apply transfers database migrations",
+      "cache": false,
       "passThroughEnv": ["TRANSFERS_DB_URL"]
     },
     "studio": {
       "description": "Start Prisma Studio for the transfers database",
+      "cache": false,
+      "persistent": true,
       "passThroughEnv": ["TRANSFERS_DB_URL"]
     }
   }

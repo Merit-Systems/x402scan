@@ -8,6 +8,7 @@ import { BaseChart } from "../chart";
 import { simulateChartData } from "../simulate";
 
 import type { BarChartProps } from "./types";
+import type { ChartData, ChartDimension } from "../types";
 
 export const BaseBarChart = <
   T extends Omit<Record<string, number>, "timestamp">,
@@ -53,12 +54,12 @@ export const BaseBarChart = <
         </defs>
       )}
 
-      {bars.map(({ dataKey, color, ref: _ref, ...barProps }, index) => {
+      {bars.map(({ dataKey, color, ...barProps }, index) => {
         return (
-          <Bar
+          <Bar<ChartData<T>, number>
             key={dataKey as string}
             isAnimationActive={index === bars.length - 1}
-            dataKey={dataKey as string}
+            dataKey={dataKey}
             stackId={stacked ? "1" : index.toString()}
             fill={solid ? color : `url(#${dataKey as string}-gradient)`}
             fillOpacity={solid ? 0.2 : undefined}
@@ -79,7 +80,7 @@ export const BaseBarChart = <
 export const LoadingBarChart = ({
   height = 350,
 }: {
-  height?: number | string;
+  height?: ChartDimension;
 }) => {
   const simulatedData = useMemo(() => simulateChartData(), []);
 

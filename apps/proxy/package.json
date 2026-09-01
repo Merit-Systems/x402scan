@@ -4,20 +4,26 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "portless",
+    "dev:app": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/node-server": "^1.13.7",
+    "@hono/node-server": "catalog:hono",
     "dotenv": "catalog:env",
-    "hono": "^4.6.14"
+    "hono": "catalog:hono"
   },
   "devDependencies": {
-    "@x402scan/typescript-config": "workspace:*",
+    "@merit-systems/typescript-config": "catalog:foundation",
     "@types/node": "catalog:",
+    "portless": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"
+  },
+  "portless": {
+    "name": "proxy.x402scan",
+    "script": "dev:app"
   }
 }

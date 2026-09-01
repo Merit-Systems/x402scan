@@ -7,8 +7,17 @@ on:
     paths:
       - "sync/transfers/**"
       - "packages/external/facilitators/**"
+      - "package.json"
+      - ".node-version"
       - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "foundation.config.ts"
+      - "turbo.json"
       - ".github/workflows/deploy-sync.yml"
+
+permissions:
+  contents: read
+  packages: read
 
 jobs:
   deploy:
@@ -20,14 +29,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Setup pnpm and Node.js
-        uses: pnpm/setup@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          runtime: node@20
-          cache: true
-          install: false
+          node-version-file: ".node-version"
+          registry-url: "https://npm.pkg.github.com"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Install dependencies
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
         run: pnpm install --frozen-lockfile --filter "@x402scan/sync-transfers..."
 
       - name: Deploy to Trigger.dev

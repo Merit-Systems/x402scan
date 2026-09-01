@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
 import { BaseBarChart, LoadingBarChart } from "../chart/bar";
 import { BaseAreaChart, LoadingAreaChart } from "../chart/area";
 
-import type { ChartData, ChartProps } from "../chart/types";
+import type { ChartData, ChartDimension, ChartProps } from "../chart/types";
 import type { BarChartProps, StackOffset } from "../chart/bar/types";
 import type { AreaChartProps } from "../chart/area/types";
 
@@ -30,7 +30,7 @@ interface TabProps<T extends Record<string, number>> {
 interface Props<T extends Record<string, number>> {
   chartData: ChartData<T>[];
   tabs: TabProps<T>[];
-  height?: number | string;
+  height?: ChartDimension;
 }
 
 export const MultiCharts = <T extends Record<string, number>>({
@@ -79,7 +79,7 @@ interface LoadingMultiChartsProps {
     type: "bar" | "area";
     label: string;
   }[];
-  height?: number | string;
+  height?: ChartDimension;
 }
 
 export const LoadingMultiCharts: React.FC<LoadingMultiChartsProps> = ({

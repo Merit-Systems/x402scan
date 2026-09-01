@@ -7,6 +7,7 @@ import { BaseChart } from "../chart";
 import { simulateChartData } from "../simulate";
 
 import type { AreaChartProps } from "./types";
+import type { ChartData, ChartDimension } from "../types";
 
 export const BaseLineChart = <
   T extends Omit<Record<string, number>, "timestamp">,
@@ -26,12 +27,12 @@ export const BaseLineChart = <
       tooltipRows={tooltipRows}
       margin={margin}
     >
-      {lines.map(({ dataKey, color, ref: _ref, ...lineProps }, index) => {
+      {lines.map(({ dataKey, color, ...lineProps }, index) => {
         return (
-          <Line
+          <Line<ChartData<T>, number>
             key={dataKey as string}
             isAnimationActive={index === lines.length - 1}
-            dataKey={dataKey as string}
+            dataKey={dataKey}
             fill={`color-mix(in oklab, ${color} 40%, transparent)`}
             stroke={color}
             type="monotone"
@@ -47,7 +48,7 @@ export const BaseLineChart = <
 export const LoadingAreaChart = ({
   height = 350,
 }: {
-  height?: number | string;
+  height?: ChartDimension;
 }) => {
   const simulatedData = useMemo(() => simulateChartData(), []);
 
