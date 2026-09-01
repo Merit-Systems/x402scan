@@ -7,7 +7,6 @@ import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 import { useChain } from "@/app/(app)/_contexts/chain/hook";
 import {
   FeaturedServiceSummary,
-  TryItButton,
   featuredServiceColumns as columns,
 } from "@/app/(app)/(home)/(overview)/_components/sellers/featured-columns";
 import {
@@ -200,10 +199,7 @@ const featuredServiceListItem: DataListItem<FeaturedServiceItem> = {
 
     return (
       <div className="flex flex-col gap-3 py-4">
-        <div className="flex items-start justify-between gap-3">
-          <FeaturedServiceSummary item={item} />
-          <TryItButton origin={origin.origin} />
-        </div>
+        <FeaturedServiceSummary item={item} />
         <dl className="grid grid-cols-4 gap-2">
           <Metric
             label="Volume"
