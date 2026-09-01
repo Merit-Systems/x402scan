@@ -55,7 +55,6 @@ export const ResourcesSelect: React.FC<Props> = ({
       <ResourceList
         selectedResourceIds={resources.map((resource) => resource.id)}
         onSelectResource={onSelectResource}
-        gradientClassName="md:from-popover"
       />
     </div>
   );

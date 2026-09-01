@@ -57,7 +57,7 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
 
   return (
     <Button
-      variant="turbo"
+      variant="default"
       disabled={isInvalid || isPending}
       onClick={handleSubmit}
     >

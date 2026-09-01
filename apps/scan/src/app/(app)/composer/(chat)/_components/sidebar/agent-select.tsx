@@ -45,9 +45,9 @@ export const AgentSelect = () => {
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
-            <DropdownMenuTrigger asChild>
-              <AgentSelectButton onClick={() => setIsOpen(true)} />
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={<AgentSelectButton onClick={() => setIsOpen(true)} />}
+            ></DropdownMenuTrigger>
             <DropdownMenuContent
               className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
               align="start"
@@ -60,40 +60,40 @@ export const AgentSelect = () => {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="gap-2 p-2"
-                asChild
+
                 onClick={() => isMobile && openMobile && setOpenMobile(false)}
+                render={<Link href="/composer/chat" />}
               >
-                <Link href="/composer/chat">
-                  <BotMessageSquare className="size-4 flex-shrink-0" />
-                  <span className="truncate font-medium">Playground</span>
-                </Link>
+                <BotMessageSquare className="size-4 flex-shrink-0" />
+                <span className="truncate font-medium">Playground</span>
               </DropdownMenuItem>
               {agentConfigurations.map((agent) => (
                 <DropdownMenuItem
                   key={agent.id}
                   className="gap-2 p-2"
-                  asChild
+
                   onClick={() => isMobile && openMobile && setOpenMobile(false)}
+                  render={
+                    <Link
+                      href={`/composer/agent/${agent.agentConfiguration.id}/chat`}
+                      key={agent.id}
+                    />
+                  }
                 >
-                  <Link
-                    href={`/composer/agent/${agent.agentConfiguration.id}/chat`}
-                    key={agent.id}
-                  >
-                    {agent.agentConfiguration.image ? (
-                      <Image
-                        src={agent.agentConfiguration.image}
-                        alt={agent.agentConfiguration.name}
-                        width={16}
-                        height={16}
-                        className="size-4 flex-shrink-0"
-                      />
-                    ) : (
-                      <BotMessageSquare className="size-4 flex-shrink-0" />
-                    )}
-                    <span className="truncate font-medium">
-                      {agent.agentConfiguration.name || "Untitled Agent"}
-                    </span>
-                  </Link>
+                  {agent.agentConfiguration.image ? (
+                    <Image
+                      src={agent.agentConfiguration.image}
+                      alt={agent.agentConfiguration.name}
+                      width={16}
+                      height={16}
+                      className="size-4 flex-shrink-0"
+                    />
+                  ) : (
+                    <BotMessageSquare className="size-4 flex-shrink-0" />
+                  )}
+                  <span className="truncate font-medium">
+                    {agent.agentConfiguration.name || "Untitled Agent"}
+                  </span>
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />

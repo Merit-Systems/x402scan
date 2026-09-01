@@ -18,7 +18,7 @@ import { parseChain } from "@/app/(app)/_lib/chain/parse";
 import type { SupportedChain } from "@/types/chain";
 
 interface Props {
-  children: React.ReactNode;
+  children: React.ReactElement;
   initialTab?: "wallet" | "deposit" | "withdraw";
   initialChain?: SupportedChain;
   isFixed?: boolean;
@@ -44,7 +44,7 @@ export const WalletDialog: React.FC<Props> = ({
     <Dialog
       defaultOpen={watchOnramp ? searchParams.get("onramp") === "true" : false}
     >
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger render={children} />
       <DialogContent
         className="overflow-hidden p-0 sm:max-w-md"
         showCloseButton={false}

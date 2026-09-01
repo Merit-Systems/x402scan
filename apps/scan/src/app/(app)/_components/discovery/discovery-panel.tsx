@@ -777,7 +777,7 @@ export function DiscoveryPanel({
           {/* Register All button */}
           {showRegisterButton && !isTestMode && onRegisterAll && (
             <Button
-              variant="turbo"
+              variant="default"
               disabled={isRegisteringAll}
               onClick={onRegisterAll}
               className="w-full"
@@ -1556,11 +1556,13 @@ function OriginPreviewCard({
           status: "partial" as const,
           badge: (
             <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-yellow-600/30 bg-yellow-600/10 px-2 py-0.5 text-xs font-medium text-yellow-600">
-                  <ShieldAlert className="size-3" />
-                  Partially Verified ({verified}/{total})
-                </span>
+              <TooltipTrigger
+                render={
+                  <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-yellow-600/30 bg-yellow-600/10 px-2 py-0.5 text-xs font-medium text-yellow-600" />
+                }
+              >
+                <ShieldAlert className="size-3" />
+                Partially Verified ({verified}/{total})
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-72">
                 <p className="font-medium">
@@ -1581,11 +1583,13 @@ function OriginPreviewCard({
         status: "unverified" as const,
         badge: (
           <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                <ShieldAlert className="size-3" />
-                Unverified
-              </span>
+            <TooltipTrigger
+              render={
+                <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground" />
+              }
+            >
+              <ShieldAlert className="size-3" />
+              Unverified
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-72">
               <p className="font-medium">No verified ownership proofs</p>
@@ -1636,11 +1640,13 @@ function OriginPreviewCard({
         status: "partial" as const,
         badge: (
           <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                <ShieldAlert className="size-3" />
-                Partially Verified ({verifiedCount}/{totalAddresses})
-              </span>
+            <TooltipTrigger
+              render={
+                <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground" />
+              }
+            >
+              <ShieldAlert className="size-3" />
+              Partially Verified ({verifiedCount}/{totalAddresses})
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-96">
               <p className="font-medium">
@@ -1724,11 +1730,13 @@ function OriginPreviewCard({
       status: "unverified" as const,
       badge: (
         <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
-              <ShieldAlert className="size-3" />
-              Unverified
-            </span>
+          <TooltipTrigger
+            render={
+              <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground" />
+            }
+          >
+            <ShieldAlert className="size-3" />
+            Unverified
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-96">
             <p className="font-medium">{unverifiedReason.title}</p>

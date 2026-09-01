@@ -12,7 +12,7 @@ export const NavbarSearchButton = () => {
 
   return (
     <Button
-      size="navbar"
+      size="default"
       variant="outline"
       className="flex items-center gap-0 text-muted-foreground md:justify-between md:gap-16 md:px-2 md:pr-1"
       onClick={() => setIsOpen(true)}

@@ -273,11 +273,13 @@ export const ShareModal: React.FC<Props> = ({
 
   return (
     <Dialog onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <button className="inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90">
-          <Share2 className="size-3" />
-          Share
-        </button>
+      <DialogTrigger
+        render={
+          <button className="inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90" />
+        }
+      >
+        <Share2 className="size-3" />
+        Share
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>

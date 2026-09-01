@@ -1,31 +1,99 @@
 "use client";
 
-import * as React from "react";
-import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
+import { createContext, useContext } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { ChevronDownIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+const accordionVariants = cva("flex w-full flex-col", {
+  variants: {
+    variant: {
+      list: "",
+      sections: "gap-4",
+      selector: "gap-4",
+    },
+  },
+  defaultVariants: {
+    variant: "list",
+  },
+});
+
+const accordionItemVariants = cva("", {
+  variants: {
+    variant: {
+      list: "not-last:border-b",
+      sections: "",
+      selector: "overflow-hidden rounded-xl border-none bg-muted",
+    },
+  },
+});
+
+const accordionTriggerVariants = cva(
+  "relative flex flex-1 text-left transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground [&[aria-expanded=true]>[data-slot=accordion-trigger-icon]]:rotate-180",
+  {
+    variants: {
+      variant: {
+        list: "type-label items-start justify-between rounded-lg border border-transparent py-2.5 **:data-[slot=accordion-trigger-icon]:ml-auto",
+        sections:
+          "type-section-title w-fit flex-none items-center justify-start gap-2 rounded-b-none border border-transparent p-0 **:data-[slot=accordion-trigger-icon]:ml-0",
+        selector:
+          "type-label items-center justify-between border border-transparent px-4 py-2.5 **:data-[slot=accordion-trigger-icon]:ml-auto",
+      },
+    },
+  }
+);
+
+const accordionContentVariants = cva(
+  "pt-0 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
+  {
+    variants: {
+      variant: {
+        list: "pb-2.5",
+        sections: "pb-0",
+        selector: "w-full border-t p-0",
+      },
+    },
+  }
+);
+
+type AccordionVariant = NonNullable<
+  VariantProps<typeof accordionVariants>["variant"]
+>;
+
+const AccordionVariantContext = createContext<AccordionVariant>("list");
+
 function Accordion({
   className,
+  variant = "list",
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Root>) {
+}: AccordionPrimitive.Root.Props & VariantProps<typeof accordionVariants>) {
+  const resolvedVariant = variant ?? "list";
+
   return (
-    <AccordionPrimitive.Root
-      data-slot="accordion"
-      className={cn("flex flex-col", className)}
-      {...props}
-    />
+    <AccordionVariantContext.Provider value={resolvedVariant}>
+      <AccordionPrimitive.Root
+        data-slot="accordion"
+        data-variant={resolvedVariant}
+        className={cn(
+          accordionVariants({ variant: resolvedVariant }),
+          className
+        )}
+        {...props}
+      />
+    </AccordionVariantContext.Provider>
   );
 }
 
-function AccordionItem({
-  className,
-  ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Item>) {
+function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
+  const variant = useContext(AccordionVariantContext);
+
   return (
     <AccordionPrimitive.Item
       data-slot="accordion-item"
-      className={cn("border-b last:border-b-0", className)}
+      data-variant={variant}
+      className={cn(accordionItemVariants({ variant }), className)}
       {...props}
     />
   );
@@ -34,21 +102,26 @@ function AccordionItem({
 function AccordionTrigger({
   className,
   children,
+  hideChevron = false,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {
+}: AccordionPrimitive.Trigger.Props & { hideChevron?: boolean }) {
+  const variant = useContext(AccordionVariantContext);
+
   return (
     <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
-        className={cn(
-          "cursor-pointer",
-          !props.asChild &&
-            "focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180",
-          className
-        )}
+        data-variant={variant}
+        className={cn(accordionTriggerVariants({ variant }), className)}
         {...props}
       >
         {children}
+        {hideChevron ? null : (
+          <ChevronDownIcon
+            data-slot="accordion-trigger-icon"
+            className="pointer-events-none shrink-0 transition-transform duration-200 motion-reduce:duration-0"
+          />
+        )}
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   );
@@ -58,16 +131,21 @@ function AccordionContent({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Content>) {
+}: AccordionPrimitive.Panel.Props) {
+  const variant = useContext(AccordionVariantContext);
+
   return (
-    <AccordionPrimitive.Content
+    <AccordionPrimitive.Panel
       data-slot="accordion-content"
-      className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+      data-variant={variant}
+      className="type-supporting-body h-(--accordion-panel-height) overflow-hidden transition-[height] duration-150 ease-out data-ending-style:h-0 data-starting-style:h-0 motion-reduce:duration-0"
       {...props}
     >
-      <div className={cn("pt-0 pb-4", className)}>{children}</div>
-    </AccordionPrimitive.Content>
+      <div className={cn(accordionContentVariants({ variant }), className)}>
+        {children}
+      </div>
+    </AccordionPrimitive.Panel>
   );
 }
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };
+export { Accordion, AccordionContent, AccordionItem, AccordionTrigger };

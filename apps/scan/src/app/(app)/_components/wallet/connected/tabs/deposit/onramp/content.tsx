@@ -46,7 +46,7 @@ export const OnrampContent = () => {
         inputClassName="placeholder:text-muted-foreground/60"
       />
       <Button
-        variant="turbo"
+        variant="default"
         disabled={
           amount === 0 || isCreatingOnrampSession || isCreatedOnrampSession
         }
