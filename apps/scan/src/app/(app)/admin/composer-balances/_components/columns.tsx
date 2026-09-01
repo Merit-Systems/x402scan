@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CHAIN_LABELS } from "@/types/chain";
 import { formatCurrency } from "@/lib/utils";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 
 type BalanceRow =
@@ -17,7 +17,7 @@ type BalanceRow =
 const truncateAddress = (address: string) =>
   `${address.slice(0, 6)}…${address.slice(-4)}`;
 
-export const columns: ExtendedColumnDef<BalanceRow>[] = [
+export const columns: DataTableColumnDef<BalanceRow>[] = [
   {
     accessorKey: "usdc",
     header: () => (
@@ -32,7 +32,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
       </span>
     ),
     size: 110,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "chain",
@@ -43,7 +43,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
       </span>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "source",
@@ -65,7 +65,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
         </span>
       ),
     size: 120,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "email",
@@ -91,7 +91,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
       );
     },
     size: 240,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "loginAddresses",
@@ -122,7 +122,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
       );
     },
     size: 180,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "address",
@@ -142,7 +142,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
       </Copyable>
     ),
     size: 180,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "userId",
@@ -167,6 +167,6 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
       );
     },
     size: 180,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
 ];

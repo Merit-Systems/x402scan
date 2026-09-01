@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DataTable } from "@/components/ui/data-table";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 import { createWalletBreakdownColumns } from "./breakdown-columns";
 import { ToolCallsChart } from "./tool-calls-chart";
 import { api } from "@/trpc/client";
@@ -53,7 +53,7 @@ export const WalletBreakdownModal = ({
         <div className="mt-4 space-y-4">
           <ToolCallsChart resourceId={resourceId} resourceUrl={resourceUrl} />
 
-          <DataTable
+          <LoadableDataTable
             columns={columns}
             data={breakdown}
             pageSize={20}

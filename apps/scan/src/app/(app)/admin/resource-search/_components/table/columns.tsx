@@ -1,13 +1,13 @@
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/image-avatar";
 import { Globe, Filter } from "lucide-react";
 import type { FilteredSearchResult } from "@/services/resource-search/types";
 import { cleanExternalText } from "@/lib/utils";
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
-import { ResourceSearchSortingContext } from "@/app/(app)/_contexts/sorting/resource-search/context";
+import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
+import { ResourceSearchSortingContext } from "@/app/(app)/admin/_contexts/sorting/resource-search/context";
 
-export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
+export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
   {
     accessorKey: "filterMatches",
     header: () => (

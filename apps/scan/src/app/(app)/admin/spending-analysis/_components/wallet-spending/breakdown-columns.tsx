@@ -8,9 +8,9 @@ import { Copyable } from "@/components/ui/copyable";
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/client";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
+import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
 
 type WalletBreakdown =
   RouterOutputs["admin"]["spending"]["walletBreakdown"][number];
@@ -80,7 +80,7 @@ const WalletCell = ({
 
 export const createWalletBreakdownColumns = (
   freeTierWalletAddress?: string
-): ExtendedColumnDef<WalletBreakdown>[] => {
+): DataTableColumnDef<WalletBreakdown>[] => {
   return [
     {
       accessorKey: "walletName",
@@ -102,7 +102,7 @@ export const createWalletBreakdownColumns = (
         );
       },
       size: 200,
-      loading: () => <Skeleton className="h-4 w-full" />,
+      meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
     },
     {
       accessorKey: "toolCalls",
@@ -115,7 +115,7 @@ export const createWalletBreakdownColumns = (
         </div>
       ),
       size: 100,
-      loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
     },
     {
       accessorKey: "maxAmountPerCall",
@@ -132,7 +132,7 @@ export const createWalletBreakdownColumns = (
         </div>
       ),
       size: 150,
-      loading: () => <Skeleton className="mx-auto h-4 w-20" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-20" /> },
     },
     {
       accessorKey: "totalMaxAmount",
@@ -149,7 +149,7 @@ export const createWalletBreakdownColumns = (
         </div>
       ),
       size: 150,
-      loading: () => <Skeleton className="mx-auto h-4 w-20" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-20" /> },
     },
     {
       accessorKey: "lastUsedAt",
@@ -162,7 +162,7 @@ export const createWalletBreakdownColumns = (
         </div>
       ),
       size: 150,
-      loading: () => <Skeleton className="mx-auto h-4 w-24" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-24" /> },
     },
   ];
 };

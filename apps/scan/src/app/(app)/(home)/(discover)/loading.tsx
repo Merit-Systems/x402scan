@@ -1,6 +1,7 @@
 import { DiscoverHeading } from "./_components/heading";
 import { LoadingOverallStats } from "../(overview)/_components/stats";
 import { LoadingDiscoverSellersTable } from "./_components/discover-origins";
+import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
 
 export default function LoadingDiscover() {
   return (
@@ -14,7 +15,7 @@ export default function LoadingDiscover() {
             Curated APIs with recent x402 activity.
           </p>
         </div>
-        <LoadingDiscoverSellersTable />
+        <LoadingDiscoverSellersTable sorting={DEFAULT_SELLERS_SORTING} />
       </section>
     </main>
   );

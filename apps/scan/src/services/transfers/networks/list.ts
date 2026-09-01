@@ -7,26 +7,17 @@ import { Prisma } from "@x402scan/transfers-db";
 import type { Chain } from "@/types/chain";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { CHAIN_LABELS, CHAIN_ICONS } from "@/types/chain";
-
-const listTopNetworksSortIds = [
-  "tx_count",
-  "total_amount",
-  "latest_block_timestamp",
-  "unique_buyers",
-  "unique_sellers",
-  "unique_facilitators",
-] as const;
-
-export type NetworksSortId = (typeof listTopNetworksSortIds)[number];
+import {
+  DEFAULT_NETWORKS_SORTING,
+  NETWORKS_SORT_IDS,
+} from "@/lib/table-sort-options";
+import type { NetworksSortId } from "@/lib/table-sort-options";
 
 export const listTopNetworksInputSchema = baseQuerySchema.extend({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   limit: z.number().default(100),
-  sorting: sortingSchema(listTopNetworksSortIds).default({
-    id: "tx_count",
-    desc: true,
-  }),
+  sorting: sortingSchema(NETWORKS_SORT_IDS).default(DEFAULT_NETWORKS_SORTING),
 });
 
 interface NetworkItem {
