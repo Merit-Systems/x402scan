@@ -33,8 +33,8 @@ export const DeleteAgentButton: React.FC<Props> = ({ agentId }) => {
     });
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="destructiveOutline">Delete Agent</Button>
+      <DialogTrigger render={<Button variant="destructive" />}>
+        Delete Agent
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

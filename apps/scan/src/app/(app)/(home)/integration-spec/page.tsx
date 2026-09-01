@@ -116,8 +116,8 @@ export default function DiscoverySpecPage() {
         actions={
           <div className="flex items-center gap-2">
             <CopyPageButton />
-            <Button asChild size="sm">
-              <Link href="/resources/register">+ Add your API</Link>
+            <Button size="sm" render={<Link href="/resources/register" />}>
+              + Add your API
             </Button>
           </div>
         }
@@ -591,11 +591,15 @@ export default function DiscoverySpecPage() {
         </section>
 
         <section className="flex items-center gap-2">
-          <Button asChild size="sm">
-            <Link href="/resources/register">+ Add your API</Link>
+          <Button size="sm" render={<Link href="/resources/register" />}>
+            + Add your API
           </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/discovery/architecture">Suggested architecture →</Link>
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href="/discovery/architecture" />}
+          >
+            Suggested architecture →
           </Button>
         </section>
 

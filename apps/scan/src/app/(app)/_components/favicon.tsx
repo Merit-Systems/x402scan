@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 import type { LucideIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/image-avatar";
 
 interface Props {
   url: string | null;

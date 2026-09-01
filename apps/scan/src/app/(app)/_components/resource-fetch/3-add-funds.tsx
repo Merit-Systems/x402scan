@@ -20,7 +20,7 @@ export const AddFundsState: React.FC<Props> = ({
 }) => {
   return (
     <WalletDialog initialChain={chain} isFixed initialTab="deposit">
-      <Button variant="primaryOutline" size="lg" className="w-full">
+      <Button variant="outline" size="lg" className="w-full">
         <Chain chain={chain} />
         Add Funds
         <span>{formatTokenAmount(maxAmountRequired)}</span>

@@ -25,7 +25,7 @@ import { WalletChain } from "@/app/(app)/_contexts/wallet-chain/component";
 import type { SupportedChain } from "@/types/chain";
 
 interface Props {
-  children: React.ReactNode;
+  children: React.ReactElement;
   chainsWithBalance: [SupportedChain, ...SupportedChain[]];
 }
 
@@ -43,7 +43,7 @@ export const WalletDialog: React.FC<Props> = ({
     >
       <OnrampSessionDialog />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogTrigger render={children} />
         <DialogContent
           className="overflow-hidden p-0 sm:max-w-md"
           showCloseButton={false}
@@ -72,14 +72,14 @@ export const WalletDialog: React.FC<Props> = ({
                 <div className="h-[34px] w-4 border-b" />
                 <TabsTrigger
                   value="send"
-                  variant="github"
+                  appearance="default"
                   className="data-[state=active]:bg-background"
                 >
                   <ArrowUp className="size-4" /> Withdraw
                 </TabsTrigger>
                 <TabsTrigger
                   value="export"
-                  variant="github"
+                  appearance="default"
                   className="data-[state=active]:bg-background"
                 >
                   <Key className="size-4" /> Export

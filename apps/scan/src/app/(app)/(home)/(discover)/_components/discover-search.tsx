@@ -166,11 +166,13 @@ export const DiscoverSearchResults = () => {
         <p className="text-sm text-muted-foreground">
           No x402 results found. Try a different description.
         </p>
-        <Button variant="outline" size="lg" asChild>
-          <Link href="/resources/register">
-            <Plus className="size-4" />
-            Add your API
-          </Link>
+        <Button
+          variant="outline"
+          size="lg"
+          render={<Link href="/resources/register" />}
+        >
+          <Plus className="size-4" />
+          Add your API
         </Button>
       </div>
     );

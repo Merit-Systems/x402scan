@@ -42,7 +42,7 @@ export const WalletButton = () => {
           chainsWithBalances as [SupportedChain, ...SupportedChain[]]
         }
       >
-        <PromptInputButton variant="primaryOutline" size="sm">
+        <PromptInputButton variant="outline" size="sm">
           <Bot className="size-4" />
           <span className="text-xs">Withdraw Funds</span>
         </PromptInputButton>

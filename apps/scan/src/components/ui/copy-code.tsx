@@ -39,9 +39,9 @@ export const CopyCode: React.FC<Props> = ({
       )}
 
       <CopyButton
-        text={props.isLoading ? "" : props.code}
-        toastMessage={props.isLoading ? "" : props.toastMessage}
-        isLoading={props.isLoading}
+        value={props.isLoading ? "" : props.code}
+        label={props.toastMessage}
+        loading={props.isLoading}
         className={copyButtonClassName}
       />
     </div>

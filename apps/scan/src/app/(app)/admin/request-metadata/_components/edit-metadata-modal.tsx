@@ -166,22 +166,26 @@ export const EditMetadataModal = ({
 
         <Tabs defaultValue="headers">
           <TabsList className="flex w-full">
-            <TabsTrigger value="headers" variant="github" className="flex-1">
+            <TabsTrigger
+              value="headers"
+              appearance="default"
+              className="flex-1"
+            >
               Headers
             </TabsTrigger>
-            <TabsTrigger value="body" variant="github" className="flex-1">
+            <TabsTrigger value="body" appearance="default" className="flex-1">
               Body
             </TabsTrigger>
             <TabsTrigger
               value="queryParams"
-              variant="github"
+              appearance="default"
               className="flex-1"
             >
               Query Params
             </TabsTrigger>
             <TabsTrigger
               value="inputSchema"
-              variant="github"
+              appearance="default"
               className="flex-1"
             >
               Input Schema

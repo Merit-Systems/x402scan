@@ -1,56 +1,75 @@
 "use client";
 
-import { Check, Copy, Loader2 } from "lucide-react";
+import { Check, Copy, LoaderCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-import { toast } from "sonner";
+import { Button, type ButtonProps } from "@/components/ui/button";
 
-import { Button } from "./button";
-
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-
-import { cn } from "@/lib/utils";
-
-import type { ButtonProps } from "./button";
-
-type Props = {
-  text: string;
-  toastMessage?: string;
+type CopyButtonProps = Omit<
+  ButtonProps,
+  "aria-label" | "children" | "onClick" | "type" | "value"
+> & {
+  value: string;
+  loading?: boolean;
+  label?: string;
   onCopy?: () => void;
-  className?: string;
-  isLoading?: boolean;
-} & ButtonProps;
+  onCopyError?: () => void;
+};
 
-export const CopyButton: React.FC<Props> = ({
-  text,
-  toastMessage,
+function CopyButton({
+  value,
+  loading = false,
+  label = "Copy to clipboard",
   onCopy,
-  className,
-  isLoading,
+  onCopyError,
+  disabled,
+  size = "icon-sm",
+  variant = "ghost",
   ...props
-}) => {
-  const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
-    if (toastMessage) {
-      toast.success(toastMessage);
+}: CopyButtonProps) {
+  const [copied, setCopied] = useState(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(
+    () => () => {
+      clearTimeout(resetTimer.current);
+    },
+    []
+  );
+
+  async function copyValue() {
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      onCopyError?.();
+      return;
     }
+
+    setCopied(true);
+    clearTimeout(resetTimer.current);
+    resetTimer.current = setTimeout(() => {
+      setCopied(false);
+    }, 2_000);
     onCopy?.();
-  });
+  }
+
+  const Icon = loading ? LoaderCircle : copied ? Check : Copy;
 
   return (
     <Button
-      onClick={() => void copyToClipboard(text)}
-      variant="outline"
-      className={cn("shrink-0 size-fit md:size-fit p-2", className)}
-      size="icon"
-      disabled={isLoading}
       {...props}
+      aria-busy={loading || undefined}
+      aria-label={loading ? "Copying" : copied ? "Copied" : label}
+      disabled={loading ? true : disabled}
+      onClick={() => void copyValue()}
+      size={size}
+      type="button"
+      variant={variant}
     >
-      {isLoading ? (
-        <Loader2 className="size-3 animate-spin" />
-      ) : isCopied ? (
-        <Check className="size-3" />
-      ) : (
-        <Copy className="size-3" />
-      )}
+      <Icon className={loading ? "animate-spin" : undefined} />
     </Button>
   );
-};
+}
+
+export { CopyButton };
+export type { CopyButtonProps };

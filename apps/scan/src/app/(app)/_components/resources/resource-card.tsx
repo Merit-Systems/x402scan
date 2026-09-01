@@ -135,9 +135,9 @@ export const ResourceCard: React.FC<Props> = ({
             )}
             {ownershipVerified && (
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <Shield className="size-4 text-green-600" />
-                </TooltipTrigger>
+                <TooltipTrigger
+                  render={<Shield className="size-4 text-green-600" />}
+                ></TooltipTrigger>
                 <TooltipContent side="left">
                   <div className="text-xs">Ownership verified</div>
                 </TooltipContent>
@@ -145,9 +145,9 @@ export const ResourceCard: React.FC<Props> = ({
             )}
             {warnings.length > 0 && (
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <AlertTriangle className="size-4 text-yellow-500" />
-                </TooltipTrigger>
+                <TooltipTrigger
+                  render={<AlertTriangle className="size-4 text-yellow-500" />}
+                ></TooltipTrigger>
                 <TooltipContent side="left" className="max-w-md">
                   <div className="space-y-1 text-xs">
                     {warnings.map((warning, i) => (
@@ -160,19 +160,21 @@ export const ResourceCard: React.FC<Props> = ({
               </Tooltip>
             )}
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="size-fit shrink-0 p-2 md:size-fit"
-                  onClick={() => void copyToClipboard(prompt)}
-                >
-                  {isCopied ? (
-                    <Check className="size-3" />
-                  ) : (
-                    <Copy className="size-3" />
-                  )}
-                </Button>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="size-fit shrink-0 p-2 md:size-fit"
+                    onClick={() => void copyToClipboard(prompt)}
+                  />
+                }
+              >
+                {isCopied ? (
+                  <Check className="size-3" />
+                ) : (
+                  <Copy className="size-3" />
+                )}
               </TooltipTrigger>
               <TooltipContent side="left">
                 <div className="text-xs">Copy prompt</div>

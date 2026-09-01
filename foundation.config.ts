@@ -80,198 +80,37 @@ export default defineConfig({
     sourceIntegrity: {
       deviations: [
         {
-          item: "accordion",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "alert-dialog",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "avatar",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "badge",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "button",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "card",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "collapsible",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "command",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
           item: "conversation",
           reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "copy-button",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "dialog",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "dropdown-menu",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "field",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "input",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "label",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
+            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
           owner: "x402scan maintainers",
           expires: "2027-03-01",
         },
         {
           item: "message",
           reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
+            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
           owner: "x402scan maintainers",
           expires: "2027-03-01",
         },
         {
           item: "prompt-input",
           reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
+            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
           owner: "x402scan maintainers",
           expires: "2027-03-01",
         },
         {
           item: "reasoning",
           reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "select",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "separator",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "sheet",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "skeleton",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "sonner",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "table",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "tabs",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "textarea",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
+            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
           owner: "x402scan maintainers",
           expires: "2027-03-01",
         },
         {
           item: "tool",
           reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "tooltip",
-          reason:
-            "Existing x402scan source must migrate independently with its callsites and behavior verified.",
+            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
           owner: "x402scan maintainers",
           expires: "2027-03-01",
         },

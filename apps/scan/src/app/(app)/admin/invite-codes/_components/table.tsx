@@ -113,7 +113,10 @@ export const InviteCodesTable = () => {
             className="pl-9"
           />
         </div>
-        <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
+        <Select
+          value={statusFilter}
+          onValueChange={(value) => value && handleStatusFilterChange(value)}
+        >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Filter status" />
           </SelectTrigger>
@@ -125,7 +128,10 @@ export const InviteCodesTable = () => {
             <SelectItem value="DISABLED">Disabled</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={orderBy} onValueChange={handleOrderByChange}>
+        <Select
+          value={orderBy}
+          onValueChange={(value) => value && handleOrderByChange(value)}
+        >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Order by" />
           </SelectTrigger>
