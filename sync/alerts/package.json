@@ -9,6 +9,7 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
+    "deploy": "trigger deploy",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
@@ -16,7 +17,7 @@
     "viem": "catalog:"
   },
   "devDependencies": {
-    "@x402scan/typescript-config": "workspace:*",
+    "@merit-systems/typescript-config": "catalog:foundation",
     "@trigger.dev/build": "catalog:trigger",
     "@types/node": "catalog:",
     "trigger.dev": "catalog:trigger",

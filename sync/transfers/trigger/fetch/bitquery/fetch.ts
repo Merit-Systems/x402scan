@@ -95,7 +95,7 @@ async function executeBitqueryRequest(
     throw new Error(`Bitquery API returned ${response.status}: ${errorText}`);
   }
 
-  const result: BitqueryGraphqlResponse = await response.json();
+  const result = (await response.json()) as BitqueryGraphqlResponse;
 
   if (result.errors) {
     logger.error(`[${config.chain}] Bitquery GraphQL errors:`, {

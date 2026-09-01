@@ -2,14 +2,14 @@
   "name": "facilitators",
   "version": "0.0.10",
   "description": "x402 facilitator configuration and validation utilities",
+  "type": "module",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js"
     }
   },
   "files": [
@@ -18,8 +18,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
-    "prepublishOnly": "pnpm run build",
+    "build": "tsdown",
+    "prepack": "pnpm build",
     "types:check": "tsc --noEmit"
   },
   "keywords": [
@@ -38,13 +38,17 @@
     "directory": "facilitators"
   },
   "devDependencies": {
-    "@x402scan/typescript-config": "workspace:*",
+    "@merit-systems/typescript-config": "catalog:foundation",
+    "@merit-systems/tsdown-config": "catalog:foundation",
     "@types/node": "catalog:",
-    "tsup": "catalog:",
+    "tsdown": "catalog:bundling",
     "typescript": "catalog:"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "^24.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@coinbase/x402": "^2.1.0",

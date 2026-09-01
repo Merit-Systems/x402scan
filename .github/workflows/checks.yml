@@ -4,28 +4,15 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
-  checks:
-    name: Run Checks
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup pnpm and Node.js
-        uses: pnpm/setup@v2
-        with:
-          runtime: node@24
-          cache: true
-          install: false
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run all checks (format, types, knip, lint, tests)
-        run: pnpm check
+  foundation:
+    name: Foundation
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    uses: Merit-Systems/foundation/.github/workflows/checks.yml@v1
+    secrets: inherit

@@ -7,11 +7,12 @@ packages:
 catalog:
   "@types/node": ^20.19.27
   date-fns: 4.1.0
-  lucide-react: ^0.556.0
-  motion: ^12.24.10
+  bs58: ^6.0.0
+  lucide-react: ^1.34.0
+  motion: ^13.1.1
   server-only: ^0.0.1
   superjson: ^2.2.6
-  typescript: ^5.9.3
+  typescript: ^6.0.3
   zod: ^4.4.3
   tsx: ^4.21.0
   tsup: ^8.5.1
@@ -20,10 +21,20 @@ catalog:
   vitest: ^4.0.16
   rimraf: ^5.0.5
   oxfmt: ^0.64.0
+  oxlint: 1.78.0
+  oxlint-tsgolint: 7.0.2001
+  portless: 0.15.6
 
 catalogs:
   foundation:
+    "@merit-systems/foundation": 0.20.1
     "@merit-systems/oxfmt-config": 0.20.1
+    "@merit-systems/oxlint-config": 0.20.1
+    "@merit-systems/taze-config": 0.20.1
+    "@merit-systems/tsdown-config": 0.20.1
+    "@merit-systems/typescript-config": 0.20.1
+  bundling:
+    tsdown: 0.22.14
   env:
     "@t3-oss/env-nextjs": ^0.13.10
     dotenv: ^17.2.3
@@ -66,6 +77,9 @@ catalogs:
   tailwind:
     "@tailwindcss/postcss": &TAILWIND_VERSION ^4
     tailwindcss: ^4
+  hono:
+    "@hono/node-server": ^1.19.9
+    hono: ^4.12.28
   clickhouse:
     "@clickhouse/client": ^1.12.1
   react-query:
