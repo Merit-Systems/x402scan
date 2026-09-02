@@ -2,12 +2,10 @@ import { createTRPCRouter } from "@/trpc/trpc";
 
 import { publicAgentConfigurationsRouter } from "./agent-configurations";
 import { publicChatsRouter } from "./chats";
-import { discoverRouter } from "./discover";
 import { originsRouter } from "./origins";
 import { publicToolsRouter } from "./tools";
 import { facilitatorsRouter } from "./facilitators";
 import { transfersRouter } from "./transfers";
-import { buyersRouter } from "./buyers";
 import { sellersRouter } from "./sellers";
 import { statsRouter } from "./stats";
 import { resourcesRouter } from "./resources";
@@ -16,12 +14,10 @@ import { solanaRouter } from "./solana";
 export const publicRouter = createTRPCRouter({
   agents: publicAgentConfigurationsRouter,
   chats: publicChatsRouter,
-  discover: discoverRouter,
   origins: originsRouter,
   tools: publicToolsRouter,
   facilitators: facilitatorsRouter,
   transfers: transfersRouter,
-  buyers: buyersRouter,
   sellers: sellersRouter,
   stats: statsRouter,
   resources: resourcesRouter,

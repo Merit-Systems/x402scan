@@ -40,10 +40,6 @@ export const env = createEnv({
     X402_PAYEE_ADDRESS: z.string().optional(),
     AGENTCASH_URL: z.string().optional(),
     AGENTCASH_INTERNAL_API_KEY: z.string().optional(),
-    // Bearer token for AgentCash's external search API
-    // (/api/external/search/*). Format: "<client_id>.<secret>" — paired
-    // server-side with SEARCH_EXTERNAL_API_KEYS=<client_id>:<sha256(secret)>.
-    AGENTCASH_SEARCH_API_KEY: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z

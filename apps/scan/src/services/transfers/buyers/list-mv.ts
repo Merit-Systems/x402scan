@@ -22,7 +22,7 @@ const BUYERS_SORT_IDS = [
   "unique_sellers",
 ] as const;
 
-export const listTopBuyersMVInputSchema = baseListQuerySchema({
+const listTopBuyersMVInputSchema = baseListQuerySchema({
   sortIds: BUYERS_SORT_IDS,
   defaultSortId: "tx_count",
 });
