@@ -1,6 +1,5 @@
-import { Card } from "@/components/ui/card";
 import { PageHeading } from "@/components/page-heading";
-import { UsageSection } from "@/components/usage-section";
+import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingNetworksChart } from "./_components/chart";
 import { LoadingNetworksTable } from "./_components/networks";
 
@@ -10,13 +9,12 @@ export default function LoadingNetworksPage() {
       <PageHeading
         title="Networks"
         description="Top networks processing x402 transactions"
+        actions={<Skeleton className="h-8 w-20 sm:w-64" />}
       />
-      <UsageSection aria-busy="true">
-        <Card className="overflow-hidden">
-          <LoadingNetworksChart />
-        </Card>
+      <section aria-busy="true" className="space-y-4">
+        <LoadingNetworksChart />
         <LoadingNetworksTable />
-      </UsageSection>
+      </section>
     </main>
   );
 }

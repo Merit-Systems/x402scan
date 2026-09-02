@@ -1,17 +1,18 @@
 "use client";
 
-import type { ChartData } from "@/components/ui/charts/chart/types";
-import { LoadingMultiCharts, MultiCharts } from "@/components/ui/charts/multi";
+import {
+  createUsageBarChartModel,
+  LoadingUsageBarChart,
+  UsageBarChart,
+} from "@/components/usage-bar-chart";
+import type { UsageChartValues } from "@/components/usage-bar-chart";
+import type { ChartData } from "@/components/ui/chart";
 import { facilitators } from "@/lib/facilitators";
 
-import { formatTokenAmount } from "@/lib/token";
-import { createTab } from "@/lib/charts";
 import { api } from "@/trpc/client";
 
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
-
-type FacilitatorKey = `${string}-${"transactions" | "amount"}`;
 
 export const FacilitatorsChart = ({
   chain,
@@ -26,109 +27,42 @@ export const FacilitatorsChart = ({
       timeframe,
       chain,
     });
-  const [overallData] = api.public.stats.overall.useSuspenseQuery({
-    timeframe,
-    chain,
-  });
-
-  const chartData: ChartData<Record<FacilitatorKey, number>>[] =
-    bucketedFacilitatorData.map((item) => ({
+  const chartData: ChartData<UsageChartValues>[] = bucketedFacilitatorData.map(
+    (item) => ({
       timestamp: item.bucket_start.toISOString(),
       ...Object.fromEntries(
-        Object.entries(item.facilitators).flatMap<[string, number]>(
-          ([facilitator_name, facilitator]) => [
-            [
-              `${facilitator_name}-transactions`,
-              facilitator.total_transactions,
-            ],
-            [`${facilitator_name}-amount`, facilitator.total_amount],
+        Object.entries(item.facilitators).map<[string, number]>(
+          ([facilitatorName, facilitator]) => [
+            `${facilitatorName}-transactions`,
+            facilitator.total_transactions,
           ]
         )
       ),
-    }));
-
-  const getValueHandler = (
-    data: number,
-    id: string,
-    allData: Record<FacilitatorKey, number>
-  ) => {
-    const total = facilitators.reduce(
-      (sum, facilitator) =>
-        sum + (allData[`${facilitator.id}-${id}` as FacilitatorKey] ?? 0),
-      0
-    );
-    const percentage = total > 0 ? (data / total) * 100 : 0;
-    return `${percentage.toFixed(1)}%`;
-  };
+    })
+  );
 
   const totals = bucketedFacilitatorData[0]?.totals;
 
   const facilitatorTotals = facilitators.map((facilitator) => ({
     facilitator,
     totalTransactions: totals?.[facilitator.id]?.totalTransactions ?? 0,
-    totalAmount: totals?.[facilitator.id]?.totalAmount ?? 0,
   }));
 
   const facilitatorsByTransactions = [...facilitatorTotals].sort(
     (a, b) => b.totalTransactions - a.totalTransactions
   );
 
-  const facilitatorsByAmount = [...facilitatorTotals].sort(
-    (a, b) => b.totalAmount - a.totalAmount
-  );
+  const chart = createUsageBarChartModel({
+    chartData,
+    items: facilitatorsByTransactions.map((item) => item.facilitator),
+    formatValue: (value, total) =>
+      `${(total > 0 ? (value / total) * 100 : 0).toFixed(1)}%`,
+    getKey: (facilitator) => `${facilitator.id}-transactions`,
+  });
 
-  return (
-    <div className="flex flex-col gap-4">
-      <MultiCharts
-        chartData={chartData}
-        tabs={[
-          createTab<
-            Record<FacilitatorKey, number>,
-            (typeof facilitators)[number]
-          >({
-            label: "Transactions",
-            amount: overallData.total_transactions.toLocaleString(),
-            items: facilitatorsByTransactions.map((f) => f.facilitator),
-            getValue: (
-              data: number,
-              dataType: string,
-              allData: Record<FacilitatorKey, number>
-            ) => getValueHandler(data, dataType, allData),
-            getKey: (f) => f.id,
-          }),
-          createTab<
-            Record<FacilitatorKey, number>,
-            (typeof facilitators)[number]
-          >({
-            label: "Amount",
-            amount: formatTokenAmount(BigInt(overallData.total_amount)),
-            items: facilitatorsByAmount.map((f) => f.facilitator),
-            getValue: (
-              data: number,
-              dataType: string,
-              allData: Record<FacilitatorKey, number>
-            ) => getValueHandler(data, dataType, allData),
-            getKey: (f) => f.id,
-          }),
-        ]}
-      />
-    </div>
-  );
+  return <UsageBarChart {...chart} />;
 };
 
 export const LoadingFacilitatorsChart = () => {
-  return (
-    <LoadingMultiCharts
-      tabs={[
-        {
-          type: "bar",
-          label: "Transactions",
-        },
-        {
-          type: "bar",
-          label: "Amount",
-        },
-      ]}
-    />
-  );
+  return <LoadingUsageBarChart />;
 };
