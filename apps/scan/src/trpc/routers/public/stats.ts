@@ -1,10 +1,5 @@
 import z from "zod";
 
-import {
-  getFirstTransferTimestampInputSchema,
-  getFirstTransferTimestamp,
-} from "@/services/transfers/stats/first-transfer";
-
 import { createTRPCRouter, publicProcedure } from "../../trpc";
 import {
   getOverallStatisticsMV,
@@ -57,10 +52,5 @@ export const statsRouter = createTRPCRouter({
         { ...rest, recipients: { include: addresses } },
         ctx
       );
-    }),
-  firstTransferTimestamp: publicProcedure
-    .input(getFirstTransferTimestampInputSchema)
-    .query(async ({ input }) => {
-      return await getFirstTransferTimestamp(input);
     }),
 });
