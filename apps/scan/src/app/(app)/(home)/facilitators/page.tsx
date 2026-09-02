@@ -1,9 +1,7 @@
 import { Suspense } from "react";
 
-import { Card } from "@/components/ui/card";
 import { PageHeading } from "@/components/page-heading";
 import { TimeframeSelect } from "@/components/timeframe-select";
-import { UsageSection } from "@/components/usage-section";
 
 import {
   FacilitatorsChart,
@@ -51,10 +49,6 @@ export default async function FacilitatorsPage({
     timeframe,
     chain,
   });
-  void api.public.stats.overall.prefetch({
-    timeframe,
-    chain,
-  });
   void api.public.facilitators.list.prefetch({
     pagination: {
       page_size: PAGE_SIZE,
@@ -70,17 +64,16 @@ export default async function FacilitatorsPage({
         <PageHeading
           title="Facilitators"
           description="Top facilitators processing x402 transactions"
+          actions={<TimeframeSelect timeframe={timeframe} />}
         />
-        <UsageSection controls={<TimeframeSelect timeframe={timeframe} />}>
+        <section className="space-y-4">
           {/* <FacilitatorPackageBanner /> */}
-          <Card className="overflow-hidden">
-            <Suspense
-              key={`chart:${chain ?? "all"}:${timeframe}`}
-              fallback={<LoadingFacilitatorsChart />}
-            >
-              <FacilitatorsChart chain={chain} timeframe={timeframe} />
-            </Suspense>
-          </Card>
+          <Suspense
+            key={`chart:${chain ?? "all"}:${timeframe}`}
+            fallback={<LoadingFacilitatorsChart />}
+          >
+            <FacilitatorsChart chain={chain} timeframe={timeframe} />
+          </Suspense>
           <Suspense
             key={`table:${chain ?? "all"}:${timeframe}:${sorting.id}:${sorting.desc}`}
             fallback={
@@ -97,7 +90,7 @@ export default async function FacilitatorsPage({
               timeframe={timeframe}
             />
           </Suspense>
-        </UsageSection>
+        </section>
       </main>
     </HydrateClient>
   );
