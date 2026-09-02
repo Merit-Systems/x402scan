@@ -2,15 +2,13 @@
 
 import { api } from "@/trpc/client";
 
-import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
-import { useChartMode } from "@/app/(app)/_contexts/chart-mode/hook";
-
 import { LoadingOverallStatsCard, OverallStatsCard } from "./card";
 
 import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 
 import type { ChartData, ChartItems } from "@/components/ui/charts/chart/types";
-import { useChain } from "@/app/(app)/_contexts/chain/hook";
+import type { Chain } from "@/types/chain";
+import type { ActivityTimeframe } from "@/types/timeframes";
 
 type StatRow = {
   transactions: number;
@@ -19,11 +17,13 @@ type StatRow = {
   sellers: number;
 };
 
-export const OverallCharts = () => {
-  const { timeframe } = useTimeRangeContext();
-  const { chain } = useChain();
-  const { chartMode } = useChartMode();
-
+export const OverallCharts = ({
+  chain,
+  timeframe,
+}: {
+  chain?: Chain;
+  timeframe: ActivityTimeframe;
+}) => {
   const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
     timeframe,
@@ -35,13 +35,6 @@ export const OverallCharts = () => {
     chain,
   });
 
-  // Cumulative running totals across the time window. Note: buyers/sellers
-  // are NOT true uniques in this mode — they sum per-bucket uniques, so a
-  // returning buyer is double-counted. Acceptable for visual exploration.
-  let txSum = 0;
-  let amountSum = 0;
-  let buyersSum = 0;
-  let sellersSum = 0;
   const chartData: ChartData<StatRow>[] = bucketedStats.map((stat) => {
     const txValue = stat.total_transactions;
     const amountValue = parseFloat(
@@ -50,33 +43,19 @@ export const OverallCharts = () => {
     const buyersValue = stat.unique_buyers;
     const sellersValue = stat.unique_sellers;
 
-    txSum += txValue;
-    amountSum += amountValue;
-    buyersSum += buyersValue;
-    sellersSum += sellersValue;
-
     return {
-      transactions: chartMode === "cumulative" ? txSum : txValue,
-      totalAmount: chartMode === "cumulative" ? amountSum : amountValue,
-      buyers: chartMode === "cumulative" ? buyersSum : buyersValue,
-      sellers: chartMode === "cumulative" ? sellersSum : sellersValue,
+      transactions: txValue,
+      totalAmount: amountValue,
+      buyers: buyersValue,
+      sellers: sellersValue,
       timestamp: stat.bucket_start.toISOString(),
     };
   });
 
-  // Per-bucket uses bars; cumulative uses areas since the line is
-  // monotonically increasing.
-  const isCumulative = chartMode === "cumulative";
-  const buildItems = (dataKey: keyof StatRow): ChartItems<StatRow> =>
-    isCumulative
-      ? {
-          type: "area",
-          areas: [{ dataKey, color: "var(--color-primary)" }],
-        }
-      : {
-          type: "bar",
-          bars: [{ dataKey, color: "var(--color-primary)" }],
-        };
+  const buildItems = (dataKey: keyof StatRow): ChartItems<StatRow> => ({
+    type: "bar",
+    bars: [{ dataKey, color: "var(--color-primary)" }],
+  });
   const txItems = buildItems("transactions");
   const volumeItems = buildItems("totalAmount");
   const buyersItems = buildItems("buyers");

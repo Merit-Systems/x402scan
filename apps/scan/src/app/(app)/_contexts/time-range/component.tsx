@@ -18,7 +18,7 @@ export const RangeSelector = () => {
   const timeframeValues = [
     ActivityTimeframe.OneDay,
     ActivityTimeframe.SevenDays,
-    ActivityTimeframe.FifteenDays,
+    ActivityTimeframe.FourteenDays,
     ActivityTimeframe.ThirtyDays,
     ActivityTimeframe.AllTime,
   ];
@@ -27,7 +27,7 @@ export const RangeSelector = () => {
     [ActivityTimeframe.AllTime]: "All Time",
     [ActivityTimeframe.OneDay]: "Past 24 Hours",
     [ActivityTimeframe.SevenDays]: "Past 7 Days",
-    [ActivityTimeframe.FifteenDays]: "Past 15 Days",
+    [ActivityTimeframe.FourteenDays]: "Past 14 Days",
     [ActivityTimeframe.ThirtyDays]: "Past 30 Days",
   };
 
