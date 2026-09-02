@@ -15,7 +15,7 @@ interface Props {
   showLink?: boolean;
 }
 
-export const Address: React.FC<Props> = ({
+const Address: React.FC<Props> = ({
   address,
   className,
   hideTooltip,
