@@ -4,43 +4,38 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import { OverallCharts, LoadingOverallCharts } from "./charts";
 
-import { api, HydrateClient } from "@/trpc/server";
+import { api } from "@/trpc/server";
 
-import { ActivityTimeframe } from "@/types/timeframes";
+import type { ActivityTimeframe } from "@/types/timeframes";
 
 import type { Chain } from "@/types/chain";
 
 interface Props {
   chain?: Chain;
-  initialTimeframe?: ActivityTimeframe;
+  timeframe: ActivityTimeframe;
 }
 
-export const OverallStatsContent: React.FC<Props> = ({
-  chain,
-  initialTimeframe = ActivityTimeframe.OneDay,
-}) => {
+export const OverallStatsContent: React.FC<Props> = ({ chain, timeframe }) => {
   void api.public.stats.overall.prefetch({
-    timeframe: initialTimeframe,
+    timeframe,
     chain,
   });
   void api.public.stats.bucketed.prefetch({
-    timeframe: initialTimeframe,
+    timeframe,
     numBuckets: 48,
     chain,
   });
 
   return (
-    <HydrateClient>
-      <ErrorBoundary
-        fallback={<p>There was an error loading the activity data</p>}
-      >
-        <Suspense fallback={<LoadingOverallStatsContent />}>
-          <StatsGrid>
-            <OverallCharts />
-          </StatsGrid>
-        </Suspense>
-      </ErrorBoundary>
-    </HydrateClient>
+    <ErrorBoundary
+      fallback={<p>There was an error loading the activity data</p>}
+    >
+      <Suspense fallback={<LoadingOverallStatsContent />}>
+        <StatsGrid>
+          <OverallCharts chain={chain} timeframe={timeframe} />
+        </StatsGrid>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

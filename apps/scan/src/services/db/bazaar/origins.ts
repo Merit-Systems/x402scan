@@ -10,7 +10,8 @@ import {
 } from "@/lib/pagination";
 import type { MixedAddress } from "@/types/address";
 import type { Chain } from "@/types/chain";
-import { listBazaarOriginsInputSchema } from "./schema";
+import type { listBazaarOriginsInputSchema } from "./schema";
+import { getOriginTransactionSparklines } from "@/services/transfers/origins/stats/sparklines";
 
 const listBazaarOriginsUncached = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>
@@ -80,7 +81,9 @@ const listBazaarOriginsUncached = async (
     if (!origins || origins.length === 0) continue;
 
     // Use the first origin's ID as the grouping key
-    const originId = origins[0]!.id;
+    const [origin] = origins;
+    if (!origin) continue;
+    const originId = origin.id;
 
     const existing = originMap.get(originId);
     if (existing) {
@@ -196,15 +199,29 @@ export const listBazaarOrigins = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
-  // paginatedProcedure merges pagination into the runtime tRPC input. Parse
-  // again at the service boundary so the complete grouped result has one
-  // cache entry shared by every requested page.
-  const queryInput = listBazaarOriginsInputSchema.parse(input);
-  const groupedItems = await listAllBazaarOrigins(queryInput);
+  const groupedItems = await listAllBazaarOrigins(input);
   const pageStart = pagination.page * pagination.page_size;
+  const pageItems = groupedItems.slice(
+    pageStart,
+    pageStart + pagination.page_size
+  );
+  const groups = pageItems.flatMap((item) =>
+    item.origins[0]
+      ? [{ originId: item.origins[0].id, recipients: item.recipients }]
+      : []
+  );
+  const transactionSparklines = await getOriginTransactionSparklines({
+    chain: input.chain,
+    groups,
+    timeframe: input.timeframe,
+  });
 
   return toPaginatedResponse({
-    items: groupedItems.slice(pageStart),
+    items: pageItems.map((item) => ({
+      ...item,
+      transactionSparkline:
+        transactionSparklines[item.origins[0]?.id ?? ""] ?? [],
+    })),
     total_count: groupedItems.length,
     ...pagination,
   });

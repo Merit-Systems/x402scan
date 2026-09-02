@@ -15,7 +15,7 @@ describe("parseDiscoverTimeframe", () => {
     ["0", ActivityTimeframe.AllTime],
     ["1", ActivityTimeframe.OneDay],
     ["7", ActivityTimeframe.SevenDays],
-    ["14", ActivityTimeframe.FifteenDays],
+    ["14", ActivityTimeframe.FourteenDays],
     ["30", ActivityTimeframe.ThirtyDays],
   ])("parses %s", (raw, expected) => {
     expect(parseDiscoverTimeframe(raw)).toBe(expected);

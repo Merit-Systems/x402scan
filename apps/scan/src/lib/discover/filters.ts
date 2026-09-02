@@ -8,7 +8,7 @@ const timeframeSchema = z.union([
   z.literal(ActivityTimeframe.AllTime),
   z.literal(ActivityTimeframe.OneDay),
   z.literal(ActivityTimeframe.SevenDays),
-  z.literal(ActivityTimeframe.FifteenDays),
+  z.literal(ActivityTimeframe.FourteenDays),
   z.literal(ActivityTimeframe.ThirtyDays),
 ]);
 const timeframeParamSchema = z
@@ -30,7 +30,7 @@ export const SERVICES_PAGE_SIZE = 15;
 export const DISCOVER_TIMEFRAME_OPTIONS = [
   { label: "24h", value: ActivityTimeframe.OneDay },
   { label: "7d", value: ActivityTimeframe.SevenDays },
-  { label: "15d", value: ActivityTimeframe.FifteenDays },
+  { label: "14d", value: ActivityTimeframe.FourteenDays },
   { label: "30d", value: ActivityTimeframe.ThirtyDays },
   { label: "All", value: ActivityTimeframe.AllTime },
 ] as const;

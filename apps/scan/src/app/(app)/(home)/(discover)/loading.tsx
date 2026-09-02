@@ -1,6 +1,6 @@
 import { DiscoverHeading } from "./_components/heading";
-import { LoadingOverallStatsContent } from "../(overview)/_components/stats";
-import { LoadingDiscoverSellersTable } from "./_components/discover-origins";
+import { LoadingOverallStatsContent } from "./_components/stats";
+import { LoadingDiscoverServices } from "./_components/discover-origins";
 import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
 import { UsageSection } from "@/components/usage-section";
 
@@ -10,7 +10,7 @@ export default function LoadingDiscover() {
       <DiscoverHeading />
       <UsageSection aria-busy="true">
         <LoadingOverallStatsContent />
-        <LoadingDiscoverSellersTable sorting={DEFAULT_SELLERS_SORTING} />
+        <LoadingDiscoverServices sorting={DEFAULT_SELLERS_SORTING} />
       </UsageSection>
     </main>
   );
