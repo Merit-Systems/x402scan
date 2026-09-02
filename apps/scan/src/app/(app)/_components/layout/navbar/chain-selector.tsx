@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useChain } from "../../../_contexts/chain/hook";
 import { SUPPORTED_CHAINS } from "@/types/chain";
 import { CHAIN_LABELS, CHAIN_ICONS } from "@/types/chain";
 
 import type { Chain } from "@/types/chain";
 import { Button } from "@/components/ui/button";
+import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
 import {
   Popover,
   PopoverContent,
@@ -17,10 +19,18 @@ import { useState } from "react";
 
 export const ChainSelector = () => {
   const { chain, setChain } = useChain();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const replaceSearchParams = useReplaceSearchParams();
 
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSelectChain = (chain: Chain | undefined) => {
+    if (pathname === "/" && searchParams.has("p")) {
+      replaceSearchParams((params) => {
+        params.delete("p");
+      });
+    }
     setChain(chain);
     setIsOpen(false);
   };
