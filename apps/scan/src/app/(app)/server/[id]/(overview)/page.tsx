@@ -1,27 +1,32 @@
 import { Suspense } from "react";
-import { HeaderCard, LoadingHeaderCard } from "./_components/header";
-import { api, HydrateClient } from "@/trpc/server";
-import { notFound } from "next/navigation";
-import { Body } from "@/app/_components/layout/page-utils";
+
+import { ServerOverview } from "./_components/overview";
 import {
   LoadingOriginResources,
   OriginResources,
 } from "./_components/resources";
-import { LoadingOriginActivity, OriginActivity } from "./_components/activity";
+import {
+  LoadingServerStatCards,
+  ServerStatCards,
+} from "./_components/stat-cards";
+import { UsageErrorBoundary } from "./_components/usage-error-boundary";
+
 import { ActivityTimeframe } from "@/types/timeframes";
+import { api, HydrateClient } from "@/trpc/server";
+
+import { notFound } from "next/navigation";
 
 export default async function OriginPage({
   params,
 }: PageProps<"/server/[id]">) {
   const { id } = await params;
   const origin = await api.public.origins.get(id);
+
   if (!origin) {
-    return notFound();
+    notFound();
   }
 
   await Promise.all([
-    api.public.origins.getMetadata.prefetch(id),
-    api.public.origins.list.withResources.prefetch({ originIds: [id] }),
     api.public.stats.overallByOrigin.prefetch({
       originId: id,
       timeframe: ActivityTimeframe.ThirtyDays,
@@ -35,17 +40,17 @@ export default async function OriginPage({
 
   return (
     <HydrateClient>
-      <Body className="pt-0">
-        <Suspense fallback={<LoadingHeaderCard />}>
-          <HeaderCard origin={origin} />
-        </Suspense>
-        <Suspense fallback={<LoadingOriginActivity />}>
-          <OriginActivity originId={id} />
-        </Suspense>
+      <main className="mx-auto w-full max-w-5xl flex-1 space-y-4 px-4 py-12 md:space-y-12">
+        <ServerOverview origin={origin} />
+        <UsageErrorBoundary>
+          <Suspense fallback={<LoadingServerStatCards />}>
+            <ServerStatCards originId={id} />
+          </Suspense>
+        </UsageErrorBoundary>
         <Suspense fallback={<LoadingOriginResources />}>
           <OriginResources originId={id} />
         </Suspense>
-      </Body>
+      </main>
     </HydrateClient>
   );
 }

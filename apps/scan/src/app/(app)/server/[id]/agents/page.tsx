@@ -19,18 +19,20 @@ export default async function OriginAgentsPage({
     DEFAULT_AGENTS_SORTING
   );
   return (
-    <TimeRangeProvider initialTimeframe={ALL_TIME_TIMEFRAME}>
-      <Heading
-        title="Agents"
-        description="Agents using resources from this origin"
-      />
-      <Body>
-        <AgentsTable
-          input={{ originId: id, timeframe: ALL_TIME_TIMEFRAME }}
-          limit={10}
-          sorting={sorting}
+    <div className="flex flex-1 flex-col py-6 md:py-8">
+      <TimeRangeProvider initialTimeframe={ALL_TIME_TIMEFRAME}>
+        <Heading
+          title="Agents"
+          description="Agents using resources from this origin"
         />
-      </Body>
-    </TimeRangeProvider>
+        <Body>
+          <AgentsTable
+            input={{ originId: id, timeframe: ALL_TIME_TIMEFRAME }}
+            limit={10}
+            sorting={sorting}
+          />
+        </Body>
+      </TimeRangeProvider>
+    </div>
   );
 }

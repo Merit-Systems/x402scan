@@ -5,7 +5,6 @@ import { AlertTriangle, Copy, Check, Shield } from "lucide-react";
 
 import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -201,25 +200,5 @@ const ResourcePricing: React.FC<{
     <span className="shrink-0 font-mono text-xs font-semibold text-primary">
       {label}
     </span>
-  );
-};
-
-export const LoadingResourceCard = () => {
-  return (
-    <Card className="flex w-full cursor-pointer items-stretch overflow-hidden transition-colors hover:border-primary">
-      <div className="flex-1">
-        <CardHeader className="flex w-full flex-row items-center justify-between gap-4 space-y-0 bg-muted p-0 px-4 py-2 transition-colors hover:border-primary">
-          <div className="flex w-0 flex-1 flex-col gap-2">
-            <div className="flex flex-1 flex-col justify-between gap-4 md:flex-row md:items-center md:gap-0">
-              <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
-                <Skeleton className="h-4 w-8" />
-                <Skeleton className="h-[16px] w-36 md:h-[18px]" />
-              </div>
-            </div>
-            <Skeleton className="h-[12px] w-full md:h-[14px]" />
-          </div>
-        </CardHeader>
-      </div>
-    </Card>
   );
 };

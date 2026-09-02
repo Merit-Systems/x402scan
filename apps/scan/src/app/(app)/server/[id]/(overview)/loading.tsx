@@ -1,15 +1,16 @@
-import { Body } from "@/app/_components/layout/page-utils";
-
-import { LoadingHeaderCard } from "./_components/header";
+import { LoadingServerOverview } from "./_components/overview";
 import { LoadingOriginResources } from "./_components/resources";
-import { LoadingOriginActivity } from "./_components/activity";
+import { LoadingServerStatCards } from "./_components/stat-cards";
 
 export default function LoadingOriginPage() {
   return (
-    <Body className="pt-0">
-      <LoadingHeaderCard />
-      <LoadingOriginActivity />
+    <main
+      aria-busy="true"
+      className="mx-auto w-full max-w-5xl flex-1 space-y-4 px-4 py-12 md:space-y-12"
+    >
+      <LoadingServerOverview />
+      <LoadingServerStatCards />
       <LoadingOriginResources />
-    </Body>
+    </main>
   );
 }
