@@ -4,11 +4,11 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { serviceColumns as columns } from "./service-columns";
 import {
   LoadingServiceSummary,
   ServiceSummary,
-  serviceColumns as columns,
-} from "./service-columns";
+} from "@/components/service-summary";
 import {
   ResponsiveCollection,
   ResponsiveCollectionLoading,

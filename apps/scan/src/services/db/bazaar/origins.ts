@@ -195,7 +195,7 @@ const listAllBazaarOrigins = createCachedArrayQuery({
   tags: ["transfers"],
 });
 
-export const listBazaarOrigins = async (
+export const listBazaarOriginSummaries = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
@@ -205,7 +205,19 @@ export const listBazaarOrigins = async (
     pageStart,
     pageStart + pagination.page_size
   );
-  const groups = pageItems.flatMap((item) =>
+  return toPaginatedResponse({
+    items: pageItems,
+    total_count: groupedItems.length,
+    ...pagination,
+  });
+};
+
+export const listBazaarOrigins = async (
+  input: z.infer<typeof listBazaarOriginsInputSchema>,
+  pagination: z.infer<typeof paginatedQuerySchema>
+) => {
+  const result = await listBazaarOriginSummaries(input, pagination);
+  const groups = result.items.flatMap((item) =>
     item.origins[0]
       ? [{ originId: item.origins[0].id, recipients: item.recipients }]
       : []
@@ -216,13 +228,12 @@ export const listBazaarOrigins = async (
     timeframe: input.timeframe,
   });
 
-  return toPaginatedResponse({
-    items: pageItems.map((item) => ({
+  return {
+    ...result,
+    items: result.items.map((item) => ({
       ...item,
       transactionSparkline:
         transactionSparklines[item.origins[0]?.id ?? ""] ?? [],
     })),
-    total_count: groupedItems.length,
-    ...pagination,
-  });
+  };
 };
