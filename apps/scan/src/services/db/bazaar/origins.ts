@@ -1,10 +1,7 @@
 import { listTopSellersMVUncached } from "@/services/transfers/sellers/list-mv";
 import { getAcceptsAddresses } from "../resources/accepts";
 import { mixedAddressSchema } from "@/lib/schemas";
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
 
 import type z from "zod";
 import {
@@ -13,11 +10,10 @@ import {
 } from "@/lib/pagination";
 import type { MixedAddress } from "@/types/address";
 import type { Chain } from "@/types/chain";
-import type { listBazaarOriginsInputSchema } from "./schema";
+import { listBazaarOriginsInputSchema } from "./schema";
 
 const listBazaarOriginsUncached = async (
-  input: z.infer<typeof listBazaarOriginsInputSchema>,
-  pagination: z.infer<typeof paginatedQuerySchema>
+  input: z.infer<typeof listBazaarOriginsInputSchema>
 ) => {
   const t0 = performance.now();
 
@@ -37,7 +33,8 @@ const listBazaarOriginsUncached = async (
   }
 
   const tAccepts = performance.now();
-  const addrCount = Object.keys(originsByAddress).length;
+  const addresses = Object.keys(originsByAddress);
+  const addrCount = addresses.length;
   console.log(
     `[bazaar.list] accepts=${(tAccepts - t0).toFixed(0)}ms (${addrCount} addrs)`
   );
@@ -46,12 +43,13 @@ const listBazaarOriginsUncached = async (
     {
       ...input,
       recipients: {
-        include: Object.keys(originsByAddress).map((addr) =>
-          mixedAddressSchema.parse(addr)
-        ),
+        include: addresses.map((address) => mixedAddressSchema.parse(address)),
       },
     },
-    pagination
+    {
+      page: 0,
+      page_size: addrCount,
+    }
   );
 
   const tMV = performance.now();
@@ -170,21 +168,15 @@ const listBazaarOriginsUncached = async (
     groupedItems.sort((a, b) => (a[key] - b[key]) * direction);
   }
 
-  const response = toPaginatedResponse({
-    items: groupedItems,
-    total_count: Object.keys(originsByAddress).length,
-    ...pagination,
-  });
-
   console.log(
     `[bazaar.list] total=${(performance.now() - t0).toFixed(0)}ms` +
       ` grouped=${groupedItems.length} origins`
   );
 
-  return response;
+  return groupedItems;
 };
 
-export const listBazaarOrigins = createCachedPaginatedQuery({
+const listAllBazaarOrigins = createCachedArrayQuery({
   queryFn: listBazaarOriginsUncached,
   cacheKeyPrefix: "bazaar-origins",
   // createStandardCacheKey sorts arrays for normalization, so the cache key
@@ -199,3 +191,21 @@ export const listBazaarOrigins = createCachedPaginatedQuery({
   dateFields: ["latest_block_timestamp"],
   tags: ["transfers"],
 });
+
+export const listBazaarOrigins = async (
+  input: z.infer<typeof listBazaarOriginsInputSchema>,
+  pagination: z.infer<typeof paginatedQuerySchema>
+) => {
+  // paginatedProcedure merges pagination into the runtime tRPC input. Parse
+  // again at the service boundary so the complete grouped result has one
+  // cache entry shared by every requested page.
+  const queryInput = listBazaarOriginsInputSchema.parse(input);
+  const groupedItems = await listAllBazaarOrigins(queryInput);
+  const pageStart = pagination.page * pagination.page_size;
+
+  return toPaginatedResponse({
+    items: groupedItems.slice(pageStart),
+    total_count: groupedItems.length,
+    ...pagination,
+  });
+};
