@@ -1,5 +1,5 @@
-import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from "viem";
-import { getBalance, readContract } from "viem/actions";
+import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
+import { readContract } from "viem/actions";
 import { toAccount } from "viem/accounts";
 
 import { cdpClient } from "../client";
@@ -30,24 +30,6 @@ export const evmServerWallet =
           message:
             e instanceof Error ? e.message : "Failed to get wallet address",
         })),
-      getNativeTokenBalance: () =>
-        cdpResultFromPromise(
-          "getNativeTokenBalance",
-          getAddress()
-            .then((address) =>
-              getBalance(baseRpc, {
-                address,
-              })
-            )
-            .then((result) => parseFloat(formatEther(result))),
-          (e) => ({
-            cause: "bad_gateway",
-            message:
-              e instanceof Error
-                ? e.message
-                : "Failed to get native token balance",
-          })
-        ),
       getTokenBalance: ({ token }) =>
         cdpResultFromPromise(
           "getTokenBalance",

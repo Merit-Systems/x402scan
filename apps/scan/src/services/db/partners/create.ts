@@ -3,7 +3,7 @@ import z from "zod";
 import { insertPartner } from "@x402scan/partners-db";
 import type { PartnerData } from "@x402scan/partners-db";
 
-export const createPartnerSchema = z.object({
+const createPartnerSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   organization: z.string().min(1),

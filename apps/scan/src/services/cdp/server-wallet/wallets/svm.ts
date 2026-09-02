@@ -26,10 +26,7 @@ import { getCompiledTransactionMessageDecoder } from "@solana/transaction-messag
 
 import { cdpClient } from "../client";
 
-import {
-  getSolanaNativeBalance,
-  getSolanaTokenBalance,
-} from "@/services/solana/balance";
+import { getSolanaTokenBalance } from "@/services/solana/balance";
 import { solanaRpc } from "@/services/rpc/solana";
 
 import { cdpResultFromPromise } from "../../result";
@@ -57,18 +54,6 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
         message:
           e instanceof Error ? e.message : "Failed to get wallet address",
       })),
-    getNativeTokenBalance: () =>
-      cdpResultFromPromise(
-        "getNativeTokenBalance",
-        getAddress().then((address) => getSolanaNativeBalance(address)),
-        (e) => ({
-          cause: "bad_gateway",
-          message:
-            e instanceof Error
-              ? e.message
-              : "Failed to get native token balance",
-        })
-      ),
     getTokenBalance: ({ token }) =>
       cdpResultFromPromise(
         "getTokenBalance",

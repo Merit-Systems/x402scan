@@ -19,7 +19,6 @@ import {
   createResourceRequestMetadataSchema,
   updateResourceRequestMetadata,
   updateResourceRequestMetadataSchema,
-  getResourceRequestMetadata,
   getAllResourceRequestMetadata,
   deleteResourceRequestMetadata,
   searchResourcesForMetadata,
@@ -28,7 +27,6 @@ import {
   createExcludedResource,
   createExcludedResourceSchema,
   getAllExcludedResources,
-  deleteExcludedResource,
   deleteExcludedResourceByResourceId,
   searchResourcesForExcludes,
 } from "@/services/db/resources/excludes";
@@ -110,10 +108,6 @@ export const adminResourcesRouter = createTRPCRouter({
       return await getAllResourceRequestMetadata();
     }),
 
-    getByResource: adminProcedure.input(z.uuid()).query(async ({ input }) => {
-      return await getResourceRequestMetadata(input);
-    }),
-
     searchResources: adminProcedure
       .input(z.object({ search: z.string().optional() }))
       .query(async ({ input }) => {
@@ -153,12 +147,6 @@ export const adminResourcesRouter = createTRPCRouter({
       .input(createExcludedResourceSchema)
       .mutation(async ({ input }) => {
         return await createExcludedResource(input);
-      }),
-
-    delete: adminProcedure
-      .input(z.object({ id: z.uuid() }))
-      .mutation(async ({ input }) => {
-        return await deleteExcludedResource(input.id);
       }),
 
     deleteByResourceId: adminProcedure

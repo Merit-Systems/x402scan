@@ -5,10 +5,7 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
 import { getUserWallets } from "@/services/cdp/server-wallet/user";
 import { mixedAddressSchema, supportedChainSchema } from "@/lib/schemas";
 import z from "zod";
-import {
-  getTokenBalanceSchema,
-  sendTokensSchema,
-} from "@/services/cdp/server-wallet/wallets/schemas";
+import { getTokenBalanceSchema } from "@/services/cdp/server-wallet/wallets/schemas";
 import { tokenSchema } from "@/types/token";
 import { usdc } from "@/lib/tokens/usdc";
 import { Chain, SUPPORTED_CHAINS } from "@/types/chain";
@@ -76,44 +73,6 @@ export const serverWalletRouter = createTRPCRouter({
     .mutation(async ({ ctx, input: { chain } }) => {
       const { wallets } = await getUserWallets(ctx.session.user.id);
       const result = await wallets[chain].export();
-      if (result.isErr()) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: result.error.message,
-        });
-      }
-      return result.value;
-    }),
-
-  nativeBalance: protectedProcedure
-    .input(serverWalletChainSchema)
-    .query(async ({ ctx, input: { chain } }) => {
-      const { wallets } = await getUserWallets(ctx.session.user.id);
-      const result = await wallets[chain].getNativeTokenBalance();
-      if (result.isErr()) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: result.error.message,
-        });
-      }
-      return result.value;
-    }),
-
-  sendTokens: protectedProcedure
-    .input(
-      sendTokensSchema.extend(serverWalletChainFields).refine(
-        ({ chain, token }) => {
-          return token.chain === chain;
-        },
-        {
-          error:
-            "The token you are sending does not match the chain you are sending on",
-        }
-      )
-    )
-    .mutation(async ({ ctx, input: { chain, ...rest } }) => {
-      const { wallets } = await getUserWallets(ctx.session.user.id);
-      const result = await wallets[chain].sendTokens(rest);
       if (result.isErr()) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
