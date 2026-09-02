@@ -6,9 +6,6 @@ export enum ActivityTimeframe {
   ThirtyDays = 30,
 }
 
-/** Use sparingly - only for explicit "all time" queries where supported */
-export const ALL_TIME_TIMEFRAME = ActivityTimeframe.AllTime;
-
 /**
  * Every ActivityTimeframe value. The `satisfies Record<ActivityTimeframe, ...>`
  * check keeps this list exhaustive when the enum changes.
