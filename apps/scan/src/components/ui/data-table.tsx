@@ -510,7 +510,7 @@ function DataTableColumnHeader<TData extends RowData, TValue>({
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={className}>{title}</div>;
+    return <div className={cn("type-caption", className)}>{title}</div>;
   }
 
   const sorted = column.getIsSorted();
@@ -525,7 +525,7 @@ function DataTableColumnHeader<TData extends RowData, TValue>({
           column.toggleSorting(sorted === "asc");
         }}
       >
-        <span>{title}</span>
+        <span className="type-caption">{title}</span>
         {sorted === "desc" ? (
           <ArrowDownIcon data-icon="inline-end" />
         ) : sorted === "asc" ? (

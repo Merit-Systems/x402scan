@@ -13,6 +13,8 @@ import { cleanExternalText, truncateAtDelimiter } from "@/lib/utils";
 
 import type { RouterOutputs } from "@/trpc/client";
 
+import { InstallCommand, LoadingInstallCommand } from "./invoke";
+
 type Origin = NonNullable<RouterOutputs["public"]["origins"]["get"]>;
 
 export function ServerOverview({ origin }: { origin: Origin }) {
@@ -57,6 +59,7 @@ export function ServerOverview({ origin }: { origin: Origin }) {
           </p>
         ) : null}
       </div>
+      <InstallCommand serverUrl={origin.origin} />
     </div>
   );
 }
@@ -81,6 +84,7 @@ export function LoadingServerOverview() {
         </OriginSummary>
         <Skeleton className="h-5 w-xl max-w-full" />
       </div>
+      <LoadingInstallCommand />
     </div>
   );
 }
