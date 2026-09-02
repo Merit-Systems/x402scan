@@ -8,7 +8,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 
-import { ResourceCard, LoadingResourceCard } from "./resource-card";
+import { ResourceCard } from "./resource-card";
 
 import { getBazaarMethod, isFreeResource, toBazaarMethod } from "./utils";
 import { serializeAccepts } from "@/lib/token";
@@ -74,16 +74,6 @@ export const OriginResources: React.FC<Props> = ({
             />
           );
         })}
-    </div>
-  );
-};
-
-export const LoadingOriginResources = () => {
-  return (
-    <div className="flex flex-col gap-4">
-      {Array.from({ length: 10 }).map((_, index) => (
-        <LoadingResourceCard key={index} />
-      ))}
     </div>
   );
 };

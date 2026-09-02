@@ -149,6 +149,14 @@
         // does not inspect or validate untrusted input.
         "anti-slop/no-runtime-typeof": "off"
       }
+    },
+    {
+      "files": ["apps/scan/src/components/ui/chart/types.ts"],
+      "rules": {
+        // Foundation's recursive generic chart types overflow the repository's
+        // dictionary-shape analyzer. Preserve the registry source verbatim.
+        "anti-slop/no-unsafe-dictionary-type": "off"
+      }
     }
   ]
 }
