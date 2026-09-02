@@ -51,19 +51,6 @@ export const updateResourceRequestMetadata = async (
   });
 };
 
-export const getResourceRequestMetadata = async (resourceId: string) => {
-  return await scanDb.resourceRequestMetadata.findUnique({
-    where: { resourceId },
-    include: {
-      resource: {
-        include: {
-          origin: true,
-        },
-      },
-    },
-  });
-};
-
 export const getAllResourceRequestMetadata = async () => {
   return await scanDb.resourceRequestMetadata.findMany({
     include: {
