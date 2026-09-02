@@ -6,7 +6,7 @@ import { Address } from "@/components/ui/address";
 
 import { Seller, SellerSkeleton } from "@/app/(app)/_components/seller";
 
-import { formatCompactAgo } from "@/lib/utils";
+import { cn, formatCompactAgo } from "@/lib/utils";
 import { formatTokenAmount } from "@/lib/token";
 
 import type { RouterOutputs } from "@/trpc/client";
@@ -18,29 +18,31 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "recipient",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Server" />
+      <DataTableColumnHeader
+        column={column}
+        title="Server"
+        className="text-left"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
-      <Seller
-        address={row.original.recipient}
-        addressClassName="text-xs font-normal"
-      />
+      <Seller address={row.original.recipient} addressClassName="font-normal" />
     ),
-    size: 300, // Fixed width for seller column (widest for address display)
+    size: 300,
     meta: { loadingCell: <SellerSkeleton /> },
   },
   {
     accessorKey: "sender",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Sender" />
+      <DataTableColumnHeader
+        column={column}
+        title="Sender"
+        className="text-center"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
-      <Address
-        address={row.original.sender}
-        className="block text-center text-xs"
-      />
+      <Address address={row.original.sender} className="block text-center" />
     ),
     size: 200,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -48,13 +50,17 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "transaction_hash",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Hash" />
+      <DataTableColumnHeader
+        column={column}
+        title="Hash"
+        className="text-center"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
       <Address
         address={row.original.tx_hash}
-        className="block text-center text-xs"
+        className="block text-center"
         disableCopy
         hideTooltip
       />
@@ -65,12 +71,14 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "block_timestamp",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Timestamp" />
+      <DataTableColumnHeader
+        column={column}
+        title="Timestamp"
+        className="justify-center text-center [&>button]:ml-0"
+      />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {formatCompactAgo(row.original.block_timestamp)}
-      </div>
+      <Cell>{formatCompactAgo(row.original.block_timestamp)}</Cell>
     ),
     size: 150,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -78,15 +86,17 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "amount",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Amount" />
+      <DataTableColumnHeader
+        column={column}
+        title="Amount"
+        className="justify-center text-center [&>button]:ml-0"
+      />
     ),
     cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
-        {formatTokenAmount(BigInt(row.original.amount))}
-      </div>
+      <Cell>{formatTokenAmount(BigInt(row.original.amount))}</Cell>
     ),
-    size: 150, // Fixed width for buyers count
-    meta: { loadingCell: <Skeleton className="ml-auto h-4 w-16" /> },
+    size: 150,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
 ];
 
@@ -94,3 +104,15 @@ export const overviewColumns = columns.map((column) => ({
   ...column,
   enableSorting: false,
 }));
+
+const Cell = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={cn("text-center type-caption", className)}>{children}</div>
+  );
+};
