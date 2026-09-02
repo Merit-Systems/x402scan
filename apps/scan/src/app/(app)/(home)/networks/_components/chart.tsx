@@ -1,7 +1,5 @@
 "use client";
 
-import { useChain } from "@/app/(app)/_contexts/chain/hook";
-import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 import type { ChartData } from "@/components/ui/charts/chart/types";
 import { LoadingMultiCharts, MultiCharts } from "@/components/ui/charts/multi";
 import type { Chain } from "@/types/chain";
@@ -9,13 +7,17 @@ import type { Chain } from "@/types/chain";
 import { formatTokenAmount } from "@/lib/token";
 import { createTab, networks } from "@/lib/charts";
 import { api } from "@/trpc/client";
+import type { ActivityTimeframe } from "@/types/timeframes";
 
 type NetworkKey = `${Chain}-${"transactions" | "amount"}`;
 
-export const NetworksChart = () => {
-  const { chain } = useChain();
-  const { timeframe } = useTimeRangeContext();
-
+export const NetworksChart = ({
+  chain,
+  timeframe,
+}: {
+  chain?: Chain;
+  timeframe: ActivityTimeframe;
+}) => {
   const [bucketedNetworkData] =
     api.networks.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,

@@ -5,17 +5,19 @@ import { api } from "@/trpc/client";
 import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 
 import { columns } from "./columns";
-import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
-import { useChain } from "@/app/(app)/_contexts/chain/hook";
 import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
 import { FACILITATORS_SORT_IDS } from "@/lib/table-sort-options";
 
 import type { FacilitatorsSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
+import type { Chain } from "@/types/chain";
+import type { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
+  chain?: Chain;
   pageSize: number;
   sorting: TableSorting<FacilitatorsSortId>;
+  timeframe: ActivityTimeframe;
 }
 
 interface LoadingProps {
@@ -23,9 +25,12 @@ interface LoadingProps {
   sorting?: TableSorting<FacilitatorsSortId>;
 }
 
-export const FacilitatorsTable: React.FC<Props> = ({ pageSize, sorting }) => {
-  const { timeframe } = useTimeRangeContext();
-  const { chain } = useChain();
+export const FacilitatorsTable: React.FC<Props> = ({
+  chain,
+  pageSize,
+  sorting,
+  timeframe,
+}) => {
   const tableSorting = useUrlTableSorting({
     sorting,
     sortIds: FACILITATORS_SORT_IDS,

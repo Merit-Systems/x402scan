@@ -17,6 +17,8 @@ import {
 import { Globe } from "lucide-react";
 import { useState } from "react";
 
+const URL_BACKED_CHAIN_ROUTES = new Set(["/", "/facilitators", "/networks"]);
+
 export const ChainSelector = () => {
   const { chain, setChain } = useChain();
   const pathname = usePathname();
@@ -27,7 +29,7 @@ export const ChainSelector = () => {
   const handleSelectChain = (chain: Chain | undefined) => {
     setChain(chain);
 
-    if (pathname === "/") {
+    if (URL_BACKED_CHAIN_ROUTES.has(pathname)) {
       replaceSearchParams((params) => {
         if (chain) {
           params.set("chain", chain);
