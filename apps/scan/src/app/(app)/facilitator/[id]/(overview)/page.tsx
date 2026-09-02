@@ -1,37 +1,97 @@
+import { Suspense } from "react";
+
 import { notFound } from "next/navigation";
 
-import { Body } from "@/app/_components/layout/page-utils";
+import { FacilitatorOverview } from "./_components/overview";
+import {
+  FacilitatorStatCards,
+  LoadingFacilitatorStatCards,
+} from "./_components/stat-cards";
+import {
+  FacilitatorOrigins,
+  LoadingFacilitatorOrigins,
+} from "./_components/origins";
+import { FACILITATOR_SERVERS_SORTING } from "./_components/origins/config";
+import {
+  FacilitatorServersErrorBoundary,
+  FacilitatorUsageErrorBoundary,
+} from "./_components/error-boundaries";
 
-import { HeaderCard } from "./_components/header";
-import { Activity } from "./_components/activity";
-import { LatestTransactions } from "./_components/transactions";
-
+import { getChainForPage } from "@/app/(app)/_lib/chain/page";
+import { TimeframeSelect } from "@/components/timeframe-select";
+import { UsageSection } from "@/components/usage-section";
 import { facilitatorIdMap } from "@/lib/facilitators";
-import { api } from "@/trpc/server";
-import { ActivityTimeframe } from "@/types/timeframes";
+import { parseUsageTimeframe } from "@/lib/timeframe";
+import { api, HydrateClient } from "@/trpc/server";
 import type { Metadata } from "next";
 
 export default async function FacilitatorPage({
   params,
+  searchParams,
 }: PageProps<"/facilitator/[id]">) {
   const { id } = await params;
+  const resolvedSearchParams = await searchParams;
   const facilitator = facilitatorIdMap.get(id);
   if (!facilitator) {
     return notFound();
   }
 
-  // Prefetch stats for hydration
+  const chain = await getChainForPage(resolvedSearchParams);
+  const timeframe = parseUsageTimeframe(resolvedSearchParams.d);
   void api.public.stats.overall.prefetch({
+    chain,
     facilitatorIds: [id],
-    timeframe: ActivityTimeframe.ThirtyDays,
+    timeframe,
+  });
+  void api.public.stats.bucketed.prefetch({
+    chain,
+    facilitatorIds: [id],
+    numBuckets: 48,
+    timeframe,
+  });
+  void api.public.sellers.bazaar.featuredSummaries.prefetch({
+    chain,
+    facilitatorIds: [id],
+    pagination: { page: 0, page_size: 10 },
+    sorting: FACILITATOR_SERVERS_SORTING,
+    timeframe,
   });
 
   return (
-    <Body className="gap-8 pt-0">
-      <HeaderCard facilitator={facilitator} />
-      <Activity facilitatorId={id} />
-      <LatestTransactions facilitatorId={id} />
-    </Body>
+    <HydrateClient>
+      <main className="mx-auto w-full max-w-5xl flex-1 space-y-4 px-4 py-12 md:space-y-12">
+        <FacilitatorOverview facilitator={facilitator} />
+        <FacilitatorUsageErrorBoundary>
+          <UsageSection controls={<TimeframeSelect timeframe={timeframe} />}>
+            <Suspense
+              key={`usage:${chain ?? "all"}:${timeframe}`}
+              fallback={<LoadingFacilitatorStatCards />}
+            >
+              <FacilitatorStatCards
+                chain={chain}
+                facilitatorId={id}
+                timeframe={timeframe}
+              />
+            </Suspense>
+          </UsageSection>
+        </FacilitatorUsageErrorBoundary>
+        <section className="space-y-4">
+          <h2 className="type-section-title">Featured servers</h2>
+          <FacilitatorServersErrorBoundary>
+            <Suspense
+              key={`servers:${chain ?? "all"}:${timeframe}`}
+              fallback={<LoadingFacilitatorOrigins />}
+            >
+              <FacilitatorOrigins
+                chain={chain}
+                facilitatorId={id}
+                timeframe={timeframe}
+              />
+            </Suspense>
+          </FacilitatorServersErrorBoundary>
+        </section>
+      </main>
+    </HydrateClient>
   );
 }
 
