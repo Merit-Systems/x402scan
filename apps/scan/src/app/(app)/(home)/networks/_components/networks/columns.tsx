@@ -5,7 +5,7 @@ import Image from "next/image";
 import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { formatCompactAgo } from "@/lib/utils";
+import { cn, formatCompactAgo } from "@/lib/utils";
 import { formatTokenAmount } from "@/lib/token";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
@@ -17,7 +17,11 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "chain",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Network" />
+      <DataTableColumnHeader
+        column={column}
+        title="Network"
+        className="text-left"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
@@ -29,7 +33,7 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
           height={16}
           className="rounded-md"
         />
-        <p className="text-xs font-semibold">{row.original.label}</p>
+        <p className="type-label">{row.original.label}</p>
       </div>
     ),
     size: 200,
@@ -46,13 +50,13 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
     accessorKey: "transactions",
     id: "tx_count",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Transactions" />
+      <DataTableColumnHeader
+        column={column}
+        title="Transactions"
+        className="justify-center [&>button]:ml-0"
+      />
     ),
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {row.original.tx_count.toLocaleString()}
-      </div>
-    ),
+    cell: ({ row }) => <Cell>{row.original.tx_count.toLocaleString()}</Cell>,
     size: 150,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
@@ -60,12 +64,14 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
     accessorKey: "volume",
     id: "total_amount",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Volume" />
+      <DataTableColumnHeader
+        column={column}
+        title="Volume"
+        className="justify-center [&>button]:ml-0"
+      />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {formatTokenAmount(BigInt(row.original.total_amount))}
-      </div>
+      <Cell>{formatTokenAmount(BigInt(row.original.total_amount))}</Cell>
     ),
     size: 150,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -74,12 +80,14 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
     accessorKey: "facilitators",
     id: "unique_facilitators",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Facilitators" />
+      <DataTableColumnHeader
+        column={column}
+        title="Facilitators"
+        className="justify-center [&>button]:ml-0"
+      />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {row.original.unique_facilitators.toLocaleString()}
-      </div>
+      <Cell>{row.original.unique_facilitators.toLocaleString()}</Cell>
     ),
     size: 150,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -88,12 +96,14 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
     accessorKey: "sellers",
     id: "unique_sellers",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Sellers" />
+      <DataTableColumnHeader
+        column={column}
+        title="Sellers"
+        className="justify-center [&>button]:ml-0"
+      />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {row.original.unique_sellers.toLocaleString()}
-      </div>
+      <Cell>{row.original.unique_sellers.toLocaleString()}</Cell>
     ),
     size: 150,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -102,12 +112,14 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
     accessorKey: "buyers",
     id: "unique_buyers",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Buyers" />
+      <DataTableColumnHeader
+        column={column}
+        title="Buyers"
+        className="justify-center [&>button]:ml-0"
+      />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {row.original.unique_buyers.toLocaleString()}
-      </div>
+      <Cell>{row.original.unique_buyers.toLocaleString()}</Cell>
     ),
     size: 150,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -115,16 +127,28 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "latest_block_timestamp",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Latest" />
+      <DataTableColumnHeader
+        column={column}
+        title="Latest"
+        className="justify-center [&>button]:ml-0"
+      />
     ),
     cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
-        {row.original.latest_block_timestamp
-          ? formatCompactAgo(row.original.latest_block_timestamp)
-          : "–"}
-      </div>
+      <Cell>{formatCompactAgo(row.original.latest_block_timestamp)}</Cell>
     ),
     size: 150,
-    meta: { loadingCell: <Skeleton className="ml-auto h-4 w-16" /> },
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
 ];
+
+const Cell = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={cn("text-center type-caption", className)}>{children}</div>
+  );
+};
