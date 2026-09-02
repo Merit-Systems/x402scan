@@ -76,7 +76,7 @@ export const DEFAULT_TOOLS_SORTING = {
 } satisfies { id: ToolSortId; desc: boolean };
 
 export const TRANSFERS_SORT_IDS = ["block_timestamp", "amount"] as const;
-export type TransfersSortId = (typeof TRANSFERS_SORT_IDS)[number];
+type TransfersSortId = (typeof TRANSFERS_SORT_IDS)[number];
 export const DEFAULT_TRANSFERS_SORTING = {
   id: "block_timestamp",
   desc: true,

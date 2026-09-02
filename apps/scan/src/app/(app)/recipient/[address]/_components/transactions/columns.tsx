@@ -15,7 +15,7 @@ import { Facilitator } from "@/app/(app)/_components/facilitator";
 
 type ColumnType = RouterOutputs["public"]["transfers"]["list"]["items"][number];
 
-export const columns: DataTableColumnDef<ColumnType>[] = [
+const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "sender",
     header: ({ column }) => (
