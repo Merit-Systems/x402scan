@@ -17,8 +17,6 @@ import { Logo } from "@/components/ui/logo";
 import { Send } from "./content/send";
 import { WalletExport } from "./content/export";
 
-import { OnrampSessionDialog } from "./content/onramp-session-dialog";
-
 import { WalletChainProvider } from "@/app/(app)/_contexts/wallet-chain/provider";
 import { WalletChain } from "@/app/(app)/_contexts/wallet-chain/component";
 
@@ -41,7 +39,6 @@ export const WalletDialog: React.FC<Props> = ({
       initialChain={chainsWithBalance[0]}
       isFixed={chainsWithBalance.length === 1}
     >
-      <OnrampSessionDialog />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger render={children} />
         <DialogContent

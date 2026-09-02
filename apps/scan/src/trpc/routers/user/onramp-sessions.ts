@@ -15,7 +15,6 @@ import {
   createOnrampUrlParamsSchema,
 } from "@/services/cdp/onramp/create-onramp-session";
 
-import { getUserWallets } from "@/services/cdp/server-wallet/user";
 import { SessionStatus } from "@x402scan/scan-db";
 import { SIWE_PROVIDER_ID } from "@/auth/providers/siwe/constants";
 import { SIWS_PROVIDER_ID } from "@/auth/providers/siws/constants";
@@ -85,33 +84,4 @@ export const onrampSessionsRouter = createTRPCRouter({
       });
       return url;
     }),
-
-  serverWallet: {
-    create: protectedProcedure
-      .input(createOnrampUrlParamsSchema)
-      .mutation(async ({ ctx, input }) => {
-        const { wallets, id } = await getUserWallets(ctx.session.user.id);
-        if (!wallets[input.defaultNetwork]) {
-          throw new TRPCError({ code: "NOT_FOUND" });
-        }
-        const addressResult = await wallets[input.defaultNetwork].address();
-        if (addressResult.isErr()) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: addressResult.error.message,
-          });
-        }
-        const { token, url } = await createOnrampUrl(addressResult.value, {
-          ...input,
-          tokenKey: "server_wallet_onramp_token",
-        });
-        await createOnrampSession({
-          token,
-          amount: input.amount,
-          userId: ctx.session.user.id,
-          serverWalletId: id,
-        });
-        return url;
-      }),
-  },
 });

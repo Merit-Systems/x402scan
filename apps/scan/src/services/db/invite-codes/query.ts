@@ -2,28 +2,7 @@ import z from "zod";
 
 import { scanDb } from "@x402scan/scan-db";
 
-import type { inviteCodeByIdSchema } from "./schemas";
 import type { Prisma } from "@x402scan/scan-db";
-
-export const getInviteCodeById = async ({
-  id,
-}: z.infer<typeof inviteCodeByIdSchema>) => {
-  return scanDb.inviteCode.findUnique({
-    where: { id },
-    include: {
-      createdBy: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-      redemptions: {
-        orderBy: { createdAt: "desc" },
-      },
-    },
-  });
-};
 
 const statusEnum = z.enum(["ACTIVE", "EXHAUSTED", "EXPIRED", "DISABLED"]);
 

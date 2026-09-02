@@ -2,11 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
 
-import {
-  joinAgentConfiguration,
-  leaveAgentConfiguration,
-  listUserAgentConfigurations,
-} from "@/services/db/agent-config/user";
+import { listUserAgentConfigurations } from "@/services/db/agent-config/user";
 import {
   createAgentConfiguration,
   createAgentConfigurationSchema,
@@ -37,12 +33,4 @@ export const userAgentConfigurationsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       return await deleteAgentConfiguration(input, ctx.session.user.id);
     }),
-
-  join: protectedProcedure.input(z.uuid()).mutation(async ({ input, ctx }) => {
-    return await joinAgentConfiguration(ctx.session.user.id, input);
-  }),
-
-  leave: protectedProcedure.input(z.uuid()).mutation(async ({ input, ctx }) => {
-    return await leaveAgentConfiguration(ctx.session.user.id, input);
-  }),
 });
