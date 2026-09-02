@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useChain } from "../../../_contexts/chain/hook";
 import { SUPPORTED_CHAINS } from "@/types/chain";
 import { CHAIN_LABELS, CHAIN_ICONS } from "@/types/chain";
@@ -20,18 +20,24 @@ import { useState } from "react";
 export const ChainSelector = () => {
   const { chain, setChain } = useChain();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const replaceSearchParams = useReplaceSearchParams();
 
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSelectChain = (chain: Chain | undefined) => {
-    if (pathname === "/" && searchParams.has("p")) {
+    setChain(chain);
+
+    if (pathname === "/") {
       replaceSearchParams((params) => {
+        if (chain) {
+          params.set("chain", chain);
+        } else {
+          params.delete("chain");
+        }
         params.delete("p");
       });
     }
-    setChain(chain);
+
     setIsOpen(false);
   };
 
@@ -65,7 +71,9 @@ export const ChainSelector = () => {
         <Button
           variant="ghost"
           className="h-8 w-full justify-start gap-2"
-          onClick={() => handleSelectChain(undefined)}
+          onClick={() => {
+            handleSelectChain(undefined);
+          }}
         >
           <Globe className="size-4" />
           All
@@ -75,7 +83,9 @@ export const ChainSelector = () => {
             key={value}
             variant="ghost"
             className="h-8 w-full justify-start gap-2"
-            onClick={() => handleSelectChain(value)}
+            onClick={() => {
+              handleSelectChain(value);
+            }}
           >
             <Image
               src={CHAIN_ICONS[value]}

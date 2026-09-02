@@ -27,6 +27,19 @@ import {
   getBucketedOriginStatisticsMV,
   bucketedOriginStatisticsMVInputSchema,
 } from "@/services/transfers/origins/stats/bucketed-mv";
+import { paginatedQuerySchema } from "@/lib/pagination";
+
+const paginationSchema = paginatedQuerySchema.default({
+  page: 0,
+  page_size: 100,
+});
+const listBazaarOriginsQuerySchema = listBazaarOriginsInputSchema.extend({
+  pagination: paginationSchema,
+});
+const listFeaturedBazaarOriginsQuerySchema =
+  listFeaturedBazaarOriginsInputSchema.extend({
+    pagination: paginationSchema,
+  });
 
 export const sellersRouter = createTRPCRouter({
   all: {
@@ -51,16 +64,18 @@ export const sellersRouter = createTRPCRouter({
   },
 
   bazaar: {
-    list: paginatedProcedure
-      .input(listBazaarOriginsInputSchema)
-      .query(async ({ input, ctx: { pagination } }) => {
-        return await listBazaarOrigins(input, pagination);
+    list: publicProcedure
+      .input(listBazaarOriginsQuerySchema)
+      .query(async ({ input }) => {
+        const { pagination, ...query } = input;
+        return listBazaarOrigins(query, pagination);
       }),
-    featured: paginatedProcedure
-      .input(listFeaturedBazaarOriginsInputSchema)
-      .query(async ({ input, ctx: { pagination } }) => {
+    featured: publicProcedure
+      .input(listFeaturedBazaarOriginsQuerySchema)
+      .query(async ({ input }) => {
+        const { pagination, ...query } = input;
         const originUrls = await getDiscoverOrigins();
-        return await listBazaarOrigins({ ...input, originUrls }, pagination);
+        return listBazaarOrigins({ ...query, originUrls }, pagination);
       }),
     stats: {
       // Use origin_stats_aggregated_* views which are pre-joined with payto_origin_map

@@ -2,7 +2,7 @@ export enum ActivityTimeframe {
   AllTime = 0,
   OneDay = 1,
   SevenDays = 7,
-  FifteenDays = 14,
+  FourteenDays = 14,
   ThirtyDays = 30,
 }
 
@@ -17,7 +17,7 @@ const ACTIVITY_TIMEFRAME_MAP = {
   [ActivityTimeframe.AllTime]: ActivityTimeframe.AllTime,
   [ActivityTimeframe.OneDay]: ActivityTimeframe.OneDay,
   [ActivityTimeframe.SevenDays]: ActivityTimeframe.SevenDays,
-  [ActivityTimeframe.FifteenDays]: ActivityTimeframe.FifteenDays,
+  [ActivityTimeframe.FourteenDays]: ActivityTimeframe.FourteenDays,
   [ActivityTimeframe.ThirtyDays]: ActivityTimeframe.ThirtyDays,
 } satisfies Record<ActivityTimeframe, ActivityTimeframe>;
 
