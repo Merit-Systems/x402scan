@@ -14,9 +14,9 @@ import { Logo } from "@/components/ui/logo";
 
 import type { RouterOutputs } from "@/trpc/client";
 import { Verify } from "./verify";
-import { ConnectWalletForm } from "@/app/(app)/_components/wallet/connect/form";
-import { WalletChainProvider } from "@/app/(app)/_contexts/wallet-chain/provider";
-import { useConnectedWallets } from "@/app/(app)/_hooks/use-connected-wallets";
+import { ConnectWalletForm } from "@/app/(app)/composer/_components/wallet/connect/form";
+import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain/provider";
+import { useConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
 
 interface Props {
   agentConfig?: NonNullable<RouterOutputs["public"]["agents"]["get"]>;

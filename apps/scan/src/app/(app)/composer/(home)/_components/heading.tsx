@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Bot, Edit } from "lucide-react";
 
-import { Heading } from "@/app/_components/layout/page-utils";
+import { Heading } from "@/app/(app)/_components/layout/page-utils";
 import { Button } from "@/components/ui/button";
 
 export const ComposerHomeHeading = () => {

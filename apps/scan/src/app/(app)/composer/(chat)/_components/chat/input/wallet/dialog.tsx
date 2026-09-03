@@ -17,8 +17,8 @@ import { Logo } from "@/components/ui/logo";
 import { Send } from "./content/send";
 import { WalletExport } from "./content/export";
 
-import { WalletChainProvider } from "@/app/(app)/_contexts/wallet-chain/provider";
-import { WalletChain } from "@/app/(app)/_contexts/wallet-chain/component";
+import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain/provider";
+import { WalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/component";
 
 import type { SupportedChain } from "@/types/chain";
 

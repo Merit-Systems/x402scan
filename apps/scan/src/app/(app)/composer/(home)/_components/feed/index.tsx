@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 
-import { Section } from "@/app/_components/layout/page-utils";
+import { Section } from "@/app/(app)/_components/layout/page-utils";
 
 import {
   FeedTableContent,
   LoadingFeedTableContent,
-} from "@/app/(app)/composer/_components/feed-table/table";
+} from "@/app/(app)/composer/feed/_components/table/table";
 
 export const Feed = () => {
   return (
