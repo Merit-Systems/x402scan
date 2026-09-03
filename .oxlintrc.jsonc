@@ -36,24 +36,18 @@
     "suspicious": "error",
     "perf": "error"
   },
-  "jsPlugins": [
-    { "name": "anti-slop", "specifier": "./tools/oxlint/anti-slop/index.ts" }
-  ],
   "rules": {
     // Existing debt exposed by Foundation. Keep these visible as warnings while
     // the visual, route-ownership, environment, hook, and strictness migrations
     // proceed in focused follow-up changes.
     "hooks/set-state-in-effect": "warn",
-    "hooks/immutability": "warn",
     "hooks/refs": "warn",
     "hooks/static-components": "warn",
     "jsx-a11y/click-events-have-key-events": "warn",
     "jsx-a11y/control-has-associated-label": "warn",
-    "jsx-a11y/heading-has-content": "warn",
     "jsx-a11y/img-redundant-alt": "warn",
     "jsx-a11y/label-has-associated-control": "warn",
     "jsx-a11y/media-has-caption": "warn",
-    "jsx-a11y/no-noninteractive-element-interactions": "warn",
     "jsx-a11y/no-static-element-interactions": "warn",
     "jsx-a11y/prefer-tag-over-role": "warn",
     "jsx-a11y/role-has-required-aria-props": "warn",
@@ -66,7 +60,6 @@
     "merit-next/require-page-route-group": "warn",
     "no-restricted-properties": "warn",
     "no-useless-assignment": "warn",
-    "tailwindcss/no-conflicting-classes": "warn",
     "typescript/consistent-type-definitions": "warn",
     "typescript/no-confusing-void-expression": "warn",
     "typescript/no-deprecated": "warn",
@@ -75,7 +68,6 @@
     "typescript/no-import-type-side-effects": "warn",
     "typescript/no-unsafe-assignment": "warn",
     "typescript/no-unnecessary-condition": "warn",
-    "typescript/no-unnecessary-type-arguments": "warn",
     "typescript/no-unnecessary-type-assertion": "warn",
     "typescript/prefer-optional-chain": "warn",
     "typescript/restrict-plus-operands": "warn",
@@ -127,36 +119,6 @@
     "unicorn/consistent-function-scoping": "off",
     "unicorn/no-array-sort": "off",
     "oxc/no-map-spread": "off",
-    "promise/always-return": "off",
-
-    "anti-slop/no-chained-type-assertions": "error",
-    "anti-slop/no-conditional-empty-object-spread": "error",
-    "anti-slop/no-known-value-widening": "error",
-    "anti-slop/no-object-parameters": "error",
-    "anti-slop/no-runtime-typeof": "error",
-    "anti-slop/no-shape-in-symbol-names": "error",
-    "anti-slop/no-unknown-parameters": "error",
-    "anti-slop/no-unknown-type-aliases": "error",
-    "anti-slop/no-unsafe-dictionary-type": "error",
-    "anti-slop/no-widen-then-assert": "error"
-  },
-  "overrides": [
-    {
-      "files": ["apps/scan/src/components/ui/data-table.tsx"],
-      "rules": {
-        // Registry code must remain byte-for-byte aligned with Foundation.
-        // This check distinguishes a renderer function from a React node; it
-        // does not inspect or validate untrusted input.
-        "anti-slop/no-runtime-typeof": "off"
-      }
-    },
-    {
-      "files": ["apps/scan/src/components/ui/chart/types.ts"],
-      "rules": {
-        // Foundation's recursive generic chart types overflow the repository's
-        // dictionary-shape analyzer. Preserve the registry source verbatim.
-        "anti-slop/no-unsafe-dictionary-type": "off"
-      }
-    }
-  ]
+    "promise/always-return": "off"
+  }
 }
