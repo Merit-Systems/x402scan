@@ -1,4 +1,4 @@
-import { Body } from "@/app/_components/layout/page-utils";
+import { Body } from "@/app/(app)/_components/layout/page-utils";
 import { ComposerHomeHeading } from "./_components/heading";
 import { LoadingAgents } from "./_components/agents";
 import { LoadingTools } from "./_components/tools";

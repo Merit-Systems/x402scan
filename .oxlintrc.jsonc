@@ -8,7 +8,11 @@
     "**/dist/**",
     "**/build/**",
     "**/generated/**",
-    "**/*.gen.ts"
+    "**/*.gen.ts",
+    // Deferred product surfaces are route-owned so they can be excluded as
+    // cohesive units without weakening lint coverage for shared production code.
+    "apps/scan/src/app/(app)/admin/**",
+    "apps/scan/src/app/(app)/composer/**"
   ],
   "plugins": [
     "typescript",

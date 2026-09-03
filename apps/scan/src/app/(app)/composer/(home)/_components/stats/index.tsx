@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 
 import { ErrorBoundary } from "react-error-boundary";
 
-import { Section } from "@/app/_components/layout/page-utils";
+import { Section } from "@/app/(app)/_components/layout/page-utils";
 
 import { OverallCharts, LoadingOverallCharts } from "./charts";
 

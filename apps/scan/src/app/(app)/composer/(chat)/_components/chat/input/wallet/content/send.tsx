@@ -7,14 +7,14 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
-import { TokenInput } from "@/components/ui/token/token-input";
+import { TokenInput } from "@/app/(app)/composer/_components/token/token-input";
 import { Input } from "@/components/ui/input";
 
 import { Chain } from "@/app/(app)/_components/chains";
 
 import { api } from "@/trpc/client";
 
-import { useWalletChain } from "@/app/(app)/_contexts/wallet-chain/hook";
+import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
 
 import { ethereumAddressSchema, solanaAddressSchema } from "@/lib/schemas";
 import { usdc } from "@/lib/tokens/usdc";

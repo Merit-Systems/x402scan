@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Section } from "@/app/_components/layout/page-utils";
+import { Section } from "@/app/(app)/_components/layout/page-utils";
 import type { RouterOutputs } from "@/trpc/client";
 import { LoadingActivityCharts } from "./charts";
 import { Card } from "@/components/ui/card";

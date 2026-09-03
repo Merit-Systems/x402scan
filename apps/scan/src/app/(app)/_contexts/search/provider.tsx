@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/command";
 
 import { SearchContext } from "./context";
-import { Origin } from "@/app/(app)/_components/origins";
-import { Resource } from "@/app/(app)/_components/resource";
+import { Origin } from "./_components/origins";
+import { Resource } from "./_components/resource";
 
 import { api } from "@/trpc/client";
 

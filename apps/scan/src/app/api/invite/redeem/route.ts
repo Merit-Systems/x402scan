@@ -7,8 +7,8 @@ import {
   validateInviteCodeSchema,
 } from "@/services/db/invite-codes";
 
-import { toNextResponse } from "../../_lib/result";
-import { apiErr } from "../../_lib/result";
+import { toNextResponse } from "./_lib/result";
+import { apiErr } from "./_lib/result";
 
 import type { NextRequest } from "next/server";
 
