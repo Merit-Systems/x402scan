@@ -78,7 +78,7 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
         <DataTableColumnHeader
           column={column}
           title="Volume"
-          className="justify-center [&>button]:ml-0"
+          className="w-full justify-center [&>button]:ml-0"
         />
       ),
       cell: ({ row }) => (
@@ -88,7 +88,11 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
       ),
       enableSorting: enableMetricSorting,
       size: 110,
-      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
+      meta: {
+        cellClassName: "text-center",
+        headerClassName: "text-center",
+        loadingCell: <Skeleton className="mx-auto h-4 w-16" />,
+      },
     },
     {
       accessorKey: "tx_count",
@@ -96,7 +100,7 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
         <DataTableColumnHeader
           column={column}
           title="Txns"
-          className="justify-center [&>button]:ml-0"
+          className="w-full justify-center [&>button]:ml-0"
         />
       ),
       cell: ({ row }) => (
@@ -106,7 +110,11 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
       ),
       enableSorting: enableMetricSorting,
       size: 90,
-      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-12" /> },
+      meta: {
+        cellClassName: "text-center",
+        headerClassName: "text-center",
+        loadingCell: <Skeleton className="mx-auto h-4 w-12" />,
+      },
     },
     {
       accessorKey: "unique_buyers",
@@ -114,7 +122,7 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
         <DataTableColumnHeader
           column={column}
           title="Buyers"
-          className="justify-center [&>button]:ml-0"
+          className="w-full justify-center [&>button]:ml-0"
         />
       ),
       cell: ({ row }) => (
@@ -124,7 +132,11 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
       ),
       enableSorting: enableMetricSorting,
       size: 90,
-      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-12" /> },
+      meta: {
+        cellClassName: "text-center",
+        headerClassName: "text-center",
+        loadingCell: <Skeleton className="mx-auto h-4 w-12" />,
+      },
     },
     {
       accessorKey: "latest_block_timestamp",
@@ -132,7 +144,7 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
         <DataTableColumnHeader
           column={column}
           title="Latest"
-          className="justify-center [&>button]:ml-0"
+          className="w-full justify-center [&>button]:ml-0"
         />
       ),
       cell: ({ row }) => (
@@ -144,7 +156,11 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
       ),
       enableSorting: enableMetricSorting,
       size: 90,
-      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-12" /> },
+      meta: {
+        cellClassName: "text-center",
+        headerClassName: "text-center",
+        loadingCell: <Skeleton className="mx-auto h-4 w-12" />,
+      },
     },
     {
       accessorKey: "chains",
@@ -152,7 +168,7 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
         <DataTableColumnHeader
           column={column}
           title="Chain"
-          className="justify-center"
+          className="w-full justify-center"
         />
       ),
       enableSorting: false,
@@ -164,7 +180,11 @@ export function createServiceColumns<T extends ServiceSummaryItem>({
         />
       ),
       size: 70,
-      meta: { loadingCell: <Skeleton className="mx-auto size-4" /> },
+      meta: {
+        cellClassName: "text-center",
+        headerClassName: "text-center",
+        loadingCell: <Skeleton className="mx-auto size-4" />,
+      },
     }
   );
 
@@ -209,7 +229,7 @@ export function LoadingServiceUsageMetrics() {
 }
 
 function ServiceMetricCell({ children }: { children: React.ReactNode }) {
-  return <div className="text-center type-caption">{children}</div>;
+  return <div className="w-full text-center type-caption">{children}</div>;
 }
 
 function ServiceMetric({ label, value }: { label: string; value: string }) {
