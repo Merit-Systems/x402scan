@@ -41,12 +41,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import {
-  DiscoveryFixHint,
-  DiscoveryPanel,
-  useDiscovery,
-} from "@/app/(app)/_components/discovery";
-import { DiscoveryActions } from "@/app/(app)/_components/discovery/discovery-actions";
+import { DiscoveryActions } from "@/app/(app)/(home)/resources/register/_components/discovery-actions";
+import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
+import { RegistrationResult } from "@/app/(app)/(home)/resources/register/_components/registration-result";
+import { useDiscovery } from "@/app/(app)/(home)/resources/register/_components/use-discovery";
 import { Favicon } from "@/app/(app)/_components/favicon";
 import {
   isOpenApiDeclaredFree,
@@ -196,7 +194,6 @@ export const RegisterResourceForm = () => {
     batchTestProgress,
     testedResources,
     failedResources,
-    retryResource,
     authModeMap,
     invalidResourcesMap,
     skippedResources,
@@ -289,8 +286,9 @@ export const RegisterResourceForm = () => {
     let originId: string | undefined;
     const failedDetails: { url: string; error: string; status?: number }[] = [];
 
-    for (let index = 0; index < targets.length; index += 1) {
-      const targetUrl = targets[index] ?? "";
+    const registerTarget = async (index: number): Promise<void> => {
+      const targetUrl = targets[index];
+      if (!targetUrl) return;
       setManualProgress({ current: index + 1, total: targets.length });
 
       try {
@@ -305,7 +303,8 @@ export const RegisterResourceForm = () => {
           if (parsedSuccessResult.success) {
             originId ??= parsedSuccessResult.data.resource.origin.id;
           }
-          continue;
+          await registerTarget(index + 1);
+          return;
         }
 
         failedDetails.push({
@@ -318,7 +317,10 @@ export const RegisterResourceForm = () => {
           error: error instanceof Error ? error.message : "Request failed",
         });
       }
-    }
+      await registerTarget(index + 1);
+    };
+
+    await registerTarget(0);
 
     if (registered > 0) {
       void utils.public.resources.list.invalidate();
@@ -554,20 +556,12 @@ export const RegisterResourceForm = () => {
         const isV1Issue =
           failedResources.length > 0 &&
           failedResources.every((r) =>
-            r.error?.includes("v1 response detected")
+            r.error.includes("v1 response detected")
           );
 
         return (
           <Collapsible defaultOpen>
-            <CollapsibleTrigger
-              render={
-                <Button
-                  variant="quiet"
-                  size="none"
-                  className="text-destructive"
-                />
-              }
-            >
+            <CollapsibleTrigger render={<Button variant="quiet" size="none" />}>
               <ChevronDown className="size-3" />
               {failedResources.length} endpoint
               {failedResources.length === 1 ? "" : "s"} with errors
@@ -584,9 +578,9 @@ export const RegisterResourceForm = () => {
                   : 'They need to return a 402 payment challenge — ensure the x402 paywall runs before request validation, or mark the required parameters in your OpenAPI spec so we can probe automatically. If these endpoints are free (not x402-paid), add "security": [] to their OpenAPI definition to exclude them from probing.'}
               </p>
               <div className="max-h-[360px] space-y-2 overflow-y-auto">
-                {failedResources.map((failed, idx) => (
+                {failedResources.map((failed) => (
                   <FailedResourceRow
-                    key={`${failed.url}-${idx}`}
+                    key={`${resourceKey(failed.url, failed.method)}-${failed.error}`}
                     url={failed.url}
                     error={getPrimaryProbeError(failed)}
                     statusCode={failed.statusCode}
@@ -612,17 +606,13 @@ export const RegisterResourceForm = () => {
       {(() => {
         if (activeBulkResult || isBatchTestLoading) return null;
         const resourcesWithWarnings = testedResources.filter(
-          (r) => r.warnings && r.warnings.length > 0
+          (r) => r.warnings.length > 0
         );
         if (resourcesWithWarnings.length === 0) return null;
 
         return (
           <Collapsible>
-            <CollapsibleTrigger
-              render={
-                <Button variant="quiet" size="none" className="text-warning" />
-              }
-            >
+            <CollapsibleTrigger render={<Button variant="quiet" size="none" />}>
               <ChevronDown className="size-3" />
               {resourcesWithWarnings.length} endpoint
               {resourcesWithWarnings.length === 1 ? "" : "s"} with warnings (Not
@@ -634,16 +624,19 @@ export const RegisterResourceForm = () => {
                 may affect agent compatibility.
               </p>
               <div className="max-h-[360px] space-y-2 overflow-y-auto">
-                {resourcesWithWarnings.map((r, idx) => (
+                {resourcesWithWarnings.map((r) => (
                   <div
-                    key={`${r.url}-${idx}`}
+                    key={resourceKey(r.url, r.method)}
                     className="space-y-1 rounded border bg-muted/50 p-2 type-caption"
                   >
-                    <div className="type-compact-code truncate text-muted-foreground">
+                    <code className="type-compact-code block truncate text-muted-foreground">
                       {toPathLabel(r.url)}
-                    </div>
-                    {r.warnings?.map((w, wi) => (
-                      <div key={wi} className="text-warning">
+                    </code>
+                    {r.warnings.map((w) => (
+                      <div
+                        key={`${w.code}-${w.message}`}
+                        className="text-warning"
+                      >
                         {w.message}
                       </div>
                     ))}
@@ -653,7 +646,7 @@ export const RegisterResourceForm = () => {
               <DiscoveryFixHint
                 className="type-label"
                 warnings={resourcesWithWarnings.flatMap((r) =>
-                  (r.warnings ?? []).map((w) => ({
+                  r.warnings.map((w) => ({
                     url: r.url,
                     error: w.message,
                   }))
@@ -670,11 +663,7 @@ export const RegisterResourceForm = () => {
           so only true leftovers land here. */}
       {!activeBulkResult && skippedResources.length > 0 && (
         <Collapsible>
-          <CollapsibleTrigger
-            render={
-              <Button variant="quiet" size="none" className="text-warning" />
-            }
-          >
+          <CollapsibleTrigger render={<Button variant="quiet" size="none" />}>
             <ChevronDown className="size-3" />
             {skippedResources.length} unprotected endpoint
             {skippedResources.length === 1 ? "" : "s"} skipped
@@ -691,13 +680,13 @@ export const RegisterResourceForm = () => {
               as public endpoints.
             </p>
             <div className="max-h-[200px] space-y-1 overflow-y-auto">
-              {skippedResources.map((r, idx) => (
-                <div
-                  key={idx}
-                  className="type-compact-code rounded bg-muted/50 px-2 py-1 text-muted-foreground"
+              {skippedResources.map((r) => (
+                <code
+                  key={`${r.url}-${r.authMode ?? "unknown"}`}
+                  className="type-compact-code block rounded bg-muted/50 px-2 py-1 text-muted-foreground"
                 >
                   {toPathLabel(r.url)}
-                </div>
+                </code>
               ))}
             </div>
           </CollapsibleContent>
@@ -706,17 +695,7 @@ export const RegisterResourceForm = () => {
 
       {/* Bulk result */}
       {activeBulkResult && activeSummaryOrigin ? (
-        <DiscoveryPanel
-          origin={activeSummaryOrigin}
-          isLoading={false}
-          found={hasDiscoveryResources}
-          source={discoverySource}
-          resources={[]}
-          resourceCount={0}
-          isRegisteringAll={false}
-          bulkResult={activeBulkResult}
-          onRetryResource={retryResource}
-        />
+        <RegistrationResult result={activeBulkResult} />
       ) : null}
 
       {activeBulkResult?.originId && activeSummaryOrigin ? (
@@ -819,7 +798,9 @@ function PostRegistrationDialog({
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setOpen(true);
+          }}
         >
           Complete your setup &rarr;
         </Button>
@@ -855,7 +836,9 @@ function PostRegistrationDialog({
               <Link
                 href={`/server/${originId}`}
                 target="_blank"
-                onClick={() => markClicked(1)}
+                onClick={() => {
+                  markClicked(1);
+                }}
                 className="flex-1"
               >
                 <Button variant="outline" className="w-full">
@@ -873,7 +856,9 @@ function PostRegistrationDialog({
               <Link
                 href={`https://tryponcho.com/m/${hostname}`}
                 target="_blank"
-                onClick={() => markClicked(2)}
+                onClick={() => {
+                  markClicked(2);
+                }}
                 className="flex-1"
               >
                 <Button variant="outline" className="w-full">
@@ -905,7 +890,9 @@ function PostRegistrationDialog({
                     autoComplete="email"
                     placeholder="you@example.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
                     className="flex-1"
                   />
                   <Button
@@ -1062,8 +1049,11 @@ function FailedResourceRow({
         <div className="pt-1">
           <p className="mb-1 text-muted-foreground">Validation details:</p>
           <ul className="list-inside list-disc space-y-1">
-            {issues.map((issue, i) => (
-              <li key={i} className="type-supporting-body text-destructive">
+            {issues.map((issue) => (
+              <li
+                key={`${issue.code}-${issue.message}`}
+                className="type-supporting-body text-destructive"
+              >
                 {issue.code}: {issue.message}
               </li>
             ))}
@@ -1074,15 +1064,27 @@ function FailedResourceRow({
   );
 }
 
+const EMPTY_TESTED_RESOURCES: {
+  url: string;
+  method?: string;
+  warnings?: { code: string }[];
+}[] = [];
+const EMPTY_FAILED_RESOURCES: { url: string; method?: string }[] = [];
+const EMPTY_AUTH_MODE_MAP: Record<string, string> = {};
+const EMPTY_INVALID_RESOURCES_MAP: Record<
+  string,
+  { invalid: boolean; reason?: string }
+> = {};
+
 function ProbeResult({
   preview,
   urlOrigin,
   resources,
-  testedResources = [],
-  failedResources = [],
+  testedResources = EMPTY_TESTED_RESOURCES,
+  failedResources = EMPTY_FAILED_RESOURCES,
   isBatchTestLoading = false,
-  authModeMap = {},
-  invalidResourcesMap = {},
+  authModeMap = EMPTY_AUTH_MODE_MAP,
+  invalidResourcesMap = EMPTY_INVALID_RESOURCES_MAP,
   contactEmail,
   discoverySource,
 }: {
@@ -1189,7 +1191,7 @@ function ProbeResult({
       if (testedKeys.has(k)) return 3;
       return 4; // non-paid — skipped
     };
-    return [...resources].sort((a, b) => priority(a) - priority(b));
+    return resources.toSorted((a, b) => priority(a) - priority(b));
   }, [
     resources,
     invalidKeys,
@@ -1300,17 +1302,16 @@ function ProbeResult({
         <Button
           variant="plain"
           size="none"
-          onClick={() => setExpanded(!expanded)}
+          onClick={() => {
+            setExpanded(!expanded);
+          }}
           className="w-full text-left"
         >
-          <ul className="w-full space-y-0.5 type-caption text-muted-foreground">
+          <ul className="w-full space-y-0.5 text-muted-foreground">
             {previewResources.map((resource) => {
               const k = rk(resource);
               return (
-                <li
-                  key={k}
-                  className="type-compact-code flex items-center gap-1.5 truncate"
-                >
+                <li key={k} className="flex items-center gap-1.5 truncate">
                   {nonPaidKeys.has(k) ? (
                     <Minus className="size-3 shrink-0 text-muted-foreground/40" />
                   ) : invalidKeys.has(k) ? (
@@ -1328,20 +1329,22 @@ function ProbeResult({
                   ) : failedKeys.has(k) ? (
                     <X className="size-3 shrink-0 text-destructive" />
                   ) : null}
-                  <span
-                    className={
-                      nonPaidKeys.has(k)
-                        ? "text-muted-foreground/40 line-through"
-                        : undefined
-                    }
-                  >
-                    {showMethodBadges && resource.method && (
-                      <span className="type-emphasis mr-1 text-muted-foreground/70">
-                        {resource.method}
-                      </span>
-                    )}
-                    {toPathLabel(resource.url)}
-                  </span>
+                  <code className="type-compact-code">
+                    <span
+                      className={
+                        nonPaidKeys.has(k)
+                          ? "text-muted-foreground/40 line-through"
+                          : undefined
+                      }
+                    >
+                      {showMethodBadges && resource.method && (
+                        <span className="mr-1 type-label text-muted-foreground/70">
+                          {resource.method}
+                        </span>
+                      )}
+                      {toPathLabel(resource.url)}
+                    </span>
+                  </code>
                 </li>
               );
             })}

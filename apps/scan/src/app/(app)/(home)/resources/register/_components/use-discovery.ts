@@ -17,9 +17,15 @@ import type {
   DiscoveredResource,
   DiscoverySource,
 } from "@/types/discovery";
-import type { OriginPreview } from "./discovery-panel";
 import { useBatchTest } from "./use-batch-test";
-import { useOwnership } from "./use-ownership";
+
+interface OriginPreview {
+  title: string | null;
+  description: string | null;
+  favicon: string | null;
+  ogImages: { url: string; height?: number; width?: number }[];
+  origin: string;
+}
 
 /** Invalid-resource badge info keyed by composite resource key. */
 export interface InvalidResourceStatus {
@@ -69,25 +75,20 @@ export interface UseDiscoveryReturn {
   isValidUrl: boolean;
   urlOrigin: string | null;
   isOriginOnly: boolean;
-  enteredUrlInDiscovery: boolean;
 
   // Discovery state
-  discoveryQuery: unknown;
   isDiscoveryLoading: boolean;
   discoveryFound: boolean;
   discoverySource?: DiscoverySource;
-  discoveryResources: DiscoveredResource[];
   actualDiscoveredResources: DiscoveredResource[];
   skippedResources: { url: string; authMode?: string }[];
   /** Registrable resources that won't be probed (siwx/public/apiKey). */
   freeResourceCount: number;
-  discoveryResourceCount: number;
   discoveryError?: string;
   invalidResourcesMap: Record<string, { invalid: boolean; reason?: string }>;
   authModeMap: Record<string, AuthMode>;
 
   // Origin preview
-  isPreviewLoading: boolean;
   preview: OriginPreview | null;
 
   // Test results
@@ -95,19 +96,6 @@ export interface UseDiscoveryReturn {
   batchTestProgress: { checked: number; total: number } | null;
   testedResources: TestedResource[];
   failedResources: FailedResource[];
-
-  // Ownership verification
-  hasOwnershipProofs: boolean;
-  ownershipProofs: string[];
-  payToAddresses: string[];
-  ownershipVerified: boolean;
-  recoveredAddresses: string[];
-  verifiedAddresses: Record<string, boolean>;
-  isVerifyingOwnership: boolean;
-
-  // Registration status
-  isCheckingRegistered: boolean;
-  registeredUrls: string[];
 
   // Bulk registration
   isRegisteringAll: boolean;
@@ -142,15 +130,6 @@ export interface UseDiscoveryReturn {
 
   // Contact email from OpenAPI info.contact.email
   contactEmail: string | undefined;
-
-  // Refresh
-  refreshDiscovery: () => void;
-
-  // Retry single resource with optional merchant-provided sample body or test URL
-  retryResource: (
-    url: string,
-    options?: { sampleBody?: string; testUrl?: string }
-  ) => Promise<void>;
 }
 
 export function useDiscovery({
@@ -158,8 +137,6 @@ export function useDiscovery({
   onRegisterAllSuccess,
   onRegisterAllError,
 }: UseDiscoveryOptions): UseDiscoveryReturn {
-  const utils = api.useUtils();
-
   // Check if URL is valid and extract origin
   const isValidUrl = useMemo(() => z.url().safeParse(url).success, [url]);
   const urlOrigin = useMemo(
@@ -174,7 +151,7 @@ export function useDiscovery({
   // Discovery query - runs automatically when we have a valid URL
   // Note: bustCache is not used in initial query, only on manual refresh
   const discoveryQuery = api.public.resources.checkDiscovery.useQuery(
-    { origin: urlOrigin!, bustCache: false },
+    { origin: urlOrigin ?? "", bustCache: false },
     {
       enabled: !!urlOrigin,
       retry: false,
@@ -248,18 +225,13 @@ export function useDiscovery({
 
   // Origin preview query - runs when we have a valid URL (always, for favicon/OG)
   const previewQuery = api.developer.preview.useQuery(
-    { url: urlOrigin! },
+    { url: urlOrigin ?? "" },
     {
       enabled: !!urlOrigin,
       staleTime: 60000, // Cache for 1 min
     }
   );
 
-  // Extract URLs for the checkRegistered query
-  const resourceInputs = useMemo(
-    () => effectiveResources.map((r) => ({ url: r.url, method: r.method })),
-    [effectiveResources]
-  );
   // Create map of compositeKey -> invalid status for displaying badges
   const invalidResourcesMap: Record<string, InvalidResourceStatus> =
     useMemo(() => {
@@ -295,22 +267,6 @@ export function useDiscovery({
     discoveryCheckComplete && effectiveResources.length > 0
   );
 
-  // Ownership verification - uses wrapper hook to isolate tRPC type issues
-  const ownership = useOwnership(
-    discoveryQuery.data,
-    urlOrigin,
-    batchTest.payToAddresses
-  );
-
-  // Check which resources are already registered
-  const registeredCheckQuery = api.public.resources.checkRegistered.useQuery(
-    { resources: resourceInputs },
-    {
-      enabled: discoveryCheckComplete && resourceInputs.length > 0,
-      staleTime: 60000, // Cache for 1 min
-    }
-  );
-
   // Bulk registration
   const {
     register,
@@ -343,14 +299,11 @@ export function useDiscovery({
     isValidUrl,
     urlOrigin,
     isOriginOnly,
-    enteredUrlInDiscovery,
 
     // Discovery state
-    discoveryQuery,
     isDiscoveryLoading: discoveryQuery.isLoading || discoveryQuery.isFetching,
     discoveryFound,
     discoverySource,
-    discoveryResources: effectiveResources,
     actualDiscoveredResources: discoveryResources,
     skippedResources,
     freeResourceCount: discoveryResources.filter(
@@ -358,7 +311,6 @@ export function useDiscovery({
         r.authMode === "siwx" ||
         isOpenApiDeclaredFree(r.authMode, discoverySource)
     ).length,
-    discoveryResourceCount: effectiveResources.length,
     discoveryError:
       discoveryQuery.data?.found === false
         ? discoveryQuery.data.error
@@ -372,7 +324,6 @@ export function useDiscovery({
       : undefined,
 
     // Origin preview
-    isPreviewLoading: previewQuery.isLoading,
     preview: previewQuery.data?.preview ?? null,
 
     // Test results
@@ -380,19 +331,6 @@ export function useDiscovery({
     batchTestProgress: batchTest.progress,
     testedResources: batchTest.resources,
     failedResources: batchTest.failed,
-
-    // Ownership verification
-    hasOwnershipProofs: ownership.ownershipProofs.length > 0,
-    ownershipProofs: ownership.ownershipProofs,
-    payToAddresses: batchTest.payToAddresses,
-    ownershipVerified: ownership.ownershipVerified,
-    recoveredAddresses: ownership.recoveredAddresses,
-    verifiedAddresses: ownership.verifiedAddresses,
-    isVerifyingOwnership: ownership.isVerifyingOwnership,
-
-    // Registration status
-    isCheckingRegistered: registeredCheckQuery.isLoading,
-    registeredUrls: registeredCheckQuery.data?.registered ?? [],
 
     // Bulk registration
     isRegisteringAll,
@@ -419,35 +357,5 @@ export function useDiscovery({
     bulkError,
     handleRegisterAll,
     resetBulk,
-
-    // Refresh discovery data with cache busting
-    refreshDiscovery: () => {
-      if (!urlOrigin) return;
-
-      // Fetch fresh data with cache busting
-      // The isFetching state will show loading indicator
-      void utils.public.resources.checkDiscovery
-        .fetch({
-          origin: urlOrigin,
-          bustCache: true,
-        })
-        .then(() => {
-          // Invalidate to ensure the query picks up the new data
-          void utils.public.resources.checkDiscovery.invalidate({
-            origin: urlOrigin,
-          });
-          // Refresh other queries after discovery is fetched
-          void previewQuery.refetch();
-          batchTest.refetch();
-        });
-    },
-
-    // Retry a single resource with optional sample body or test URL
-    retryResource: (
-      url: string,
-      options?: { sampleBody?: string; testUrl?: string }
-    ) => {
-      return batchTest.retryOne(url, options);
-    },
   };
 }
