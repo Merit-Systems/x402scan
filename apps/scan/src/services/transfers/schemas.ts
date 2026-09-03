@@ -10,7 +10,9 @@ import { timeframeSchema } from "@/lib/schemas";
 
 const addressArray = z
   .array(mixedAddressSchema)
-  .transform((addresses) => [...addresses].sort((a, b) => a.localeCompare(b)));
+  .transform((addresses) =>
+    [...addresses].toSorted((a, b) => a.localeCompare(b))
+  );
 
 const addressesSchema = z.object({
   include: addressArray.optional(),

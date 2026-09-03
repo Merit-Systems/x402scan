@@ -8,7 +8,7 @@ export const createTagSchema = z.object({
 });
 
 export const createTag = async (data: z.infer<typeof createTagSchema>) => {
-  return await scanDb.tag.create({
+  return scanDb.tag.create({
     data,
   });
 };
@@ -18,7 +18,7 @@ export const listTagsSchema = z.object({
 });
 
 export const listTags = async (data: z.infer<typeof listTagsSchema>) => {
-  return await scanDb.tag.findMany({
+  return scanDb.tag.findMany({
     orderBy: {
       name: "asc",
     },
@@ -46,7 +46,7 @@ export const assignTagToResource = async (
   data: z.infer<typeof assignTagToResourceSchema>
 ) => {
   const { resourceId, tagId } = data;
-  return await scanDb.resourcesTags.upsert({
+  return scanDb.resourcesTags.upsert({
     where: {
       resourceId_tagId: {
         resourceId,
@@ -67,7 +67,7 @@ export const unassignTagFromResource = async (
   data: z.infer<typeof assignTagToResourceSchema>
 ) => {
   const { resourceId, tagId } = data;
-  return await scanDb.resourcesTags.delete({
+  return scanDb.resourcesTags.delete({
     where: {
       resourceId_tagId: {
         resourceId,
@@ -78,7 +78,7 @@ export const unassignTagFromResource = async (
 };
 
 export const listResourceTags = async (resourceId: string) => {
-  return await scanDb.resourcesTags.findMany({
+  return scanDb.resourcesTags.findMany({
     where: {
       resourceId,
     },
@@ -94,7 +94,7 @@ export const listResourceTags = async (resourceId: string) => {
 };
 
 export const unassignAllTagsFromResource = async (resourceId: string) => {
-  return await scanDb.resourcesTags.deleteMany({
+  return scanDb.resourcesTags.deleteMany({
     where: {
       resourceId,
     },
@@ -102,11 +102,11 @@ export const unassignAllTagsFromResource = async (resourceId: string) => {
 };
 
 export const unassignAllTagsFromAllResources = async () => {
-  return await scanDb.resourcesTags.deleteMany({});
+  return scanDb.resourcesTags.deleteMany({});
 };
 
 export const deleteResourceTag = async (tagId: string) => {
-  return await scanDb.tag.delete({
+  return scanDb.tag.delete({
     where: {
       id: tagId,
     },
@@ -130,7 +130,7 @@ export const removeSubTagsFromTag = async (tagId: string) => {
   const resourceIds = resourcesWithTag.map((rt) => rt.resourceId);
 
   // Delete all tag associations from these resources EXCEPT for the specified tag
-  return await scanDb.resourcesTags.deleteMany({
+  return scanDb.resourcesTags.deleteMany({
     where: {
       resourceId: {
         in: resourceIds,
@@ -146,7 +146,7 @@ export const unassignAllSubTags = async () => {
   const mainTagNames = Object.keys(MAIN_TAGS);
 
   // Delete all tags (and their assignments via cascade) that are NOT main categories
-  return await scanDb.tag.deleteMany({
+  return scanDb.tag.deleteMany({
     where: {
       name: {
         notIn: mainTagNames,

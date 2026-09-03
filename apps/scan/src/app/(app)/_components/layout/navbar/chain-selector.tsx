@@ -26,13 +26,13 @@ export const ChainSelector = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelectChain = (chain: Chain | undefined) => {
-    setChain(chain);
+  const handleSelectChain = (selectedChain: Chain | undefined) => {
+    setChain(selectedChain);
 
     if (URL_BACKED_CHAIN_ROUTES.has(pathname)) {
       replaceSearchParams((params) => {
-        if (chain) {
-          params.set("chain", chain);
+        if (selectedChain) {
+          params.set("chain", selectedChain);
         } else {
           params.delete("chain");
         }

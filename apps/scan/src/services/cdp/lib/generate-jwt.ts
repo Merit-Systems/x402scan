@@ -16,7 +16,7 @@ export const generateCdpJwt = async (
   const { requestMethod, requestHost, requestPath, expiresIn } =
     generateCdpJwtSchema.parse(input);
 
-  return await generateJwt({
+  return generateJwt({
     apiKeyId: env.CDP_API_KEY_ID,
     apiKeySecret: env.CDP_API_KEY_SECRET,
     requestMethod,

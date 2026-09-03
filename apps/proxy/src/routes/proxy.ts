@@ -11,7 +11,7 @@ const REQUEST_HEADER_BLOCKLIST = new Set(["host", "content-length"]);
 const extractRequestBody = async (request: Request) => {
   const contentType = request.headers.get("content-type") ?? "";
   if (contentType.includes("application/json")) {
-    return (await request.json()) as unknown;
+    return request.json();
   } else if (contentType.includes("application/x-www-form-urlencoded")) {
     const formData = await request.formData();
     return Object.fromEntries(formData.entries());
@@ -19,7 +19,7 @@ const extractRequestBody = async (request: Request) => {
     const formData = await request.formData();
     return Object.fromEntries(formData.entries());
   } else if (contentType.includes("text/")) {
-    return await request.text();
+    return request.text();
   }
   return null;
 };
@@ -70,7 +70,7 @@ const extractResponseBody = async (
 
   if (contentType.includes("application/json")) {
     try {
-      const result = (await response.json()) as unknown;
+      const result = await response.json();
       console.log("[extractResponseBody] Successfully parsed JSON");
       return { kind: "json", body: result };
     } catch (error) {
@@ -304,8 +304,7 @@ async function proxyHandler(c: Context) {
       void (async () => {
         try {
           if (clonedUpstreamResponse.status === 402) {
-            const upstreamX402Response =
-              (await clonedUpstreamResponse.json()) as unknown;
+            const upstreamX402Response = await clonedUpstreamResponse.json();
             console.log("[402 Response]", {
               url: targetUrl.toString(),
               data: upstreamX402Response,
@@ -320,7 +319,8 @@ async function proxyHandler(c: Context) {
             let requestBody: unknown = undefined;
             let requestHeaders: Record<string, string> | undefined = undefined;
             let responseBody: unknown = undefined;
-            let responseHeaders: Record<string, string> | undefined = undefined;
+            let capturedResponseHeaders: Record<string, string> | undefined =
+              undefined;
 
             try {
               requestBody = await extractRequestBody(clonedRequest);
@@ -369,7 +369,7 @@ async function proxyHandler(c: Context) {
             }
 
             try {
-              responseHeaders = Object.fromEntries(
+              capturedResponseHeaders = Object.fromEntries(
                 clonedUpstreamResponse.headers
               );
             } catch (error) {
@@ -392,7 +392,7 @@ async function proxyHandler(c: Context) {
               requestBody,
               requestHeaders,
               responseBody,
-              responseHeaders,
+              responseHeaders: capturedResponseHeaders,
             };
             console.log("[Proxy Data]", { cleanedTargetUrl, data });
           }

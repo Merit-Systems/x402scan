@@ -12,7 +12,7 @@ import {
 import { DEFAULT_TOOLS_SORTING, TOOL_SORT_IDS } from "@/lib/table-sort-options";
 
 export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
-  return await scanDb.toolCall.create({
+  return scanDb.toolCall.create({
     data,
   });
 };

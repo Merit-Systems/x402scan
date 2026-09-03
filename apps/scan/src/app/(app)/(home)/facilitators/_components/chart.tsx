@@ -48,7 +48,7 @@ export const FacilitatorsChart = ({
     totalTransactions: totals?.[facilitator.id]?.totalTransactions ?? 0,
   }));
 
-  const facilitatorsByTransactions = [...facilitatorTotals].sort(
+  const facilitatorsByTransactions = [...facilitatorTotals].toSorted(
     (a, b) => b.totalTransactions - a.totalTransactions
   );
 

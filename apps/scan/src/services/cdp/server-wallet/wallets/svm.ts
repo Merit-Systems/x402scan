@@ -57,9 +57,9 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
     getTokenBalance: ({ token }) =>
       cdpResultFromPromise(
         "getTokenBalance",
-        getAddress().then((address) =>
+        getAddress().then((walletAddress) =>
           getSolanaTokenBalance({
-            ownerAddress: address,
+            ownerAddress: walletAddress,
             tokenMint: token.address as SolanaAddress,
           })
         ),
@@ -72,9 +72,9 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
     export: () =>
       cdpResultFromPromise(
         "export",
-        getAddress().then((address) =>
+        getAddress().then((walletAddress) =>
           cdpClient.solana.exportAccount({
-            address,
+            address: walletAddress,
             name,
           })
         ),
@@ -84,7 +84,7 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
         })
       ),
     signer: async () => getModifyingSigner(await getAccount()),
-    sendTokens: ({ address, token, amount }) =>
+    sendTokens: ({ address: recipientAddress, token, amount }) =>
       cdpResultFromPromise(
         "sendTokens",
         (async () => {
@@ -103,14 +103,14 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
           // Find destination token account (recipient's ATA)
           const [destinationTokenAccount] = await findAssociatedTokenPda({
             mint,
-            owner: solanaAddress(address),
+            owner: solanaAddress(recipientAddress),
             tokenProgram: TOKEN_PROGRAM_ADDRESS,
           });
 
           const createAssociatedTokenInstruction =
             await getCreateAssociatedTokenIdempotentInstructionAsync({
               mint,
-              owner: solanaAddress(address),
+              owner: solanaAddress(recipientAddress),
               payer: signer,
             });
 

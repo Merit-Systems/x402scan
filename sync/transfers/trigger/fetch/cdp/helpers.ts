@@ -18,7 +18,7 @@ async function generateCdpJwt(request: CdpFetchRequest): Promise<string> {
     expiresIn = 120,
   } = request;
 
-  return await generateJwt({
+  return generateJwt({
     apiKeyId: process.env.CDP_API_KEY_ID!,
     apiKeySecret: process.env.CDP_API_KEY_SECRET!,
     requestMethod,

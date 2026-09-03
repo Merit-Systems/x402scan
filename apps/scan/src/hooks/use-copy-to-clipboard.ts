@@ -7,7 +7,9 @@ export const useCopyToClipboard = (onCopy?: () => void) => {
     async (text: string) => {
       await navigator.clipboard.writeText(text);
       setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
       onCopy?.();
     },
     [onCopy]

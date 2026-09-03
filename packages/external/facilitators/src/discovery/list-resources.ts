@@ -13,7 +13,7 @@ export const listFacilitatorResources = async (
   facilitator: FacilitatorConfig,
   config?: ListDiscoveryResourcesRequest
 ) => {
-  return await facilitatorUtils(facilitator).list(config);
+  return facilitatorUtils(facilitator).list(config);
 };
 
 export const listAllFacilitatorResources = async (

@@ -6,10 +6,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DiscoverLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DiscoverLayout({ children }: LayoutProps<"/">) {
   return children;
 }

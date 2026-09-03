@@ -33,7 +33,7 @@ describe("isVercelPreviewDeployment", () => {
   });
 
   function stubFetch(impl: typeof fetch) {
-    const spy = vi.fn(impl);
+    const spy = vi.fn<typeof fetch>(impl);
     vi.stubGlobal("fetch", spy);
     return spy;
   }

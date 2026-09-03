@@ -34,25 +34,25 @@ function checkRateLimit(originId: string): void {
 
 export const originsRouter = createTRPCRouter({
   get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
-    return await getOrigin(input);
+    return getOrigin(input);
   }),
   list: {
     origins: publicProcedure
       .input(listOriginsSchema)
       .query(async ({ input }) => {
-        return await listOrigins(input);
+        return listOrigins(input);
       }),
 
     withResources: publicProcedure
       .input(listOriginsWithResourcesSchema)
       .query(async ({ input }) => {
-        return await listOriginsWithResources(input);
+        return listOriginsWithResources(input);
       }),
   },
   search: publicProcedure
     .input(searchOriginsSchema)
     .query(async ({ input }) => {
-      return await searchOrigins(input);
+      return searchOrigins(input);
     }),
   updateEmail: publicProcedure
     .input(z.object({ originId: z.string().uuid(), email: z.string().email() }))

@@ -31,13 +31,13 @@ import { auth } from "@/auth";
 export const publicAgentConfigurationsRouter = createTRPCRouter({
   get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
     const session = await auth();
-    return await getAgentConfiguration(input, session?.user?.id);
+    return getAgentConfiguration(input, session?.user?.id);
   }),
 
   list: paginatedProcedure
     .input(listTopAgentConfigurationsSchema)
     .query(async ({ input, ctx: { pagination } }) => {
-      return await listTopAgentConfigurations(input, pagination);
+      return listTopAgentConfigurations(input, pagination);
     }),
 
   activity: {
@@ -45,23 +45,23 @@ export const publicAgentConfigurationsRouter = createTRPCRouter({
       bucketed: publicProcedure
         .input(agentConfigBucketedActivityInputSchema)
         .query(async ({ input }) => {
-          return await getAgentConfigBucketedActivity(input);
+          return getAgentConfigBucketedActivity(input);
         }),
     },
     overall: publicProcedure
       .input(overallActivityInputSchema)
       .query(async ({ input }) => {
-        return await getOverallActivity(input);
+        return getOverallActivity(input);
       }),
     bucketed: publicProcedure
       .input(overallBucketedActivityInputSchema)
       .query(async ({ input }) => {
-        return await getOverallBucketedActivity(input);
+        return getOverallBucketedActivity(input);
       }),
     feed: paginatedProcedure
       .input(getAgentConfigFeedSchema)
       .query(async ({ input, ctx: { pagination } }) => {
-        return await getAgentConfigFeed(input, pagination);
+        return getAgentConfigFeed(input, pagination);
       }),
   },
 });

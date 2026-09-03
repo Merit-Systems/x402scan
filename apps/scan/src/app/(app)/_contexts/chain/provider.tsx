@@ -23,9 +23,9 @@ export const ChainProvider: React.FC<Props> = ({ children }) => {
   );
   const chain = urlChain ?? storedChain;
 
-  const setChain = (chain: Chain | undefined) => {
-    setDataChainCookieClient(chain);
-    setStoredChain(chain);
+  const setChain = (selectedChain: Chain | undefined) => {
+    setDataChainCookieClient(selectedChain);
+    setStoredChain(selectedChain);
   };
 
   return (
