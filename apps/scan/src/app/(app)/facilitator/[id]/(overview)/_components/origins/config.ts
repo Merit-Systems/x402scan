@@ -1,4 +1,4 @@
 export const FACILITATOR_SERVERS_SORTING = {
-  id: "editorial",
-  desc: false,
+  id: "tx_count",
+  desc: true,
 } as const;

@@ -15,8 +15,8 @@ export function FacilitatorOverview({
   facilitator: Facilitator;
 }) {
   return (
-    <div className="min-w-0 space-y-2">
-      <div className="flex min-w-0 items-center justify-between gap-4">
+    <div className="flex min-w-0 items-center justify-between gap-4">
+      <div className="min-w-0 space-y-2">
         <div className="flex min-w-0 items-center gap-3">
           <Avatar
             className="shrink-0"
@@ -36,9 +36,9 @@ export function FacilitatorOverview({
             <span className="sr-only">Open documentation</span>
           </a>
         </div>
-        {controls}
+        <p className="text-muted-foreground">x402 payment facilitator</p>
       </div>
-      <p className="text-muted-foreground">x402 payment facilitator</p>
+      <div className="flex shrink-0 items-center">{controls}</div>
     </div>
   );
 }
@@ -49,16 +49,16 @@ export function LoadingFacilitatorOverview({
   controls?: ReactNode;
 }) {
   return (
-    <div className="min-w-0 space-y-2">
-      <div className="flex min-w-0 items-center justify-between gap-4">
+    <div className="flex min-w-0 items-center justify-between gap-4">
+      <div className="min-w-0 space-y-2">
         <div className="flex min-w-0 items-center gap-3">
           <Skeleton className="size-10 rounded-md" />
           <Skeleton className="h-8 w-48 max-w-full" />
           <Skeleton className="size-7" />
         </div>
-        {controls}
+        <Skeleton className="h-5 w-40 max-w-full" />
       </div>
-      <Skeleton className="h-5 w-40 max-w-full" />
+      <div className="flex shrink-0 items-center">{controls}</div>
     </div>
   );
 }
