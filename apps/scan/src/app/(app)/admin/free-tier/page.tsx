@@ -1,4 +1,4 @@
-import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
 import { auth } from "@/auth";
 import { forbidden } from "next/navigation";
 import { freeTierWallets } from "@/services/cdp/server-wallet/free-tier";

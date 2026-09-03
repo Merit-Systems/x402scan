@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { ModelProviderIcon } from "@/app/(app)/_components/model-icon";
+import { ModelProviderIcon } from "@/app/(app)/composer/(chat)/_components/model-icon";
 import {
   Command,
   CommandEmpty,
