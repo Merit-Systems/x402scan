@@ -1,0 +1,246 @@
+import Link from "next/link";
+import { Plus } from "lucide-react";
+
+import { CopyPageDropdown } from "@/app/(app)/(home)/discovery/_components/copy-page-dropdown";
+import { DiscoveryDocActions } from "@/app/(app)/(home)/discovery/_components/doc-actions";
+import { DiscoveryPageHeader } from "@/app/(app)/(home)/discovery/_components/page-header";
+import { AgentPromptPreview } from "@/app/(app)/(home)/integration-spec/agent-prompt-preview";
+import { CopyForAgentsButton } from "@/app/(app)/(home)/integration-spec/copy-for-agents-button";
+import { PAGE_MARKDOWN } from "@/app/(app)/(home)/integration-spec/_content/markdown";
+import { SPEC_PROMPT } from "@/app/(app)/(home)/integration-spec/_content/prompt";
+import { TryDiscovery } from "@/app/(app)/(home)/integration-spec/try-discovery";
+import { buttonVariants } from "@/components/ui/button";
+import { env } from "@/env";
+
+export const metadata = {
+  title: "Become Discoverable",
+  description:
+    "Build once, register reliably, and keep your resources discoverable by agents.",
+};
+
+<DiscoveryPageHeader
+  title="Become discoverable"
+  description="Build once, register reliably, and keep your resources discoverable by agents."
+>
+  <CopyPageDropdown
+    markdown={PAGE_MARKDOWN}
+    pageUrl={`${env.NEXT_PUBLIC_APP_URL}/discovery/spec`}
+    markdownPath="/discovery/spec.md"
+  />
+  <Link href="/resources/register" className={buttonVariants({ size: "sm" })}>
+    <Plus className="size-3.5" />
+    Add your API
+  </Link>
+</DiscoveryPageHeader>
+
+## Why This Matters
+
+If agents can't discover your API, they can't call it. Bulletproof discovery turns your endpoint from merely listed to reliably invocable.
+
+When metadata and runtime `402` behavior agree, agents succeed on the first pass. You get fewer failures, less debugging churn, and more real agent traffic.
+
+- Publish OpenAPI as the canonical machine-readable contract.
+- Treat runtime `402` challenge behavior as the final source of truth.
+
+## Copy for Agents
+
+Paste this directly into your coding agent. It should handle discovery implementation and validation end-to-end.
+
+<div className="mt-3 mb-10 space-y-3" data-not-typeset>
+  <CopyForAgentsButton text={SPEC_PROMPT} />
+  <AgentPromptPreview prompt={SPEC_PROMPT} />
+</div>
+
+## Test your API
+
+Run discovery against your origin to see what x402scan resolves before you register.
+
+<div className="mt-3 mb-10" data-not-typeset>
+  <TryDiscovery />
+</div>
+
+## Discovery Strategy
+
+OpenAPI is the canonical discovery format. Use it for the cleanest machine-readable contract and best agent compatibility.
+
+The `x-payment-info` fields are a superset of the [IETF API payment spec](https://paymentauth.org/draft-payment-discovery-00.txt). The fields do not collide, so your service is still compatible if you already follow the IETF standard.
+
+Expected location: `GET /openapi.json`
+
+### Requirements
+
+- Top-level fields: `openapi`, `info.title`, `info.x-guidance`, `info.version`, `paths`.
+- For paid operations: `responses.402` and `x-payment-info`.
+- Set `x-payment-info.protocols` as an array of protocol objects and one pricing mode (`fixed` or `dynamic`) with `currency`.
+- Use OpenAPI `security` and `components.securitySchemes` for auth declaration.
+- Add high-level guidance in `info.x-guidance` for agent-friendly discovery.
+
+### Recommended
+
+- `info.contact.email` — your contact email. It lets you verify ownership of your origin, allows users to contact you, and lets you customize your merchant pages on [Poncho](https://tryponcho.com).
+
+### Pricing modes in `x-payment-info`
+
+- Fixed: `{ price: { mode: "fixed", currency: "USD", amount: "<amount>" } }`
+- Dynamic: `{ price: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" } }`
+- OpenAPI `x-payment-info.price.amount` is decimal USD; runtime x402 v2 `accepts[].amount` is token atomic units. For USDC, `0.01` becomes `"10000"`.
+
+### Minimal valid example
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+    "x-guidance": "Use POST /api/search for neural web search."
+  },
+  "paths": {
+    "/api/search": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": { "type": "object" }
+                    }
+                  },
+                  "required": ["results"]
+                }
+              }
+            }
+          },
+          "402": { "description": "Payment Required" }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The query string for the search"
+                  }
+                },
+                "required": ["query"]
+              }
+            }
+          }
+        },
+        "x-payment-info": {
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.010000"
+          },
+          "protocols": [{ "x402": {} }]
+        }
+      }
+    }
+  }
+}
+```
+
+## Discovery Precedence
+
+x402scan uses the OpenAPI document at `/openapi.json` to discover your API. It also checks runtime `402` behavior to ensure the payment challenge is valid.
+
+| Order | Source             | Expected Location              |
+| ----- | ------------------ | ------------------------------ |
+| 1     | OpenAPI document   | `/openapi.json`                |
+| 2     | `402` API Response | Correct `402` payment response |
+
+## SIWX (Sign-In with X) Routes
+
+SIWX routes are identity-gated, requiring a wallet proof but no payment. Agents with a wallet can call these for free.
+
+- Declare a security scheme named `siwx` in `components.securitySchemes`.
+- Reference it on each identity-gated operation via `security: [{ "siwx": [] }]`.
+- Do **not** add `x-payment-info` to SIWX-only routes, as that classifies them as paid.
+
+```json
+{
+  "components": {
+    "securitySchemes": {
+      "siwx": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "SIGN-IN-WITH-X"
+      }
+    }
+  },
+  "paths": {
+    "/api/me": {
+      "get": {
+        "summary": "Get current user profile",
+        "security": [{ "siwx": [] }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}
+```
+
+The scheme **must** be named `siwx`. Discovery resolves it by name. Routes with both `x-payment-info` and `siwx` security are classified as paid, not SIWX.
+
+## Free / Public Routes
+
+Free routes don't require payment or identity, but they still need an explicit auth mode declaration so discovery can classify them correctly.
+
+- Add `security: []` to each free operation in the OpenAPI spec.
+- This overrides any global security requirement and tells discovery the endpoint is intentionally open.
+- Without it, the endpoint is flagged as having no auth mode during registration.
+
+```json
+{
+  "paths": {
+    "/api/status": {
+      "get": {
+        "summary": "Health check (free, no auth)",
+        "security": [],
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}
+```
+
+## Endpoint-Only Fallback
+
+If no OpenAPI document exists, a single endpoint URL can still be registered. x402scan probes the URL directly with `@agentcash/discovery`.
+
+- The probe is method-aware and chooses the first response with a valid x402 payment option.
+- The endpoint must return a parseable `402` challenge with at least one x402 entry.
+- Request validation should let unauthenticated probes reach the `402` challenge before body or query validation rejects the request.
+- Endpoints without an input schema are non-invocable and are skipped during registration. Publish an OpenAPI schema or a `402` body carrying one to make the endpoint registerable.
+- SIWX endpoints are registered as identity-only. No payment is required, but agents still need a wallet proof to call them.
+
+```bash
+curl -i -X POST https://yourdomain.com/api/route
+curl -i -X GET https://yourdomain.com/api/route
+```
+
+## Common Failure Reasons
+
+| Error                                     | Likely Cause                                                                        | Fix                                                                                                                         |
+| ----------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Not Found                                 | OpenAPI not found at `{origin}/openapi.json`                                        | Add an OpenAPI document at `{origin}/openapi.json`                                                                          |
+| Input/Output Schema Missing               | Operation has no input or output schema                                             | Add an input and output schema to the operation                                                                             |
+| No Payment Modes Detected                 | No payment modes detected in the response                                           | Add a valid x402 payment mode to the response                                                                               |
+| Expected 402, got 400                     | Request validation rejected the unauthenticated probe before payment middleware ran | Let probes reach the `402` challenge before body/query validation, or add schemas/examples that let probes send valid input |
+| Malformed Runtime Amount                  | Runtime amount used decimal dollars                                                 | Encode runtime amounts in token atomic units                                                                                |
+| No valid x402 response / No 402 challenge | Endpoint is free but not marked as such                                             | Add `security: []` to the operation                                                                                         |
+
+<DiscoveryDocActions
+  secondaryHref="/discovery/architecture"
+  secondaryLabel="Suggested architecture"
+/>

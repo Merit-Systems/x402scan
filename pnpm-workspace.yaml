@@ -40,6 +40,7 @@ catalogs:
     dotenv: ^17.2.3
   next:
     next: &NEXT_VERSION ^16.1.5
+    "@next/mdx": *NEXT_VERSION
     next-themes: ^0.4.6
   prisma:
     prisma: &PRISMA_VERSION ^7.3.0

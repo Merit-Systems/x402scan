@@ -1,8 +1,10 @@
 import Link from "next/link";
 
-import { Body, Heading, Section } from "@/app/_components/layout/page-utils";
+import { DiscoveryPageHeader } from "@/app/(app)/(home)/discovery/_components/page-header";
+import { DocumentationPage } from "@/components/documentation-page";
 import { JsonLd } from "@/components/json-ld";
 import { Button } from "@/components/ui/button";
+import { Typeset } from "@/components/ui/typeset";
 import { env } from "@/env";
 
 const description =
@@ -80,113 +82,85 @@ const jsonLd = [
 
 export function AgenticCommerceContent() {
   return (
-    <>
+    <DocumentationPage>
       <JsonLd data={jsonLd} />
-      <Heading
+      <DiscoveryPageHeader
         title="Agentic Commerce"
         description="AI agents discover, pay for, and use digital services directly."
-        actions={
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button size="sm" render={<Link href="/resources/register" />}>
-              Register API
-            </Button>
-            <Button size="sm" variant="outline" render={<Link href="/" />}>
-              Browse services
-            </Button>
-          </div>
-        }
-      />
-      <Body className="gap-8">
-        <Section title="What is agentic commerce?">
-          <div className="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground">
-            <p>
-              Agentic commerce happens when AI agents discover, pay for, and use
-              digital services directly. In this model, the commercial unit is
-              often an API request rather than a pageview, subscription, or
-              human checkout session.
-            </p>
-            <p>
-              This matters because more internet activity is moving through
-              agent interfaces. When agents do the work, providers need ways to
-              charge directly for data, content, tools, and services that can be
-              called programmatically.
-            </p>
-          </div>
-        </Section>
+      >
+        <div className="flex flex-col gap-2 sm:flex-row" data-not-typeset>
+          <Button size="sm" render={<Link href="/resources/register" />}>
+            Register API
+          </Button>
+          <Button size="sm" variant="outline" render={<Link href="/" />}>
+            Browse services
+          </Button>
+        </div>
+      </DiscoveryPageHeader>
+      <Typeset>
+        <h2>What is agentic commerce?</h2>
+        <p>
+          Agentic commerce happens when AI agents discover, pay for, and use
+          digital services directly. In this model, the commercial unit is often
+          an API request rather than a pageview, subscription, or human checkout
+          session.
+        </p>
+        <p>
+          This matters because more internet activity is moving through agent
+          interfaces. When agents do the work, providers need ways to charge
+          directly for data, content, tools, and services that can be called
+          programmatically.
+        </p>
 
-        <Section
-          title="How providers sell to agents"
-          description="The provider path is simple: make the API payable, make it discoverable, and let agents call it."
-        >
-          <ol className="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground">
-            <li>
-              <span className="font-medium text-foreground">
-                1. Add pay-per-call:
-              </span>{" "}
-              enable per-request pricing so agents can pay without subscriptions
-              or invoices.
-            </li>
-            <li>
-              <span className="font-medium text-foreground">
-                2. Publish discovery:
-              </span>{" "}
-              describe what the API does, what it costs, and how an agent should
-              call it.
-            </li>
-            <li>
-              <span className="font-medium text-foreground">
-                3. Reach agents:
-              </span>{" "}
-              let agents inspect schemas and pricing, pay, and execute the
-              request.
-            </li>
-          </ol>
-        </Section>
+        <h2>How providers sell to agents</h2>
+        <p>
+          The provider path is simple: make the API payable, make it
+          discoverable, and let agents call it.
+        </p>
+        <ol>
+          <li>
+            <strong>Add pay-per-call:</strong> enable per-request pricing so
+            agents can pay without subscriptions or invoices.
+          </li>
+          <li>
+            <strong>Publish discovery:</strong> describe what the API does, what
+            it costs, and how an agent should call it.
+          </li>
+          <li>
+            <strong>Reach agents:</strong> let agents inspect schemas and
+            pricing, pay, and execute the request.
+          </li>
+        </ol>
 
-        <Section
-          title="The x402scan role"
-          description="x402scan is the public marketplace and analytics layer for x402 services."
-        >
-          <div className="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground">
-            <p>
-              x402 is the payment standard, AgentCash is the MCP for discovering
-              and paying for premium APIs, and x402scan is where those services
-              become visible.
-            </p>
-            <p>
-              The goal is not a new checkout page. The goal is a market where
-              software can understand the service, pay the listed price, and get
-              the result.
-            </p>
-          </div>
-        </Section>
+        <h2>The x402scan role</h2>
+        <p>
+          x402 is the payment standard, AgentCash is the MCP for discovering and
+          paying for premium APIs, and x402scan is where those services become
+          visible.
+        </p>
+        <p>
+          The goal is not a new checkout page. The goal is a market where
+          software can understand the service, pay the listed price, and get the
+          result.
+        </p>
 
-        <Section
-          title="Enter the agent market"
-          description="Register your API on x402scan and publish discovery metadata so agents can understand and call it."
-        >
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <Link
-              className="font-medium underline-offset-4 hover:underline"
-              href="/discovery"
-            >
-              Sell to agents
-            </Link>
-            <Link
-              className="font-medium underline-offset-4 hover:underline"
-              href="/resources/register"
-            >
-              Register API
-            </Link>
-            <Link
-              className="font-medium underline-offset-4 hover:underline"
-              href="/x402"
-            >
-              Explore x402
-            </Link>
-          </div>
-        </Section>
-      </Body>
-    </>
+        <h2>Enter the agent market</h2>
+        <p>
+          Register your API on x402scan and publish discovery metadata so agents
+          can understand and call it.
+        </p>
+        <ul>
+          <li>
+            <Link href="/discovery">Sell to agents</Link>
+          </li>
+          <li>
+            <Link href="/resources/register">Register API</Link>
+          </li>
+          <li>
+            <Link href="/x402">Explore x402</Link>
+          </li>
+        </ul>
+      </Typeset>
+    </DocumentationPage>
   );
 }
