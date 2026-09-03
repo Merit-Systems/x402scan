@@ -35,8 +35,8 @@ export const BaseComposedChart = <
       <defs>
         {bars.map(({ dataKey, color }) => (
           <linearGradient
-            key={dataKey as string}
-            id={`${dataKey as string}-gradient`}
+            key={dataKey}
+            id={`${dataKey}-gradient`}
             x1="0"
             y1="0"
             x2="0"
@@ -50,7 +50,7 @@ export const BaseComposedChart = <
       {bars.map(({ dataKey, color, ...barProps }, index) => {
         return (
           <Bar<ChartData<T>, number>
-            key={dataKey as string}
+            key={dataKey}
             isAnimationActive={index === bars.length - 1}
             dataKey={dataKey}
             stackId={index.toString()}
@@ -64,8 +64,8 @@ export const BaseComposedChart = <
       <defs>
         {areas.map(({ dataKey, color }) => (
           <linearGradient
-            key={dataKey as string}
-            id={`${dataKey as string}-gradient`}
+            key={dataKey}
+            id={`${dataKey}-gradient`}
             x1="0"
             y1="0"
             x2="0"
@@ -79,7 +79,7 @@ export const BaseComposedChart = <
       {areas.map(({ dataKey, color, ...areaProps }, index) => {
         return (
           <Area<ChartData<T>, number>
-            key={dataKey as string}
+            key={dataKey}
             isAnimationActive={index === areas.length - 1}
             dataKey={dataKey}
             stackId="1"
@@ -93,7 +93,7 @@ export const BaseComposedChart = <
       {lines.map(({ dataKey, color, ...lineProps }, index) => {
         return (
           <Line<ChartData<T>, number>
-            key={dataKey as string}
+            key={dataKey}
             isAnimationActive={index === lines.length - 1}
             dataKey={dataKey}
             fill={`color-mix(in oklab, ${color} 40%, transparent)`}

@@ -42,15 +42,16 @@ export function SolanaWalletProvider({ children }: Props) {
 
   useEffect(() => {
     if (ready && cdpWallet) {
-      const wallet = wallets.find(
-        (wallet) =>
-          wallet.features.includes("cdp:") &&
-          wallet.accounts[0]?.address === cdpWallet.accounts[0]?.address
+      const matchingWallet = wallets.find(
+        (candidateWallet) =>
+          candidateWallet.features.includes("cdp:") &&
+          candidateWallet.accounts[0]?.address ===
+            cdpWallet.accounts[0]?.address
       );
-      if (wallet) {
+      if (matchingWallet) {
         setConnectedWallet({
-          account: wallet.accounts[0]!,
-          wallet: wallet,
+          account: matchingWallet.accounts[0]!,
+          wallet: matchingWallet,
         });
       }
     }

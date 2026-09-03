@@ -139,7 +139,9 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const accept = resource.accepts?.find((accept) => accept.network === chain);
+  const accept = resource.accepts?.find(
+    (candidateAccept) => candidateAccept.network === chain
+  );
 
   if (!accept) {
     return NextResponse.json(
@@ -226,8 +228,8 @@ export const POST = async (request: NextRequest) => {
     requestInit.headers = mergedHeaders;
   }
 
-  const supportedAccepts = resource.accepts.filter((accept) =>
-    SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+  const supportedAccepts = resource.accepts.filter((candidateAccept) =>
+    SUPPORTED_CHAINS.includes(candidateAccept.network as SupportedChain)
   );
 
   if (supportedAccepts.length === 0) {

@@ -36,8 +36,8 @@ export const BaseAreaChart = <
       <defs>
         {areas.map(({ dataKey, color }) => (
           <linearGradient
-            key={dataKey as string}
-            id={`${dataKey as string}-gradient`}
+            key={dataKey}
+            id={`${dataKey}-gradient`}
             x1="0"
             y1="0"
             x2="0"
@@ -51,11 +51,11 @@ export const BaseAreaChart = <
       {areas.map(({ dataKey, color, ...areaProps }, index) => {
         return (
           <Area<ChartData<T>, number>
-            key={dataKey as string}
+            key={dataKey}
             isAnimationActive={index === areas.length - 1}
             dataKey={dataKey}
             stackId="1"
-            fill={`url(#${dataKey as string}-gradient)`}
+            fill={`url(#${dataKey}-gradient)`}
             stroke={color}
             strokeWidth={1}
             type="monotone"

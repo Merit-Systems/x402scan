@@ -14,7 +14,7 @@ export const upsertResourceResponse = async (
   response: ParsedX402Response
 ) => {
   const responseJson = toPrismaJson(response);
-  return await scanDb.resourceResponse.upsert({
+  return scanDb.resourceResponse.upsert({
     where: {
       resourceId,
     },
@@ -30,7 +30,7 @@ export const upsertResourceResponse = async (
 };
 
 export const deleteResourceResponse = async (resourceId: string) => {
-  return await scanDb.resourceResponse.deleteMany({
+  return scanDb.resourceResponse.deleteMany({
     where: {
       resourceId,
     },

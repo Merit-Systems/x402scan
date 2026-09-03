@@ -40,8 +40,8 @@ export const BaseBarChart = <
         <defs>
           {bars.map(({ dataKey, color }) => (
             <linearGradient
-              key={dataKey as string}
-              id={`${dataKey as string}-gradient`}
+              key={dataKey}
+              id={`${dataKey}-gradient`}
               x1="0"
               y1="0"
               x2="0"
@@ -57,11 +57,11 @@ export const BaseBarChart = <
       {bars.map(({ dataKey, color, ...barProps }, index) => {
         return (
           <Bar<ChartData<T>, number>
-            key={dataKey as string}
+            key={dataKey}
             isAnimationActive={index === bars.length - 1}
             dataKey={dataKey}
             stackId={stacked ? "1" : index.toString()}
-            fill={solid ? color : `url(#${dataKey as string}-gradient)`}
+            fill={solid ? color : `url(#${dataKey}-gradient)`}
             fillOpacity={solid ? 0.2 : undefined}
             stroke={color}
             strokeWidth={0.5}

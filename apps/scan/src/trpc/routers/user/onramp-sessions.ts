@@ -51,7 +51,7 @@ export const onrampSessionsRouter = createTRPCRouter({
       return onrampSession;
     }
 
-    return await updateOnrampSession(onrampSession.id, {
+    return updateOnrampSession(onrampSession.id, {
       status: transaction.status,
       txHash: transaction.tx_hash,
       failureReason:
@@ -66,8 +66,8 @@ export const onrampSessionsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { defaultNetwork } = input;
       const account = ctx.session.user.accounts.find(
-        (account) =>
-          account.provider ===
+        (candidateAccount) =>
+          candidateAccount.provider ===
           (defaultNetwork === Chain.SOLANA
             ? SIWS_PROVIDER_ID
             : SIWE_PROVIDER_ID)

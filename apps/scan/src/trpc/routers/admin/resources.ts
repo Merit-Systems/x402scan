@@ -52,7 +52,7 @@ export const adminResourcesRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      return await searchResourcesCombined(input.query, {
+      return searchResourcesCombined(input.query, {
         refinementMode: input.refinementMode,
         queryMode: input.queryMode,
       });
@@ -62,122 +62,122 @@ export const adminResourcesRouter = createTRPCRouter({
     create: adminProcedure
       .input(createTagSchema)
       .mutation(async ({ input }) => {
-        return await createTag(input);
+        return createTag(input);
       }),
 
     assign: adminProcedure
       .input(assignTagToResourceSchema)
       .mutation(async ({ input }) => {
-        return await assignTagToResource(input);
+        return assignTagToResource(input);
       }),
 
     unassign: adminProcedure
       .input(assignTagToResourceSchema)
       .mutation(async ({ input }) => {
-        return await unassignTagFromResource(input);
+        return unassignTagFromResource(input);
       }),
 
     unassignAll: adminProcedure
       .input(z.string().uuid())
       .mutation(async ({ input }) => {
-        return await unassignAllTagsFromResource(input);
+        return unassignAllTagsFromResource(input);
       }),
 
     unassignAllFromAll: adminProcedure.mutation(async () => {
-      return await unassignAllTagsFromAllResources();
+      return unassignAllTagsFromAllResources();
     }),
 
     delete: adminProcedure
       .input(z.string().uuid())
       .mutation(async ({ input }) => {
-        return await deleteResourceTag(input);
+        return deleteResourceTag(input);
       }),
 
     removeSubTags: adminProcedure
       .input(z.string().uuid())
       .mutation(async ({ input }) => {
-        return await removeSubTagsFromTag(input);
+        return removeSubTagsFromTag(input);
       }),
 
     unassignAllSubTags: adminProcedure.mutation(async () => {
-      return await unassignAllSubTags();
+      return unassignAllSubTags();
     }),
   },
   requestMetadata: {
     list: adminProcedure.query(async () => {
-      return await getAllResourceRequestMetadata();
+      return getAllResourceRequestMetadata();
     }),
 
     searchResources: adminProcedure
       .input(z.object({ search: z.string().optional() }))
       .query(async ({ input }) => {
-        return await searchResourcesForMetadata(input.search);
+        return searchResourcesForMetadata(input.search);
       }),
 
     create: adminProcedure
       .input(createResourceRequestMetadataSchema)
       .mutation(async ({ input }) => {
-        return await createResourceRequestMetadata(input);
+        return createResourceRequestMetadata(input);
       }),
 
     update: adminProcedure
       .input(updateResourceRequestMetadataSchema)
       .mutation(async ({ input }) => {
-        return await updateResourceRequestMetadata(input);
+        return updateResourceRequestMetadata(input);
       }),
 
     delete: adminProcedure
       .input(z.object({ id: z.uuid() }))
       .mutation(async ({ input }) => {
-        return await deleteResourceRequestMetadata(input.id);
+        return deleteResourceRequestMetadata(input.id);
       }),
   },
   excludes: {
     list: adminProcedure.query(async () => {
-      return await getAllExcludedResources();
+      return getAllExcludedResources();
     }),
 
     searchResources: adminProcedure
       .input(z.object({ search: z.string().optional() }))
       .query(async ({ input }) => {
-        return await searchResourcesForExcludes(input.search);
+        return searchResourcesForExcludes(input.search);
       }),
 
     create: adminProcedure
       .input(createExcludedResourceSchema)
       .mutation(async ({ input }) => {
-        return await createExcludedResource(input);
+        return createExcludedResource(input);
       }),
 
     deleteByResourceId: adminProcedure
       .input(z.object({ resourceId: z.uuid() }))
       .mutation(async ({ input }) => {
-        return await deleteExcludedResourceByResourceId(input.resourceId);
+        return deleteExcludedResourceByResourceId(input.resourceId);
       }),
   },
   stats: {
     creations: adminProcedure
       .input(resourceBucketedQuerySchema)
       .query(async ({ input }) => {
-        return await getBucketedResourceCreations(input);
+        return getBucketedResourceCreations(input);
       }),
 
     toolCalls: adminProcedure
       .input(resourceBucketedQuerySchema)
       .query(async ({ input }) => {
-        return await getBucketedToolCalls(input);
+        return getBucketedToolCalls(input);
       }),
 
     toolCallsByTags: adminProcedure
       .input(resourceBucketedQuerySchema)
       .query(async ({ input }) => {
-        return await getBucketedToolCallsByTags(input);
+        return getBucketedToolCallsByTags(input);
       }),
 
     toolCallsByResources: adminProcedure
       .input(resourceBucketedQuerySchema)
       .query(async ({ input }) => {
-        return await getBucketedToolCallsByResources(input);
+        return getBucketedToolCallsByResources(input);
       }),
   },
 });

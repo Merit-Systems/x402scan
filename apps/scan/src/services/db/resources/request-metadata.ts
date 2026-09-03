@@ -21,7 +21,7 @@ export const createResourceRequestMetadata = async (
   input: z.input<typeof createResourceRequestMetadataSchema>
 ) => {
   const data = createResourceRequestMetadataSchema.parse(input);
-  return await scanDb.resourceRequestMetadata.create({
+  return scanDb.resourceRequestMetadata.create({
     data,
     include: {
       resource: {
@@ -38,7 +38,7 @@ export const updateResourceRequestMetadata = async (
 ) => {
   const { id, ...updateData } =
     updateResourceRequestMetadataSchema.parse(input);
-  return await scanDb.resourceRequestMetadata.update({
+  return scanDb.resourceRequestMetadata.update({
     where: { id },
     data: updateData,
     include: {
@@ -52,7 +52,7 @@ export const updateResourceRequestMetadata = async (
 };
 
 export const getAllResourceRequestMetadata = async () => {
-  return await scanDb.resourceRequestMetadata.findMany({
+  return scanDb.resourceRequestMetadata.findMany({
     include: {
       resource: {
         include: {
@@ -69,13 +69,13 @@ export const getAllResourceRequestMetadata = async () => {
 };
 
 export const deleteResourceRequestMetadata = async (id: string) => {
-  return await scanDb.resourceRequestMetadata.delete({
+  return scanDb.resourceRequestMetadata.delete({
     where: { id },
   });
 };
 
 export const searchResourcesForMetadata = async (search?: string) => {
-  return await scanDb.resources.findMany({
+  return scanDb.resources.findMany({
     where: {
       ...(search
         ? {

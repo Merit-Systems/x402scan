@@ -11,7 +11,7 @@ export const hasUserAcknowledgedComposer = async (
 };
 
 export const upsertUserAcknowledgement = async (userId: string) => {
-  return await scanDb.userAcknowledgement.upsert({
+  return scanDb.userAcknowledgement.upsert({
     where: { userId },
     create: {
       userId,

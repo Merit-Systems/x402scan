@@ -31,10 +31,5 @@ export async function fetchBigQuery(
 
   logger.log(`[${config.chain}] BigQuery returned ${rows.length} rows`);
 
-  return await config.transformResponse(
-    rows,
-    config,
-    facilitator,
-    facilitatorConfig
-  );
+  return config.transformResponse(rows, config, facilitator, facilitatorConfig);
 }
