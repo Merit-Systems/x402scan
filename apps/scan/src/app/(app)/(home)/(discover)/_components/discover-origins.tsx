@@ -10,8 +10,12 @@ import {
   ServiceSummary,
 } from "@/components/service-summary";
 import {
-  LoadingServiceUsageMetrics,
-  ServiceUsageMetrics,
+  LoadingServiceMetric,
+  ServiceBuyersMetric,
+  ServiceLatestMetric,
+  ServiceMetricsGrid,
+  ServiceTransactionsMetric,
+  ServiceVolumeMetric,
 } from "@/app/(app)/_components/service-collection";
 import {
   ResponsiveCollection,
@@ -281,7 +285,12 @@ const serviceListItem: DataListItem<ServiceItem> = {
           descriptionPlacement="below"
           nameVariant="card-title"
         />
-        <ServiceUsageMetrics item={item} />
+        <ServiceMetricsGrid>
+          <ServiceVolumeMetric item={item} />
+          <ServiceTransactionsMetric item={item} />
+          <ServiceBuyersMetric item={item} />
+          <ServiceLatestMetric item={item} />
+        </ServiceMetricsGrid>
       </Link>
     );
   },
@@ -292,7 +301,11 @@ function LoadingServiceItem() {
   return (
     <div className="flex flex-col gap-3 py-4">
       <LoadingServiceSummary />
-      <LoadingServiceUsageMetrics />
+      <ServiceMetricsGrid>
+        {Array.from({ length: 4 }, (_, metricIndex) => (
+          <LoadingServiceMetric key={metricIndex} />
+        ))}
+      </ServiceMetricsGrid>
     </div>
   );
 }

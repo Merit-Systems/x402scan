@@ -1,6 +1,9 @@
 "use client";
 
-import { createServiceColumns } from "@/app/(app)/_components/service-collection";
+import {
+  createServiceActivityColumn,
+  createServiceColumnSet,
+} from "@/app/(app)/_components/service-collection";
 
 import type { RouterOutputs } from "@/trpc/client";
 
@@ -9,6 +12,14 @@ type BazaarItem =
 
 export type ServiceItem = BazaarItem;
 
-export const serviceColumns = createServiceColumns<ServiceItem>({
-  getActivity: (item) => item.transactionSparkline,
-});
+const columns = createServiceColumnSet<ServiceItem>();
+
+export const serviceColumns = [
+  columns.server,
+  createServiceActivityColumn<ServiceItem>((item) => item.transactionSparkline),
+  columns.volume,
+  columns.transactions,
+  columns.buyers,
+  columns.latest,
+  columns.chain,
+];

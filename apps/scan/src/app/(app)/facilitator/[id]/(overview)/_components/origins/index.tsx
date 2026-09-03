@@ -9,8 +9,11 @@ import {
   ServiceSummary,
 } from "@/components/service-summary";
 import {
-  LoadingServiceUsageMetrics,
-  ServiceUsageMetrics,
+  LoadingServiceMetric,
+  ServiceBuyersMetric,
+  ServiceMetricsGrid,
+  ServiceTransactionsMetric,
+  ServiceVolumeMetric,
 } from "@/app/(app)/_components/service-collection";
 import {
   ResponsiveCollection,
@@ -83,13 +86,21 @@ const facilitatorServerListItem: DataListItem<FacilitatorServer> = {
         item={item}
         nameVariant="card-title"
       />
-      <ServiceUsageMetrics item={item} />
+      <ServiceMetricsGrid>
+        <ServiceVolumeMetric item={item} />
+        <ServiceTransactionsMetric item={item} />
+        <ServiceBuyersMetric item={item} />
+      </ServiceMetricsGrid>
     </Link>
   ),
   renderLoadingItem: () => (
     <div className="flex flex-col gap-3 py-4">
       <LoadingServiceSummary />
-      <LoadingServiceUsageMetrics />
+      <ServiceMetricsGrid>
+        {Array.from({ length: 3 }, (_, metricIndex) => (
+          <LoadingServiceMetric key={metricIndex} />
+        ))}
+      </ServiceMetricsGrid>
     </div>
   ),
 };
