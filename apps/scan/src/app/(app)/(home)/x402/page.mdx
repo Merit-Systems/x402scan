@@ -1,0 +1,66 @@
+import Link from "next/link";
+
+import { DiscoveryPageHeader } from "@/app/(app)/(home)/discovery/_components/page-header";
+import {
+  X402StructuredData,
+  x402Description,
+} from "@/app/(app)/(home)/x402/_components/structured-data";
+import { Button } from "@/components/ui/button";
+
+export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "x402 Explorer, Transactions, Servers, and Marketplace",
+  description: x402Description,
+  alternates: {
+    canonical: "/x402",
+  },
+};
+
+<X402StructuredData />
+
+<DiscoveryPageHeader
+  title="x402"
+  description="An HTTP-native payment standard for paid APIs and agentic commerce."
+>
+  <div data-not-typeset>
+    <Button size="sm" render={<Link href="/" />}>
+      Discover services
+    </Button>
+  </div>
+</DiscoveryPageHeader>
+
+## What is x402?
+
+x402 is an open, neutral standard for internet-native payments between clients and servers. Instead of forcing a user or agent through account creation, checkout, and prepaid credits, a server can answer a paid request with `402 Payment Required`.
+
+The client reads the payment requirements, pays, retries the request, and receives access to the API or resource. That flow makes paid APIs usable by software, not just by humans filling out web forms.
+
+## How x402 works
+
+1. **Request:** a client or AI agent sends a normal HTTP request to a paid resource.
+2. **Pay:** the server responds with `402 Payment Required` and the client submits payment.
+3. **Retry:** the client retries with payment proof and receives the API result.
+
+## Why x402 matters
+
+Paid APIs usually require accounts, checkout, prepaid credits, and API keys before software can do anything useful. x402 lets services price individual requests, so agents and developers can pay only when they need access.
+
+## Explore x402 on x402scan
+
+x402scan indexes the services, payments, and infrastructure behind the x402 ecosystem.
+
+- [Discover services](/)
+- [Facilitators](/facilitators)
+- [Networks](/networks)
+
+## Build with x402
+
+Register an x402-compatible API so agents and developers can discover what it does, what it costs, and how to call it.
+
+<div className="flex flex-col gap-2 sm:flex-row" data-not-typeset>
+  <Button render={<Link href="/resources/register" />}>Add your API</Button>
+  <Button variant="outline" render={<Link href="/discovery" />}>
+    Become discoverable
+  </Button>
+</div>
