@@ -93,9 +93,8 @@
     "unicorn/no-array-sort": "warn",
     "oxc/no-map-spread": "warn",
     "promise/always-return": "warn",
-    // Intentional plain images and Hono async handlers remain reviewable at
-    // their use sites instead of disappearing behind repository-wide disables.
-    "nextjs/no-img-element": "warn",
+    // Hono async handlers remain reviewable at their use sites instead of
+    // disappearing behind a repository-wide disable.
     "oxc/no-async-endpoint-handlers": "warn",
 
     // Parity with the previous typescript-eslint config.
@@ -109,11 +108,6 @@
     "import/no-empty-named-blocks": "error",
     "promise/no-multiple-resolved": "error",
     "unicorn/no-instanceof-builtins": ["error", { "exclude": ["Function"] }],
-    "unicorn/require-post-message-target-origin": "error",
-
-    // This is a deliberate framework policy rather than migration debt. Every
-    // other inherited rule remains enabled, at least as a warning.
-    // The app uses the automatic JSX runtime; React never needs importing.
-    "react/react-in-jsx-scope": "off"
+    "unicorn/require-post-message-target-origin": "error"
   }
 }
