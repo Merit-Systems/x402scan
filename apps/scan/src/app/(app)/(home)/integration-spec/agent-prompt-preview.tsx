@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 
+import { Button } from "@/components/ui/button";
+
 interface AgentPromptPreviewProps {
   prompt: string;
   collapsedLines?: number;
@@ -39,8 +41,8 @@ export function AgentPromptPreview({
           <pre
             className={
               expanded
-                ? "overflow-x-auto p-3 text-xs"
-                : "overflow-hidden p-3 text-xs"
+                ? "type-compact-code overflow-x-auto p-3"
+                : "type-compact-code overflow-hidden p-3"
             }
           >
             <code>{prompt}</code>
@@ -51,13 +53,13 @@ export function AgentPromptPreview({
         )}
       </div>
       <div className="flex justify-end">
-        <button
-          type="button"
+        <Button
+          variant="quiet"
+          size="none"
           onClick={() => setExpanded((prev) => !prev)}
-          className="text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
           {expanded ? "Show less" : "Show full prompt"}
-        </button>
+        </Button>
       </div>
     </div>
   );
