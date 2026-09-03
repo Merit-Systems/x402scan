@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { Chains } from "@/app/(app)/_components/chains";
 import { facilitatorServerColumns, type FacilitatorServer } from "./columns";
 import {
   LoadingServiceSummary,
   ServiceSummary,
 } from "@/components/service-summary";
 import {
+  LoadingServiceUsageMetrics,
+  ServiceUsageMetrics,
+} from "@/app/(app)/_components/service-collection";
+import {
   ResponsiveCollection,
   ResponsiveCollectionLoading,
 } from "@/components/responsive-collection";
-import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/client";
 
 import { FACILITATOR_SERVERS_SORTING } from "./config";
@@ -75,20 +77,19 @@ export function LoadingFacilitatorOrigins() {
 const facilitatorServerListItem: DataListItem<FacilitatorServer> = {
   getItemKey: (item, index) => item.origins[0]?.id ?? index,
   renderItem: ({ item }) => (
-    <Link href={getRowHref(item)} className="flex items-center gap-4 py-4">
+    <Link href={getRowHref(item)} className="flex flex-col gap-2 py-4">
       <ServiceSummary
-        className="flex-1"
         descriptionPlacement="below"
         item={item}
         nameVariant="card-title"
       />
-      <Chains chains={item.chains} className="shrink-0" />
+      <ServiceUsageMetrics item={item} />
     </Link>
   ),
   renderLoadingItem: () => (
-    <div className="flex items-center gap-4 py-4">
-      <LoadingServiceSummary className="flex-1" />
-      <Skeleton className="size-4 shrink-0" />
+    <div className="flex flex-col gap-3 py-4">
+      <LoadingServiceSummary />
+      <LoadingServiceUsageMetrics />
     </div>
   ),
 };
