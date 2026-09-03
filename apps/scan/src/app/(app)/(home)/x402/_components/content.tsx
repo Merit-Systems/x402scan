@@ -1,8 +1,10 @@
 import Link from "next/link";
 
-import { Body, Heading, Section } from "@/app/_components/layout/page-utils";
+import { DiscoveryPageHeader } from "@/app/(app)/(home)/discovery/_components/page-header";
+import { DocumentationPage } from "@/components/documentation-page";
 import { JsonLd } from "@/components/json-ld";
 import { Button } from "@/components/ui/button";
+import { Typeset } from "@/components/ui/typeset";
 import { env } from "@/env";
 
 const description =
@@ -90,105 +92,87 @@ const jsonLd = [
 
 export function X402Content() {
   return (
-    <div data-slot="documentation">
+    <DocumentationPage>
       <JsonLd data={jsonLd} />
-      <Heading
+      <DiscoveryPageHeader
         title="x402"
         description="An HTTP-native payment standard for paid APIs and agentic commerce."
-        actions={
+      >
+        <div data-not-typeset>
           <Button size="sm" render={<Link href="/" />}>
             Discover services
           </Button>
-        }
-      />
-      <Body className="gap-8">
-        <Section title="What is x402?">
-          <div className="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground">
-            <p>
-              x402 is an open, neutral standard for internet-native payments
-              between clients and servers. Instead of forcing a user or agent
-              through account creation, checkout, and prepaid credits, a server
-              can answer a paid request with <code>402 Payment Required</code>.
-            </p>
-            <p>
-              The client reads the payment requirements, pays, retries the
-              request, and receives access to the API or resource. That flow
-              makes paid APIs usable by software, not just by humans filling out
-              web forms.
-            </p>
-          </div>
-        </Section>
+        </div>
+      </DiscoveryPageHeader>
+      <Typeset>
+        <h2>What is x402?</h2>
+        <p>
+          x402 is an open, neutral standard for internet-native payments between
+          clients and servers. Instead of forcing a user or agent through
+          account creation, checkout, and prepaid credits, a server can answer a
+          paid request with <code>402 Payment Required</code>.
+        </p>
+        <p>
+          The client reads the payment requirements, pays, retries the request,
+          and receives access to the API or resource. That flow makes paid APIs
+          usable by software, not just by humans filling out web forms.
+        </p>
 
-        <Section title="How x402 works">
-          <ol className="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground">
-            <li>
-              <span className="font-medium text-foreground">1. Request:</span> a
-              client or AI agent sends a normal HTTP request to a paid resource.
-            </li>
-            <li>
-              <span className="font-medium text-foreground">2. Pay:</span> the
-              server responds with <code>402 Payment Required</code> and the
-              client submits payment.
-            </li>
-            <li>
-              <span className="font-medium text-foreground">3. Retry:</span> the
-              client retries with payment proof and receives the API result.
-            </li>
-          </ol>
-        </Section>
+        <h2>How x402 works</h2>
+        <ol>
+          <li>
+            <strong>Request:</strong> a client or AI agent sends a normal HTTP
+            request to a paid resource.
+          </li>
+          <li>
+            <strong>Pay:</strong> the server responds with{" "}
+            <code>402 Payment Required</code> and the client submits payment.
+          </li>
+          <li>
+            <strong>Retry:</strong> the client retries with payment proof and
+            receives the API result.
+          </li>
+        </ol>
 
-        <Section
-          title="Why x402 matters"
-          description="x402 replaces manual API onboarding with request-time access."
-        >
-          <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-            Paid APIs usually require accounts, checkout, prepaid credits, and
-            API keys before software can do anything useful. x402 lets services
-            price individual requests, so agents and developers can pay only
-            when they need access.
-          </p>
-        </Section>
+        <h2>Why x402 matters</h2>
+        <p>
+          Paid APIs usually require accounts, checkout, prepaid credits, and API
+          keys before software can do anything useful. x402 lets services price
+          individual requests, so agents and developers can pay only when they
+          need access.
+        </p>
 
-        <Section
-          title="Explore x402 on x402scan"
-          description="x402scan indexes the services, payments, and infrastructure behind the x402 ecosystem."
-        >
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <Link
-              className="font-medium underline-offset-4 hover:underline"
-              href="/"
-            >
-              Discover services
-            </Link>
-            <Link
-              className="font-medium underline-offset-4 hover:underline"
-              href="/facilitators"
-            >
-              Facilitators
-            </Link>
-            <Link
-              className="font-medium underline-offset-4 hover:underline"
-              href="/networks"
-            >
-              Networks
-            </Link>
-          </div>
-        </Section>
+        <h2>Explore x402 on x402scan</h2>
+        <p>
+          x402scan indexes the services, payments, and infrastructure behind the
+          x402 ecosystem.
+        </p>
+        <ul>
+          <li>
+            <Link href="/">Discover services</Link>
+          </li>
+          <li>
+            <Link href="/facilitators">Facilitators</Link>
+          </li>
+          <li>
+            <Link href="/networks">Networks</Link>
+          </li>
+        </ul>
 
-        <Section
-          title="Build with x402"
-          description="Register an x402-compatible API so agents and developers can discover what it does, what it costs, and how to call it."
-        >
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button render={<Link href="/resources/register" />}>
-              Add your API
-            </Button>
-            <Button variant="outline" render={<Link href="/discovery" />}>
-              Become discoverable
-            </Button>
-          </div>
-        </Section>
-      </Body>
-    </div>
+        <h2>Build with x402</h2>
+        <p>
+          Register an x402-compatible API so agents and developers can discover
+          what it does, what it costs, and how to call it.
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row" data-not-typeset>
+          <Button render={<Link href="/resources/register" />}>
+            Add your API
+          </Button>
+          <Button variant="outline" render={<Link href="/discovery" />}>
+            Become discoverable
+          </Button>
+        </div>
+      </Typeset>
+    </DocumentationPage>
   );
 }

@@ -68,7 +68,7 @@ export function TryDiscovery() {
                 </div>
               )}
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 type-caption text-muted-foreground">
               Runs <code>discoverOriginSchema</code> against the origin and
               probes each discovered route. Nothing is registered.
             </p>
