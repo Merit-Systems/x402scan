@@ -2,8 +2,6 @@ import { DocumentationPage } from "@/components/documentation-page";
 
 export default function IntegrationSpecLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: LayoutProps<"/integration-spec">) {
   return <DocumentationPage>{children}</DocumentationPage>;
 }

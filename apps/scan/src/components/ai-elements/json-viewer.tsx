@@ -90,8 +90,10 @@ const JsonNode = ({
         <div className="flex items-start gap-1">
           {!isEmpty && (
             <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="mt-0.5 flex-shrink-0 rounded p-0.5 transition-colors hover:bg-accent"
+              onClick={() => {
+                setIsCollapsed(!isCollapsed);
+              }}
+              className="mt-0.5 shrink-0 rounded p-0.5 transition-colors hover:bg-accent"
               aria-label={isCollapsed ? "Expand" : "Collapse"}
             >
               {isCollapsed ? (

@@ -44,7 +44,9 @@ export const Stepper: React.FC<Props> = ({
               activeClassName={activeStepClassName}
               onClick={
                 setCurrentStep && index < currentStep
-                  ? () => setCurrentStep(index)
+                  ? () => {
+                      setCurrentStep(index);
+                    }
                   : undefined
               }
               {...step}

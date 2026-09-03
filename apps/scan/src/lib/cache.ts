@@ -142,7 +142,7 @@ async function withRedisCache<T>(
     console.log(
       `[Cache] NO REDIS: Executing query directly for ${fullCacheKey}`
     );
-    return await queryFn();
+    return queryFn();
   }
 
   const lockKey = `${fullCacheKey}:lock`;
@@ -262,7 +262,7 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
         : rawKey;
     const ttl = config.revalidate ?? CACHE_TTL_SECONDS;
 
-    return await withRedisCache(
+    return withRedisCache(
       fullCacheKey,
       async () => {
         const data = await config.queryFn(...args);
@@ -412,7 +412,7 @@ const normalizeCacheKeyValue = (
     // elements stringifying to '[object Object]' matches the previous
     // default-sort behavior, so existing cache keys are preserved.
     /* oxlint-disable typescript/no-base-to-string */
-    return [...value].sort((a, b) =>
+    return [...value].toSorted((a, b) =>
       String(a) < String(b) ? -1 : String(a) > String(b) ? 1 : 0
     );
     /* oxlint-enable typescript/no-base-to-string */
@@ -454,7 +454,7 @@ export const createStandardCacheKey = <T extends object>(params: T): string => {
   return JSON.stringify(
     Object.fromEntries(
       Object.keys(normalized)
-        .sort()
+        .toSorted()
         .map((key) => [key, normalized[key]])
     )
   );

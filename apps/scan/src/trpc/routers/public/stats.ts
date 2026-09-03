@@ -26,19 +26,19 @@ export const statsRouter = createTRPCRouter({
   overall: publicProcedure
     .input(overallStatisticsMVInputSchema)
     .query(async ({ input, ctx }) => {
-      return await getOverallStatisticsMV(input, ctx);
+      return getOverallStatisticsMV(input, ctx);
     }),
   bucketed: publicProcedure
     .input(bucketedStatisticsMVInputSchema)
     .query(async ({ input, ctx }) => {
-      return await getBucketedStatisticsMV(input, ctx);
+      return getBucketedStatisticsMV(input, ctx);
     }),
   overallByOrigin: publicProcedure
     .input(overallByOriginInputSchema)
     .query(async ({ input, ctx }) => {
       const { originId, ...rest } = input;
       const addresses = await getOriginPayToAddresses(originId);
-      return await getOverallStatisticsMV(
+      return getOverallStatisticsMV(
         { ...rest, recipients: { include: addresses } },
         ctx
       );
@@ -48,7 +48,7 @@ export const statsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const { originId, ...rest } = input;
       const addresses = await getOriginPayToAddresses(originId);
-      return await getBucketedStatisticsMV(
+      return getBucketedStatisticsMV(
         { ...rest, recipients: { include: addresses } },
         ctx
       );

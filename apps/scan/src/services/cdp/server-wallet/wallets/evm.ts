@@ -18,7 +18,7 @@ export const evmServerWallet =
   <T extends EvmChain>(chain: T): NetworkServerWallet<EvmChain> =>
   (name: string) => {
     const getAccount = async () => {
-      return await cdpClient.evm.getOrCreateAccount({ name });
+      return cdpClient.evm.getOrCreateAccount({ name });
     };
 
     const getAddress = async () => (await getAccount()).address;

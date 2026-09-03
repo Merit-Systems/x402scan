@@ -49,14 +49,16 @@ export function AgentPromptPreview({
           </pre>
         </motion.div>
         {!expanded && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 rounded-b-md bg-gradient-to-t from-muted via-muted/95 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 rounded-b-md bg-linear-to-t from-muted via-muted/95 to-transparent" />
         )}
       </div>
       <div className="flex justify-end">
         <Button
           variant="quiet"
           size="none"
-          onClick={() => setExpanded((prev) => !prev)}
+          onClick={() => {
+            setExpanded((prev) => !prev);
+          }}
         >
           {expanded ? "Show less" : "Show full prompt"}
         </Button>

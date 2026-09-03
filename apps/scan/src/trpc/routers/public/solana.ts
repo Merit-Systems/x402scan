@@ -9,6 +9,6 @@ export const solanaRouter = createTRPCRouter({
   balance: publicProcedure
     .input(getSolanaTokenBalanceSchema)
     .query(async ({ input }) => {
-      return await getSolanaTokenBalance(input);
+      return getSolanaTokenBalance(input);
     }),
 });

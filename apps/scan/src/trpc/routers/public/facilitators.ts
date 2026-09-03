@@ -16,12 +16,12 @@ export const facilitatorsRouter = createTRPCRouter({
   list: paginatedProcedure
     .input(listTopFacilitatorsInputSchema)
     .query(async ({ input, ctx: { pagination } }) => {
-      return await listTopFacilitators(input, pagination);
+      return listTopFacilitators(input, pagination);
     }),
 
   bucketedStatistics: publicProcedure
     .input(bucketedStatisticsInputSchema)
     .query(async ({ input }) => {
-      return await getBucketedFacilitatorsStatistics(input);
+      return getBucketedFacilitatorsStatistics(input);
     }),
 });

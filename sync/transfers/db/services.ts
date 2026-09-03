@@ -8,7 +8,7 @@ import type { Prisma } from "@x402scan/transfers-db";
 export async function createTransferEvent(
   data: Prisma.TransferEventCreateInput
 ) {
-  return await transfersDb.transferEvent.create({
+  return transfersDb.transferEvent.create({
     data,
   });
 }
@@ -19,7 +19,7 @@ export async function createTransferEvent(
 export async function createManyTransferEvents(
   data: Prisma.TransferEventCreateManyInput[]
 ) {
-  return await transfersDb.transferEvent.createMany({
+  return transfersDb.transferEvent.createMany({
     data,
     skipDuplicates: true,
   });
@@ -60,7 +60,7 @@ export async function updateManyTransferEvents(
   where: Prisma.TransferEventWhereInput,
   data: Prisma.TransferEventUpdateManyMutationInput
 ) {
-  return await transfersDb.transferEvent.updateMany({
+  return transfersDb.transferEvent.updateMany({
     where,
     data,
   });
@@ -70,7 +70,7 @@ export async function updateManyTransferEvents(
  * Find a single TransferEvent by transaction hash
  */
 export async function getTransferEventByTxHash(tx_hash: string) {
-  return await transfersDb.transferEvent.findFirst({
+  return transfersDb.transferEvent.findFirst({
     where: { tx_hash },
   });
 }
@@ -86,7 +86,7 @@ export async function getTransferEvents(params?: {
 }) {
   const { where, orderBy, skip, take } = params ?? {};
 
-  return await transfersDb.transferEvent.findMany({
+  return transfersDb.transferEvent.findMany({
     where,
     orderBy,
     skip,
@@ -105,7 +105,7 @@ export async function getTransferEventsByChain(
     take?: number;
   }
 ) {
-  return await transfersDb.transferEvent.findMany({
+  return transfersDb.transferEvent.findMany({
     where: { chain },
     orderBy: params?.orderBy,
     skip: params?.skip,
@@ -124,7 +124,7 @@ export async function getTransferEventsByAddress(
     take?: number;
   }
 ) {
-  return await transfersDb.transferEvent.findMany({
+  return transfersDb.transferEvent.findMany({
     where: { address },
     orderBy: params?.orderBy,
     skip: params?.skip,
@@ -143,7 +143,7 @@ export async function getTransferEventsBySender(
     take?: number;
   }
 ) {
-  return await transfersDb.transferEvent.findMany({
+  return transfersDb.transferEvent.findMany({
     where: { sender },
     orderBy: params?.orderBy,
     skip: params?.skip,
@@ -162,7 +162,7 @@ export async function getTransferEventsByRecipient(
     take?: number;
   }
 ) {
-  return await transfersDb.transferEvent.findMany({
+  return transfersDb.transferEvent.findMany({
     where: { recipient },
     orderBy: params?.orderBy,
     skip: params?.skip,
@@ -176,7 +176,7 @@ export async function getTransferEventsByRecipient(
 export async function countTransferEvents(
   where?: Prisma.TransferEventWhereInput
 ) {
-  return await transfersDb.transferEvent.count({ where });
+  return transfersDb.transferEvent.count({ where });
 }
 
 /**
@@ -185,7 +185,7 @@ export async function countTransferEvents(
 export async function deleteManyTransferEvents(
   where: Prisma.TransferEventWhereInput
 ) {
-  return await transfersDb.transferEvent.deleteMany({
+  return transfersDb.transferEvent.deleteMany({
     where,
   });
 }
@@ -205,7 +205,7 @@ function syncStateWhere(key: TransferSyncStateKey) {
 }
 
 export async function getTransferSyncState(key: TransferSyncStateKey) {
-  return await transfersDb.transferSyncState.findUnique({
+  return transfersDb.transferSyncState.findUnique({
     where: syncStateWhere(key),
   });
 }
@@ -214,7 +214,7 @@ export async function createTransferSyncState(
   key: TransferSyncStateKey,
   cursorTimestamp: Date
 ) {
-  return await transfersDb.transferSyncState.upsert({
+  return transfersDb.transferSyncState.upsert({
     where: syncStateWhere(key),
     create: {
       ...key,
@@ -228,7 +228,7 @@ export async function markTransferSyncStateStarted(
   key: TransferSyncStateKey,
   startedAt: Date
 ) {
-  return await transfersDb.transferSyncState.update({
+  return transfersDb.transferSyncState.update({
     where: syncStateWhere(key),
     data: {
       last_started_at: startedAt,
@@ -242,7 +242,7 @@ export async function advanceTransferSyncState(
   cursorTimestamp: Date,
   completedAt: Date
 ) {
-  return await transfersDb.transferSyncState.update({
+  return transfersDb.transferSyncState.update({
     where: syncStateWhere(key),
     data: {
       cursor_timestamp: cursorTimestamp,
@@ -256,7 +256,7 @@ export async function recordTransferSyncStateError(
   key: TransferSyncStateKey,
   error: string
 ) {
-  return await transfersDb.transferSyncState.update({
+  return transfersDb.transferSyncState.update({
     where: syncStateWhere(key),
     data: {
       last_error: error,
