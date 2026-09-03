@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { cn } from "@/lib/utils";
 
 import { ChartTooltipContent } from "./tooltip";
 
@@ -122,7 +123,16 @@ function BaseChart<T extends ChartValues>({
     </>
   );
 
-  const chartProps = { className, data: normalizedData, margin, stackOffset };
+  const chartProps = {
+    accessibilityLayer: true,
+    className: cn(
+      "[&_.recharts-surface:focus:not(:focus-visible)]:outline-none",
+      className
+    ),
+    data: normalizedData,
+    margin,
+    stackOffset,
+  };
 
   return (
     <ResponsiveContainer width={width} height={height}>
