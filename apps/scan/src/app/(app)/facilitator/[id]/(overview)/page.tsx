@@ -19,7 +19,6 @@ import {
 
 import { getChainForPage } from "@/app/(app)/_lib/chain/page";
 import { TimeframeSelect } from "@/components/timeframe-select";
-import { UsageSection } from "@/components/usage-section";
 import { facilitatorIdMap } from "@/lib/facilitators";
 import { parseUsageTimeframe } from "@/lib/timeframe";
 import { api, HydrateClient } from "@/trpc/server";
@@ -60,36 +59,34 @@ export default async function FacilitatorPage({
   return (
     <HydrateClient>
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-4 px-4 py-12 md:space-y-12">
-        <FacilitatorOverview facilitator={facilitator} />
+        <FacilitatorOverview
+          controls={<TimeframeSelect timeframe={timeframe} />}
+          facilitator={facilitator}
+        />
         <FacilitatorUsageErrorBoundary>
-          <UsageSection controls={<TimeframeSelect timeframe={timeframe} />}>
-            <Suspense
-              key={`usage:${chain ?? "all"}:${timeframe}`}
-              fallback={<LoadingFacilitatorStatCards />}
-            >
-              <FacilitatorStatCards
-                chain={chain}
-                facilitatorId={id}
-                timeframe={timeframe}
-              />
-            </Suspense>
-          </UsageSection>
+          <Suspense
+            key={`usage:${chain ?? "all"}:${timeframe}`}
+            fallback={<LoadingFacilitatorStatCards />}
+          >
+            <FacilitatorStatCards
+              chain={chain}
+              facilitatorId={id}
+              timeframe={timeframe}
+            />
+          </Suspense>
         </FacilitatorUsageErrorBoundary>
-        <section className="space-y-4">
-          <h2 className="type-section-title">Featured servers</h2>
-          <FacilitatorServersErrorBoundary>
-            <Suspense
-              key={`servers:${chain ?? "all"}:${timeframe}`}
-              fallback={<LoadingFacilitatorOrigins />}
-            >
-              <FacilitatorOrigins
-                chain={chain}
-                facilitatorId={id}
-                timeframe={timeframe}
-              />
-            </Suspense>
-          </FacilitatorServersErrorBoundary>
-        </section>
+        <FacilitatorServersErrorBoundary>
+          <Suspense
+            key={`servers:${chain ?? "all"}:${timeframe}`}
+            fallback={<LoadingFacilitatorOrigins />}
+          >
+            <FacilitatorOrigins
+              chain={chain}
+              facilitatorId={id}
+              timeframe={timeframe}
+            />
+          </Suspense>
+        </FacilitatorServersErrorBoundary>
       </main>
     </HydrateClient>
   );
