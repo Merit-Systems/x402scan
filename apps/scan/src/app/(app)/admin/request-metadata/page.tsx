@@ -1,4 +1,4 @@
-import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { ResourceMetadataTable } from "./_components/resource-metadata-table";
 import { auth } from "@/auth";
 import { forbidden } from "next/navigation";

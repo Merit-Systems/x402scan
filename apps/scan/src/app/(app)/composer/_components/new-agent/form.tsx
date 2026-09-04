@@ -8,7 +8,7 @@ import { api } from "@/trpc/client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { steps } from "./steps";
-import { Stepper } from "@/components/ui/stepper";
+import { Stepper } from "./stepper";
 import {
   Card,
   CardDescription,

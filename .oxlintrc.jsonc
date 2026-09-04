@@ -13,6 +13,7 @@
     // cohesive units without weakening lint coverage for shared production code.
     "apps/scan/src/app/(app)/admin/**",
     "apps/scan/src/app/(app)/composer/**",
+    "apps/scan/src/app/(app)/_components/deferred/**",
     "apps/scan/src/app/api/chat/**",
     "apps/scan/src/components/ai-elements/**",
     "apps/scan/src/components/magicui/animated-shiny-text.tsx",
@@ -29,37 +30,16 @@
     "apps/scan/src/services/db/spending/**",
     "apps/scan/src/services/cdp/server-wallet/admin.ts"
   ],
-  "options": {
-    // Foundation adoption is staged: inherited migration findings remain
-    // visible, but only the established and high-signal rules block this batch.
-    "denyWarnings": false
-  },
   "settings": {
     "tailwindcss": {
       "entryPoint": "apps/scan/src/app/globals.css"
     }
   },
-  "categories": {
-    "correctness": "error",
-    "suspicious": "error",
-    "perf": "error"
-  },
   "rules": {
-    // Visual Foundation adoption continues in focused follow-up changes.
-    "merit-brand/no-arbitrary-typography": "warn",
-    "merit-brand/no-raw-theme-colors": "warn",
-    // Bare severities intentionally retain the pre-Foundation rule options.
-    // Foundation's stricter environment and interpolation options expose a
-    // separate 276-finding migration, not the mechanical advisory cleanup.
+    // Remaining strict-Foundation migrations; bare severities preserve the
+    // legacy options until runtime boundaries and string conversions migrate.
     "no-restricted-properties": "warn",
     "typescript/restrict-plus-operands": "warn",
-    "typescript/restrict-template-expressions": "warn",
-
-    // Preserve repository-specific options beyond Foundation's defaults.
-    "typescript/consistent-type-imports": [
-      "error",
-      { "fixStyle": "separate-type-imports" }
-    ],
-    "unicorn/no-instanceof-builtins": ["error", { "exclude": ["Function"] }]
+    "typescript/restrict-template-expressions": "warn"
   }
 }

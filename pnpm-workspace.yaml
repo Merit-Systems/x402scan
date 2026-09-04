@@ -27,12 +27,12 @@ catalog:
 
 catalogs:
   foundation:
-    "@merit-systems/foundation": 0.20.1
-    "@merit-systems/oxfmt-config": 0.20.1
-    "@merit-systems/oxlint-config": 0.20.1
-    "@merit-systems/taze-config": 0.20.1
-    "@merit-systems/tsdown-config": 0.20.1
-    "@merit-systems/typescript-config": 0.20.1
+    "@merit-systems/foundation": 0.20.2
+    "@merit-systems/oxfmt-config": 0.20.2
+    "@merit-systems/oxlint-config": 0.20.2
+    "@merit-systems/taze-config": 0.20.2
+    "@merit-systems/tsdown-config": 0.20.2
+    "@merit-systems/typescript-config": 0.20.2
   bundling:
     tsdown: 0.22.14
   env:
@@ -119,3 +119,6 @@ allowBuilds:
   "sharp": false
   "utf-8-validate": false
   "workerd": false
+
+minimumReleaseAgeExclude:
+  - "@merit-systems/*"

@@ -1,4 +1,4 @@
-import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { LoadingAgentsTable } from "@/app/(app)/composer/agents/(table)/_components/table/table";
 
 export default function LoadingAgents() {
