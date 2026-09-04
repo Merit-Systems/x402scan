@@ -38,7 +38,7 @@ export const RangeSelector = () => {
         selectTimeframe(Number(value));
       }}
     >
-      <SelectTrigger className="border shadow-xs dark:border-input">
+      <SelectTrigger>
         <CalendarDays />
         <span>{timeframeNames[timeframe]}</span>
       </SelectTrigger>

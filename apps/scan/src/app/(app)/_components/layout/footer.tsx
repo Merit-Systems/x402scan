@@ -3,8 +3,8 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="mt-auto w-full">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-6 sm:flex-row">
-        <p className="type-caption text-muted-foreground">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-6 type-caption text-muted-foreground sm:flex-row">
+        <p>
           Made by{" "}
           <a
             href="https://merit.systems"
@@ -15,10 +15,7 @@ export function Footer() {
             Merit Systems
           </a>
         </p>
-        <nav
-          aria-label="Footer navigation"
-          className="flex items-center gap-4 type-caption text-muted-foreground"
-        >
+        <nav aria-label="Footer navigation" className="flex items-center gap-4">
           <a
             href="https://github.com/Merit-Systems/x402scan"
             target="_blank"

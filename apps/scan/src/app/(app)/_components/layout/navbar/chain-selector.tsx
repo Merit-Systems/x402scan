@@ -2,20 +2,21 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { Globe } from "lucide-react";
+
 import { useChain } from "../../../_contexts/chain/hook";
-import { SUPPORTED_CHAINS } from "@/types/chain";
-import { CHAIN_LABELS, CHAIN_ICONS } from "@/types/chain";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
+import { CHAIN_ICONS, CHAIN_LABELS, SUPPORTED_CHAINS } from "@/types/chain";
 
 import type { Chain } from "@/types/chain";
-import { Button } from "@/components/ui/button";
-import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Globe } from "lucide-react";
-import { useState } from "react";
 
 const URL_BACKED_CHAIN_ROUTES = new Set(["/", "/facilitators", "/networks"]);
 
@@ -23,8 +24,6 @@ export const ChainSelector = () => {
   const { chain, setChain } = useChain();
   const pathname = usePathname();
   const replaceSearchParams = useReplaceSearchParams();
-
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleSelectChain = (selectedChain: Chain | undefined) => {
     setChain(selectedChain);
@@ -39,67 +38,69 @@ export const ChainSelector = () => {
         params.delete("p");
       });
     }
-
-    setIsOpen(false);
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="default"
-          aria-label={
-            chain ? `Network: ${CHAIN_LABELS[chain]}` : "Network: All chains"
-          }
-        >
-          {chain ? (
-            <Image
-              src={CHAIN_ICONS[chain]}
-              alt={CHAIN_LABELS[chain]}
-              width={16}
-              height={16}
-              className="rounded-sm"
-            />
-          ) : (
-            <Globe className="size-4" />
-          )}
-          <span className="hidden xl:block">
-            {chain ? CHAIN_LABELS[chain] : "All Chains"}
-          </span>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[140px] p-1">
-        <Button
-          variant="ghost"
-          className="h-8 w-full justify-start gap-2"
-          onClick={() => {
-            handleSelectChain(undefined);
-          }}
-        >
-          <Globe className="size-4" />
-          All
-        </Button>
-        {SUPPORTED_CHAINS.map((value) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
           <Button
-            key={value}
-            variant="ghost"
-            className="h-8 w-full justify-start gap-2"
+            variant="outline"
+            size="default"
+            aria-label={
+              chain ? `Network: ${CHAIN_LABELS[chain]}` : "Network: All chains"
+            }
+          />
+        }
+      >
+        {chain ? (
+          <Image
+            src={CHAIN_ICONS[chain]}
+            alt={CHAIN_LABELS[chain]}
+            width={16}
+            height={16}
+            className="rounded-sm"
+          />
+        ) : (
+          <Globe className="size-4" />
+        )}
+        <span className="hidden xl:block">
+          {chain ? CHAIN_LABELS[chain] : "All Chains"}
+        </span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-36">
+        <DropdownMenuRadioGroup value={chain ?? "all"}>
+          <DropdownMenuRadioItem
+            value="all"
+            closeOnClick
             onClick={() => {
-              handleSelectChain(value);
+              handleSelectChain(undefined);
             }}
           >
-            <Image
-              src={CHAIN_ICONS[value]}
-              alt={CHAIN_LABELS[value]}
-              width={16}
-              height={16}
-              className="rounded-sm"
-            />
-            {CHAIN_LABELS[value]}
-          </Button>
-        ))}
-      </PopoverContent>
-    </Popover>
+            <Globe className="size-4" />
+            All
+          </DropdownMenuRadioItem>
+          {SUPPORTED_CHAINS.map((value) => (
+            <DropdownMenuRadioItem
+              key={value}
+              value={value}
+              closeOnClick
+              onClick={() => {
+                handleSelectChain(value);
+              }}
+            >
+              <Image
+                src={CHAIN_ICONS[value]}
+                alt={CHAIN_LABELS[value]}
+                width={16}
+                height={16}
+                className="rounded-sm"
+              />
+              {CHAIN_LABELS[value]}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
