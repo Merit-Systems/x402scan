@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { api } from "@/trpc/client";
-import { ResourceCard } from "@/app/(app)/_components/resources/resource-card";
+import { ResourceCard } from "@/app/(app)/admin/_components/resources/resource-card";
 import { parseX402Response } from "@/lib/x402";
 import { Loader2 } from "lucide-react";
 import { getBazaarMethod } from "@/app/(app)/_components/resources/utils";

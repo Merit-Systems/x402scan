@@ -1,5 +1,6 @@
 import { env } from "@/env";
 import { Subnav } from "../_components/layout/subnav";
+import { OnrampSessionDialog } from "./_components/wallet/onramp-session-dialog";
 import { auth } from "@/auth";
 import { notFound } from "next/navigation";
 
@@ -24,6 +25,7 @@ export default async function ComposerLayout({
   }
   return (
     <div className="flex flex-1 flex-col">
+      <OnrampSessionDialog />
       <Subnav
         tabs={[
           {

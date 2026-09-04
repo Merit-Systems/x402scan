@@ -9,7 +9,7 @@ import { PromptInputButton } from "@/components/ai-elements/prompt-input";
 import { WalletDialog } from "./dialog";
 
 import { api } from "@/trpc/client";
-import { WalletChainProvider } from "@/app/(app)/_contexts/wallet-chain/provider";
+import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain/provider";
 
 import type { SupportedChain } from "@/types/chain";
 
