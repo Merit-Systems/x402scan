@@ -1,6 +1,6 @@
 import { DocumentationPage } from "@/components/documentation-page";
 
-export default function DiscoveryLayout({
+export default function X402Layout({
   children,
 }: {
   children: React.ReactNode;

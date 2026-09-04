@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+
 export function ExpandableLink({
   label,
   children,
@@ -30,12 +32,14 @@ export function ExpandableLink({
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <button
+      <Button
+        type="button"
+        variant="quiet"
+        size="none"
         onClick={() => setOpen((prev) => !prev)}
-        className="cursor-default transition-colors hover:text-foreground"
       >
         {label}
-      </button>
+      </Button>
       {open && (
         <span className="absolute top-full flex flex-col items-center pt-1">
           <span className="flex items-center gap-3 rounded-md border bg-background px-3 py-1.5 whitespace-nowrap shadow-sm">

@@ -1,0 +1,62 @@
+import Link from "next/link";
+
+import {
+  AgenticCommerceStructuredData,
+  agenticCommerceDescription,
+} from "@/app/(app)/(home)/agentic-commerce/_components/structured-data";
+import { DiscoveryPageHeader } from "@/app/(app)/(home)/discovery/_components/page-header";
+import { Button } from "@/components/ui/button";
+
+export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "Agentic Commerce APIs and Payments",
+  description: agenticCommerceDescription,
+  alternates: {
+    canonical: "/agentic-commerce",
+  },
+};
+
+<AgenticCommerceStructuredData />
+
+<DiscoveryPageHeader
+  title="Agentic Commerce"
+  description="AI agents discover, pay for, and use digital services directly."
+>
+  <div className="flex flex-col gap-2 sm:flex-row" data-not-typeset>
+    <Button size="sm" render={<Link href="/resources/register" />}>
+      Register API
+    </Button>
+    <Button size="sm" variant="outline" render={<Link href="/" />}>
+      Browse services
+    </Button>
+  </div>
+</DiscoveryPageHeader>
+
+## What is agentic commerce?
+
+Agentic commerce happens when AI agents discover, pay for, and use digital services directly. In this model, the commercial unit is often an API request rather than a pageview, subscription, or human checkout session.
+
+This matters because more internet activity is moving through agent interfaces. When agents do the work, providers need ways to charge directly for data, content, tools, and services that can be called programmatically.
+
+## How providers sell to agents
+
+The provider path is simple: make the API payable, make it discoverable, and let agents call it.
+
+1. **Add pay-per-call:** enable per-request pricing so agents can pay without subscriptions or invoices.
+2. **Publish discovery:** describe what the API does, what it costs, and how an agent should call it.
+3. **Reach agents:** let agents inspect schemas and pricing, pay, and execute the request.
+
+## The x402scan role
+
+x402 is the payment standard, AgentCash is the MCP for discovering and paying for premium APIs, and x402scan is where those services become visible.
+
+The goal is not a new checkout page. The goal is a market where software can understand the service, pay the listed price, and get the result.
+
+## Enter the agent market
+
+Register your API on x402scan and publish discovery metadata so agents can understand and call it.
+
+- [Sell to agents](/discovery)
+- [Register API](/resources/register)
+- [Explore x402](/x402)
