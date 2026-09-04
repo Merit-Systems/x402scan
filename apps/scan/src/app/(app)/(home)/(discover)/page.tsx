@@ -5,7 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { OverallStatsContent } from "./_components/stats";
 import { DiscoverHeading } from "./_components/heading";
 import { ServiceViewToggle } from "./_components/service-view-toggle";
-import { UsageTimeframeSelect } from "./_components/usage-timeframe-select";
+import { TimeframeSelect } from "@/components/timeframe-select";
 
 import { api, HydrateClient } from "@/trpc/server";
 
@@ -19,7 +19,6 @@ import { UsageSection } from "@/components/usage-section";
 import { Separator } from "@/components/ui/separator";
 import {
   parseDiscoverPage,
-  parseDiscoverTimeframe,
   parseServiceView,
   SERVICES_PAGE_SIZE,
 } from "@/lib/discover/filters";
@@ -28,6 +27,7 @@ import {
   DEFAULT_SELLERS_SORTING,
   SELLERS_SORT_IDS,
 } from "@/lib/table-sort-options";
+import { parseUsageTimeframe } from "@/lib/timeframe";
 
 export default async function DiscoverPage({ searchParams }: PageProps<"/">) {
   const resolvedParams = await searchParams;
@@ -37,7 +37,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/">) {
     SELLERS_SORT_IDS,
     DEFAULT_SELLERS_SORTING
   );
-  const timeframe = parseDiscoverTimeframe(resolvedParams.d);
+  const timeframe = parseUsageTimeframe(resolvedParams.d);
   const view = parseServiceView(resolvedParams.v);
   const page = parseDiscoverPage(resolvedParams.p);
 
@@ -68,7 +68,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/">) {
             <div className="flex flex-wrap items-center gap-0 sm:gap-2">
               <ServiceViewToggle view={view} />
               <Separator orientation="vertical" className="hidden sm:block" />
-              <UsageTimeframeSelect timeframe={timeframe} />
+              <TimeframeSelect timeframe={timeframe} />
             </div>
           }
         >

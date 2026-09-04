@@ -13,13 +13,13 @@ import {
 } from "@/components/ui/select";
 import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
 import {
-  DEFAULT_DISCOVER_TIMEFRAME,
-  DISCOVER_TIMEFRAME_OPTIONS,
-} from "@/lib/discover/filters";
+  DEFAULT_USAGE_TIMEFRAME,
+  USAGE_TIMEFRAME_OPTIONS,
+} from "@/lib/timeframe";
 
 import type { ActivityTimeframe } from "@/types/timeframes";
 
-export function UsageTimeframeSelect({
+export function TimeframeSelect({
   timeframe,
 }: {
   timeframe: ActivityTimeframe;
@@ -30,7 +30,7 @@ export function UsageTimeframeSelect({
     if (nextTimeframe === timeframe) return;
 
     replaceSearchParams((params) => {
-      if (nextTimeframe === DEFAULT_DISCOVER_TIMEFRAME) {
+      if (nextTimeframe === DEFAULT_USAGE_TIMEFRAME) {
         params.delete("d");
       } else {
         params.set("d", nextTimeframe.toString());
@@ -45,7 +45,7 @@ export function UsageTimeframeSelect({
       <Select
         value={timeframe.toString()}
         onValueChange={(value) => {
-          const option = DISCOVER_TIMEFRAME_OPTIONS.find(
+          const option = USAGE_TIMEFRAME_OPTIONS.find(
             (candidate) => candidate.value.toString() === value
           );
           if (option) setTimeframe(option.value);
@@ -59,14 +59,14 @@ export function UsageTimeframeSelect({
         >
           <SelectValue>
             {(value: string | null) =>
-              DISCOVER_TIMEFRAME_OPTIONS.find(
+              USAGE_TIMEFRAME_OPTIONS.find(
                 (option) => option.value.toString() === value
               )?.label ?? "Timeframe"
             }
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {DISCOVER_TIMEFRAME_OPTIONS.map((option) => (
+          {USAGE_TIMEFRAME_OPTIONS.map((option) => (
             <SelectItem key={option.value} value={option.value.toString()}>
               {option.label}
             </SelectItem>
@@ -78,14 +78,14 @@ export function UsageTimeframeSelect({
         aria-label="Usage timeframe"
         value={timeframe.toString()}
         onValueChange={(value) => {
-          const option = DISCOVER_TIMEFRAME_OPTIONS.find(
+          const option = USAGE_TIMEFRAME_OPTIONS.find(
             (candidate) => candidate.value.toString() === value
           );
           if (option) setTimeframe(option.value);
         }}
         className="hidden sm:inline-flex"
       >
-        {DISCOVER_TIMEFRAME_OPTIONS.map((option) => (
+        {USAGE_TIMEFRAME_OPTIONS.map((option) => (
           <MotionToggleItem key={option.value} value={option.value.toString()}>
             {option.label}
           </MotionToggleItem>

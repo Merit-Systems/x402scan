@@ -5,21 +5,23 @@ import { api } from "@/trpc/client";
 import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 
 import { columns } from "./columns";
-import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
-import { useChain } from "@/app/(app)/_contexts/chain/hook";
 import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
 import { NETWORKS_SORT_IDS } from "@/lib/table-sort-options";
 
 import type { NetworksSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
+import type { Chain } from "@/types/chain";
+import type { ActivityTimeframe } from "@/types/timeframes";
 
 export const NetworksTable = ({
+  chain,
   sorting,
+  timeframe,
 }: {
+  chain?: Chain;
   sorting: TableSorting<NetworksSortId>;
+  timeframe: ActivityTimeframe;
 }) => {
-  const { timeframe } = useTimeRangeContext();
-  const { chain } = useChain();
   const tableSorting = useUrlTableSorting({
     sorting,
     sortIds: NETWORKS_SORT_IDS,

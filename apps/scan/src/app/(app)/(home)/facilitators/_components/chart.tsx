@@ -1,7 +1,5 @@
 "use client";
 
-import { useChain } from "@/app/(app)/_contexts/chain/hook";
-import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 import type { ChartData } from "@/components/ui/charts/chart/types";
 import { LoadingMultiCharts, MultiCharts } from "@/components/ui/charts/multi";
 import { facilitators } from "@/lib/facilitators";
@@ -10,12 +8,18 @@ import { formatTokenAmount } from "@/lib/token";
 import { createTab } from "@/lib/charts";
 import { api } from "@/trpc/client";
 
+import type { Chain } from "@/types/chain";
+import type { ActivityTimeframe } from "@/types/timeframes";
+
 type FacilitatorKey = `${string}-${"transactions" | "amount"}`;
 
-export const FacilitatorsChart = () => {
-  const { chain } = useChain();
-  const { timeframe } = useTimeRangeContext();
-
+export const FacilitatorsChart = ({
+  chain,
+  timeframe,
+}: {
+  chain?: Chain;
+  timeframe: ActivityTimeframe;
+}) => {
   const [bucketedFacilitatorData] =
     api.public.facilitators.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,
