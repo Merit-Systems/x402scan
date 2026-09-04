@@ -4,19 +4,24 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { serviceColumns as columns } from "./service-columns";
 import {
   LoadingServiceSummary,
   ServiceSummary,
-  serviceColumns as columns,
-} from "./service-columns";
+} from "@/components/service-summary";
+import {
+  LoadingServiceMetric,
+  ServiceBuyersMetric,
+  ServiceLatestMetric,
+  ServiceMetricsGrid,
+  ServiceTransactionsMetric,
+  ServiceVolumeMetric,
+} from "@/app/(app)/_components/service-collection";
 import {
   ResponsiveCollection,
   ResponsiveCollectionLoading,
 } from "@/components/responsive-collection";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { formatTokenAmount } from "@/lib/token";
-import { formatCompactAgo } from "@/lib/utils";
 import { api } from "@/trpc/client";
 import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
 import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
@@ -280,61 +285,27 @@ const serviceListItem: DataListItem<ServiceItem> = {
           descriptionPlacement="below"
           nameVariant="card-title"
         />
-        <dl className="grid grid-cols-4 gap-2">
-          <Metric
-            label="Volume"
-            value={formatTokenAmount(BigInt(item.total_amount))}
-          />
-          <Metric
-            label="Txns"
-            value={item.tx_count.toLocaleString(undefined, {
-              notation: "compact",
-              maximumFractionDigits: 2,
-            })}
-          />
-          <Metric
-            label="Buyers"
-            value={item.unique_buyers.toLocaleString(undefined, {
-              notation: "compact",
-              maximumFractionDigits: 2,
-            })}
-          />
-          <Metric
-            label="Latest"
-            value={
-              item.latest_block_timestamp
-                ? formatCompactAgo(item.latest_block_timestamp)
-                : "—"
-            }
-          />
-        </dl>
+        <ServiceMetricsGrid>
+          <ServiceVolumeMetric item={item} />
+          <ServiceTransactionsMetric item={item} />
+          <ServiceBuyersMetric item={item} />
+          <ServiceLatestMetric item={item} />
+        </ServiceMetricsGrid>
       </Link>
     );
   },
   renderLoadingItem: () => <LoadingServiceItem />,
 };
 
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="min-w-0">
-      <dt className="truncate type-caption text-muted-foreground">{label}</dt>
-      <dd className="type-numeric type-supporting-body truncate">{value}</dd>
-    </div>
-  );
-}
-
 function LoadingServiceItem() {
   return (
     <div className="flex flex-col gap-3 py-4">
       <LoadingServiceSummary />
-      <div className="grid grid-cols-4 gap-2">
+      <ServiceMetricsGrid>
         {Array.from({ length: 4 }, (_, metricIndex) => (
-          <div key={metricIndex} className="flex flex-col gap-1">
-            <Skeleton className="h-3 w-8" />
-            <Skeleton className="h-4 w-12" />
-          </div>
+          <LoadingServiceMetric key={metricIndex} />
         ))}
-      </div>
+      </ServiceMetricsGrid>
     </div>
   );
 }
