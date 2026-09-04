@@ -15,7 +15,7 @@ import type { Address } from "viem";
 import type { NetworkServerWallet } from "./types";
 
 export const evmServerWallet =
-  <T extends EvmChain>(chain: T): NetworkServerWallet<EvmChain> =>
+  (chain: EvmChain): NetworkServerWallet<EvmChain> =>
   (name: string) => {
     const getAccount = async () => {
       return cdpClient.evm.getOrCreateAccount({ name });

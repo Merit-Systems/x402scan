@@ -27,18 +27,21 @@ export const Code: React.FC<Props> = ({
   useLayoutEffect(() => {
     void highlight(value, lang, highlighter)
       .then(setNodes)
-      .catch((error) => {
-        console.error(error);
-        setNodes(
-          <code
-            className={
-              "w-full max-w-full overflow-x-auto p-4 whitespace-pre-wrap"
-            }
-          >
-            {value}
-          </code>
-        );
-      });
+      .catch(
+        /* oxlint-disable-next-line merit-core/no-unknown-parameters */
+        (error: unknown) => {
+          console.error(error);
+          setNodes(
+            <code
+              className={
+                "w-full max-w-full overflow-x-auto p-4 whitespace-pre-wrap"
+              }
+            >
+              {value}
+            </code>
+          );
+        }
+      );
   }, [value, lang, highlighter]);
 
   return (

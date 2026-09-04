@@ -161,6 +161,8 @@ function methodClassName(method: string) {
     case "OPTIONS":
     case "HEAD":
       return "bg-muted text-muted-foreground";
+    default:
+      return undefined;
   }
 }
 

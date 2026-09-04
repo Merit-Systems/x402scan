@@ -45,6 +45,9 @@ type FindDuplicateAddressToken<
   : never;
 
 export function validateUniqueFacilitators<
+  // The list intentionally accepts facilitator constructors with heterogeneous
+  // prop types; this generic only performs compile-time duplicate detection.
+  // eslint-disable-next-line typescript/no-explicit-any
   const T extends readonly Facilitator<any>[],
 >(
   facilitators: FindDuplicateId<T> extends never

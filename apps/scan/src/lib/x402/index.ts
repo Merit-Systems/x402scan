@@ -36,6 +36,7 @@ import type { JsonObject, JsonValue } from "@/lib/json";
  * they get implicit index signatures, keeping them assignable to Prisma's
  * structural JSON input types.
  */
+// eslint-disable-next-line typescript/consistent-type-definitions
 export type BazaarSchemaInput = {
   type?: string;
   method?: string;
@@ -50,6 +51,8 @@ export type BazaarSchemaInput = {
 };
 
 /** Output schema assembled from a v2 bazaar discovery extension. */
+// A type alias keeps the implicit index signature required by Prisma JSON.
+// eslint-disable-next-line typescript/consistent-type-definitions
 type BazaarOutputSchema = {
   input: BazaarSchemaInput;
   output?: JsonValue;
@@ -87,7 +90,11 @@ function toParseFailure(error: z3.ZodError): ParseResult<never> {
   };
 }
 
-export function parseX402Response<T>(data: T): ParseResult<ParsedX402Response> {
+// The two versioned schemas validate this untrusted response boundary.
+/* oxlint-disable merit-core/no-unknown-parameters */
+export function parseX402Response(
+  data: unknown
+): ParseResult<ParsedX402Response> {
   if (v2VersionProbeSchema.safeParse(data).success) {
     const result = x402ResponseSchemaV2.safeParse(data);
     if (!result.success) return toParseFailure(result.error);
@@ -97,6 +104,7 @@ export function parseX402Response<T>(data: T): ParseResult<ParsedX402Response> {
   if (!result.success) return toParseFailure(result.error);
   return { success: true, data: result.data };
 }
+/* oxlint-enable merit-core/no-unknown-parameters */
 
 /**
  * NOTE(shafu): get the output schema from a parsed x402 response

@@ -10,6 +10,8 @@ import type { ChartData, ChartItems } from "@/components/ui/charts/chart/types";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
+// Chart row types require an implicit string index signature.
+// eslint-disable-next-line typescript/consistent-type-definitions
 type StatRow = {
   transactions: number;
   totalAmount: number;
