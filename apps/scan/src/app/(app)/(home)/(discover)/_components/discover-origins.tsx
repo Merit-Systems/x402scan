@@ -1,14 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
-import { useChain } from "@/app/(app)/_contexts/chain/hook";
-import {
-  FeaturedServiceSummary,
-  featuredServiceColumns as columns,
-} from "@/app/(app)/(home)/(overview)/_components/sellers/featured-columns";
+import { ServiceSummary, serviceColumns as columns } from "./service-columns";
 import {
   ResponsiveCollection,
   ResponsiveCollectionLoading,
@@ -27,61 +21,82 @@ import {
   type ServiceView,
 } from "@/lib/discover/filters";
 
-import type { FeaturedServiceItem } from "@/app/(app)/(home)/(overview)/_components/sellers/featured-columns";
+import type { ServiceItem } from "./service-columns";
 import type { DataListItem } from "@/components/ui/data-list";
 import type { SellerSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
+import type { Chain } from "@/types/chain";
+import type { ActivityTimeframe } from "@/types/timeframes";
 
 const PAGE_SIZE = SERVICES_PAGE_SIZE;
 
-export const DiscoverSellersTable = ({
+export const DiscoverServices = ({
+  chain,
   sorting,
+  timeframe,
   view,
   page,
 }: {
+  chain?: Chain;
   sorting: TableSorting<SellerSortId>;
+  timeframe: ActivityTimeframe;
   view: ServiceView;
   page: number;
 }) => {
   return view === "featured" ? (
-    <FeaturedSellersTable sorting={sorting} />
+    <FeaturedServices
+      chain={chain}
+      page={page}
+      sorting={sorting}
+      timeframe={timeframe}
+    />
   ) : (
-    <AllSellersTable page={page} sorting={sorting} />
+    <AllServices
+      chain={chain}
+      page={page}
+      sorting={sorting}
+      timeframe={timeframe}
+    />
   );
 };
 
-const FeaturedSellersTable = ({
+const FeaturedServices = ({
+  chain,
+  page,
   sorting,
+  timeframe,
 }: {
+  chain?: Chain;
+  page: number;
   sorting: TableSorting<SellerSortId>;
+  timeframe: ActivityTimeframe;
 }) => {
-  const { timeframe } = useTimeRangeContext();
-  const { chain } = useChain();
-
   const [topSellers] = api.public.sellers.bazaar.featured.useSuspenseQuery({
     chain,
     pagination: {
-      page_size: 400,
+      page,
+      page_size: PAGE_SIZE,
     },
     timeframe,
     sorting,
   });
 
   return (
-    <FeaturedServicesCollection items={topSellers.items} sorting={sorting} />
+    <ServicesCollection page={page} result={topSellers} sorting={sorting} />
   );
 };
 
-const AllSellersTable = ({
+const AllServices = ({
+  chain,
   page,
   sorting,
+  timeframe,
 }: {
+  chain?: Chain;
   page: number;
   sorting: TableSorting<SellerSortId>;
+  timeframe: ActivityTimeframe;
 }) => {
-  const { timeframe } = useTimeRangeContext();
-  const { chain } = useChain();
-
   const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
     chain,
     pagination: {
@@ -93,17 +108,11 @@ const AllSellersTable = ({
   });
 
   return (
-    <PaginatedServicesCollection
-      items={topSellers.items}
-      page={page}
-      pageCount={topSellers.total_pages}
-      sorting={sorting}
-      total={topSellers.total_count}
-    />
+    <ServicesCollection page={page} result={topSellers} sorting={sorting} />
   );
 };
 
-export const LoadingDiscoverSellersTable = ({
+export const LoadingDiscoverServices = ({
   rowCount = PAGE_SIZE,
   sorting,
 }: {
@@ -111,103 +120,37 @@ export const LoadingDiscoverSellersTable = ({
   sorting: TableSorting<SellerSortId>;
 }) => {
   return (
-    <FeaturedServicesCollection
-      items={[]}
-      loadingRowCount={rowCount}
-      sorting={sorting}
+    <ResponsiveCollectionLoading
+      rowCount={rowCount}
+      list={{ item: serviceListItem }}
+      table={{
+        columns,
+        manualSorting: true,
+        sorting: [sorting],
+      }}
     />
   );
 };
 
-function FeaturedServicesCollection({
-  items,
-  loadingRowCount,
-  pageSize = PAGE_SIZE,
-  sorting,
-}: {
-  items: FeaturedServiceItem[];
-  loadingRowCount?: number;
-  pageSize?: number;
-  sorting: TableSorting<SellerSortId>;
-}) {
-  const [page, setPage] = useState(0);
-  const tableSorting = useUrlTableSorting({
-    sorting,
-    sortIds: SELLERS_SORT_IDS,
-  });
-  const isLoading = loadingRowCount !== undefined;
-  const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
-  const currentPage = Math.min(page, pageCount - 1);
-  const visibleItems = items.slice(
-    currentPage * pageSize,
-    (currentPage + 1) * pageSize
-  );
-
-  if (isLoading) {
-    return (
-      <ResponsiveCollectionLoading
-        rowCount={loadingRowCount}
-        list={{ item: featuredServiceListItem }}
-        table={{
-          columns,
-          manualSorting: true,
-          sorting: tableSorting.tableSorting,
-          onSortingChange: tableSorting.onSortingChange,
-        }}
-      />
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      <ResponsiveCollection
-        data={visibleItems}
-        list={{ item: featuredServiceListItem }}
-        table={{
-          columns,
-          manualSorting: true,
-          sorting: tableSorting.tableSorting,
-          onSortingChange: tableSorting.onSortingChange,
-          pageSize,
-          pagination: {
-            pageIndex: currentPage,
-            pageSize,
-            pageCount,
-            totalRows: items.length,
-          },
-          onPaginationChange: ({ pageIndex }) => setPage(pageIndex),
-        }}
-      />
-      <MobilePagination
-        page={currentPage}
-        pageSize={pageSize}
-        total={items.length}
-        totalPages={pageCount}
-        onPageChange={setPage}
-      />
-    </div>
-  );
-}
-
-function PaginatedServicesCollection({
-  items,
+function ServicesCollection({
   page,
-  pageCount,
+  result,
   sorting,
-  total,
 }: {
-  items: FeaturedServiceItem[];
   page: number;
-  pageCount: number;
+  result: {
+    items: ServiceItem[];
+    total_count: number;
+    total_pages: number;
+  };
   sorting: TableSorting<SellerSortId>;
-  total: number;
 }) {
   const replaceSearchParams = useReplaceSearchParams();
   const tableSorting = useUrlTableSorting({
     sorting,
     sortIds: SELLERS_SORT_IDS,
   });
-  const totalPages = Math.max(1, pageCount);
+  const totalPages = Math.max(1, result.total_pages);
   const setPage = (nextPage: number) => {
     replaceSearchParams((params) => {
       const pageParam = formatDiscoverPage(nextPage);
@@ -222,8 +165,8 @@ function PaginatedServicesCollection({
   return (
     <div className="flex flex-col gap-4">
       <ResponsiveCollection
-        data={items}
-        list={{ item: featuredServiceListItem }}
+        data={result.items}
+        list={{ item: serviceListItem }}
         table={{
           columns,
           manualSorting: true,
@@ -234,15 +177,17 @@ function PaginatedServicesCollection({
             pageIndex: page,
             pageSize: PAGE_SIZE,
             pageCount: totalPages,
-            totalRows: total,
+            totalRows: result.total_count,
           },
-          onPaginationChange: ({ pageIndex }) => setPage(pageIndex),
+          onPaginationChange: ({ pageIndex }) => {
+            setPage(pageIndex);
+          },
         }}
       />
       <MobilePagination
         page={page}
         pageSize={PAGE_SIZE}
-        total={total}
+        total={result.total_count}
         totalPages={totalPages}
         onPageChange={setPage}
       />
@@ -284,7 +229,9 @@ function MobilePagination({
           size="icon-sm"
           aria-label="Go to previous page"
           disabled={page === 0}
-          onClick={() => onPageChange(page - 1)}
+          onClick={() => {
+            onPageChange(page - 1);
+          }}
         >
           <ChevronLeftIcon />
         </Button>
@@ -293,7 +240,9 @@ function MobilePagination({
           size="icon-sm"
           aria-label="Go to next page"
           disabled={page >= totalPages - 1}
-          onClick={() => onPageChange(page + 1)}
+          onClick={() => {
+            onPageChange(page + 1);
+          }}
         >
           <ChevronRightIcon />
         </Button>
@@ -302,7 +251,7 @@ function MobilePagination({
   );
 }
 
-const featuredServiceListItem: DataListItem<FeaturedServiceItem> = {
+const serviceListItem: DataListItem<ServiceItem> = {
   getItemKey: (item, index) => item.origins[0]?.id ?? index,
   renderItem: ({ item }) => {
     const origin = item.origins[0];
@@ -313,7 +262,7 @@ const featuredServiceListItem: DataListItem<FeaturedServiceItem> = {
 
     return (
       <div className="flex flex-col gap-3 py-4">
-        <FeaturedServiceSummary item={item} />
+        <ServiceSummary item={item} />
         <dl className="grid grid-cols-4 gap-2">
           <Metric
             label="Volume"
