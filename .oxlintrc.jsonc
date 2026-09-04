@@ -98,12 +98,5 @@
     "promise/no-multiple-resolved": "error",
     "unicorn/no-instanceof-builtins": ["error", { "exclude": ["Function"] }],
     "unicorn/require-post-message-target-origin": "error"
-  },
-  "overrides": [
-    {
-      // Registry primitives must remain byte-for-byte aligned with Foundation.
-      "files": ["apps/scan/src/components/ui/data-list.tsx"],
-      "rules": { "typescript/consistent-return": "off" }
-    }
-  ]
+  }
 }
