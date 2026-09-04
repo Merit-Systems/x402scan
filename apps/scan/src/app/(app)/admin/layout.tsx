@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { Nav } from "../_components/layout/nav";
+import { Subnav } from "../_components/layout/subnav";
 import { forbidden } from "next/navigation";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
@@ -10,7 +10,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <Nav
+      <Subnav
         tabs={[
           {
             label: "Tags",
