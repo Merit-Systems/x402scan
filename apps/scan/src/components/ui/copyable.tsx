@@ -3,6 +3,8 @@
 import React from "react";
 import { toast } from "sonner";
 
+import { cn } from "@/lib/utils";
+
 interface CopyableProps {
   value: string;
   children?: React.ReactNode;
@@ -27,15 +29,15 @@ export const Copyable: React.FC<CopyableProps> = ({
   };
 
   return (
-    <span
-      onClick={void handleCopy}
-      className={className}
-      style={{ cursor: "pointer" }}
-      tabIndex={0}
-      role="button"
+    <button
+      type="button"
+      onClick={(event) => {
+        void handleCopy(event);
+      }}
+      className={cn("cursor-pointer", className)}
       aria-label="Copy to clipboard"
     >
       {children ?? value}
-    </span>
+    </button>
   );
 };

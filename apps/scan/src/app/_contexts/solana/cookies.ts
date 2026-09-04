@@ -10,7 +10,7 @@ const solanaWalletCookieSchema = z.object({
   address: z.string(),
 });
 
-type SolanaWalletCookie = z.infer<typeof solanaWalletCookieSchema>;
+export type SolanaWalletCookie = z.infer<typeof solanaWalletCookieSchema>;
 
 export const solanaWalletCookies = {
   get() {
