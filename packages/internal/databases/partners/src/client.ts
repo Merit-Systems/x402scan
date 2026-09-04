@@ -1,11 +1,10 @@
 import { createClient } from "@clickhouse/client";
+import { env } from "./env";
 
 export const partnersDb = createClient({
-  url: process.env.PARTNERS_CLICKHOUSE_URL ?? "http://localhost:8124",
-  username: process.env.PARTNERS_CLICKHOUSE_USER ?? "default",
-  password: process.env.PARTNERS_CLICKHOUSE_PASSWORD,
-  database: process.env.PARTNERS_CLICKHOUSE_DATABASE ?? "default",
-  request_timeout: process.env.PARTNERS_CLICKHOUSE_REQUEST_TIMEOUT
-    ? Number(process.env.PARTNERS_CLICKHOUSE_REQUEST_TIMEOUT)
-    : undefined,
+  url: env.PARTNERS_CLICKHOUSE_URL,
+  username: env.PARTNERS_CLICKHOUSE_USER,
+  password: env.PARTNERS_CLICKHOUSE_PASSWORD,
+  database: env.PARTNERS_CLICKHOUSE_DATABASE,
+  request_timeout: env.PARTNERS_CLICKHOUSE_REQUEST_TIMEOUT,
 });

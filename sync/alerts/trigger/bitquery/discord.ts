@@ -1,8 +1,10 @@
+import { env } from "@/trigger/env";
+
 const DISCORD_USER_ID = "382656830087757824";
 const AVATAR_URL = "https://x402scan.com/manifest/512x512.png";
 
 export async function sendBitqueryUsageAlert(): Promise<void> {
-  const webhookUrl = process.env.DISCORD_MERCHANT_HEALTH_WEBHOOK_URL;
+  const webhookUrl = env.DISCORD_MERCHANT_HEALTH_WEBHOOK_URL;
   if (!webhookUrl) {
     throw new Error("DISCORD_MERCHANT_HEALTH_WEBHOOK_URL is not configured");
   }
@@ -21,7 +23,7 @@ export async function sendBitqueryUsageAlert(): Promise<void> {
   if (!response.ok) {
     const body = await response.text().catch(() => "");
     throw new Error(
-      `Discord webhook failed: ${response.status} ${body.slice(0, 200)}`
+      `Discord webhook failed: ${String(response.status)} ${body.slice(0, 200)}`
     );
   }
 }

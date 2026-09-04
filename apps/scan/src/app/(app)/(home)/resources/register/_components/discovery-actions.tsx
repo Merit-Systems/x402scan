@@ -82,7 +82,7 @@ Adding your email lets you verify ownership, allows users to contact you, and le
   // hunting for a paywall bug that isn't there.
   if (!serverHostMismatch && failedResources && failedResources.length > 0) {
     const lines = failedResources.map((r) => {
-      const status = r.status ? ` (HTTP ${r.status})` : "";
+      const status = r.status ? ` (HTTP ${String(r.status)})` : "";
       return `- ${r.url}: ${r.error}${status}`;
     });
     sections.push(`Errors (these endpoints failed and won't be registered):
@@ -92,7 +92,7 @@ ${lines.join("\n")}`);
 
   if (warnings && warnings.length > 0) {
     const lines = warnings.map((r) => {
-      const status = r.status ? ` (HTTP ${r.status})` : "";
+      const status = r.status ? ` (HTTP ${String(r.status)})` : "";
       return `- ${r.url}: ${r.error}${status}`;
     });
     sections.push(`Warnings (registered but with issues):

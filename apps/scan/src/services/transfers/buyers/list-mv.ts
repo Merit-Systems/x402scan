@@ -117,7 +117,7 @@ const listTopBuyersMVUncached = async (
     );
 
     console.log(
-      `[buyers-mv] main query ${tableName} ${(performance.now() - t0).toFixed(0)}ms (${items.length} rows)`
+      `[buyers-mv] main query ${tableName} ${(performance.now() - t0).toFixed(0)}ms (${String(items.length)} rows)`
     );
 
     let count: number;

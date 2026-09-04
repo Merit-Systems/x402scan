@@ -14,7 +14,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
     promise,
     new Promise<never>((_, reject) => {
       setTimeout(() => {
-        reject(new Error(`QUERY_TIMEOUT after ${ms}ms`));
+        reject(new Error(`QUERY_TIMEOUT after ${String(ms)}ms`));
       }, ms);
     }),
   ]);
@@ -24,7 +24,7 @@ function toParameterized(sql: Prisma.Sql): [string, unknown[]] {
   const [firstSegment = ""] = sql.strings;
   let query = firstSegment;
   for (let i = 1; i < sql.strings.length; i++) {
-    query += `$${i}${sql.strings[i]}`;
+    query += `$${String(i)}${String(sql.strings[i])}`;
   }
   return [query, [...sql.values]];
 }

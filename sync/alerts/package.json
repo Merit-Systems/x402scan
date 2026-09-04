@@ -13,6 +13,7 @@
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
+    "@t3-oss/env-core": "catalog:env",
     "@trigger.dev/sdk": "catalog:trigger",
     "viem": "catalog:",
     "zod": "catalog:"

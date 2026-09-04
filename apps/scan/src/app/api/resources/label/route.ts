@@ -70,7 +70,7 @@ export const GET = async (request: NextRequest) => {
   };
 
   for await (const batch of iterateResourcesBatched(100, whereWithIds)) {
-    console.info(`Processing batch of ${batch.length} resources`);
+    console.info(`Processing batch of ${String(batch.length)} resources`);
 
     const batchResults = await Promise.allSettled(
       batch.map(async (resource) => {

@@ -82,7 +82,7 @@ const listAcceptsOriginsUncached = async (input: GetAcceptsAddressesInput) => {
   );
 
   console.log(
-    `[accepts] distinct query=${(performance.now() - t0).toFixed(0)}ms (${rows.length} mappings)`
+    `[accepts] distinct query=${(performance.now() - t0).toFixed(0)}ms (${String(rows.length)} mappings)`
   );
 
   return rows;
