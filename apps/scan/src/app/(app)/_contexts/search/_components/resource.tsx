@@ -17,9 +17,7 @@ interface Props {
 export const Resource: React.FC<Props> = ({ resource }) => {
   return (
     <ResourceContainer
-      Icon={({ className }) => (
-        <Favicon url={resource.origin.favicon} className={className} />
-      )}
+      icon={<Favicon url={resource.origin.favicon} className="size-6" />}
       title={`${new URL(resource.origin.origin).hostname}${decodeURIComponent(new URL(resource.resource).pathname)}`}
       address={
         <Addresses
@@ -33,19 +31,19 @@ export const Resource: React.FC<Props> = ({ resource }) => {
 };
 
 interface ResourceContainerProps {
-  Icon: ({ className }: { className: string }) => React.ReactNode;
+  icon: React.ReactNode;
   title: React.ReactNode;
   address: React.ReactNode;
 }
 
 const ResourceContainer = ({
-  Icon,
+  icon,
   title,
   address,
 }: ResourceContainerProps) => {
   return (
     <div className="flex items-center gap-2">
-      <Icon className="size-6" />
+      {icon}
       <div>
         <div className="font-mono text-sm font-semibold">{title}</div>
         <div>{address}</div>

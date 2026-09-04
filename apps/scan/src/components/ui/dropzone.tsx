@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext } from "react";
+import { createContext, useMemo } from "react";
 
 import { useDropzone } from "react-dropzone";
 
@@ -62,11 +62,12 @@ export const Dropzone = ({
     },
     ...props,
   });
+  const contextValue = useMemo(
+    () => ({ src, accept, maxSize, minSize, maxFiles }),
+    [src, accept, maxSize, minSize, maxFiles]
+  );
   return (
-    <DropzoneContext.Provider
-      key={JSON.stringify(src)}
-      value={{ src, accept, maxSize, minSize, maxFiles }}
-    >
+    <DropzoneContext.Provider key={JSON.stringify(src)} value={contextValue}>
       <Button
         className={cn(
           "overflow-hidden",

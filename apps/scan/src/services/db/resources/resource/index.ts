@@ -7,8 +7,8 @@ import { toPaginatedResponse } from "@/lib/pagination";
 
 import { supportedChainSchema } from "@/lib/schemas";
 
-import { upsertResourceSchema } from "./resource-schema";
-import { ensureOriginExists, freeAuthModeFilters } from "./origin";
+import { upsertResourceSchema } from "./schema";
+import { ensureOriginExists, freeAuthModeFilters } from "../origin";
 
 import type { PaginatedQueryParams } from "@/lib/pagination";
 import type { Prisma } from "@x402scan/scan-db";
