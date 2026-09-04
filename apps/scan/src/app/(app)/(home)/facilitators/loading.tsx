@@ -1,6 +1,5 @@
-import { Card } from "@/components/ui/card";
 import { PageHeading } from "@/components/page-heading";
-import { UsageSection } from "@/components/usage-section";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { LoadingFacilitatorsChart } from "./_components/chart";
 import { LoadingFacilitatorsTable } from "./_components/facilitators";
@@ -10,13 +9,12 @@ export default function LoadingFacilitatorsPage() {
       <PageHeading
         title="Facilitators"
         description="Top facilitators processing x402 transactions"
+        actions={<Skeleton className="h-8 w-20 sm:w-64" />}
       />
-      <UsageSection aria-busy="true">
-        <Card className="overflow-hidden">
-          <LoadingFacilitatorsChart />
-        </Card>
+      <section aria-busy="true" className="space-y-4">
+        <LoadingFacilitatorsChart />
         <LoadingFacilitatorsTable pageSize={10} />
-      </UsageSection>
+      </section>
     </main>
   );
 }
