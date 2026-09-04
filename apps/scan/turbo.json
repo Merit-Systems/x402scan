@@ -4,6 +4,7 @@
   "tasks": {
     "build": {
       "description": "Build x402 scan Next.js app for production",
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "NEXT_PUBLIC_*",
@@ -46,6 +47,7 @@
     "build:deploy": {
       "description": "Build x402 scan app with database migrations",
       "cache": false,
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "NEXT_PUBLIC_*",
@@ -87,19 +89,11 @@
     },
     "types:generate": {
       "description": "Generate Next.js route types",
-      "outputs": [".next/types/**", ".next/package.json", "next-env.d.ts"],
-      "env": [
-        "NEXT_PUBLIC_*",
-        "NODE_ENV",
-        "POSTHOG_*",
-        "VERCEL",
-        "VERCEL_ENV",
-        "VERCEL_PROJECT_PRODUCTION_URL",
-        "VERCEL_BRANCH_URL"
-      ]
+      "outputs": [".next/types/**", ".next/package.json", "next-env.d.ts"]
     },
     "test": {
       "description": "Run x402 scan tests",
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"],
       "env": [
         "NEXT_PUBLIC_*",
         "NODE_ENV",

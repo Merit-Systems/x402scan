@@ -91,7 +91,11 @@ catalogs:
     "@trigger.dev/build": ^4.3.2
     trigger.dev: ^4.3.2
 overrides:
+  "@types/react": 19.2.2
+  "@types/react-dom": 19.2.2
   "@auth/core": 0.40.0
+  "react": 19.2.2
+  "react-dom": 19.2.2
   "viem": 2.51.2
   "@walletconnect/utils": ^2.23.9
 

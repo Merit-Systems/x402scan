@@ -2,8 +2,8 @@ import { z } from "zod";
 
 import type { FieldDef, OutputSchemaV1 } from "@/lib/x402";
 
-function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
-  let zodType: z.ZodTypeAny;
+function fieldDefToZodType(fieldDef: FieldDef): z.ZodType {
+  let zodType: z.ZodType;
 
   if (fieldDef.enum) {
     zodType = z.enum(fieldDef.enum as [string, ...string[]]);
@@ -18,7 +18,7 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
         break;
       case "object":
         if (fieldDef.properties) {
-          const fields: Record<string, z.ZodTypeAny> = {};
+          const fields: Record<string, z.ZodType> = {};
           for (const [key, subField] of Object.entries(fieldDef.properties)) {
             fields[key] = fieldDefToZodType(subField);
           }
@@ -54,7 +54,7 @@ export const inputSchemaToZodSchema = (
   inputSchema: OutputSchemaV1["input"]
 ) => {
   const method = (inputSchema.method ?? "GET").toUpperCase();
-  const fields: Record<string, z.ZodTypeAny> = {};
+  const fields: Record<string, z.ZodType> = {};
 
   // For GET/HEAD/OPTIONS: use query params
   if (method === "GET" || method === "HEAD" || method === "OPTIONS") {

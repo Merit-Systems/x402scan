@@ -61,7 +61,7 @@ const originSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   favicon: z.url().optional(),
-  email: z.string().email().optional(),
+  email: z.email().optional(),
   ogImages: z.array(ogImageSchema),
 });
 

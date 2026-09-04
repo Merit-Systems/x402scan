@@ -39,7 +39,7 @@
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "knip": "knip",
-    "knip:check": "turbo run knip",
+    "knip:check": "turbo run //#knip",
     "test": "turbo run test",
     "ui:check": "turbo run ui:check",
     "ui:integrity": "turbo run ui:integrity",

@@ -5,7 +5,7 @@ import type { PartnerData } from "@x402scan/partners-db";
 
 const createPartnerSchema = z.object({
   name: z.string().min(1),
-  email: z.string().email(),
+  email: z.email(),
   organization: z.string().min(1),
   merit_contact: z.string().min(1),
 });

@@ -13,11 +13,9 @@ const extractRequestBody = async (request: Request) => {
   if (contentType.includes("application/json")) {
     return request.json();
   } else if (contentType.includes("application/x-www-form-urlencoded")) {
-    const formData = await request.formData();
-    return Object.fromEntries(formData.entries());
+    return Object.fromEntries(new URLSearchParams(await request.text()));
   } else if (contentType.includes("multipart/form-data")) {
-    const formData = await request.formData();
-    return Object.fromEntries(formData.entries());
+    return request.text();
   } else if (contentType.includes("text/")) {
     return request.text();
   }

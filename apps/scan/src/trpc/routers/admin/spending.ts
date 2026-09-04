@@ -56,7 +56,7 @@ export const adminSpendingRouter = createTRPCRouter({
   toolBreakdown: adminProcedure
     .input(
       z.object({
-        walletId: z.string().uuid(),
+        walletId: z.uuid(),
         sorting: z
           .object({
             id: z.enum([
@@ -102,7 +102,7 @@ export const adminSpendingRouter = createTRPCRouter({
   walletBreakdown: adminProcedure
     .input(
       z.object({
-        resourceId: z.string().uuid(),
+        resourceId: z.uuid(),
         sorting: z
           .object({
             id: z.enum([
