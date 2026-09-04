@@ -8,33 +8,47 @@ import {
 } from "../_components/transactions/table";
 
 import { HydrateClient } from "@/trpc/server";
-import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
-import { TransfersSortingProvider } from "@/app/(app)/_contexts/sorting/transfers/provider";
+import { parseTableSorting } from "@/lib/table-state";
+import {
+  DEFAULT_TRANSFERS_SORTING,
+  TRANSFERS_SORT_IDS,
+} from "@/lib/table-sort-options";
 
 export default async function TransactionsPage({
   params,
+  searchParams,
 }: PageProps<"/recipient/[address]/transactions">) {
   const { address } = await params;
+  const sorting = parseTableSorting(
+    await searchParams,
+    TRANSFERS_SORT_IDS,
+    DEFAULT_TRANSFERS_SORTING
+  );
 
   const pageSize = 10;
 
   return (
     <HydrateClient>
-      <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
-        <Heading
-          title="Transactions"
-          description="x402 transactions to this server address"
-        />
-        <Body>
-          <Suspense
-            fallback={
-              <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
-            }
-          >
-            <LatestTransactionsTable address={address} pageSize={pageSize} />
-          </Suspense>
-        </Body>
-      </TransfersSortingProvider>
+      <Heading
+        title="Transactions"
+        description="x402 transactions to this server address"
+      />
+      <Body>
+        <Suspense
+          fallback={
+            <LoadingLatestTransactionsTable
+              loadingRowCount={pageSize}
+              sorting={sorting}
+            />
+          }
+        >
+          <LatestTransactionsTable
+            address={address}
+            pageSize={pageSize}
+            sorting={sorting}
+          />
+        </Suspense>
+      </Body>
     </HydrateClient>
   );
 }

@@ -1,35 +1,25 @@
 "use client";
 
-import {
-  Bolt,
-  Bot,
-  CircleDot,
-  MessageSquare,
-  MessagesSquare,
-  Server,
-  Users,
-} from "lucide-react";
+import { Bot } from "lucide-react";
 
 import Image from "next/image";
 
+import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
-
-import { AgentsSortingContext } from "@/app/(app)/_contexts/sorting/agents/context";
-
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 import { Favicons, LoadingFavicons } from "@/app/(app)/_components/favicon";
 
 type ColumnType = RouterOutputs["public"]["agents"]["list"]["items"][number];
 
-export const columns: ExtendedColumnDef<ColumnType>[] = [
+export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "name",
-    header: () => (
-      <HeaderCell Icon={CircleDot} label="Name" className="mr-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Name" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="flex items-center gap-2 overflow-hidden text-sm font-medium text-muted-foreground">
         {row.original.image ? (
@@ -49,13 +39,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 200,
-    loading: () => <Skeleton className="mr-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mr-auto h-4 w-16" /> },
   },
   {
     accessorKey: "resources",
-    header: () => (
-      <HeaderCell Icon={Server} label="Resources" className="mx-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Resources" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground">
         <Favicons
@@ -67,24 +58,18 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 125,
-    loading: () => (
-      <div className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground">
-        <LoadingFavicons count={2} iconContainerClassName="size-5" />
-      </div>
-    ),
+    meta: {
+      loadingCell: (
+        <div className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground">
+          <LoadingFavicons count={2} iconContainerClassName="size-5" />
+        </div>
+      ),
+    },
   },
   {
     accessorKey: "score",
-    header: () => (
-      <HeaderCell
-        Icon={Bolt}
-        label="Score"
-        className="mx-auto"
-        sorting={{
-          sortContext: AgentsSortingContext,
-          sortKey: "score",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Score" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -95,20 +80,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "message_count",
-    header: () => (
-      <HeaderCell
-        Icon={MessageSquare}
-        label="Messages"
-        className="mx-auto"
-        sorting={{
-          sortContext: AgentsSortingContext,
-          sortKey: "message_count",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Messages" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -120,21 +97,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 125, // Fixed width for transaction count
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
 
   {
     accessorKey: "user_count",
-    header: () => (
-      <HeaderCell
-        Icon={Users}
-        label="Users"
-        className="mx-auto"
-        sorting={{
-          sortContext: AgentsSortingContext,
-          sortKey: "user_count",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Users" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -146,20 +115,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 125, // Fixed width for buyers count
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "chat_count",
-    header: () => (
-      <HeaderCell
-        Icon={MessagesSquare}
-        label="Chats"
-        sorting={{
-          sortContext: AgentsSortingContext,
-          sortKey: "chat_count",
-        }}
-        className="mx-auto"
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Chats" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -171,6 +132,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 125, // Fixed width for timestamp
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
 ];

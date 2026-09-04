@@ -139,5 +139,16 @@
     "anti-slop/no-unknown-type-aliases": "error",
     "anti-slop/no-unsafe-dictionary-type": "error",
     "anti-slop/no-widen-then-assert": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["apps/scan/src/components/ui/data-table.tsx"],
+      "rules": {
+        // Registry code must remain byte-for-byte aligned with Foundation.
+        // This check distinguishes a renderer function from a React node; it
+        // does not inspect or validate untrusted input.
+        "anti-slop/no-runtime-typeof": "off"
+      }
+    }
+  ]
 }

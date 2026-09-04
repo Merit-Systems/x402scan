@@ -1,32 +1,29 @@
 "use client";
 
-import { Calendar, DollarSign, Globe, Hash, Server } from "lucide-react";
-
 import Link from "next/link";
 
+import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
-
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
 
 import { Address } from "@/components/ui/address";
 
 import { formatCompactAgo } from "@/lib/utils";
 import { formatTokenAmount } from "@/lib/token";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
-import { TransfersSortingContext } from "@/app/(app)/_contexts/sorting/transfers/context";
 import { Chains } from "@/app/(app)/_components/chains";
 import { Facilitator } from "@/app/(app)/_components/facilitator";
 
 type ColumnType = RouterOutputs["public"]["transfers"]["list"]["items"][number];
 
-export const columns: ExtendedColumnDef<ColumnType>[] = [
+export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "recipient",
-    header: () => (
-      <HeaderCell Icon={Server} label="Recipient" className="mr-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Recipient" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <Link href={`/recipient/${row.original.recipient}`}>
         <Address
@@ -37,20 +34,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </Link>
     ),
     size: 150,
-    loading: () => <Skeleton className="mr-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mr-auto h-4 w-16" /> },
   },
   {
     accessorKey: "amount",
-    header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Amount"
-        className="mx-auto"
-        sorting={{
-          sortContext: TransfersSortingContext,
-          sortKey: "amount",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Amount" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -58,20 +47,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "block_timestamp",
-    header: () => (
-      <HeaderCell
-        Icon={Calendar}
-        label="Timestamp"
-        className="mx-auto"
-        sorting={{
-          sortContext: TransfersSortingContext,
-          sortKey: "block_timestamp",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Timestamp" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -79,11 +60,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "chains",
-    header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Chain" />
+    ),
+    enableSorting: false,
     cell: ({ row }) => (
       <Chains
         chains={[row.original.chain]}
@@ -92,13 +76,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto size-4" />,
+    meta: { loadingCell: <Skeleton className="mx-auto size-4" /> },
   },
   {
     accessorKey: "facilitator",
-    header: () => (
-      <HeaderCell Icon={Server} label="Facilitator" className="mx-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Facilitator" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <Facilitator
         id={row.original.facilitator_id}
@@ -106,13 +91,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "transaction_hash",
-    header: () => (
-      <HeaderCell Icon={Hash} label="Transaction Hash" className="mx-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Transaction Hash" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <Address
         address={row.original.tx_hash}
@@ -120,6 +106,11 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
 ];
+
+export const overviewColumns = columns.map((column) => ({
+  ...column,
+  enableSorting: false,
+}));

@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { DataTable } from "@/components/ui/data-table";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 import { createColumns } from "./columns";
 import { api, type RouterOutputs } from "@/trpc/client";
 import { EditTagModal } from "./edit-tag-modal";
 import { ResourceExecutorModal } from "./resource-executor-modal";
 import { ControlMenu } from "./control-menu";
 import { TagFilter } from "./tag-filter";
-import { useResourcesSorting } from "@/app/(app)/_contexts/sorting/resource-tags/hook";
+import { useResourcesSorting } from "@/app/(app)/admin/_contexts/sorting/resource-tags/hook";
 import type { RowSelectionState } from "@tanstack/react-table";
 
 type Resource =
@@ -77,17 +77,18 @@ export const ResourceTable = () => {
         />
       </div>
 
-      <DataTable
+      <LoadableDataTable
         columns={columns}
         data={resources}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        onRowClick={(row) =>
-          setModalState({ type: "executor", resource: row.original })
-        }
-        page={page}
-        onPageChange={setPage}
-        hasNextPage={hasNextPage}
+        onRowClick={(resource) => setModalState({ type: "executor", resource })}
+        pagination={{
+          pageIndex: page,
+          pageSize: PAGE_SIZE,
+          pageCount: hasNextPage ? page + 2 : page + 1,
+        }}
+        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
         enableRowSelection={true}
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}

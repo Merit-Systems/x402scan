@@ -11,20 +11,16 @@ import {
 } from "@/lib/cache";
 import { queryRaw } from "@/services/transfers/client";
 import { getTimeRangeFromTimeframe } from "@/lib/time-range";
+import {
+  BUYER_SELLERS_SORT_IDS,
+  DEFAULT_BUYER_SELLERS_SORTING,
+} from "@/lib/table-sort-options";
 
 import type { paginatedQuerySchema } from "@/lib/pagination";
 
-const BUYER_SELLERS_SORT_IDS = [
-  "tx_count",
-  "total_amount",
-  "latest_block_timestamp",
-] as const;
-
-export type BuyerSellerSortId = (typeof BUYER_SELLERS_SORT_IDS)[number];
-
 export const listBuyerSellersInputSchema = baseListQuerySchema({
   sortIds: BUYER_SELLERS_SORT_IDS,
-  defaultSortId: "tx_count",
+  defaultSortId: DEFAULT_BUYER_SELLERS_SORTING.id,
 }).extend({
   sender: mixedAddressSchema,
 });

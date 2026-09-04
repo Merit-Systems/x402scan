@@ -3,13 +3,14 @@
 import { Globe, Hash, Calendar, Tag } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
+import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { cleanExternalText, formatCompactAgo } from "@/lib/utils";
 
-import { ResourcesSortingContext } from "@/app/(app)/_contexts/sorting/resource-tags/context";
+import { ResourcesSortingContext } from "@/app/(app)/admin/_contexts/sorting/resource-tags/context";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 
 type ColumnType =
@@ -21,7 +22,7 @@ interface ColumnHandlers {
 
 export const createColumns = (
   handlers?: ColumnHandlers
-): ExtendedColumnDef<ColumnType>[] => [
+): DataTableColumnDef<ColumnType>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -57,7 +58,7 @@ export const createColumns = (
       </div>
     ),
     size: 300,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "description",
@@ -77,7 +78,7 @@ export const createColumns = (
       );
     },
     size: 200,
-    loading: () => <Skeleton className="mx-auto h-4 w-32" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-32" /> },
   },
   {
     accessorKey: "toolCalls",
@@ -98,7 +99,7 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "lastUpdated",
@@ -119,7 +120,7 @@ export const createColumns = (
       </div>
     ),
     size: 120,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "tags",
@@ -130,10 +131,12 @@ export const createColumns = (
       const hasMore = tags.length > 2;
 
       return (
-        <div
-          className="flex cursor-pointer flex-wrap justify-center gap-1"
-          onClick={(e) => {
-            e.stopPropagation();
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-auto w-full flex-wrap justify-center gap-1"
+          onClick={() => {
             handlers?.onTagsClick?.(row.original);
           }}
         >
@@ -168,10 +171,10 @@ export const createColumns = (
               )}
             </>
           )}
-        </div>
+        </Button>
       );
     },
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-24" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-24" /> },
   },
 ];
