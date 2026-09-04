@@ -405,15 +405,15 @@ export const RegisterResourceForm = () => {
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />
                   {batchTestProgress
-                    ? `Checking ${batchTestProgress.checked}/${batchTestProgress.total} endpoints...`
-                    : `Checking ${actualDiscoveredResources.length} endpoints...`}
+                    ? `Checking ${String(batchTestProgress.checked)}/${String(batchTestProgress.total)} endpoints...`
+                    : `Checking ${String(actualDiscoveredResources.length)} endpoints...`}
                 </>
               ) : batchTestComplete &&
                 failedResources.length > 0 &&
                 testedResources.length === 0 ? (
                 `0 valid resources`
               ) : (
-                `Add API (${registrableResourceCount} resources)`
+                `Add API (${String(registrableResourceCount)} resources)`
               )}
             </Button>
             {canUseManualMode && (
@@ -452,11 +452,11 @@ export const RegisterResourceForm = () => {
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
                 {manualProgress
-                  ? `Checking ${manualProgress.current}/${manualProgress.total}`
+                  ? `Checking ${String(manualProgress.current)}/${String(manualProgress.total)}`
                   : "Registering..."}
               </>
             ) : manualTargets.length > 1 ? (
-              `Register ${manualTargets.length} URLs`
+              `Register ${String(manualTargets.length)} URLs`
             ) : (
               "Add"
             )}

@@ -8,7 +8,7 @@ import Image from "next/image";
 
 import { useSearchParams } from "next/navigation";
 
-import { AnimatedBeam, Circle } from "@/components/magicui/animated-beam";
+import { AnimatedBeam, Circle } from "./animated-beam";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

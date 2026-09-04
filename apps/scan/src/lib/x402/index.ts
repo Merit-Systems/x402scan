@@ -344,7 +344,7 @@ export function normalizeChainId(chainId: string): string {
       result = "solana_devnet";
     else if (suffix === "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z")
       result = "solana_testnet";
-    else result = `solana_${suffix}`;
+    else result = `solana_${String(suffix)}`;
   }
   return result.replaceAll("-", "_");
 }

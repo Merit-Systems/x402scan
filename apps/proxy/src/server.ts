@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { cors } from "hono/cors";
+import { env } from "./env.js";
 import { registerProxyRouter } from "./routes/proxy.js";
 
 const app = new Hono();
@@ -44,9 +45,7 @@ app.get("/", (c) => {
 
 registerProxyRouter(app);
 
-const port = Number(process.env.PORT) || 6969;
-
 serve({
   fetch: app.fetch,
-  port,
+  port: env.PORT,
 });

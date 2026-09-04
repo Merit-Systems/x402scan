@@ -432,7 +432,7 @@ export const deprecateStaleResources = async (
   // (URL normalization mismatch), not the origin removing all endpoints.
   if (staleIds.length === allResources.length) {
     console.warn(
-      `[deprecateStaleResources] Skipping: would deprecate all ${allResources.length} active resources for origin ${originId}. Likely a URL normalization mismatch.`
+      `[deprecateStaleResources] Skipping: would deprecate all ${String(allResources.length)} active resources for origin ${originId}. Likely a URL normalization mismatch.`
     );
     return 0;
   }

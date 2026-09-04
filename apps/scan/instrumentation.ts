@@ -1,3 +1,5 @@
+import { env } from "./src/env";
+
 declare global {
   // Set once OTLP log export is wired up, so hot reloads don't re-initialize.
   var x402scanOtelLogsInitialized: boolean | undefined;
@@ -5,13 +7,13 @@ declare global {
 
 export async function register() {
   // prevent this from running in the edge runtime
-  if (process.env.NEXT_RUNTIME === "nodejs") {
+  if (env.NEXT_RUNTIME === "nodejs") {
     // ---- SigNoz (OTLP Logs) ----
     // We only export logs when explicitly configured via env.
     // This keeps instrumentation safe for local/dev without secrets.
     const signozLogsUrl = "https://ingest.us.signoz.cloud:443/v1/logs";
 
-    const signozIngestionKey = process.env.SIGNOZ_INGESTION_KEY?.trim();
+    const signozIngestionKey = env.SIGNOZ_INGESTION_KEY?.trim();
 
     if (signozIngestionKey) {
       if (!globalThis.x402scanOtelLogsInitialized) {
@@ -48,25 +50,22 @@ export async function register() {
       }
     }
 
-    if (process.env.LMNR_PROJECT_API_KEY) {
+    if (env.LMNR_PROJECT_API_KEY) {
       const { Laminar } = await import("@lmnr-ai/lmnr");
 
       Laminar.initialize({
-        projectApiKey: process.env.LMNR_PROJECT_API_KEY,
+        projectApiKey: env.LMNR_PROJECT_API_KEY,
       });
     }
   }
 }
 
 function getServiceName(): string {
-  let serviceName = process.env.OTEL_SERVICE_NAME ?? "x402scan-scan-api";
+  let serviceName = env.OTEL_SERVICE_NAME ?? "x402scan-scan-api";
 
-  if (
-    process.env.NODE_ENV === "production" ||
-    process.env.VERCEL_ENV === "production"
-  ) {
+  if (env.NODE_ENV === "production" || env.VERCEL_ENV === "production") {
     serviceName = `${serviceName}-prod`;
-  } else if (process.env.VERCEL_ENV === "preview") {
+  } else if (env.VERCEL_ENV === "preview") {
     serviceName = `${serviceName}-preview`;
   } else {
     serviceName = `${serviceName}-dev`;

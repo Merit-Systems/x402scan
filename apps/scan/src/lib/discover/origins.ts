@@ -50,7 +50,9 @@ export const fetchUsedOriginsFromAgentCash = async (
   }
 
   if (!res.ok) {
-    console.warn(`[discover] AgentCash used-origins returned ${res.status}`);
+    console.warn(
+      `[discover] AgentCash used-origins returned ${String(res.status)}`
+    );
     return null;
   }
 
@@ -78,7 +80,7 @@ const getDiscoverOriginsUncached = async (): Promise<string[]> => {
   const t0 = performance.now();
   const origins = await fetchUsedOriginsFromAgentCash(PROTOCOL);
   console.log(
-    `[discover] getDiscoverOrigins=${(performance.now() - t0).toFixed(0)}ms (${origins?.length ?? 0} origins)`
+    `[discover] getDiscoverOrigins=${(performance.now() - t0).toFixed(0)}ms (${String(origins?.length ?? 0)} origins)`
   );
   return origins ?? [];
 };

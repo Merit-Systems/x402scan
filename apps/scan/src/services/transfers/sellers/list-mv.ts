@@ -121,7 +121,7 @@ export const listTopSellersMVUncached = async (
   );
 
   console.log(
-    `[sellers-mv] main query ${tableName} ${(performance.now() - t0).toFixed(0)}ms (${items.length} rows)`
+    `[sellers-mv] main query ${tableName} ${(performance.now() - t0).toFixed(0)}ms (${String(items.length)} rows)`
   );
 
   let count: number;

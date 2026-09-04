@@ -112,7 +112,7 @@ export function RegistrationResult({ result }: { result: RegistrationResult }) {
         </div>
 
         <ResultDisclosure
-          label={`${failedDetails.length || result.failed} failed resources`}
+          label={`${String(failedDetails.length || result.failed)} failed resources`}
           defaultOpen
         >
           {failedDetails.length > 0 ? (
@@ -170,7 +170,7 @@ export function RegistrationResult({ result }: { result: RegistrationResult }) {
 
       {result.warningDetails?.length ? (
         <ResultDisclosure
-          label={`${result.warningDetails.length} registered resource${result.warningDetails.length === 1 ? "" : "s"} with warnings`}
+          label={`${String(result.warningDetails.length)} registered resource${result.warningDetails.length === 1 ? "" : "s"} with warnings`}
         >
           <div className="max-h-96 space-y-2 overflow-y-auto">
             {result.warningDetails.map((entry) => (
@@ -204,7 +204,7 @@ export function RegistrationResult({ result }: { result: RegistrationResult }) {
 
       {skippedDetails.length > 0 ? (
         <ResultDisclosure
-          label={`${skippedDetails.length} unprotected endpoint${skippedDetails.length === 1 ? "" : "s"} skipped`}
+          label={`${String(skippedDetails.length)} unprotected endpoint${skippedDetails.length === 1 ? "" : "s"} skipped`}
         >
           <p className="type-caption text-muted-foreground">
             These endpoints have no x402 paywall and were not registered. Add
@@ -234,7 +234,7 @@ export function RegistrationResult({ result }: { result: RegistrationResult }) {
 
       {failedDetails.length > 0 ? (
         <ResultDisclosure
-          label={`${failedDetails.length} resource${failedDetails.length === 1 ? "" : "s"} not registered`}
+          label={`${String(failedDetails.length)} resource${failedDetails.length === 1 ? "" : "s"} not registered`}
           defaultOpen
         >
           <div className="max-h-96 space-y-2 overflow-y-auto">

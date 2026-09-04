@@ -40,7 +40,7 @@ export const cdpFetch = async <T>(
 
   if (!response.ok) {
     const errorBody = await response.text();
-    const message = `Failed to ${requestMethod} ${requestPath} from ${requestHost}: ${response.status}`;
+    const message = `Failed to ${requestMethod} ${requestPath} from ${requestHost}: ${String(response.status)}`;
     console.error(message);
     console.error("Response body:", errorBody);
     throw new CdpError(message, {

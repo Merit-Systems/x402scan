@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { BorderBeam } from "@/components/magicui/border-beam";
+import { BorderBeam } from "./border-beam";
 
 type Props = React.HTMLAttributes<HTMLDivElement>;
 

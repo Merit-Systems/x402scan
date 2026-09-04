@@ -3,6 +3,12 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
+    NODE_ENV: z
+      .enum(["development", "test", "production"])
+      .default("development"),
+    NEXT_RUNTIME: z.enum(["edge", "nodejs"]).optional(),
+    VERCEL: z.literal("1").optional(),
+    VERCEL_ENV: z.enum(["development", "preview", "production"]).optional(),
     SCAN_DATABASE_URL: z.url(),
     SCAN_DATABASE_URL_UNPOOLED: z.url(),
     CDP_API_KEY_NAME: z.string(),
@@ -40,6 +46,11 @@ export const env = createEnv({
     X402_PAYEE_ADDRESS: z.string().optional(),
     AGENTCASH_URL: z.string().optional(),
     AGENTCASH_INTERNAL_API_KEY: z.string().optional(),
+    LMNR_PROJECT_API_KEY: z.string().optional(),
+    OTEL_SERVICE_NAME: z.string().optional(),
+    POSTHOG_API_KEY: z.string().optional(),
+    POSTHOG_PROJECT_ID: z.string().optional(),
+    SIGNOZ_INGESTION_KEY: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
@@ -47,9 +58,9 @@ export const env = createEnv({
       .default(
         process.env.NEXT_PUBLIC_APP_URL ??
           (process.env.VERCEL_ENV === "production"
-            ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+            ? `https://${String(process.env.VERCEL_PROJECT_PRODUCTION_URL)}`
             : process.env.VERCEL_ENV === "preview"
-              ? `https://${process.env.VERCEL_BRANCH_URL}`
+              ? `https://${String(process.env.VERCEL_BRANCH_URL)}`
               : "http://localhost:3000")
       ),
     NEXT_PUBLIC_PROXY_URL: z.url(),
@@ -71,9 +82,9 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL:
       process.env.NEXT_PUBLIC_APP_URL ??
       (process.env.VERCEL_ENV === "production"
-        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        ? `https://${String(process.env.VERCEL_PROJECT_PRODUCTION_URL)}`
         : process.env.VERCEL_ENV === "preview"
-          ? `https://${process.env.VERCEL_BRANCH_URL}`
+          ? `https://${String(process.env.VERCEL_BRANCH_URL)}`
           : "http://localhost:3000"),
     NEXT_PUBLIC_PROXY_URL: process.env.NEXT_PUBLIC_PROXY_URL,
     NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,

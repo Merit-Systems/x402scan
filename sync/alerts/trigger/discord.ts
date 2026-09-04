@@ -1,12 +1,13 @@
 import type { BalanceCheckResult } from "./types";
 import { CURRENCY_CONFIG } from "./constants";
+import { env } from "@/trigger/env";
 
 export async function sendDiscordAlert(
   balanceResult: BalanceCheckResult
 ): Promise<void> {
   const { symbol, decimalsExternal } = CURRENCY_CONFIG[balanceResult.currency];
   const currencyName = balanceResult.currency;
-  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  const webhookUrl = env.DISCORD_WEBHOOK_URL;
   if (!webhookUrl) throw new Error("DISCORD_WEBHOOK_URL is required");
 
   const response = await fetch(webhookUrl, {
@@ -45,7 +46,7 @@ export async function sendDiscordAlert(
 
   if (!response.ok) {
     throw new Error(
-      `Discord webhook failed: ${response.status} ${response.statusText}`
+      `Discord webhook failed: ${String(response.status)} ${response.statusText}`
     );
   }
 }

@@ -11,9 +11,11 @@
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
+    "@t3-oss/env-core": "catalog:env",
     "@hono/node-server": "catalog:hono",
     "dotenv": "catalog:env",
-    "hono": "catalog:hono"
+    "hono": "catalog:hono",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@merit-systems/typescript-config": "catalog:foundation",
