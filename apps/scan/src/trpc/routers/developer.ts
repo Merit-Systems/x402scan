@@ -107,7 +107,7 @@ async function testSingleResource(
 
 export const developerRouter = createTRPCRouter({
   preview: publicProcedure
-    .input(z.object({ url: z.string().url() }))
+    .input(z.object({ url: z.url() }))
     .query(async ({ input }) => {
       // Strip query params to mirror registration flow
       const urlObj = new URL(input.url);
@@ -158,11 +158,11 @@ export const developerRouter = createTRPCRouter({
       z.object({
         /** Probe session ID. If omitted, a new session is created. Pass the
          *  sessionId from a previous batch to append to the same cache. */
-        probeSessionId: z.string().uuid().optional(),
+        probeSessionId: z.uuid().optional(),
         resources: z
           .array(
             z.object({
-              url: z.string().url(),
+              url: z.url(),
               method: z
                 .enum([
                   "GET",

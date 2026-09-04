@@ -77,24 +77,20 @@ export const adminResourcesRouter = createTRPCRouter({
         return unassignTagFromResource(input);
       }),
 
-    unassignAll: adminProcedure
-      .input(z.string().uuid())
-      .mutation(async ({ input }) => {
-        return unassignAllTagsFromResource(input);
-      }),
+    unassignAll: adminProcedure.input(z.uuid()).mutation(async ({ input }) => {
+      return unassignAllTagsFromResource(input);
+    }),
 
     unassignAllFromAll: adminProcedure.mutation(async () => {
       return unassignAllTagsFromAllResources();
     }),
 
-    delete: adminProcedure
-      .input(z.string().uuid())
-      .mutation(async ({ input }) => {
-        return deleteResourceTag(input);
-      }),
+    delete: adminProcedure.input(z.uuid()).mutation(async ({ input }) => {
+      return deleteResourceTag(input);
+    }),
 
     removeSubTags: adminProcedure
-      .input(z.string().uuid())
+      .input(z.uuid())
       .mutation(async ({ input }) => {
         return removeSubTagsFromTag(input);
       }),

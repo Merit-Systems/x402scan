@@ -24,15 +24,17 @@
     "bottleneck": "^2.19.5",
     "bs58": "catalog:",
     "facilitators": "workspace:*",
-    "p-limit": "^7.2.0"
+    "google-auth-library": "^10.4.2",
+    "p-limit": "^7.2.0",
+    "zod": "catalog:"
   },
   "devDependencies": {
+    "@merit-systems/typescript-config": "catalog:foundation",
     "@trigger.dev/build": "catalog:trigger",
     "@types/node": "catalog:",
-    "@merit-systems/typescript-config": "catalog:foundation",
     "trigger.dev": "catalog:trigger",
+    "tsx": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:",
-    "tsx": "catalog:"
+    "vitest": "catalog:"
   }
 }

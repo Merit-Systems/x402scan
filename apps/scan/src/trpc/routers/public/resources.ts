@@ -176,7 +176,7 @@ export const resourcesRouter = createTRPCRouter({
         origin: z.url(),
         /** Server-side probe session from the batch test. URLs with a cached
          *  probe result skip re-probing — avoids rate limiting on registration. */
-        probeSessionId: z.string().uuid().optional(),
+        probeSessionId: z.uuid().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -267,8 +267,8 @@ export const resourcesRouter = createTRPCRouter({
   verificationStatus: publicProcedure
     .input(
       z.object({
-        resourceIds: z.array(z.string().uuid()).optional(),
-        originId: z.string().uuid().optional(),
+        resourceIds: z.array(z.uuid()).optional(),
+        originId: z.uuid().optional(),
       })
     )
     .query(async ({ input }) => {
