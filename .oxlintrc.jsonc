@@ -45,29 +45,15 @@
     "perf": "error"
   },
   "rules": {
-    // Existing debt exposed by Foundation. Keep these visible as warnings while
-    // the visual, route-ownership, environment, hook, and strictness migrations
-    // proceed in focused follow-up changes.
-    "hooks/set-state-in-effect": "warn",
-    "jsx-a11y/click-events-have-key-events": "warn",
-    "jsx-a11y/no-static-element-interactions": "warn",
-    "jsx-a11y/prefer-tag-over-role": "warn",
+    // Visual Foundation adoption continues in focused follow-up changes.
     "merit-brand/no-arbitrary-typography": "warn",
     "merit-brand/no-raw-theme-colors": "warn",
     // Bare severities intentionally retain the pre-Foundation rule options.
-    // Restoring Foundation's stricter options exposes separate environment and
-    // interpolation migrations that do not belong in this safety pass.
+    // Foundation's stricter environment and interpolation options expose a
+    // separate 276-finding migration, not the mechanical advisory cleanup.
     "no-restricted-properties": "warn",
-    "no-useless-assignment": "warn",
     "typescript/restrict-plus-operands": "warn",
     "typescript/restrict-template-expressions": "warn",
-    "import/no-named-as-default-member": "warn",
-    "no-underscore-dangle": "warn",
-    "react/no-unstable-nested-components": "warn",
-    "react/jsx-no-constructed-context-values": "warn",
-    // Hono async handlers remain reviewable at their use sites instead of
-    // disappearing behind a repository-wide disable.
-    "oxc/no-async-endpoint-handlers": "warn",
 
     // Preserve repository-specific options beyond Foundation's defaults.
     "typescript/consistent-type-imports": [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { TimeRangeContext } from "./context";
 
@@ -18,17 +18,16 @@ export const TimeRangeProvider: React.FC<Props> = ({
   const [timeframe, setTimeframe] =
     useState<ActivityTimeframe>(initialTimeframe);
 
-  const selectTimeframe = (newTimeframe: ActivityTimeframe) => {
+  const selectTimeframe = useCallback((newTimeframe: ActivityTimeframe) => {
     setTimeframe(newTimeframe);
-  };
+  }, []);
+  const contextValue = useMemo(
+    () => ({ timeframe, selectTimeframe }),
+    [timeframe, selectTimeframe]
+  );
 
   return (
-    <TimeRangeContext.Provider
-      value={{
-        timeframe,
-        selectTimeframe,
-      }}
-    >
+    <TimeRangeContext.Provider value={contextValue}>
       {children}
     </TimeRangeContext.Provider>
   );

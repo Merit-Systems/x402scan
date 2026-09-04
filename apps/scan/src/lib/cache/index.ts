@@ -1,9 +1,9 @@
 import { createHash } from "crypto";
-import superjson from "superjson";
+import { parse, stringify } from "superjson";
 import { z } from "zod";
-import type { PaginatedQueryParams } from "./pagination";
-import { getRedisClient } from "./redis";
-import { CACHE_DURATION_MINUTES } from "./cache-constants";
+import type { PaginatedQueryParams } from "../pagination";
+import { getRedisClient } from "../redis";
+import { CACHE_DURATION_MINUTES } from "./constants";
 
 /**
  * Maximum Redis key length in bytes. Keys exceeding this are hashed to prevent
@@ -68,8 +68,8 @@ const roundDateToInterval = (date?: Date): string | undefined => {
 /**
  * Serialize data using SuperJSON (handles BigInt, Date, Map, Set, etc.)
  */
-const serialize = (data: Parameters<typeof superjson.stringify>[0]): string => {
-  return superjson.stringify(data);
+const serialize = (data: Parameters<typeof stringify>[0]): string => {
+  return stringify(data);
 };
 
 /**
@@ -142,7 +142,7 @@ async function withRedisCache<T>(
       const cached = await redis.get(fullCacheKey);
       if (cached) {
         console.log(`[Cache] HIT: ${fullCacheKey}`);
-        return superjson.parse<T>(cached);
+        return parse<T>(cached);
       }
     } catch {
       // Redis read failed — fall through to execute
@@ -186,7 +186,7 @@ async function withRedisCache<T>(
         console.log(
           `[Cache] WAIT→HIT after ${(i + 1) * POLL_INTERVAL_MS}ms: ${fullCacheKey}`
         );
-        return superjson.parse<T>(cached);
+        return parse<T>(cached);
       }
 
       // Detect orphaned lock: if the lock disappeared but no result was
