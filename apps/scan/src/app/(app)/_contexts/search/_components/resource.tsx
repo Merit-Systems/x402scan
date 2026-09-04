@@ -22,7 +22,6 @@ export const Resource: React.FC<Props> = ({ resource }) => {
       address={
         <Addresses
           addresses={resource.accepts.map((accept) => accept.payTo)}
-          className="border-none p-0"
           hideTooltip
         />
       }
@@ -45,7 +44,7 @@ const ResourceContainer = ({
     <div className="flex items-center gap-2">
       {icon}
       <div>
-        <div className="font-mono text-sm font-semibold">{title}</div>
+        <span className="type-compact-code">{title}</span>
         <div>{address}</div>
       </div>
     </div>

@@ -12,10 +12,10 @@ export const NavbarSearchButton = () => {
 
   return (
     <Button
-      size="icon"
+      size="default"
       variant="outline"
       aria-label="Search x402scan"
-      className="text-muted-foreground lg:w-48 lg:justify-between lg:px-2 lg:pr-1"
+      className="w-8 lg:w-48 lg:justify-between"
       onClick={() => {
         setIsOpen(true);
       }}
@@ -24,9 +24,7 @@ export const NavbarSearchButton = () => {
         <Search className="size-4" />
         <span className="hidden lg:block">Search...</span>
       </div>
-      <Shortcut className="hidden rounded-md bg-muted px-1 lg:block">
-        ⌘K
-      </Shortcut>
+      <Shortcut className="hidden lg:block">⌘K</Shortcut>
     </Button>
   );
 };

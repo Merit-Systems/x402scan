@@ -1,6 +1,6 @@
 import { forbidden } from "next/navigation";
 
-import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { auth } from "@/auth";
 
 import { ComposerBalancesTable } from "./_components/table";

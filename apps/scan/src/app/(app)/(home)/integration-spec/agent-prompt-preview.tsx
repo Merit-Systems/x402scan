@@ -39,13 +39,9 @@ export function AgentPromptPreview({
           className="overflow-hidden rounded-md bg-muted"
         >
           <pre
-            className={
-              expanded
-                ? "type-compact-code overflow-x-auto p-3"
-                : "type-compact-code overflow-hidden p-3"
-            }
+            className={expanded ? "overflow-x-auto p-3" : "overflow-hidden p-3"}
           >
-            <code>{prompt}</code>
+            <code className="type-compact-code">{prompt}</code>
           </pre>
         </motion.div>
         {!expanded && (

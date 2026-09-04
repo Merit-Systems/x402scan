@@ -84,7 +84,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
             onValueChange={setSearch}
           />
           <CommandList>
-            <CommandEmpty className="flex flex-col items-center justify-center gap-2 p-8 text-center text-sm text-muted-foreground">
+            <CommandEmpty className="flex flex-col items-center justify-center gap-2 text-center">
               {isLoadingOrigins || isLoadingResources ? (
                 <>
                   <Loader2 className="size-10 animate-spin" />
