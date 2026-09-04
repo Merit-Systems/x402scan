@@ -109,7 +109,7 @@ function CodeBlock({ code }: { code: string }) {
 
 export default function DiscoverySpecPage() {
   return (
-    <div>
+    <div data-slot="documentation">
       <Heading
         title="Become discoverable"
         description="Build once, register reliably, and keep your resources discoverable by agents."
