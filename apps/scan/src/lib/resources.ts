@@ -59,6 +59,8 @@ const v1HttpMethodSchema = z.enum([
  * Discovery-sourced display fields stored in Resource.metadata at
  * registration time.
  */
+// A type alias keeps the implicit index signature required by Prisma JSON.
+// eslint-disable-next-line typescript/consistent-type-definitions
 type DiscoveryResourceMetadata = {
   pricingMode?: string;
   price?: string;

@@ -23,6 +23,7 @@ export const jsonObjectSchema3 = z3.record(jsonValueSchema3);
 // A `type` alias (not an `interface`) so it gets an implicit index signature,
 // which keeps zod-inferred structures containing FieldDef assignable to
 // Prisma's structural JSON input types.
+// eslint-disable-next-line typescript/consistent-type-definitions
 export type FieldDef = {
   type?: string;
   required?: boolean | string[];

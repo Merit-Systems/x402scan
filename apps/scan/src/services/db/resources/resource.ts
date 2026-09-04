@@ -29,7 +29,7 @@ export const upsertResource = async (
 ) => {
   const parsedResourceInput = upsertResourceSchema.safeParse(resourceInput);
   if (!parsedResourceInput.success) {
-    return;
+    return undefined;
   }
   const baseResource = parsedResourceInput.data;
   const supportedAccepts = baseResource.accepts.filter((accept) =>
@@ -39,7 +39,7 @@ export const upsertResource = async (
     (accept) => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
   if (supportedAccepts.length === 0) {
-    return;
+    return undefined;
   }
   const originStr = getOriginFromUrl(baseResource.resource);
 
