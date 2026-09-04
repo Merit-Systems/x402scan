@@ -54,12 +54,13 @@ export async function searchX402Tools(
     const description =
       parsedAccepts.data.find((accept) => accept.description)?.description ??
       "";
+    const { _count: count } = resource;
     toolDefinitions.push({
       id: resource.id,
       resource: resource.resource,
       description: description,
       favicon: resource.origin.favicon,
-      invocations: resource._count.toolCalls,
+      invocations: count.toolCalls,
       accepts: parsedAccepts.data.flatMap((accept) => {
         const chain = supportedChainSchema.safeParse(accept.network);
         return chain.success

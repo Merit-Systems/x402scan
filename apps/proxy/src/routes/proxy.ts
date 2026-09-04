@@ -493,9 +493,11 @@ async function proxyHandler(c: Context) {
 }
 
 export function registerProxyRouter(app: Hono) {
-  app.get("/api/proxy", proxyHandler);
-  app.post("/api/proxy", proxyHandler);
-  app.put("/api/proxy", proxyHandler);
-  app.patch("/api/proxy", proxyHandler);
-  app.delete("/api/proxy", proxyHandler);
+  const handleProxy = (context: Context) => proxyHandler(context);
+
+  app.get("/api/proxy", handleProxy);
+  app.post("/api/proxy", handleProxy);
+  app.put("/api/proxy", handleProxy);
+  app.patch("/api/proxy", handleProxy);
+  app.delete("/api/proxy", handleProxy);
 }

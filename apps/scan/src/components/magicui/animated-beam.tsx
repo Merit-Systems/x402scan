@@ -120,7 +120,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
                 }
         );
 
-        let d = "";
+        let d: string;
         if (pathType === "angular") {
           // Create angular path with rounded corners
           const controlPointY = (startY + endY) / 2;

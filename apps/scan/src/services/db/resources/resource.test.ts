@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   normalizeKnownAcceptNetworks,
   upsertResourceSchema,
-} from "./resource-schema";
+} from "./resource/schema";
 
 const validAccepts = [
   {

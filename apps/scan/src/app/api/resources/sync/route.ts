@@ -14,7 +14,7 @@ import { isVercelPreviewDeployment } from "@/lib/discovery/vercel-preview";
 import {
   normalizeKnownAcceptNetworks,
   upsertResourceSchema,
-} from "@/services/db/resources/resource-schema";
+} from "@/services/db/resources/resource/schema";
 
 import type { NextRequest } from "next/server";
 import {

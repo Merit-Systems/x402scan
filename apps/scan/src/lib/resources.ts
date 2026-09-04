@@ -23,7 +23,7 @@ import { formatTokenAmount } from "./token";
 import { SUPPORTED_CHAINS } from "@/types/chain";
 import { fetchDiscoveryDocument } from "@/services/discovery";
 import { verifyAcceptsOwnership } from "@/services/verification/accepts-verification";
-import { normalizeKnownAcceptNetworks } from "@/services/db/resources/resource-schema";
+import { normalizeKnownAcceptNetworks } from "@/services/db/resources/resource/schema";
 import { outputSchemaV1 } from "@/lib/x402/v1";
 import {
   normalizeChainId,

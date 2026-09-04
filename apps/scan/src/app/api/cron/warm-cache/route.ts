@@ -5,7 +5,7 @@ import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
 import { ACTIVITY_TIMEFRAMES } from "@/types/timeframes";
 import type { ActivityTimeframe } from "@/types/timeframes";
 import { facilitatorAddresses } from "@/lib/facilitators";
-import { CACHE_DURATION_MINUTES } from "@/lib/cache-constants";
+import { CACHE_DURATION_MINUTES } from "@/lib/cache/constants";
 import { Chain } from "@/types/chain";
 
 import type { NextRequest } from "next/server";
