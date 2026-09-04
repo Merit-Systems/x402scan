@@ -2,22 +2,13 @@
 
 import { api } from "@/trpc/client";
 
-import { LoadingOverallStatsCard, OverallStatsCard } from "./card";
-
+import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
 import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
+import { formatChartTimestamp } from "@/lib/utils";
 
-import type { ChartData, ChartItems } from "@/components/ui/charts/chart/types";
+import type { ChartData } from "@/components/ui/chart";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
-
-// Chart row types require an implicit string index signature.
-// eslint-disable-next-line typescript/consistent-type-definitions
-type StatRow = {
-  transactions: number;
-  totalAmount: number;
-  buyers: number;
-  sellers: number;
-};
 
 export const OverallCharts = ({
   chain,
@@ -37,7 +28,12 @@ export const OverallCharts = ({
     chain,
   });
 
-  const chartData: ChartData<StatRow>[] = bucketedStats.map((stat) => {
+  const chartData: ChartData<{
+    transactions: number;
+    totalAmount: number;
+    buyers: number;
+    sellers: number;
+  }>[] = bucketedStats.map((stat) => {
     const txValue = stat.total_transactions;
     const amountValue = parseFloat(
       convertTokenAmount(BigInt(stat.total_amount)).toString()
@@ -54,31 +50,26 @@ export const OverallCharts = ({
     };
   });
 
-  const buildItems = (dataKey: keyof StatRow): ChartItems<StatRow> => ({
-    type: "bar",
-    bars: [{ dataKey, color: "var(--color-primary)" }],
-  });
-  const txItems = buildItems("transactions");
-  const volumeItems = buildItems("totalAmount");
-  const buyersItems = buildItems("buyers");
-  const sellersItems = buildItems("sellers");
-
   return (
     <>
-      <OverallStatsCard
+      <StatsCard
         title="Transactions"
         value={overallStats.total_transactions.toLocaleString(undefined, {
           notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
-        items={txItems}
+        items={{
+          type: "bar",
+          bars: [{ dataKey: "transactions", color: "var(--color-primary)" }],
+        }}
         data={chartData}
+        formatTooltipLabel={formatChartTimestamp}
         tooltipRows={[
           {
-            key: "transactions",
+            dataKey: "transactions",
             label: "Transactions",
-            getValue: (data) =>
+            formatValue: (data) =>
               data.toLocaleString(undefined, {
                 notation: "compact",
                 minimumFractionDigits: 0,
@@ -87,16 +78,20 @@ export const OverallCharts = ({
           },
         ]}
       />
-      <OverallStatsCard
+      <StatsCard
         title="Volume"
         value={formatTokenAmount(BigInt(overallStats.total_amount))}
-        items={volumeItems}
+        items={{
+          type: "bar",
+          bars: [{ dataKey: "totalAmount", color: "var(--color-primary)" }],
+        }}
         data={chartData}
+        formatTooltipLabel={formatChartTimestamp}
         tooltipRows={[
           {
-            key: "totalAmount",
+            dataKey: "totalAmount",
             label: "Volume",
-            getValue: (data) =>
+            formatValue: (data) =>
               data.toLocaleString(undefined, {
                 notation: "compact",
                 minimumFractionDigits: 2,
@@ -107,20 +102,24 @@ export const OverallCharts = ({
           },
         ]}
       />
-      <OverallStatsCard
+      <StatsCard
         title="Buyers"
         value={overallStats.unique_buyers.toLocaleString(undefined, {
           notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
-        items={buyersItems}
+        items={{
+          type: "bar",
+          bars: [{ dataKey: "buyers", color: "var(--color-primary)" }],
+        }}
         data={chartData}
+        formatTooltipLabel={formatChartTimestamp}
         tooltipRows={[
           {
-            key: "buyers",
+            dataKey: "buyers",
             label: "Buyers",
-            getValue: (data) =>
+            formatValue: (data) =>
               data.toLocaleString(undefined, {
                 notation: "compact",
                 minimumFractionDigits: 0,
@@ -129,20 +128,24 @@ export const OverallCharts = ({
           },
         ]}
       />
-      <OverallStatsCard
+      <StatsCard
         title="Sellers"
         value={overallStats.unique_sellers.toLocaleString(undefined, {
           notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         })}
-        items={sellersItems}
+        items={{
+          type: "bar",
+          bars: [{ dataKey: "sellers", color: "var(--color-primary)" }],
+        }}
         data={chartData}
+        formatTooltipLabel={formatChartTimestamp}
         tooltipRows={[
           {
-            key: "sellers",
+            dataKey: "sellers",
             label: "Sellers",
-            getValue: (data) =>
+            formatValue: (data) =>
               data.toLocaleString(undefined, {
                 notation: "compact",
                 minimumFractionDigits: 0,
@@ -158,10 +161,10 @@ export const OverallCharts = ({
 export const LoadingOverallCharts = () => {
   return (
     <>
-      <LoadingOverallStatsCard type="bar" title="Transactions" />
-      <LoadingOverallStatsCard type="bar" title="Volume" />
-      <LoadingOverallStatsCard type="bar" title="Buyers" />
-      <LoadingOverallStatsCard type="bar" title="Sellers" />
+      <LoadingStatsCard type="bar" title="Transactions" />
+      <LoadingStatsCard type="bar" title="Volume" />
+      <LoadingStatsCard type="bar" title="Buyers" />
+      <LoadingStatsCard type="bar" title="Sellers" />
     </>
   );
 };

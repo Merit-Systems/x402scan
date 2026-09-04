@@ -9,11 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ChartData } from "@/components/ui/charts/chart/types";
-import {
-  BaseBarChart,
-  LoadingBarChart,
-} from "@/components/ui/charts/chart/bar";
+import { BarChart, LoadingBarChart } from "@/components/ui/chart";
+import type { ChartData } from "@/components/ui/chart";
 import { api } from "@/trpc/client";
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
@@ -136,10 +133,10 @@ export const ResourceToolCallsByResourceChart = ({
       const baseHue = (index * 360) / resourcesWithData.length;
       const key: ResourceKey = `${resource.id}-tool_calls`;
       return {
-        key,
+        dataKey: key,
         label: resource.resource,
-        getValue: (value: number) => value.toLocaleString(),
-        dotColor: generatePerturbedColor(baseHue, resource.id),
+        formatValue: (value: number) => value.toLocaleString(),
+        color: generatePerturbedColor(baseHue, resource.id),
       };
     });
   }, [allResources, resourceIdsInData]);
@@ -171,7 +168,7 @@ export const ResourceToolCallsByResourceChart = ({
       </CardHeader>
       <CardContent>
         {bars.length > 0 ? (
-          <BaseBarChart
+          <BarChart
             data={chartData}
             bars={bars}
             height={450}

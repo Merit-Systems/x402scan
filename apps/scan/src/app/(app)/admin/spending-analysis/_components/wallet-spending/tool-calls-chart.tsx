@@ -9,11 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  BaseBarChart,
-  LoadingBarChart,
-} from "@/components/ui/charts/chart/bar";
-import type { ChartData } from "@/components/ui/charts/chart/types";
+import { BarChart, LoadingBarChart } from "@/components/ui/chart";
+import type { ChartData } from "@/components/ui/chart";
 import { api } from "@/trpc/client";
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
@@ -71,7 +68,7 @@ export const ToolCallsChart = ({
         {toolCallsLoading ? (
           <LoadingBarChart height={300} />
         ) : (
-          <BaseBarChart
+          <BarChart
             data={toolCallsChartData}
             bars={[
               {
@@ -90,9 +87,9 @@ export const ToolCallsChart = ({
             }}
             tooltipRows={[
               {
-                key: "total_tool_calls",
+                dataKey: "total_tool_calls",
                 label: "Tool Calls",
-                getValue: (value) => value.toLocaleString(),
+                formatValue: (value) => value.toLocaleString(),
               },
             ]}
           />
