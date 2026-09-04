@@ -291,7 +291,7 @@ function createSplitSyncTasks(syncConfig: SyncConfig) {
 
 export function createChainSyncTask(syncConfig: SyncConfig) {
   if (!syncConfig.enabled) {
-    return;
+    return undefined;
   }
 
   if (syncConfig.splitSyncByFacilitator) {

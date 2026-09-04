@@ -13,6 +13,7 @@ import { jsonValueSchema3 } from "../shared";
  * so it gets an implicit index signature, keeping structures containing it
  * assignable to Prisma's structural JSON input types.
  */
+// eslint-disable-next-line typescript/consistent-type-definitions
 export type BazaarJsonSchema = {
   type?: string;
   properties?: Record<string, BazaarJsonSchema>;

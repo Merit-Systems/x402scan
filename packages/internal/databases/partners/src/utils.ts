@@ -7,7 +7,7 @@ export const createTable = async (query: string) => {
 };
 
 export const insertData = async <T extends Tables>(
-  table: Tables,
+  table: T,
   data: PartnersDatabaseMap[T][]
 ) => {
   return partnersDb.insert<PartnersDatabaseMap[T]>({

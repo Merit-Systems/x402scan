@@ -49,13 +49,16 @@ export const GET = async (request: NextRequest) => {
     const resources = (
       await Promise.all(
         discoverableFacilitators.map((facilitator) =>
-          listAllFacilitatorResources(facilitator).catch((error) => {
-            console.error("Failed to fetch facilitator resources", {
-              facilitator: facilitator.url,
-              error: error instanceof Error ? error.message : "Unknown error",
-            });
-            return [];
-          })
+          listAllFacilitatorResources(facilitator).catch(
+            /* oxlint-disable-next-line merit-core/no-unknown-parameters */
+            (error: unknown) => {
+              console.error("Failed to fetch facilitator resources", {
+                facilitator: facilitator.url,
+                error: error instanceof Error ? error.message : "Unknown error",
+              });
+              return [];
+            }
+          )
         )
       )
     ).flat();
