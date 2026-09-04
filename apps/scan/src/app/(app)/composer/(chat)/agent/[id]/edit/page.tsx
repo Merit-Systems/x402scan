@@ -1,4 +1,4 @@
-import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { auth } from "@/auth";
 import { api } from "@/trpc/server";
 

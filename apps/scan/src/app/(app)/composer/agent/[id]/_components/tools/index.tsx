@@ -1,4 +1,4 @@
-import { Section } from "@/app/(app)/_components/layout/page-utils";
+import { Section } from "@/app/(app)/_components/deferred/page-utils";
 
 import { LoadingToolCard, ToolCard } from "./card";
 

@@ -2,7 +2,7 @@ import { AlertCircle } from "lucide-react";
 
 import {
   Card,
-  CardDescription,
+  CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -21,18 +21,19 @@ export const ErrorCard: React.FC<ErrorComponentProps> = ({
   actions,
 }) => {
   return (
-    <Card className="flex w-full max-w-md flex-col gap-4 p-4">
-      <CardHeader className="flex flex-row items-center gap-2 p-0 text-center">
+    <Card className="w-full max-w-md">
+      <CardHeader className="flex flex-row items-center gap-2 text-center">
         <Icon className="size-6 text-primary" />
-        <CardTitle className="text-xl font-bold">{title}</CardTitle>
-        <CardDescription className="hidden text-base" />
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <Streamdown className="text-base">
-        {description ??
-          errorProps?.error.message ??
-          "This error has been reported to our team and will be investigated shortly."}
-      </Streamdown>
-      <CardFooter className="p-0">
+      <CardContent>
+        <Streamdown>
+          {description ??
+            errorProps?.error.message ??
+            "This error has been reported to our team and will be investigated shortly."}
+        </Streamdown>
+      </CardContent>
+      <CardFooter>
         {actions ?? (
           <Link href="/" className="flex-1">
             <Button variant="outline" className="w-full">

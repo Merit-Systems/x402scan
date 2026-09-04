@@ -22,7 +22,6 @@ export const Origin: React.FC<OriginProps> = ({
       address={
         <Addresses
           addresses={addresses}
-          className="border-none p-0 text-[10px] md:text-xs"
           hideTooltip
           disableCopy={disableCopy}
         />
@@ -42,9 +41,9 @@ const OriginsContainer = ({ icon, title, address }: OriginsContainerProps) => {
     <div className="flex w-full items-center gap-2 overflow-hidden">
       {icon}
       <div className="flex-1 overflow-hidden">
-        <div className="flex w-full max-w-full items-center gap-2 overflow-hidden font-mono text-xs font-semibold text-ellipsis whitespace-nowrap md:text-sm">
+        <span className="type-compact-code flex w-full max-w-full items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
           {title}
-        </div>
+        </span>
         <div>{address}</div>
       </div>
     </div>
