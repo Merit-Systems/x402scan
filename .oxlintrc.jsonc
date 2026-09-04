@@ -29,21 +29,10 @@
     "apps/scan/src/services/db/spending/**",
     "apps/scan/src/services/cdp/server-wallet/admin.ts"
   ],
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "oxc",
-    "import",
-    "react",
-    "nextjs",
-    "promise",
-    "node"
-  ],
   "options": {
     // Foundation adoption is staged: inherited migration findings remain
     // visible, but only the established and high-signal rules block this batch.
-    "denyWarnings": false,
-    "typeAware": true
+    "denyWarnings": false
   },
   "settings": {
     "tailwindcss": {
@@ -86,17 +75,11 @@
     // disappearing behind a repository-wide disable.
     "oxc/no-async-endpoint-handlers": "warn",
 
-    // Parity with the previous typescript-eslint config.
+    // Preserve repository-specific options beyond Foundation's defaults.
     "typescript/consistent-type-imports": [
       "error",
       { "fixStyle": "separate-type-imports" }
     ],
-    // Curated additions: high-signal bug catchers not on by default.
-    "import/no-cycle": "error",
-    "import/no-self-import": "error",
-    "import/no-empty-named-blocks": "error",
-    "promise/no-multiple-resolved": "error",
-    "unicorn/no-instanceof-builtins": ["error", { "exclude": ["Function"] }],
-    "unicorn/require-post-message-target-origin": "error"
+    "unicorn/no-instanceof-builtins": ["error", { "exclude": ["Function"] }]
   }
 }
