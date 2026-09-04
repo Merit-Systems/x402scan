@@ -3,13 +3,7 @@ import type { KnipConfig } from "knip";
 const config: KnipConfig = {
   workspaces: {
     ".": {
-      entry: [
-        "foundation.config.ts",
-        "oxfmt.config.ts",
-        "taze.config.ts",
-        "tools/oxlint/anti-slop/index.ts",
-      ],
-      project: ["tools/oxlint/**/*.ts"],
+      entry: ["foundation.config.ts", "oxfmt.config.ts", "taze.config.ts"],
       ignoreDependencies: [
         "@merit-systems/oxlint-config",
         "@merit-systems/typescript-config",

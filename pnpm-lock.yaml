@@ -247,9 +247,6 @@ importers:
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
         version: 0.20.1(typescript@6.0.3)
-      '@oxlint/plugins':
-        specifier: 1.78.0
-        version: 1.78.0
       knip:
         specifier: ^5.80.0
         version: 5.80.0(@types/node@24.9.2)(typescript@6.0.3)
