@@ -22,8 +22,6 @@ import { Resource } from "@/app/(app)/_components/resource";
 
 import { api } from "@/trpc/client";
 
-import { mixedAddressSchema } from "@/lib/schemas";
-
 import type { Route } from "next";
 
 export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
@@ -72,7 +70,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
       >
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Search for an address, origin, or resource..."
+            placeholder="Search for an origin or resource..."
             value={search}
             onValueChange={setSearch}
           />
@@ -91,30 +89,10 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
               ) : (
                 <>
                   <Search className="size-10" />
-                  <p>Search by address, origin, or resource.</p>
+                  <p>Search by origin or resource.</p>
                 </>
               )}
             </CommandEmpty>
-            {mixedAddressSchema.safeParse(search).success && (
-              <>
-                <CommandGroup heading="Server Addresses">
-                  <CommandItem
-                    value={`${search}-server`}
-                    onSelect={() => handleSelect(`/recipient/${search}`)}
-                  >
-                    {search}
-                  </CommandItem>
-                </CommandGroup>
-                {/* <CommandGroup heading="Buyer Addresses">
-                <CommandItem
-                  value={`${search}-buyer`}
-                  onSelect={() => handleSelect(`/recipient/${search}`)}
-                >
-                  {search}
-                </CommandItem>
-              </CommandGroup> */}
-              </>
-            )}
             {(origins?.length ?? 0) > 0 && (
               <CommandGroup heading="Origins">
                 {origins?.map((origin) => (

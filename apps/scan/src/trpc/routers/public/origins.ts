@@ -2,7 +2,6 @@ import z from "zod";
 import { createTRPCRouter, publicProcedure } from "../../trpc";
 import {
   getOrigin,
-  getOriginMetadata,
   listOrigins,
   listOriginsSchema,
   listOriginsWithResources,
@@ -36,9 +35,6 @@ function checkRateLimit(originId: string): void {
 export const originsRouter = createTRPCRouter({
   get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
     return await getOrigin(input);
-  }),
-  getMetadata: publicProcedure.input(z.uuid()).query(async ({ input }) => {
-    return await getOriginMetadata(input);
   }),
   list: {
     origins: publicProcedure
