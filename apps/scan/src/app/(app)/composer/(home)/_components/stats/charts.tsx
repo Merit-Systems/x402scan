@@ -4,9 +4,10 @@ import { api } from "@/trpc/client";
 
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
-import { LoadingOverallStatsCard, OverallStatsCard } from "./card";
+import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
+import { formatChartTimestamp } from "@/lib/utils";
 
-import type { ChartData } from "@/components/ui/charts/chart/types";
+import type { ChartData } from "@/components/ui/chart";
 
 export const OverallCharts = () => {
   const { timeframe } = useTimeRangeContext();
@@ -34,7 +35,7 @@ export const OverallCharts = () => {
 
   return (
     <>
-      <OverallStatsCard
+      <StatsCard
         title="Requests"
         value={overallStats.message_count.toLocaleString(undefined, {
           notation: "compact",
@@ -46,11 +47,12 @@ export const OverallCharts = () => {
           bars: [{ dataKey: "requests", color: "var(--color-primary)" }],
         }}
         data={chartData}
+        formatTooltipLabel={formatChartTimestamp}
         tooltipRows={[
           {
-            key: "requests",
+            dataKey: "requests",
             label: "Requests",
-            getValue: (data) =>
+            formatValue: (data) =>
               data.toLocaleString(undefined, {
                 notation: "compact",
                 minimumFractionDigits: 0,
@@ -59,7 +61,7 @@ export const OverallCharts = () => {
           },
         ]}
       />
-      <OverallStatsCard
+      <StatsCard
         title="Users"
         value={overallStats.user_count.toLocaleString(undefined, {
           notation: "compact",
@@ -71,11 +73,12 @@ export const OverallCharts = () => {
           bars: [{ dataKey: "users", color: "var(--color-primary)" }],
         }}
         data={chartData}
+        formatTooltipLabel={formatChartTimestamp}
         tooltipRows={[
           {
-            key: "users",
+            dataKey: "users",
             label: "Users",
-            getValue: (data) =>
+            formatValue: (data) =>
               data.toLocaleString(undefined, {
                 notation: "compact",
                 minimumFractionDigits: 0,
@@ -91,8 +94,8 @@ export const OverallCharts = () => {
 export const LoadingOverallCharts = () => {
   return (
     <>
-      <LoadingOverallStatsCard type="bar" title="Requests" />
-      <LoadingOverallStatsCard type="bar" title="Users" />
+      <LoadingStatsCard type="bar" title="Requests" />
+      <LoadingStatsCard type="bar" title="Users" />
     </>
   );
 };
