@@ -1,8 +1,14 @@
 "use client";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import { ServiceSummary, serviceColumns as columns } from "./service-columns";
+import {
+  LoadingServiceSummary,
+  ServiceSummary,
+  serviceColumns as columns,
+} from "./service-columns";
 import {
   ResponsiveCollection,
   ResponsiveCollectionLoading,
@@ -23,6 +29,7 @@ import {
 
 import type { ServiceItem } from "./service-columns";
 import type { DataListItem } from "@/components/ui/data-list";
+import type { Route } from "next";
 import type { SellerSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
 import type { Chain } from "@/types/chain";
@@ -145,6 +152,7 @@ function ServicesCollection({
   };
   sorting: TableSorting<SellerSortId>;
 }) {
+  const router = useRouter();
   const replaceSearchParams = useReplaceSearchParams();
   const tableSorting = useUrlTableSorting({
     sorting,
@@ -169,7 +177,12 @@ function ServicesCollection({
         list={{ item: serviceListItem }}
         table={{
           columns,
+          getRowHref: getServiceHref,
+          getRowLabel: (item) => `Open ${getServiceName(item)}`,
           manualSorting: true,
+          onRowMouseEnter: (item) => {
+            router.prefetch(getServiceHref(item));
+          },
           sorting: tableSorting.tableSorting,
           onSortingChange: tableSorting.onSortingChange,
           pageSize: PAGE_SIZE,
@@ -261,8 +274,12 @@ const serviceListItem: DataListItem<ServiceItem> = {
     }
 
     return (
-      <div className="flex flex-col gap-3 py-4">
-        <ServiceSummary item={item} />
+      <Link href={getServiceHref(item)} className="flex flex-col gap-2 py-4">
+        <ServiceSummary
+          item={item}
+          descriptionPlacement="below"
+          nameVariant="card-title"
+        />
         <dl className="grid grid-cols-4 gap-2">
           <Metric
             label="Volume"
@@ -291,7 +308,7 @@ const serviceListItem: DataListItem<ServiceItem> = {
             }
           />
         </dl>
-      </div>
+      </Link>
     );
   },
   renderLoadingItem: () => <LoadingServiceItem />,
@@ -309,14 +326,7 @@ function Metric({ label, value }: { label: string; value: string }) {
 function LoadingServiceItem() {
   return (
     <div className="flex flex-col gap-3 py-4">
-      <div className="flex items-start gap-3">
-        <Skeleton className="size-6 rounded-full" />
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-3 w-4/5" />
-        </div>
-        <Skeleton className="h-7 w-16" />
-      </div>
+      <LoadingServiceSummary />
       <div className="grid grid-cols-4 gap-2">
         {Array.from({ length: 4 }, (_, metricIndex) => (
           <div key={metricIndex} className="flex flex-col gap-1">
@@ -327,4 +337,29 @@ function LoadingServiceItem() {
       </div>
     </div>
   );
+}
+
+function getServiceHref(item: ServiceItem): Route {
+  const origin = item.origins[0];
+
+  if (!origin) {
+    throw new Error("A service row must have at least one origin");
+  }
+
+  return `/server/${origin.id}` as Route;
+}
+
+function getServiceName(item: ServiceItem) {
+  const origin = item.origins[0];
+
+  if (!origin) {
+    return "server";
+  }
+
+  const title = origin.title?.trim();
+  if (title) {
+    return title;
+  }
+
+  return new URL(origin.origin).hostname;
 }
