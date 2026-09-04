@@ -1,7 +1,6 @@
 import z from "zod";
 import { revalidatePath } from "next/cache";
 
-import { resourceKey } from "@/lib/resource-key";
 import {
   createTRPCRouter,
   paginatedProcedure,
@@ -39,7 +38,6 @@ import {
 
 import type { Prisma } from "@x402scan/scan-db";
 import type { SupportedChain } from "@/types/chain";
-import { verifyAnyOwnershipProof } from "@/lib/ownership-proof";
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -260,73 +258,6 @@ export const resourcesRouter = createTRPCRouter({
         ownershipProofs: discoveryResult.ownershipProofs,
         contactEmail: discoveryResult.contactEmail,
       };
-    }),
-
-  /**
-   * Check which resources are already registered.
-   * Accepts resources with optional method for compound-key matching.
-   */
-  checkRegistered: publicProcedure
-    .input(
-      z.object({
-        resources: z
-          .array(
-            z.object({
-              url: z.string().url(),
-              method: z.string().optional(),
-            })
-          )
-          .max(50),
-      })
-    )
-    .query(async ({ input }) => {
-      const registered = await scanDb.resources.findMany({
-        where: {
-          OR: input.resources.map((r) =>
-            r.method
-              ? { resource: r.url, method: r.method }
-              : { resource: r.url }
-          ),
-        },
-        select: {
-          resource: true,
-          method: true,
-        },
-      });
-
-      const registeredKeys = new Set(
-        registered.map((r) => resourceKey(r.resource, r.method))
-      );
-      return {
-        registered: input.resources
-          .filter((r) => registeredKeys.has(resourceKey(r.url, r.method)))
-          .map((r) => r.url),
-        unregistered: input.resources
-          .filter((r) => !registeredKeys.has(resourceKey(r.url, r.method)))
-          .map((r) => r.url),
-      };
-    }),
-
-  /**
-   * Verify ownership proofs against payTo addresses.
-   * Checks if any proof is a valid signature of the origin by any payTo address.
-   */
-  verifyOwnership: publicProcedure
-    .input(
-      z.object({
-        ownershipProofs: z.array(z.string()),
-        origin: z.string(),
-        payToAddresses: z.array(z.string()),
-      })
-    )
-    .query(async ({ input }) => {
-      const result = await verifyAnyOwnershipProof(
-        input.ownershipProofs,
-        input.origin,
-        input.payToAddresses
-      );
-
-      return result;
     }),
 
   /**
