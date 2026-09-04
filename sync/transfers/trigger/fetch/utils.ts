@@ -38,12 +38,12 @@ export async function fetchWithTimeWindowing(
 
     allTransfers.push(...results);
     logger.log(
-      `[${config.chain}] Fetched ${results.length} results in this time window`
+      `[${config.chain}] Fetched ${String(results.length)} results in this time window`
     );
 
     if (results.length >= config.limit) {
       logger.warn(
-        `[${config.chain}] Window returned ${results.length} results (at or above limit of ${config.limit}). Some data might be missing. Consider reducing TIME_WINDOW_DAYS or increasing the limit.`
+        `[${config.chain}] Window returned ${String(results.length)} results (at or above limit of ${String(config.limit)}). Some data might be missing. Consider reducing TIME_WINDOW_DAYS or increasing the limit.`
       );
     }
 

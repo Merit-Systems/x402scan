@@ -464,13 +464,13 @@ export const registerResource = async (
     console.warn(
       `[registerResource] No output schema resolved for ${cleanUrl}`,
       `method=${advisory.method}`,
-      `hasInputSchema=${!!advisory.inputSchema}`,
-      `hasPaymentBody=${!!advisory.paymentRequiredBody}`,
+      `hasInputSchema=${String(!!advisory.inputSchema)}`,
+      `hasPaymentBody=${String(!!advisory.paymentRequiredBody)}`,
       `inputSchemaKeys=${advisory.inputSchema ? Object.keys(advisory.inputSchema).join(",") : "none"}`
     );
   } else {
     console.log(
-      `[registerResource] Schema resolved via ${schemaSource} for ${cleanUrl}`
+      `[registerResource] Schema resolved via ${String(schemaSource)} for ${cleanUrl}`
     );
   }
 

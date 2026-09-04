@@ -57,13 +57,13 @@ export default async function NetworksPage({
         />
         <section className="space-y-4">
           <Suspense
-            key={`chart:${chain ?? "all"}:${timeframe}`}
+            key={`chart:${chain ?? "all"}:${String(timeframe)}`}
             fallback={<LoadingNetworksChart />}
           >
             <NetworksChart chain={chain} timeframe={timeframe} />
           </Suspense>
           <Suspense
-            key={`table:${chain ?? "all"}:${timeframe}:${sorting.id}:${sorting.desc}`}
+            key={`table:${chain ?? "all"}:${String(timeframe)}:${sorting.id}:${String(sorting.desc)}`}
             fallback={<LoadingNetworksTable sorting={sorting} />}
           >
             <NetworksTable

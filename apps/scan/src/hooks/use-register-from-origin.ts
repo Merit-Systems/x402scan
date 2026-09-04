@@ -62,13 +62,17 @@ export function useRegisterFromOrigin(
 
       if (showToasts) {
         const parts: string[] = [];
-        if (data.registered > 0) parts.push(`${data.registered} registered`);
-        if (data.siwx > 0) parts.push(`${data.siwx} SIWX`);
-        if (data.publicCount > 0) parts.push(`${data.publicCount} public`);
-        if (data.apiKeyCount > 0) parts.push(`${data.apiKeyCount} API key`);
-        if (data.deprecated > 0) parts.push(`${data.deprecated} removed`);
-        if (data.skipped > 0) parts.push(`${data.skipped} skipped`);
-        if (data.failed > 0) parts.push(`${data.failed} failed`);
+        if (data.registered > 0)
+          parts.push(`${String(data.registered)} registered`);
+        if (data.siwx > 0) parts.push(`${String(data.siwx)} SIWX`);
+        if (data.publicCount > 0)
+          parts.push(`${String(data.publicCount)} public`);
+        if (data.apiKeyCount > 0)
+          parts.push(`${String(data.apiKeyCount)} API key`);
+        if (data.deprecated > 0)
+          parts.push(`${String(data.deprecated)} removed`);
+        if (data.skipped > 0) parts.push(`${String(data.skipped)} skipped`);
+        if (data.failed > 0) parts.push(`${String(data.failed)} failed`);
         const description =
           parts.length > 0 ? parts.join(", ") : "Server is up to date";
         toast.success("Server refreshed", { description });

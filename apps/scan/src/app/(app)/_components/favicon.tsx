@@ -65,7 +65,7 @@ export const Favicons: React.FC<FaviconsProps> = ({
                 "-ml-2": orientation === "horizontal",
               }
             )}
-            key={`${favicon}-${index}`}
+            key={`${String(favicon)}-${String(index)}`}
           >
             <Favicon url={favicon} className="size-full" />
           </div>

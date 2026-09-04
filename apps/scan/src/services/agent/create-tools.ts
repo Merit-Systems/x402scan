@@ -53,7 +53,7 @@ export async function createX402AITools(
       );
 
       aiTools[resource.id] = tool({
-        description: `${toolName}: ${parsedAccept.data.description} (Paid API - ${parsedAccept.data.maxAmountRequired} on ${parsedAccept.data.network})`,
+        description: `${toolName}: ${parsedAccept.data.description} (Paid API - ${parsedAccept.data.maxAmountRequired} on ${String(parsedAccept.data.network)})`,
         inputSchema: parametersSchema,
       });
     }

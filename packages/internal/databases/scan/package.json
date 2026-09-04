@@ -17,11 +17,13 @@
     "studio": "prisma studio"
   },
   "dependencies": {
+    "@t3-oss/env-core": "catalog:env",
     "@neondatabase/serverless": "catalog:prisma",
     "@prisma/adapter-neon": "catalog:prisma",
     "@prisma/client": "catalog:prisma",
     "dotenv": "catalog:env",
-    "ws": "catalog:prisma"
+    "ws": "catalog:prisma",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -31,8 +33,5 @@
     "rimraf": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:"
-  },
-  "peerDependencies": {
-    "zod": "catalog:"
   }
 }

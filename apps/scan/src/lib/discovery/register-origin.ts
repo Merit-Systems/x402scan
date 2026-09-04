@@ -63,7 +63,7 @@ async function mapSettledWithConcurrency<T, R>(
     if (!result) {
       return {
         status: "rejected",
-        reason: new Error(`Missing result at index ${index}`),
+        reason: new Error(`Missing result at index ${String(index)}`),
       };
     }
     return result;

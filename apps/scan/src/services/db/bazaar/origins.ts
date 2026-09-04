@@ -37,7 +37,7 @@ const listBazaarOriginsUncached = async (
   const addresses = Object.keys(originsByAddress);
   const addrCount = addresses.length;
   console.log(
-    `[bazaar.list] accepts=${(tAccepts - t0).toFixed(0)}ms (${addrCount} addrs)`
+    `[bazaar.list] accepts=${(tAccepts - t0).toFixed(0)}ms (${String(addrCount)} addrs)`
   );
 
   const result = await listTopSellersMVUncached(
@@ -56,8 +56,8 @@ const listBazaarOriginsUncached = async (
   const tMV = performance.now();
 
   console.log(
-    `[bazaar.list] mv=${(tMV - tAccepts).toFixed(0)}ms (${result.items.length} items)` +
-      ` chain=${input.chain ?? "all"} timeframe=${input.timeframe instanceof Object ? input.timeframe.period : input.timeframe}`
+    `[bazaar.list] mv=${(tMV - tAccepts).toFixed(0)}ms (${String(result.items.length)} items)` +
+      ` chain=${input.chain ?? "all"} timeframe=${String(input.timeframe instanceof Object ? input.timeframe.period : input.timeframe)}`
   );
 
   // Group by origin
@@ -173,7 +173,7 @@ const listBazaarOriginsUncached = async (
 
   console.log(
     `[bazaar.list] total=${(performance.now() - t0).toFixed(0)}ms` +
-      ` grouped=${groupedItems.length} origins`
+      ` grouped=${String(groupedItems.length)} origins`
   );
 
   return groupedItems;

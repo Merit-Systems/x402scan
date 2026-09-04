@@ -175,7 +175,7 @@ async function withRedisCache<T>(
 
   // Another process holds the lock — poll for result
   console.log(
-    `[Cache] WAIT: Polling for ${fullCacheKey} (max ${MAX_POLL_SECONDS}s)`
+    `[Cache] WAIT: Polling for ${fullCacheKey} (max ${String(MAX_POLL_SECONDS)}s)`
   );
   for (let i = 0; i < MAX_POLL_ATTEMPTS; i++) {
     await sleep(POLL_INTERVAL_MS);
@@ -184,7 +184,7 @@ async function withRedisCache<T>(
       const cached = await redis.get(fullCacheKey);
       if (cached) {
         console.log(
-          `[Cache] WAIT→HIT after ${(i + 1) * POLL_INTERVAL_MS}ms: ${fullCacheKey}`
+          `[Cache] WAIT→HIT after ${String((i + 1) * POLL_INTERVAL_MS)}ms: ${fullCacheKey}`
         );
         return parse<T>(cached);
       }
@@ -194,7 +194,7 @@ async function withRedisCache<T>(
       const lockExists = await redis.exists(lockKey);
       if (!lockExists) {
         console.log(
-          `[Cache] WAIT→ORPHAN: Lock gone without result after ${(i + 1) * POLL_INTERVAL_MS}ms`
+          `[Cache] WAIT→ORPHAN: Lock gone without result after ${String((i + 1) * POLL_INTERVAL_MS)}ms`
         );
         break;
       }

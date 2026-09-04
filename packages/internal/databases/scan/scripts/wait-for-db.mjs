@@ -1,10 +1,11 @@
 import { neon } from "@neondatabase/serverless";
+import { env } from "../src/env.ts";
 
 const MAX_RETRIES = 30;
 const RETRY_INTERVAL_MS = 1000;
 
 async function waitForDatabase() {
-  const databaseUrl = process.env.SCAN_DATABASE_URL_UNPOOLED;
+  const databaseUrl = env.SCAN_DATABASE_URL_UNPOOLED;
 
   if (!databaseUrl) {
     console.log("SCAN_DATABASE_URL_UNPOOLED not set, skipping wait");
