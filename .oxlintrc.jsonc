@@ -61,16 +61,10 @@
     "no-useless-assignment": "warn",
     "typescript/restrict-plus-operands": "warn",
     "typescript/restrict-template-expressions": "warn",
-    "import/no-unassigned-import": "warn",
     "import/no-named-as-default-member": "warn",
-    "no-await-in-loop": "warn",
     "no-underscore-dangle": "warn",
-    "react/no-array-index-key": "warn",
     "react/no-unstable-nested-components": "warn",
     "react/jsx-no-constructed-context-values": "warn",
-    "unicorn/consistent-function-scoping": "warn",
-    "unicorn/no-array-sort": "warn",
-    "oxc/no-map-spread": "warn",
     // Hono async handlers remain reviewable at their use sites instead of
     // disappearing behind a repository-wide disable.
     "oxc/no-async-endpoint-handlers": "warn",
