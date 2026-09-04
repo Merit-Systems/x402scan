@@ -25,7 +25,7 @@ export const WithdrawEVM: React.FC<Props> = ({
 
   return (
     <Button
-      variant="turbo"
+      variant="default"
       disabled={isInvalid || isPending}
       onClick={handleSubmit}
     >

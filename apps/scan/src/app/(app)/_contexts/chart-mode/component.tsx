@@ -23,7 +23,11 @@ export const ChartModeSelector = () => {
   return (
     <Select
       value={chartMode}
-      onValueChange={(value) => selectChartMode(value as ChartMode)}
+      onValueChange={(value) => {
+        if (value === "bucketed" || value === "cumulative") {
+          selectChartMode(value);
+        }
+      }}
     >
       <SelectTrigger className="border shadow-xs dark:border-input">
         {chartMode === "cumulative" ? <ChartSpline /> : <ChartColumn />}

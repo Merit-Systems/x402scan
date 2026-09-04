@@ -15,7 +15,7 @@ interface Props {
 
 export const LoadingState: React.FC<Props> = ({ chain, maxAmountRequired }) => {
   return (
-    <Button variant="primaryOutline" size="lg" className="w-full" disabled>
+    <Button variant="outline" size="lg" className="w-full" disabled>
       <Chain chain={chain} />
       <Loader2 className="h-4 w-4 animate-spin" />
       <span>{formatTokenAmount(maxAmountRequired)}</span>

@@ -68,7 +68,7 @@ export const ResourcesByOrigin: React.FC<Props> = ({
           </EmptyHeader>
           <EmptyContent>
             <Link href="/resources/register">
-              <Button variant="turbo">
+              <Button variant="default">
                 <Plus className="size-4" />
                 Add your API
               </Button>
@@ -80,19 +80,17 @@ export const ResourcesByOrigin: React.FC<Props> = ({
   }
 
   return (
-    <Accordion
-      type="multiple"
-      value={openOrigins}
-      onValueChange={setOpenOrigins}
-    >
+    <Accordion multiple value={openOrigins} onValueChange={setOpenOrigins}>
       {originsWithResources.map((origin, index) => (
         <AccordionItem value={origin.id} key={origin.id} className="border-b-0">
-          <AccordionTrigger asChild>
-            <OriginCard
-              origin={origin}
-              numResources={origin.resources.length}
-            />
-          </AccordionTrigger>
+          <AccordionTrigger
+            render={
+              <OriginCard
+                origin={origin}
+                numResources={origin.resources.length}
+              />
+            }
+          ></AccordionTrigger>
           <AccordionContent className="pb-0">
             <div className="pl-4">
               <OriginResources resources={origin.resources} />

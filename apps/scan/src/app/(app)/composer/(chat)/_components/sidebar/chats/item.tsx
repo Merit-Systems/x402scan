@@ -50,14 +50,16 @@ const PureChatItem: React.FC<Props> = ({
       </SidebarMenuButton>
 
       <DropdownMenu modal={true}>
-        <DropdownMenuTrigger asChild>
-          <SidebarMenuAction
-            className="mr-0.5 cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            showOnHover={!isActive}
-          >
-            <MoreHorizontal />
-            <span className="sr-only">More</span>
-          </SidebarMenuAction>
+        <DropdownMenuTrigger
+          render={
+            <SidebarMenuAction
+              className="mr-0.5 cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              showOnHover={!isActive}
+            />
+          }
+        >
+          <MoreHorizontal />
+          <span className="sr-only">More</span>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent side="right" align="center" sideOffset={8}>

@@ -60,21 +60,21 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
             <div className="h-[34px] w-2 shrink-0 border-b" />
             <TabsTrigger
               value="wallet"
-              variant="github"
+              appearance="default"
               className="data-[state=active]:bg-background"
             >
               <Wallet className="size-4" /> Overview
             </TabsTrigger>
             <TabsTrigger
               value="deposit"
-              variant="github"
+              appearance="default"
               className="data-[state=active]:bg-background"
             >
               <ArrowDown className="size-4" /> Deposit
             </TabsTrigger>
             <TabsTrigger
               value="withdraw"
-              variant="github"
+              appearance="default"
               className="data-[state=active]:bg-background"
             >
               <ArrowUp className="size-4" /> Withdraw
@@ -82,7 +82,7 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
             {user && (
               <TabsTrigger
                 value="export"
-                variant="github"
+                appearance="default"
                 className="data-[state=active]:bg-background"
               >
                 <Key className="size-4" /> Export

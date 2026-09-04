@@ -80,14 +80,12 @@ const TopServersFavicons: React.FC<{ recipients: string[] }> = ({
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <div className="flex justify-center">
-          <Favicons
-            favicons={favicons}
-            numToShow={3}
-            iconContainerClassName="size-5"
-          />
-        </div>
+      <TooltipTrigger render={<div className="flex justify-center" />}>
+        <Favicons
+          favicons={favicons}
+          numToShow={3}
+          iconContainerClassName="size-5"
+        />
       </TooltipTrigger>
       <TooltipContent className="flex flex-col gap-1">
         <p className="text-xs font-medium">Top servers</p>

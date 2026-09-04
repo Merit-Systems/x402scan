@@ -64,7 +64,7 @@ const VerifyContent: React.FC<VerifyProps> = ({ signIn, isPending }) => {
           onClick={() => signIn()}
           disabled={isPending}
           className="h-12 w-full md:h-12"
-          variant="turbo"
+          variant="default"
         >
           {isPending ? (
             <Loader2 className="size-4 animate-spin" />

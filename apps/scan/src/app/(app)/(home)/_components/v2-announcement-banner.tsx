@@ -56,14 +56,17 @@ export const AgentCashAnnouncementBanner = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button size="sm" asChild>
-          <Link
-            href="https://agentcash.dev/onboard"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Try AgentCash
-          </Link>
+        <Button
+          size="sm"
+          render={
+            <Link
+              href="https://agentcash.dev/onboard"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+          }
+        >
+          Try AgentCash
         </Button>
         <Button size="sm" variant="outline" onClick={handleDismiss}>
           Close

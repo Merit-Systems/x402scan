@@ -134,7 +134,6 @@ const ModelSelectContent: React.FC<{
       style={{
         height: `${MODEL_HEIGHT * (NUM_MODELS_TO_SHOW + 0.5)}px`,
       }}
-      gradientClassName="from-background md:from-popover"
     >
       <CommandEmpty>No models found.</CommandEmpty>
       <CommandGroup className="p-0">
@@ -167,7 +166,7 @@ const ModelSelectContent: React.FC<{
                 return (
                   <Badge
                     key={capability}
-                    variant="capability"
+                    variant="secondary"
                     className={`h-5 gap-1 px-1 text-xs ${capabilityColors[capability]}`}
                   >
                     {Icon && <Icon className="size-3" />}
@@ -210,7 +209,7 @@ export const ModelSelect: React.FC<Props> = ({ model, setModel }) => {
   const triggerButton = (
     <PromptInputButton
       variant="outline"
-      size={isMobile ? "icon" : "sm"}
+      size={isMobile ? "icon-sm" : "sm"}
       className={cn("justify-center bg-transparent md:justify-start")}
       onClick={(event) => {
         const target = event.target as HTMLElement;
@@ -267,7 +266,7 @@ export const ModelSelect: React.FC<Props> = ({ model, setModel }) => {
           open={isOpen}
           onOpenChange={isOpen ? setIsOpen : undefined}
         >
-          <DropdownMenuTrigger asChild>{triggerButton}</DropdownMenuTrigger>
+          <DropdownMenuTrigger render={triggerButton} />
           <DropdownMenuContent
             className="w-xs overflow-hidden p-0 md:w-lg"
             align="start"

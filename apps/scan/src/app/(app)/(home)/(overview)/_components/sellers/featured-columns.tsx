@@ -206,29 +206,31 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
       accessorKey: "tryIt",
       header: () => (
         <Tooltip>
-          <TooltipTrigger asChild>
-            <a
-              href="https://agentcash.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Call all x402 resources with AgentCash"
-              className="mx-auto flex size-7 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            >
-              <Image
-                src="/agentcash-light.svg"
-                alt=""
-                width={16}
-                height={16}
-                className="block size-4 dark:hidden"
+          <TooltipTrigger
+            render={
+              <a
+                href="https://agentcash.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Call all x402 resources with AgentCash"
+                className="mx-auto flex size-7 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               />
-              <Image
-                src="/agentcash-dark.svg"
-                alt=""
-                width={16}
-                height={16}
-                className="hidden size-4 dark:block"
-              />
-            </a>
+            }
+          >
+            <Image
+              src="/agentcash-light.svg"
+              alt=""
+              width={16}
+              height={16}
+              className="block size-4 dark:hidden"
+            />
+            <Image
+              src="/agentcash-dark.svg"
+              alt=""
+              width={16}
+              height={16}
+              className="hidden size-4 dark:block"
+            />
           </TooltipTrigger>
           <TooltipContent side="left" className="max-w-xs">
             Call all x402 resources with AgentCash.
@@ -323,25 +325,27 @@ const TryItButton: React.FC<{ origin: string }> = ({ origin }) => {
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            void navigator.clipboard.writeText(prompt).then(() => {
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2000);
-            });
-          }}
-          className="mx-auto flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground"
-        >
-          {copied ? (
-            <Check className="size-3.5" />
-          ) : (
-            <ArrowUpRight className="size-3.5" />
-          )}
-          {copied ? "Copied" : "Try it"}
-        </button>
+      <TooltipTrigger
+        render={
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              void navigator.clipboard.writeText(prompt).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              });
+            }}
+            className="mx-auto flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground"
+          />
+        }
+      >
+        {copied ? (
+          <Check className="size-3.5" />
+        ) : (
+          <ArrowUpRight className="size-3.5" />
+        )}
+        {copied ? "Copied" : "Try it"}
       </TooltipTrigger>
       <TooltipContent side="left" className="max-w-xs">
         <p className="text-xs">

@@ -87,11 +87,9 @@ export const CreateInviteCodeButton = () => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Create Invite Code
-        </Button>
+      <DialogTrigger render={<Button />}>
+        <Plus className="mr-2 h-4 w-4" />
+        Create Invite Code
       </DialogTrigger>
       <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-[500px]">
         <DialogHeader>

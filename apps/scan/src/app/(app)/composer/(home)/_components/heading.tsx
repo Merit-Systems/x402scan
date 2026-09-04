@@ -13,7 +13,7 @@ export const ComposerHomeHeading = () => {
       actions={
         <div className="flex items-center gap-2">
           <Link href="/composer/agents/new">
-            <Button variant="turbo" size="lg">
+            <Button variant="default" size="lg">
               <Bot className="size-4" />
               New Agent
             </Button>

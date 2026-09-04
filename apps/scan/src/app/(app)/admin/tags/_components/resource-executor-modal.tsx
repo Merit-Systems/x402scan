@@ -106,7 +106,7 @@ export function ResourceExecutorModal({
           isFlat
         />
         {outputSchema && (
-          <Accordion type="single" collapsible className="mt-4">
+          <Accordion className="mt-4">
             <AccordionItem value="output-schema">
               <AccordionTrigger className="text-sm font-semibold">
                 Output Schema

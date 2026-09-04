@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/image-avatar";
 
 import { LoadingOverallRecipientStats } from "./stats";
 
