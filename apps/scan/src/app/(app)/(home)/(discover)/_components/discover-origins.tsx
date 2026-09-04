@@ -19,16 +19,38 @@ import { formatTokenAmount } from "@/lib/token";
 import { formatCompactAgo } from "@/lib/utils";
 import { api } from "@/trpc/client";
 import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
+import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
 import { SELLERS_SORT_IDS } from "@/lib/table-sort-options";
+import {
+  formatDiscoverPage,
+  SERVICES_PAGE_SIZE,
+  type ServiceView,
+} from "@/lib/discover/filters";
 
 import type { FeaturedServiceItem } from "@/app/(app)/(home)/(overview)/_components/sellers/featured-columns";
 import type { DataListItem } from "@/components/ui/data-list";
 import type { SellerSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = SERVICES_PAGE_SIZE;
 
 export const DiscoverSellersTable = ({
+  sorting,
+  view,
+  page,
+}: {
+  sorting: TableSorting<SellerSortId>;
+  view: ServiceView;
+  page: number;
+}) => {
+  return view === "featured" ? (
+    <FeaturedSellersTable sorting={sorting} />
+  ) : (
+    <AllSellersTable page={page} sorting={sorting} />
+  );
+};
+
+const FeaturedSellersTable = ({
   sorting,
 }: {
   sorting: TableSorting<SellerSortId>;
@@ -47,6 +69,37 @@ export const DiscoverSellersTable = ({
 
   return (
     <FeaturedServicesCollection items={topSellers.items} sorting={sorting} />
+  );
+};
+
+const AllSellersTable = ({
+  page,
+  sorting,
+}: {
+  page: number;
+  sorting: TableSorting<SellerSortId>;
+}) => {
+  const { timeframe } = useTimeRangeContext();
+  const { chain } = useChain();
+
+  const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
+    chain,
+    pagination: {
+      page,
+      page_size: PAGE_SIZE,
+    },
+    timeframe,
+    sorting,
+  });
+
+  return (
+    <PaginatedServicesCollection
+      items={topSellers.items}
+      page={page}
+      pageCount={topSellers.total_pages}
+      sorting={sorting}
+      total={topSellers.total_count}
+    />
   );
 };
 
@@ -136,6 +189,67 @@ function FeaturedServicesCollection({
   );
 }
 
+function PaginatedServicesCollection({
+  items,
+  page,
+  pageCount,
+  sorting,
+  total,
+}: {
+  items: FeaturedServiceItem[];
+  page: number;
+  pageCount: number;
+  sorting: TableSorting<SellerSortId>;
+  total: number;
+}) {
+  const replaceSearchParams = useReplaceSearchParams();
+  const tableSorting = useUrlTableSorting({
+    sorting,
+    sortIds: SELLERS_SORT_IDS,
+  });
+  const totalPages = Math.max(1, pageCount);
+  const setPage = (nextPage: number) => {
+    replaceSearchParams((params) => {
+      const pageParam = formatDiscoverPage(nextPage);
+      if (pageParam) {
+        params.set("p", pageParam);
+      } else {
+        params.delete("p");
+      }
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <ResponsiveCollection
+        data={items}
+        list={{ item: featuredServiceListItem }}
+        table={{
+          columns,
+          manualSorting: true,
+          sorting: tableSorting.tableSorting,
+          onSortingChange: tableSorting.onSortingChange,
+          pageSize: PAGE_SIZE,
+          pagination: {
+            pageIndex: page,
+            pageSize: PAGE_SIZE,
+            pageCount: totalPages,
+            totalRows: total,
+          },
+          onPaginationChange: ({ pageIndex }) => setPage(pageIndex),
+        }}
+      />
+      <MobilePagination
+        page={page}
+        pageSize={PAGE_SIZE}
+        total={total}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
+    </div>
+  );
+}
+
 function MobilePagination({
   page,
   pageSize,
@@ -158,7 +272,7 @@ function MobilePagination({
 
   return (
     <nav
-      aria-label="Featured services pagination"
+      aria-label="Services pagination"
       className="flex items-center justify-between md:hidden"
     >
       <div className="type-caption text-muted-foreground">
