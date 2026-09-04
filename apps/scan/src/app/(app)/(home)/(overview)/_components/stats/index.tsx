@@ -2,12 +2,9 @@ import React, { Suspense } from "react";
 
 import { ErrorBoundary } from "react-error-boundary";
 
-import { Section } from "@/app/_components/layout/page-utils";
-
 import { OverallCharts, LoadingOverallCharts } from "./charts";
 
 import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
-
 import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 
 import { ChartModeSelector } from "@/app/(app)/_contexts/chart-mode/component";
@@ -42,7 +39,7 @@ export const OverallStats: React.FC<Props> = ({
     <HydrateClient>
       <TimeRangeProvider initialTimeframe={initialTimeframe}>
         <ChartModeProvider>
-          <ActivityContainer>
+          <ActivityContainer controls>
             <ErrorBoundary
               fallback={<p>There was an error loading the activity data</p>}
             >
@@ -65,21 +62,25 @@ export const LoadingOverallStats = () => {
   );
 };
 
-const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
+const ActivityContainer = ({
+  children,
+  controls = false,
+}: {
+  children: React.ReactNode;
+  controls?: boolean;
+}) => {
   return (
-    <Section
-      title="Overall Stats"
-      description="Global statistics for the x402 ecosystem"
-      actions={
-        <div className="flex items-center gap-2">
-          <ChartModeSelector />
-          <RangeSelector />
-        </div>
-      }
-    >
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {children}
+    <section className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="type-section-title">Usage</h2>
+        {controls ? (
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <ChartModeSelector />
+            <RangeSelector />
+          </div>
+        ) : null}
       </div>
-    </Section>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">{children}</div>
+    </section>
   );
 };

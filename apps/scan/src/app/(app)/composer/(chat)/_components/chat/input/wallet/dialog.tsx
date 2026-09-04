@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Logo } from "@/components/logo";
+import { Logo } from "@/components/ui/logo";
 
 import { Send } from "./content/send";
 import { WalletExport } from "./content/export";
