@@ -7,22 +7,17 @@ import { toPaginatedResponse } from "@/lib/pagination";
 
 import { supportedChainSchema } from "@/lib/schemas";
 
-import { SUPPORTED_CHAINS } from "@/types/chain";
-
 import { upsertResourceSchema } from "./resource-schema";
 import { ensureOriginExists, freeAuthModeFilters } from "./origin";
 
 import type { PaginatedQueryParams } from "@/lib/pagination";
 import type { Prisma } from "@x402scan/scan-db";
-import type { SupportedChain } from "@/types/chain";
 
 import {
   createCachedArrayQuery,
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from "@/lib/cache";
-
-export { upsertResourceSchema };
 
 export const upsertResource = async (
   resourceInput: z.input<typeof upsertResourceSchema>
@@ -32,11 +27,11 @@ export const upsertResource = async (
     return undefined;
   }
   const baseResource = parsedResourceInput.data;
-  const supportedAccepts = baseResource.accepts.filter((accept) =>
-    SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+  const supportedAccepts = baseResource.accepts.filter(
+    (accept) => supportedChainSchema.safeParse(accept.network).success
   );
   const unsupportedAccepts = baseResource.accepts.filter(
-    (accept) => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+    (accept) => !supportedChainSchema.safeParse(accept.network).success
   );
   if (supportedAccepts.length === 0) {
     return undefined;

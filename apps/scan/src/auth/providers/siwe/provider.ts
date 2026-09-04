@@ -13,7 +13,20 @@ import {
 const siweCredentialsSchema = z.object({
   message: z.string().transform((val: string) => {
     try {
-      return JSON.parse(val) as SiweMessage;
+      const parsed = z
+        .looseObject({
+          domain: z.string(),
+          address: z.string(),
+          statement: z.string().optional(),
+          uri: z.string(),
+          version: z.literal("1"),
+          chainId: z.number(),
+          nonce: z.string(),
+          issuedAt: z.string().optional(),
+          expirationTime: z.string().optional(),
+        })
+        .parse(JSON.parse(val));
+      return new SiweMessage(parsed);
     } catch {
       throw new Error("Invalid JSON in message");
     }
@@ -52,7 +65,7 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
       const { auth } = await import("@/auth");
       const session = await auth();
 
-      if (session?.user?.id) {
+      if (session?.user.id) {
         // link account to user
         const { user } = await scanDb.account.upsert({
           where: {
@@ -141,7 +154,10 @@ async function verifySignature({
   if (SIWE_STATEMENT !== result.data.statement) {
     throw new Error("Statement mismatch");
   }
-  if (new Date(result.data.expirationTime!) < new Date()) {
+  if (
+    result.data.expirationTime === undefined ||
+    new Date(result.data.expirationTime) < new Date()
+  ) {
     throw new Error("Signature expired");
   }
   return result.data;

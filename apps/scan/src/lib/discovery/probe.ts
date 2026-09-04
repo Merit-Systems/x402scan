@@ -14,11 +14,23 @@ import {
   buildMinimalSampleFromInputSchema,
   buildMinimalQueryParamsFromInputSchema,
   hasPathParameters,
+  isX402PaymentOption,
   PROBE_TIMEOUT_MS,
 } from "./utils";
 import { jsonValueSchema } from "@/lib/json";
 
 import type { JsonObject, JsonValue } from "@/lib/json";
+
+const httpMethodSchema = z.enum([
+  "GET",
+  "POST",
+  "PUT",
+  "DELETE",
+  "PATCH",
+  "HEAD",
+  "OPTIONS",
+  "TRACE",
+]);
 
 /**
  * Direct HTTPS probe that tolerates large response headers (128 KB).
@@ -112,7 +124,7 @@ function pickX402Advisory(
   if (preferredMethod && preferred.method !== preferredMethod.toUpperCase()) {
     return {
       ...preferred,
-      method: preferredMethod.toUpperCase() as EndpointMethodAdvisory["method"],
+      method: httpMethodSchema.parse(preferredMethod.toUpperCase()),
     };
   }
   return preferred;
@@ -302,14 +314,14 @@ async function probeX402EndpointOnce(
       const rawAccepts = acceptsEnvelope.success
         ? acceptsEnvelope.data.accepts
         : [];
-      const paymentOptions = rawAccepts.map((accept) => ({
-        protocol: "x402" as const,
-        ...accept,
-      })) as NonNullable<EndpointMethodAdvisory["paymentOptions"]>;
+      const paymentOptions = rawAccepts.flatMap((accept) => {
+        const option = { protocol: "x402" as const, ...accept };
+        return isX402PaymentOption(option) ? [option] : [];
+      });
 
       const advisory: EndpointMethodAdvisory = {
         source: "probe",
-        method: directMethod as EndpointMethodAdvisory["method"],
+        method: httpMethodSchema.parse(directMethod),
         paymentOptions,
         paymentRequiredBody: direct.body,
       };

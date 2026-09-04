@@ -22,6 +22,25 @@ const visibilityBySurface = {
   tool: "response",
 } satisfies Record<Surface, ErrorVisibility>;
 
+function errorTypeFromCode(errorCode: ErrorCode): ErrorType {
+  if (errorCode.startsWith("bad_request:")) return "bad_request";
+  if (errorCode.startsWith("unauthorized:")) return "unauthorized";
+  if (errorCode.startsWith("payment_required:")) return "payment_required";
+  if (errorCode.startsWith("forbidden:")) return "forbidden";
+  if (errorCode.startsWith("not_found:")) return "not_found";
+  if (errorCode.startsWith("rate_limit:")) return "rate_limit";
+  if (errorCode.startsWith("offline:")) return "offline";
+  return "server";
+}
+
+function surfaceFromCode(errorCode: ErrorCode): Surface {
+  if (errorCode.endsWith(":chat")) return "chat";
+  if (errorCode.endsWith(":auth")) return "auth";
+  if (errorCode.endsWith(":api")) return "api";
+  if (errorCode.endsWith(":database")) return "database";
+  return "tool";
+}
+
 export class ChatError extends Error {
   public type: ErrorType;
   public surface: Surface;
@@ -30,11 +49,9 @@ export class ChatError extends Error {
   constructor(errorCode: ErrorCode, message?: string, cause?: string) {
     super();
 
-    const [type, surface] = errorCode.split(":");
-
-    this.type = type as ErrorType;
+    this.type = errorTypeFromCode(errorCode);
     this.cause = cause;
-    this.surface = surface as Surface;
+    this.surface = surfaceFromCode(errorCode);
     this.message = message ?? getMessageByErrorCode(errorCode);
     this.statusCode = getStatusCodeByType(this.type);
   }

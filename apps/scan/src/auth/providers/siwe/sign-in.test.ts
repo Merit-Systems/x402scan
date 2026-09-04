@@ -18,6 +18,11 @@ const params = {
   nonce: "abcdef1234567890",
 };
 
+function requiredTimestamp(value: string | undefined): string {
+  if (!value) throw new Error("Expected SIWE timestamp");
+  return value;
+}
+
 describe("buildSiweMessage", () => {
   it("constructs a message without throwing", () => {
     expect(() => buildSiweMessage(params)).not.toThrow();
@@ -28,19 +33,21 @@ describe("buildSiweMessage", () => {
     // before the wallet was ever prompted, breaking all EVM sign-in.
     const message = buildSiweMessage(params);
     expect(message.issuedAt).toBeDefined();
-    expect(new Date(message.issuedAt!).toString()).not.toBe("Invalid Date");
+    expect(new Date(requiredTimestamp(message.issuedAt)).toString()).not.toBe(
+      "Invalid Date"
+    );
   });
 
   it("expires after issuedAt", () => {
     const message = buildSiweMessage(params);
-    expect(new Date(message.expirationTime!).getTime()).toBeGreaterThan(
-      new Date(message.issuedAt!).getTime()
-    );
+    expect(
+      new Date(requiredTimestamp(message.expirationTime)).getTime()
+    ).toBeGreaterThan(new Date(requiredTimestamp(message.issuedAt)).getTime());
   });
 
   it("survives the JSON round trip the provider does on the wire", () => {
     const message = buildSiweMessage(params);
-    const parsed = JSON.parse(JSON.stringify(message)) as SiweMessage;
+    const parsed = new SiweMessage(message.prepareMessage());
     expect(() => new SiweMessage(parsed)).not.toThrow();
   });
 
@@ -51,7 +58,7 @@ describe("buildSiweMessage", () => {
     });
 
     // Mirrors verifySignature in the provider.
-    const onTheWire = JSON.parse(JSON.stringify(message)) as SiweMessage;
+    const onTheWire = new SiweMessage(message.prepareMessage());
     const siwe = new SiweMessage(onTheWire);
     const result = await siwe.verify({
       signature,
@@ -62,8 +69,8 @@ describe("buildSiweMessage", () => {
     expect(result.success).toBe(true);
     expect(result.data.address).toBe(account.address);
     expect(result.data.statement).toBe(SIWE_STATEMENT);
-    expect(new Date(result.data.expirationTime!).getTime()).toBeGreaterThan(
-      Date.now()
-    );
+    expect(
+      new Date(requiredTimestamp(result.data.expirationTime)).getTime()
+    ).toBeGreaterThan(Date.now());
   });
 });

@@ -5,7 +5,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { getOriginFromUrl } from "@/lib/url";
 import { jsonObjectSchema, type JsonObject } from "@/lib/json";
 import { scrapeOriginData } from "@/services/scraper";
-import type { FailedResource, TestedResource } from "@/types/batch-test";
+import type { FailedResource } from "@/types/batch-test";
 import { probeX402Endpoint } from "@/lib/discovery/probe";
 import { validateResource } from "@/lib/resources";
 import { fetchDiscoveryDocument } from "@/services/discovery";
@@ -14,6 +14,8 @@ import {
   createProbeSession,
   cacheProbeResult,
 } from "@/lib/discovery/probe-cache";
+
+const testedMethodSchema = z.enum(["DELETE", "GET", "PATCH", "POST", "PUT"]);
 
 /**
  * Test a single resource by probing it and running the same validation
@@ -91,7 +93,7 @@ async function testSingleResource(
     return {
       success: true as const,
       url,
-      method: advisory.method as TestedResource["method"],
+      method: testedMethodSchema.parse(advisory.method),
       description: advisory.summary ?? null,
       parsed: advisory,
       warnings: deduplicateWarnings([...probeWarnings, ...validation.warnings]),
@@ -224,7 +226,7 @@ export const developerRouter = createTRPCRouter({
             sessionId,
             result.url,
             result.parsed,
-            result.warnings ?? []
+            result.warnings
           );
         }
         testResults.push(result);

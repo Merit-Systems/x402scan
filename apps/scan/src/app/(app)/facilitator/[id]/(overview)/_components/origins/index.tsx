@@ -110,6 +110,8 @@ function getRowHref(item: FacilitatorServer): Route {
   if (!origin) {
     throw new Error("A server row must have an origin");
   }
+  // Next's generated Route union cannot model an identifier interpolated at runtime.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return `/server/${origin.id}` as Route;
 }
 

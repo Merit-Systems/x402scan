@@ -29,7 +29,7 @@ export const upsertWalletAddressForInviteCode = async (
 
     // Update each partner's wallet_addresses array
     for (const partner of rows) {
-      const currentAddresses = partner.wallet_addresses || [];
+      const currentAddresses = partner.wallet_addresses;
       const normalizedAddress = recipientAddress.toLowerCase();
 
       // Only add if not already present

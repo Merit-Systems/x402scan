@@ -228,84 +228,84 @@ describe("parseV2", () => {
     const result = parseV2(v2Responses.basic);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.x402Version).toBe(2);
-      expect(result.data.accepts).toHaveLength(1);
-      expect(result.data.accepts?.[0]?.amount).toBe("10000");
-      expect(result.data.accepts?.[0]?.network).toBe("eip155:8453");
-      expect(result.data.resource?.url).toBe(
-        "https://api.example.com/endpoint"
-      );
-      expect(result.data.resource?.description).toBe("A test API endpoint");
-      // V2: schema comes from extensions.bazaar, not resource.outputSchema
-      expect(result.data.extensions?.bazaar?.info?.input?.method).toBe("GET");
-      expect(
-        result.data.extensions?.bazaar?.schema?.properties?.input?.properties
-          ?.queryParams
-      ).toBeDefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.x402Version).toBe(2);
+    expect(result.data.accepts).toHaveLength(1);
+    expect(result.data.accepts?.[0]?.amount).toBe("10000");
+    expect(result.data.accepts?.[0]?.network).toBe("eip155:8453");
+    expect(result.data.resource?.url).toBe("https://api.example.com/endpoint");
+    expect(result.data.resource?.description).toBe("A test API endpoint");
+    // V2: schema comes from extensions.bazaar, not resource.outputSchema
+    expect(result.data.extensions?.bazaar?.info?.input?.method).toBe("GET");
+    expect(
+      result.data.extensions?.bazaar?.schema?.properties?.input?.properties
+        ?.queryParams
+    ).toBeDefined();
   });
 
   it("should parse V2 response with POST body fields", () => {
     const result = parseV2(v2Responses.withPostBody);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      // V2: schema comes from extensions.bazaar, not resource.outputSchema
-      expect(result.data.extensions?.bazaar?.info?.input?.method).toBe("POST");
-      expect(result.data.extensions?.bazaar?.info?.input?.bodyType).toBe(
-        "json"
-      );
-      expect(
-        result.data.extensions?.bazaar?.schema?.properties?.input?.properties
-          ?.body?.properties?.message
-      ).toBeDefined();
-      expect(result.data.extensions?.bazaar?.info?.output).toHaveProperty("id");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    // V2: schema comes from extensions.bazaar, not resource.outputSchema
+    expect(result.data.extensions?.bazaar?.info?.input?.method).toBe("POST");
+    expect(result.data.extensions?.bazaar?.info?.input?.bodyType).toBe("json");
+    expect(
+      result.data.extensions?.bazaar?.schema?.properties?.input?.properties
+        ?.body?.properties?.message
+    ).toBeDefined();
+    expect(result.data.extensions?.bazaar?.info?.output).toHaveProperty("id");
   });
 
   it("should parse V2 response with Solana network", () => {
     const result = parseV2(v2Responses.withSolana);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.accepts?.[0]?.network).toBe("solana:mainnet");
-      expect(result.data.accepts?.[0]?.amount).toBe("1000000");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.accepts?.[0]?.network).toBe("solana:mainnet");
+    expect(result.data.accepts?.[0]?.amount).toBe("1000000");
   });
 
   it("should parse V2 response with multiple accepts (multi-chain)", () => {
     const result = parseV2(v2Responses.withMultipleAccepts);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.accepts).toHaveLength(2);
-      expect(result.data.accepts?.[0]?.network).toBe("eip155:8453");
-      expect(result.data.accepts?.[1]?.network).toBe("solana:mainnet");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.accepts).toHaveLength(2);
+    expect(result.data.accepts?.[0]?.network).toBe("eip155:8453");
+    expect(result.data.accepts?.[1]?.network).toBe("solana:mainnet");
   });
 
   it("should parse V2 response with error field", () => {
     const result = parseV2(v2Responses.withError);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.error).toBe("X-PAYMENT header is required");
-      expect(result.data.accepts).toHaveLength(1);
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.error).toBe("X-PAYMENT header is required");
+    expect(result.data.accepts).toHaveLength(1);
   });
 
   it("should parse minimal V2 response without resource", () => {
     const result = parseV2(v2Responses.minimal);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.x402Version).toBe(2);
-      expect(result.data.resource?.url).toBe(
-        "https://api.minimal.com/endpoint"
-      );
-      expect(result.data.accepts).toHaveLength(1);
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.x402Version).toBe(2);
+    expect(result.data.resource?.url).toBe("https://api.minimal.com/endpoint");
+    expect(result.data.accepts).toHaveLength(1);
   });
 
   it("should return error for invalid network format", () => {
@@ -326,11 +326,12 @@ describe("parseV2", () => {
     const result = parseV2(invalidResponse);
 
     expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.errors.some((e) => e.startsWith("accepts.0.network"))).toBe(
-        true
-      );
+    if (result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.errors.some((e) => e.startsWith("accepts.0.network"))).toBe(
+      true
+    );
   });
 
   it("should return error for V1 version number", () => {
@@ -357,18 +358,20 @@ describe("parseV2", () => {
     const result = parseV2(v1Response);
 
     expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.errors).toEqual(["Not a V2 response"]);
+    if (result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.errors).toEqual(["Not a V2 response"]);
   });
 
   it("should return error for invalid data", () => {
     const result = parseV2({ invalid: "data" });
 
     expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.errors.length).toBeGreaterThan(0);
+    if (result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.errors.length).toBeGreaterThan(0);
   });
 
   it("should return error for null input", () => {
@@ -392,9 +395,10 @@ describe("parseV2", () => {
     const result = parseV2(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.accepts).toHaveLength(0);
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.accepts).toHaveLength(0);
   });
 
   it("should preserve extra fields in accepts", () => {
@@ -420,10 +424,11 @@ describe("parseV2", () => {
     const result = parseV2(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.accepts?.[0]?.extra?.name).toBe("USD Coin");
-      expect(result.data.accepts?.[0]?.extra?.customField).toBe("custom value");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.accepts?.[0]?.extra?.name).toBe("USD Coin");
+    expect(result.data.accepts?.[0]?.extra?.customField).toBe("custom value");
   });
 
   it("should parse non-exact V2 schemes such as upto", () => {
@@ -447,9 +452,10 @@ describe("parseV2", () => {
     const result = parseV2(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.accepts?.[0]?.scheme).toBe("upto");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.accepts?.[0]?.scheme).toBe("upto");
   });
 });
 
@@ -513,12 +519,13 @@ describe("V2 schema validation edge cases", () => {
     const result = parseV2(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const bodySchema =
-        result.data.extensions?.bazaar?.schema?.properties?.input?.properties
-          ?.body?.properties?.data;
-      expect(bodySchema).toBeDefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const bodySchema =
+      result.data.extensions?.bazaar?.schema?.properties?.input?.properties
+        ?.body?.properties?.data;
+    expect(bodySchema).toBeDefined();
   });
 
   it("should handle array fields with items schema", () => {
@@ -587,12 +594,13 @@ describe("V2 schema validation edge cases", () => {
     const result = parseV2(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const messagesSchema =
-        result.data.extensions?.bazaar?.schema?.properties?.input?.properties
-          ?.body?.properties?.messages;
-      expect(messagesSchema).toBeDefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const messagesSchema =
+      result.data.extensions?.bazaar?.schema?.properties?.input?.properties
+        ?.body?.properties?.messages;
+    expect(messagesSchema).toBeDefined();
   });
 
   it("should accept resource without mimeType", () => {
@@ -618,9 +626,10 @@ describe("V2 schema validation edge cases", () => {
     const result = parseV2(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.resource?.mimeType).toBeUndefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.resource?.mimeType).toBeUndefined();
   });
 
   it("should validate solana-devnet network", () => {
@@ -647,8 +656,9 @@ describe("V2 schema validation edge cases", () => {
     const result = parseV2(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.accepts?.[0]?.network).toBe("solana:devnet");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.accepts?.[0]?.network).toBe("solana:devnet");
   });
 });

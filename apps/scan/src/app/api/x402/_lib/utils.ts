@@ -5,7 +5,7 @@ import { z } from "zod";
 import { mixedAddressSchema } from "@/lib/schemas";
 
 import type { MixedAddress } from "@/types/address";
-import type { Chain } from "@/types/chain";
+import { Chain } from "@/types/chain";
 
 export function parseAddress(
   address: string
@@ -117,7 +117,8 @@ export function paginatedResponse(
 export function asChain(
   chain: "base" | "solana" | undefined
 ): Chain | undefined {
-  return chain as Chain | undefined;
+  if (chain === undefined) return undefined;
+  return chain === "base" ? Chain.BASE : Chain.SOLANA;
 }
 
 /**
@@ -127,5 +128,9 @@ export function asChain(
  * paths that match the route's shape.
  */
 export function extractPathSegment(request: Request, index: number): string {
-  return new URL(request.url).pathname.split("/")[index]!;
+  const segment = new URL(request.url).pathname.split("/")[index];
+  if (segment === undefined) {
+    throw new Error(`Missing path segment at index ${index}`);
+  }
+  return segment;
 }

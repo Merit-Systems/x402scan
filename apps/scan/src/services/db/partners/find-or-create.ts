@@ -28,10 +28,9 @@ export const findOrCreatePartner = async (
     query_params: { name },
   });
 
-  const data = await resultSet.json();
-  const rows = data as PartnerData[];
+  const rows = await resultSet.json<PartnerData>();
 
-  if (rows && rows.length > 0) {
+  if (rows.length > 0) {
     const partner = rows[0];
     if (!partner) {
       // This shouldn't happen, but TypeScript needs this check

@@ -1,4 +1,5 @@
 import z from "zod";
+import { SUPPORTED_CHAINS } from "@/types/chain";
 
 // ── Reusable primitives ──────────────────────────────
 
@@ -19,7 +20,7 @@ const paginationSchema = z.object({
 });
 
 const chainFilterSchema = z
-  .enum(["base", "solana"])
+  .enum(SUPPORTED_CHAINS)
   .optional()
   .describe("Filter by chain");
 

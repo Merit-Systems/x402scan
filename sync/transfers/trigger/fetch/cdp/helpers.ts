@@ -1,5 +1,6 @@
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
 import { logger } from "@trigger.dev/sdk/v3";
+import { z } from "zod";
 
 interface CdpFetchRequest {
   requestMethod: "GET" | "POST" | "PUT" | "DELETE";
@@ -17,10 +18,15 @@ async function generateCdpJwt(request: CdpFetchRequest): Promise<string> {
     requestPath,
     expiresIn = 120,
   } = request;
+  const apiKeyId = process.env.CDP_API_KEY_ID;
+  const apiKeySecret = process.env.CDP_API_KEY_SECRET;
+  if (!apiKeyId || !apiKeySecret) {
+    throw new Error("CDP_API_KEY_ID and CDP_API_KEY_SECRET are required");
+  }
 
   return generateJwt({
-    apiKeyId: process.env.CDP_API_KEY_ID!,
-    apiKeySecret: process.env.CDP_API_KEY_SECRET!,
+    apiKeyId,
+    apiKeySecret,
     requestMethod,
     requestPath,
     requestHost,
@@ -28,10 +34,10 @@ async function generateCdpJwt(request: CdpFetchRequest): Promise<string> {
   });
 }
 
-export async function cdpFetch<T>(
+export async function cdpFetch(
   request: CdpFetchRequest,
   init?: RequestInit
-): Promise<T> {
+): Promise<unknown> {
   const { requestMethod, requestPath, requestHost = DEFAULT_HOST } = request;
 
   const jwt = await generateCdpJwt(request);
@@ -55,16 +61,19 @@ export async function cdpFetch<T>(
     throw new Error(`CDP API error (${response.status}): ${errorText}`);
   }
 
-  return response.json() as Promise<T>;
+  return response.json();
 }
 
-export async function runCdpSqlQuery<TRow>(sql: string): Promise<TRow[]> {
+export async function runCdpSqlQuery<TRow>(
+  sql: string,
+  rowSchema: z.ZodType<TRow>
+): Promise<TRow[]> {
   const maxRetries = 5;
   let attempt = 0;
 
   while (attempt < maxRetries) {
     try {
-      const data = await cdpFetch<{ result: TRow[] | null }>(
+      const response = await cdpFetch(
         {
           requestMethod: "POST",
           requestPath: "/platform/v2/data/query/run",
@@ -73,6 +82,9 @@ export async function runCdpSqlQuery<TRow>(sql: string): Promise<TRow[]> {
           body: JSON.stringify({ sql }),
         }
       );
+      const data = z
+        .object({ result: z.array(rowSchema).nullable() })
+        .parse(response);
 
       return data.result ?? [];
     } catch (error) {

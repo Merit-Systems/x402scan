@@ -51,7 +51,11 @@ describe("fetchUsedOriginsFromAgentCash", () => {
       "https://c.example.com",
     ]);
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [calledUrl, init] = fetchMock.mock.calls[0] as [URL, RequestInit];
+    const call = fetchMock.mock.calls[0];
+    if (!call) throw new Error("Expected fetch to be called");
+    const [calledUrl, init] = call;
+    if (!(calledUrl instanceof URL)) throw new Error("Expected a URL request");
+    if (!init) throw new Error("Expected fetch options");
     expect(calledUrl.pathname).toBe("/api/internal/catalog/used-origins");
     expect(calledUrl.searchParams.get("protocol")).toBe("x402");
     expect(init.headers).toMatchObject({

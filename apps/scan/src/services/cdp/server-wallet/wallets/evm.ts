@@ -9,9 +9,9 @@ import { baseRpc } from "@/services/rpc/base";
 import { cdpResultFromPromise } from "../../result";
 
 import { convertTokenAmount } from "@/lib/token";
+import { ethereumAddressSchema } from "@/lib/schemas";
 
 import type { EvmChain } from "@/types/chain";
-import type { Address } from "viem";
 import type { NetworkServerWallet } from "./types";
 
 export const evmServerWallet =
@@ -37,7 +37,7 @@ export const evmServerWallet =
             .then((address) =>
               readContract(baseRpc, {
                 abi: erc20Abi,
-                address: token.address as Address,
+                address: ethereumAddressSchema.parse(token.address),
                 args: [address],
                 functionName: "balanceOf",
               })
@@ -72,12 +72,12 @@ export const evmServerWallet =
               .sendTransaction({
                 network: chain,
                 transaction: {
-                  to: token.address as Address,
+                  to: ethereumAddressSchema.parse(token.address),
                   data: encodeFunctionData({
                     abi: erc20Abi,
                     functionName: "transfer",
                     args: [
-                      address as Address,
+                      ethereumAddressSchema.parse(address),
                       parseUnits(amount.toString(), token.decimals),
                     ],
                   }),

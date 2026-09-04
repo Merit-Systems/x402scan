@@ -10,9 +10,6 @@ export class CdpError extends Error {
     this.name = "CdpError";
     this.status = options.status;
     this.innerError = options.innerError;
-    // Maintains proper stack trace (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, CdpError);
-    }
+    Error.captureStackTrace(this, CdpError);
   }
 }
