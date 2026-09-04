@@ -12,7 +12,6 @@ export type NetworkServerWallet<T extends Chain> = (name: string) => {
   getTokenBalance: (
     input: z.infer<typeof getTokenBalanceSchema>
   ) => CdpResultAsync<number>;
-  getNativeTokenBalance: () => CdpResultAsync<number>;
   export: () => CdpResultAsync<string>;
   signer: () => Promise<unknown>;
   sendTokens: (

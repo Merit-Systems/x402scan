@@ -17,22 +17,18 @@ const createOnrampSessionSchema = z.object({
   token: z.string(),
   amount: z.number(),
   userId: z.string(),
-  serverWalletId: z.string().optional(),
 });
 
 export const createOnrampSession = async (
   input: z.input<typeof createOnrampSessionSchema>
 ) => {
-  const { token, amount, userId, serverWalletId } =
-    createOnrampSessionSchema.parse(input);
+  const { token, amount, userId } = createOnrampSessionSchema.parse(input);
 
   return scanDb.onrampSession.create({
     data: {
       token,
       amount,
       userId,
-      // An empty-string id must also become undefined, not just a missing one.
-      serverWalletId: serverWalletId === "" ? undefined : serverWalletId,
     },
   });
 };
