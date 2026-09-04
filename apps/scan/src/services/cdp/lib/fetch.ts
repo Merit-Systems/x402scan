@@ -6,7 +6,7 @@ import type z from "zod";
 
 export const cdpFetch = async <T>(
   request: z.input<typeof cdpFetchSchema>,
-  outputSchema: z.ZodSchema<T>,
+  outputSchema: z.ZodType<T>,
   init?: RequestInit
 ): Promise<T> => {
   const { requestMethod, requestPath, requestHost } =

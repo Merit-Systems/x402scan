@@ -5,7 +5,7 @@ import type { Prisma } from "@x402scan/scan-db";
 
 export const queryRaw = async <T>(
   sql: Prisma.Sql,
-  resultSchema: z.ZodSchema<T>
+  resultSchema: z.ZodType<T>
 ) => {
   const result = await scanDb.$queryRaw<T>(sql);
 

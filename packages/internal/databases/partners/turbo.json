@@ -5,6 +5,12 @@
     "build": {
       "description": "Build partners database package",
       "outputs": ["dist/**"]
+    },
+    "dev": {
+      "description": "Watch the partners database package",
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": ["PARTNERS_CLICKHOUSE_*"]
     }
   }
 }

@@ -16,6 +16,17 @@
       "cache": false,
       "passThroughEnv": ["SCAN_DATABASE_URL_UNPOOLED"]
     },
+    "db:format": {
+      "description": "Format the scan database Prisma schema",
+      "cache": false,
+      "passThroughEnv": ["SCAN_DATABASE_URL_UNPOOLED"]
+    },
+    "dev": {
+      "description": "Watch the scan database package",
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": ["SCAN_DATABASE_URL", "NODE_ENV"]
+    },
     "studio": {
       "description": "Start Prisma Studio for the scan database",
       "cache": false,
