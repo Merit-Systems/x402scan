@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { parseX402Response, getOutputSchema, isV2Response } from "../index";
 
 // Helper for v1 tests: parse and narrow to the V1 branch of the union.
-function parseV1<T>(data: T) {
+function parseV1(data: Parameters<typeof parseX402Response>[0]) {
   const result = parseX402Response(data);
   if (!result.success) {
     return result;
@@ -24,11 +24,11 @@ const rawBodies = [
   `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base","maxAmountRequired":"1000000","resource":"https://www.remixme.xyz/api/generate/custom","description":"Custom remix video generation with profile picture","mimeType":"application/json","payTo":"0x37ffc90BDb5B0c3aCF8beCCCe4AA7e7d74ab38Ba","maxTimeoutSeconds":300,"asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","outputSchema":{"input":{"type":"http","method":"POST","bodyType":"json","bodyFields":{"prompt":"string","walletAddress":"string","pfpUrl":"string","farcasterId":"number"}}},"extra":{"name":"USD Coin","version":"2"}}]}`,
   `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base","maxAmountRequired":"500000","resource":"https://www.remixme.xyz/api/generate/daily","description":"Daily remix video generation with profile picture","mimeType":"application/json","payTo":"0x37ffc90BDb5B0c3aCF8beCCCe4AA7e7d74ab38Ba","maxTimeoutSeconds":300,"asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","outputSchema":{"input":{"type":"http","method":"POST","bodyType":"json","bodyFields":{"walletAddress":"string","pfpUrl":"string","farcasterId":"number"}}},"extra":{"name":"USD Coin","version":"2"}}]}`,
   `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base","maxAmountRequired":"2000000","resource":"http://api.aixbt.tech/v1/agents/indigo","description":"Find what's gaining traction before the rest of the market catches on.","mimeType":"","payTo":"0x8E4B195c14f20e1Ba4C40234F471E1781f293b45","maxTimeoutSeconds":60,"asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","outputSchema":{"input":{"type":"http","method":"POST","discoverable":true,"bodyType":"json","bodyFields":{"messages":{"type":"array","description":"Array of conversation messages with role and content","items":{"type":"object","properties":{"role":{"type":"string","enum":["user","assistant"],"description":"The role of the message sender"},"content":{"type":"string","description":"The message content"}},"required":["role","content"]},"minItems":1}}},"output":{"status":{"type":"number","description":"HTTP status code"},"error":{"type":"string","description":"Error message if request failed"},"data":{"type":"object","properties":{"text":{"type":"string","description":"Response text from the Indigo agent"}},"required":["text"]}}},"extra":{"name":"USD Coin","version":"2"}}]}`,
-];
+] as const;
 
 describe("parseV1", () => {
   it("should handle x402 responses with lenient parsing", () => {
-    const responseWithError = JSON.parse(rawBodies[1]!) as unknown;
+    const responseWithError = JSON.parse(rawBodies[1]) as unknown;
     const result = parseV1(responseWithError);
 
     // The function should handle responses with error fields, even if strict parsing fails
@@ -70,7 +70,7 @@ describe("parseV1", () => {
 
 describe("parseV1 with normalized schemas", () => {
   it("should normalize Gloria AI response with queryParams", () => {
-    const response = JSON.parse(rawBodies[1]!) as unknown;
+    const response = JSON.parse(rawBodies[1]) as unknown;
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
@@ -83,7 +83,7 @@ describe("parseV1 with normalized schemas", () => {
   });
 
   it("should reject empty payTo field", () => {
-    const response = JSON.parse(rawBodies[0]!) as unknown;
+    const response = JSON.parse(rawBodies[0]) as unknown;
     const result = parseV1(response);
 
     // V1 schema validates payTo - empty string is rejected
@@ -94,7 +94,7 @@ describe("parseV1 with normalized schemas", () => {
   });
 
   it("should extract field information from API responses", () => {
-    const response = JSON.parse(rawBodies[5]!) as unknown;
+    const response = JSON.parse(rawBodies[5]) as unknown;
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
@@ -108,7 +108,7 @@ describe("parseV1 with normalized schemas", () => {
   });
 
   it("should handle various API response formats", () => {
-    const response = JSON.parse(rawBodies[6]!) as unknown;
+    const response = JSON.parse(rawBodies[6]) as unknown;
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
@@ -124,7 +124,7 @@ describe("parseV1 with normalized schemas", () => {
   });
 
   it("should handle GET requests without body fields", () => {
-    const response = JSON.parse(rawBodies[3]!) as unknown;
+    const response = JSON.parse(rawBodies[3]) as unknown;
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
@@ -266,7 +266,7 @@ describe("parseV1 with normalized schemas", () => {
   });
 
   it("should handle aixbt Indigo agent with nested array items schema", () => {
-    const response = JSON.parse(rawBodies[8]!) as unknown;
+    const response = JSON.parse(rawBodies[8]) as unknown;
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
@@ -381,7 +381,7 @@ describe("schema validation edge cases", () => {
   });
 
   it("should handle error fields in responses", () => {
-    const responseWithError = JSON.parse(rawBodies[0]!) as unknown;
+    const responseWithError = JSON.parse(rawBodies[0]) as unknown;
     const result = parseV1(responseWithError);
 
     // The function should handle responses with error fields
