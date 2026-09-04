@@ -1,18 +1,50 @@
+# Foundation's reusable workflow lives in an internal repository, which GitHub
+# does not allow this public repository to call. Keep this job aligned with the
+# Foundation v1 workflow until public consumers have a public workflow host.
 name: Checks
 
 on:
   pull_request:
-    branches: [main]
+  push:
+    branches:
+      - main
+      - master
 
-permissions:
-  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   foundation:
-    name: Foundation
+    name: Quality
     permissions:
       contents: read
       id-token: write
       packages: read
-    uses: Merit-Systems/foundation/.github/workflows/checks.yml@v1
-    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+
+      - name: Install dependencies
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN || github.token }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Enable Turborepo Remote Cache
+        uses: vercel/setup-turborepo-remote-cache-action@v1.0.0
+        with:
+          team: ${{ vars.TURBO_TEAM }}
+
+      - name: Run repository checks
+        run: pnpm check
