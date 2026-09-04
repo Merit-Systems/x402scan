@@ -48,9 +48,10 @@ export function SolanaWalletProvider({ children }: Props) {
           candidateWallet.accounts[0]?.address ===
             cdpWallet.accounts[0]?.address
       );
-      if (matchingWallet) {
+      const [account] = matchingWallet?.accounts ?? [];
+      if (matchingWallet && account) {
         setConnectedWallet({
-          account: matchingWallet.accounts[0]!,
+          account,
           wallet: matchingWallet,
         });
       }
@@ -82,14 +83,16 @@ export function SolanaWalletProvider({ children }: Props) {
           wallet: matchingWallet,
         });
       } else if (matchingWallet.accounts.length === 1) {
+        const [account] = matchingWallet.accounts;
+        if (!account) return;
         // If there's only one account and it doesn't match, update the cookie with new address
         setConnectedWallet({
-          account: matchingWallet.accounts[0]!,
+          account,
           wallet: matchingWallet,
         });
         solanaWalletCookies.set({
           walletName: matchingWallet.name,
-          address: matchingWallet.accounts[0]!.address,
+          address: account.address,
         });
       }
     }

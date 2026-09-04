@@ -10,8 +10,7 @@ import {
   createStandardCacheKey,
 } from "@/lib/cache";
 import { transfersDb } from "@x402scan/transfers-db";
-import type { MixedAddress } from "@/types/address";
-import type { Chain } from "@/types/chain";
+import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
 import { transfersWhereObject } from "../query-utils";
 import {
   DEFAULT_TRANSFERS_SORTING,
@@ -43,11 +42,11 @@ const listFacilitatorTransfersUncached = async (
   // Map to expected output format
   const items = transfers.map((transfer) => ({
     ...transfer,
-    sender: transfer.sender as MixedAddress,
-    recipient: transfer.recipient as MixedAddress,
-    token_address: transfer.address as MixedAddress,
-    transaction_from: transfer.transaction_from as MixedAddress,
-    chain: transfer.chain as Chain,
+    sender: mixedAddressSchema.parse(transfer.sender),
+    recipient: mixedAddressSchema.parse(transfer.recipient),
+    token_address: mixedAddressSchema.parse(transfer.address),
+    transaction_from: mixedAddressSchema.parse(transfer.transaction_from),
+    chain: chainSchema.parse(transfer.chain),
   }));
 
   return toPeekAheadResponse({

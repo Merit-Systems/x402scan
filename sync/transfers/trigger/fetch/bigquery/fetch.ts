@@ -16,10 +16,11 @@ const serviceAccountCredentialsSchema = z.object({
   project_id: z.string().min(1),
 });
 
-const getServiceAccountCredentials = () =>
-  serviceAccountCredentialsSchema.parse(
-    JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS!)
-  );
+const getServiceAccountCredentials = () => {
+  const credentials = process.env.GOOGLE_CLOUD_CREDENTIALS;
+  if (!credentials) throw new Error("GOOGLE_CLOUD_CREDENTIALS is required");
+  return serviceAccountCredentialsSchema.parse(JSON.parse(credentials));
+};
 
 export async function fetchBigQuery(
   config: SyncConfig,

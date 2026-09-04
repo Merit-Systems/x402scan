@@ -3,6 +3,7 @@
 import { functionalUpdate } from "@tanstack/react-table";
 
 import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
+import { isSortId } from "@/lib/table-state";
 
 import type { OnChangeFn, SortingState } from "@tanstack/react-table";
 import type { TableSorting } from "@/lib/table-state";
@@ -25,12 +26,12 @@ export function useUrlTableSorting<SortId extends string>({
   const onSortingChange: OnChangeFn<SortingState> = (updater) => {
     const next = functionalUpdate(updater, tableSorting)[0];
 
-    if (!next || !sortIds.includes(next.id as SortId)) {
+    if (!next || !isSortId(next.id, sortIds)) {
       return;
     }
 
     const nextSorting = {
-      id: next.id as SortId,
+      id: next.id,
       desc: next.id === sorting.id ? next.desc : true,
     };
 

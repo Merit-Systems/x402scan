@@ -37,18 +37,14 @@ export async function fetchTransfers(
     );
   }
 
-  if (strategy === PaginationStrategy.OFFSET) {
-    return fetchWithOffset(
-      config,
-      facilitator,
-      facilitatorConfig,
-      since,
-      now,
-      onBatchFetched
-    );
-  }
-
-  throw new Error(`Unsupported pagination strategy: ${strategy as string}`);
+  return fetchWithOffset(
+    config,
+    facilitator,
+    facilitatorConfig,
+    since,
+    now,
+    onBatchFetched
+  );
 }
 
 async function fetchWithWindow(
@@ -66,7 +62,10 @@ async function fetchWithWindow(
 ): Promise<{ totalFetched: number }> {
   const provider = config.provider;
   let currentStart = new Date(since);
-  const timeWindowMs = config.timeWindowInMs!;
+  const timeWindowMs = config.timeWindowInMs;
+  if (timeWindowMs === undefined) {
+    throw new Error("Time-window pagination requires timeWindowInMs");
+  }
   let totalFetched = 0;
 
   while (currentStart < now) {

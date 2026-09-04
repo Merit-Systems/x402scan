@@ -3,6 +3,7 @@ import { base } from "viem/chains";
 import { USDC_ADDRESS, ERC20_ABI, CURRENCY_CONFIG } from "./constants";
 import type { BalanceCheckResult } from "./types";
 import { Currency } from "./types";
+import { z } from "zod";
 
 export async function checkUSDCBalance(
   address: Address,
@@ -19,9 +20,10 @@ export async function checkUSDCBalance(
     functionName: "balanceOf",
     args: [address],
   });
+  const parsedBalance = z.bigint().parse(balance);
 
   const balanceInUSDC = formatUnits(
-    balance as bigint,
+    parsedBalance,
     CURRENCY_CONFIG[Currency.USDC].decimalsInternal
   );
   const balanceNumber = parseFloat(balanceInUSDC);

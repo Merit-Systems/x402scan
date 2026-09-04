@@ -176,10 +176,6 @@ export const searchResourcesWithNaturalLanguage = async (
       console.log(`SQL generation retry attempt ${attempt}:`, result.object);
     }
 
-    if (!result.object) {
-      throw new Error("Failed to generate SQL query");
-    }
-
     const { sqlQuery, explanation } = result.object;
 
     const executionResult = await executeResourceSearch(sqlQuery);

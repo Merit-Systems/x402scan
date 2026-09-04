@@ -1,13 +1,12 @@
 import { z } from "zod";
 
-import { scanDb } from "@x402scan/scan-db";
+import { AcceptsNetwork, scanDb } from "@x402scan/scan-db";
 
-import { parseX402Response, type ParsedX402Response } from "@/lib/x402";
+import { parseX402Response } from "@/lib/x402";
 import { mixedAddressSchema, optionalChainSchema } from "@/lib/schemas";
 import { FREE_AUTH_MODES, isFreeResource } from "@/lib/resource-auth";
-import { SUPPORTED_CHAINS } from "@/types/chain";
 
-import type { AcceptsNetwork, Prisma } from "@x402scan/scan-db";
+import type { Prisma } from "@x402scan/scan-db";
 import type { MixedAddress } from "@/types/address";
 
 /** OR-able filters matching free resources (siwx/unprotected/apiKey). */
@@ -16,9 +15,10 @@ export const freeAuthModeFilters: Prisma.ResourcesWhereInput[] =
     metadata: { path: ["authMode"], equals: mode },
   }));
 
-const SUPPORTED_ACCEPT_NETWORKS = SUPPORTED_CHAINS.map(
-  (chain) => chain as AcceptsNetwork
-);
+const SUPPORTED_ACCEPT_NETWORKS = [
+  AcceptsNetwork.base,
+  AcceptsNetwork.solana,
+] satisfies AcceptsNetwork[];
 
 function getDisplayableAcceptsWhere({
   chain,
@@ -250,7 +250,7 @@ export const listOriginsWithResources = async (
           return {
             ...resource,
             success: true as const,
-            data: {} as ParsedX402Response,
+            data: undefined,
           };
         }
         const response = parseX402Response(resource.response?.response);

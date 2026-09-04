@@ -7,6 +7,18 @@ import type {
 } from "@/trigger/types";
 import { runCdpSqlQuery } from "./helpers";
 import { logger } from "@trigger.dev/sdk/v3";
+import { z } from "zod";
+
+const cdpTransferRowSchema: z.ZodType<CdpTransferRow> = z.object({
+  contract_address: z.string(),
+  sender: z.string(),
+  transaction_from: z.string(),
+  to_address: z.string(),
+  transaction_hash: z.string(),
+  block_timestamp: z.string(),
+  amount: z.string(),
+  log_index: z.number(),
+});
 
 export async function fetchCDP(
   config: SyncConfig,
@@ -27,7 +39,7 @@ export async function fetchCDP(
     now,
     offset
   );
-  const rows = await runCdpSqlQuery<CdpTransferRow>(query);
+  const rows = await runCdpSqlQuery(query, cdpTransferRowSchema);
 
   return config.transformResponse(rows, config, facilitator, facilitatorConfig);
 }

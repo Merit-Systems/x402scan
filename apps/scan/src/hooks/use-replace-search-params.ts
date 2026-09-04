@@ -16,6 +16,8 @@ export function useReplaceSearchParams() {
       update(params);
 
       const queryString = params.toString();
+      // Next's generated Route union cannot represent a dynamic query string.
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       const href = (
         queryString ? `${pathname}?${queryString}` : pathname
       ) as Route;

@@ -14,7 +14,7 @@ import type {
   FacilitatorConfig,
   SyncConfig,
 } from "../trigger/types";
-import { PaginationStrategy, QueryProvider } from "../trigger/types";
+import { QueryProvider } from "../trigger/types";
 
 const CHANNELS_PROGRAM = new PublicKey(PAYMENT_CHANNELS_PROGRAM_ID);
 const TOKEN_PROGRAM = new PublicKey(
@@ -52,8 +52,7 @@ const facilitator: Facilitator = {
 const config = {
   chain: "solana",
   provider: QueryProvider.BITQUERY_CHANNELS,
-  paginationStrategy: PaginationStrategy.OFFSET,
-} as SyncConfig;
+} satisfies Pick<SyncConfig, "chain" | "provider">;
 
 const context = {
   signature: "test-signature",
@@ -436,6 +435,6 @@ describe("extractPayouts", () => {
 
     const events = extractPayouts(tx, CHANNELS_PROGRAM, context);
     expect(events).toHaveLength(1);
-    expect(events[0]!.recipient).toBe(recipientAta.toBase58());
+    expect(events[0]?.recipient).toBe(recipientAta.toBase58());
   });
 });

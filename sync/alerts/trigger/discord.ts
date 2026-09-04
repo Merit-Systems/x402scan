@@ -6,8 +6,10 @@ export async function sendDiscordAlert(
 ): Promise<void> {
   const { symbol, decimalsExternal } = CURRENCY_CONFIG[balanceResult.currency];
   const currencyName = balanceResult.currency;
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhookUrl) throw new Error("DISCORD_WEBHOOK_URL is required");
 
-  const response = await fetch(process.env.DISCORD_WEBHOOK_URL!, {
+  const response = await fetch(webhookUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

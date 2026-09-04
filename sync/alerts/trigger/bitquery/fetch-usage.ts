@@ -1,3 +1,4 @@
+import { bitqueryUsageResponseSchema } from "./types";
 import type { BitqueryUsageResponse } from "./types";
 
 const USAGE_API_URL = "https://account.bitquery.io/api/usage";
@@ -22,7 +23,7 @@ export async function fetchBitqueryUsage(): Promise<BitqueryUsageResponse> {
     );
   }
 
-  return response.json() as Promise<BitqueryUsageResponse>;
+  return bitqueryUsageResponseSchema.parse(await response.json());
 }
 
 export function isUsageAtThreshold(

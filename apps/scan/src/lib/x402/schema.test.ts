@@ -78,7 +78,7 @@ describe("extractFieldsFromSchema - protocol header filtering", () => {
 
     const fields = extractFieldsFromSchema(inputSchema, Methods.GET, "query");
     expect(fields).toHaveLength(1);
-    expect(fields[0]!.name).toBe("authorization");
+    expect(fields[0]?.name).toBe("authorization");
   });
 });
 

@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "@trigger.dev/sdk": "catalog:trigger",
-    "viem": "catalog:"
+    "viem": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@merit-systems/typescript-config": "catalog:foundation",
