@@ -8,6 +8,7 @@ import { BaseChart } from "../chart";
 import { simulateChartData } from "../simulate";
 
 import type { ComposedChartProps } from "./types";
+import type { ChartData, ChartDimension } from "../types";
 
 export const BaseComposedChart = <
   T extends Omit<Record<string, number>, "timestamp">,
@@ -46,12 +47,12 @@ export const BaseComposedChart = <
           </linearGradient>
         ))}
       </defs>
-      {bars.map(({ dataKey, color, ref: _ref, ...barProps }, index) => {
+      {bars.map(({ dataKey, color, ...barProps }, index) => {
         return (
-          <Bar
+          <Bar<ChartData<T>, number>
             key={dataKey as string}
             isAnimationActive={index === bars.length - 1}
-            dataKey={dataKey as string}
+            dataKey={dataKey}
             stackId={index.toString()}
             fill={`color-mix(in oklab, ${color} 40%, transparent)`}
             stroke={color}
@@ -75,12 +76,12 @@ export const BaseComposedChart = <
           </linearGradient>
         ))}
       </defs>
-      {areas.map(({ dataKey, color, ref: _ref, ...areaProps }, index) => {
+      {areas.map(({ dataKey, color, ...areaProps }, index) => {
         return (
-          <Area
+          <Area<ChartData<T>, number>
             key={dataKey as string}
             isAnimationActive={index === areas.length - 1}
-            dataKey={dataKey as string}
+            dataKey={dataKey}
             stackId="1"
             fill={`color-mix(in oklab, ${color} 40%, transparent)`}
             stroke={color}
@@ -89,12 +90,12 @@ export const BaseComposedChart = <
           />
         );
       })}
-      {lines.map(({ dataKey, color, ref: _ref, ...lineProps }, index) => {
+      {lines.map(({ dataKey, color, ...lineProps }, index) => {
         return (
-          <Line
+          <Line<ChartData<T>, number>
             key={dataKey as string}
             isAnimationActive={index === lines.length - 1}
-            dataKey={dataKey as string}
+            dataKey={dataKey}
             fill={`color-mix(in oklab, ${color} 40%, transparent)`}
             stroke={color}
             type="monotone"
@@ -110,7 +111,7 @@ export const BaseComposedChart = <
 export const LoadingComposedChart = ({
   height = 350,
 }: {
-  height?: number | string;
+  height?: ChartDimension;
 }) => {
   const simulatedData = useMemo(() => simulateChartData(), []);
 

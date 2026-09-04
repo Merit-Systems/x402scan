@@ -1,0 +1,18 @@
+# foundation:dependency-maintenance:v1
+name: Dependency maintenance
+
+on:
+  schedule:
+    - cron: "17 11 * * 1"
+  workflow_dispatch:
+
+jobs:
+  maintain:
+    name: Foundation
+    permissions:
+      contents: write
+      id-token: write
+      packages: read
+      pull-requests: write
+    uses: Merit-Systems/foundation/.github/workflows/dependency-maintenance.yml@v1
+    secrets: inherit

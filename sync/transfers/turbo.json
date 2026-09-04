@@ -4,6 +4,8 @@
   "tasks": {
     "trigger:dev": {
       "description": "Start transfers sync jobs in development mode",
+      "cache": false,
+      "persistent": true,
       "passThroughEnv": [
         "CDP_*",
         "BITQUERY_*",
@@ -13,6 +15,7 @@
     },
     "trigger:deploy": {
       "description": "Deploy transfers sync jobs to Trigger.dev",
+      "cache": false,
       "passThroughEnv": ["TRIGGER_*"]
     }
   }

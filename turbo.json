@@ -4,13 +4,15 @@
   "tasks": {
     "build": {
       "description": "Build package for production",
-      "dependsOn": ["^build", "^db:generate"]
+      "dependsOn": ["^build", "^db:generate"],
+      "outputs": ["dist/**"]
     },
     "build:deploy": {
       "description": "Build package with database migrations for deployment",
-      "dependsOn": ["^build", "^db:generate", "^db:deploy"]
+      "dependsOn": ["^build", "^db:generate", "^db:deploy"],
+      "cache": false
     },
-    "//#lint": {
+    "//#lint:repo": {
       "description": "Run oxlint (type-aware) across the whole repo",
       "dependsOn": [
         "@x402scan/scan-db#db:generate",
@@ -23,7 +25,7 @@
       "inputs": [
         "**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}",
         "**/tsconfig*.json",
-        ".oxlintrc.json",
+        ".oxlintrc.jsonc",
         "!**/node_modules/**",
         "!**/.turbo/**",
         "!**/.next/**",
@@ -31,7 +33,7 @@
         "!**/generated/**"
       ]
     },
-    "//#lint:fix": {
+    "//#lint:fix:repo": {
       "description": "Run oxlint and automatically fix issues",
       "cache": false
     },
@@ -82,6 +84,33 @@
         "!**/generated/**"
       ]
     },
+    "//#foundation:check": {
+      "description": "Validate the repository against Foundation policy",
+      "inputs": [
+        "foundation.config.ts",
+        "package.json",
+        "pnpm-workspace.yaml",
+        "pnpm-lock.yaml",
+        "turbo.json",
+        ".github/workflows/**",
+        "**/package.json",
+        "**/tsconfig*.json",
+        "**/.oxlintrc.jsonc",
+        "!**/node_modules/**",
+        "!**/.next/**",
+        "!**/.turbo/**",
+        "!**/dist/**",
+        "!**/generated/**"
+      ]
+    },
+    "ui:check": {
+      "description": "Validate the product UI against Foundation policy",
+      "outputs": []
+    },
+    "ui:integrity": {
+      "description": "Compare owned UI sources with the Merit registry",
+      "outputs": []
+    },
     "publish:check": {
       "description": "Verify package is ready for npm publishing",
       "cache": false
@@ -114,7 +143,8 @@
     "deploy": {
       "description": "Deploy a package to its hosting provider",
       "dependsOn": ["^build", "^db:generate"],
-      "cache": false
+      "cache": false,
+      "outputs": [".trigger/**"]
     },
     "trigger:dev": {
       "description": "Start Trigger.dev background jobs locally",

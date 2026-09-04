@@ -19,6 +19,12 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@magicui": "https://magicui.design/r/{name}"
+    "@magicui": "https://magicui.design/r/{name}",
+    "@merit": {
+      "url": "https://merit.engineering/r/{name}.json",
+      "headers": {
+        "x-vercel-trusted-oidc-idp-token": "${MERIT_REGISTRY_OIDC_TOKEN}"
+      }
+    }
   }
 }

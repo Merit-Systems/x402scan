@@ -5,12 +5,36 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import {
+  columnFacetingFeature,
+  columnFilteringFeature,
+  columnSizingFeature,
+  columnVisibilityFeature,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  filterFn_arrIncludes,
+  filterFn_equals,
+  filterFn_inDateRange,
+  filterFn_inNumberRange,
+  filterFn_includesString,
+  filterFn_weakEquals,
   flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  sortFn_alphanumeric,
+  sortFn_basic,
+  sortFn_datetime,
+  sortFn_text,
+  tableFeatures,
+  useTable,
+  type ColumnDef,
   type RowSelectionState,
   type OnChangeFn,
+  type Row,
+  type RowData,
 } from "@tanstack/react-table";
 
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,21 +51,54 @@ import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 
-import type { ColumnDef, Row } from "@tanstack/react-table";
 import type { Route } from "next";
 
-export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
+const dataTableFeatures = tableFeatures({
+  columnFacetingFeature,
+  columnFilteringFeature,
+  columnSizingFeature,
+  columnVisibilityFeature,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+  filteredRowModel: createFilteredRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  filterFns: {
+    arrIncludes: filterFn_arrIncludes,
+    equals: filterFn_equals,
+    inDateRange: filterFn_inDateRange,
+    inNumberRange: filterFn_inNumberRange,
+    includesString: filterFn_includesString,
+    weakEquals: filterFn_weakEquals,
+  },
+  sortFns: {
+    alphanumeric: sortFn_alphanumeric,
+    basic: sortFn_basic,
+    datetime: sortFn_datetime,
+    text: sortFn_text,
+  },
+});
+
+type DataTableFeatures = typeof dataTableFeatures;
+
+export type ExtendedColumnDef<TData extends RowData> = ColumnDef<
+  DataTableFeatures,
   TData,
-  TValue
+  unknown
 > & {
   loading?: React.ComponentType;
 };
 
-interface DataTableProps<TData, TValue, AppRoute extends string> {
-  columns: ExtendedColumnDef<TData, TValue>[];
+export type DataTableRow<TData extends RowData> = Row<DataTableFeatures, TData>;
+
+interface DataTableProps<TData extends RowData, AppRoute extends string> {
+  columns: ExtendedColumnDef<TData>[];
   data: TData[];
   href?: (data: TData) => Route<AppRoute>;
-  onRowClick?: (row: Row<TData>) => void;
+  onRowClick?: (row: DataTableRow<TData>) => void;
   isLoading?: boolean;
   loadingRowCount?: number;
   pageSize?: number;
@@ -55,7 +112,7 @@ interface DataTableProps<TData, TValue, AppRoute extends string> {
   getRowId?: (row: TData, index: number) => string;
 }
 
-export function DataTable<TData, TValue, AppRoute extends string>({
+export function DataTable<TData extends RowData, AppRoute extends string>({
   columns,
   data,
   href,
@@ -71,19 +128,17 @@ export function DataTable<TData, TValue, AppRoute extends string>({
   rowSelection,
   onRowSelectionChange,
   getRowId,
-}: DataTableProps<TData, TValue, AppRoute>) {
+}: DataTableProps<TData, AppRoute>) {
   const isServerSidePagination =
     page !== undefined && onPageChange !== undefined;
 
-  const table = useReactTable({
+  const table = useTable({
+    features: dataTableFeatures,
     data: isLoading ? (Array(loadingRowCount).fill(null) as TData[]) : data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: isServerSidePagination
-      ? undefined
-      : getPaginationRowModel(),
     initialState: {
       pagination: {
+        pageIndex: 0,
         pageSize,
       },
     },
@@ -210,7 +265,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
           <p className="text-xs text-muted-foreground">
             {isServerSidePagination
               ? `Page ${page + 1}${totalPages ? ` of ${totalPages.toLocaleString()}` : ""}`
-              : `Page ${table.getState().pagination.pageIndex + 1} of ${table.getPageCount()}`}
+              : `Page ${table.state.pagination.pageIndex + 1} of ${table.getPageCount()}`}
           </p>
         )}
         <Button

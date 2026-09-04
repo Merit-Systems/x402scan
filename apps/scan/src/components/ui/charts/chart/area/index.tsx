@@ -8,6 +8,7 @@ import { BaseChart } from "../chart";
 
 import { simulateChartData } from "../simulate";
 
+import type { ChartData, ChartDimension } from "../types";
 import type { AreaChartProps } from "./types";
 
 export const BaseAreaChart = <
@@ -47,12 +48,12 @@ export const BaseAreaChart = <
           </linearGradient>
         ))}
       </defs>
-      {areas.map(({ dataKey, color, ref: _ref, ...areaProps }, index) => {
+      {areas.map(({ dataKey, color, ...areaProps }, index) => {
         return (
-          <Area
+          <Area<ChartData<T>, number>
             key={dataKey as string}
             isAnimationActive={index === areas.length - 1}
-            dataKey={dataKey as string}
+            dataKey={dataKey}
             stackId="1"
             fill={`url(#${dataKey as string}-gradient)`}
             stroke={color}
@@ -70,7 +71,7 @@ export const BaseAreaChart = <
 export const LoadingAreaChart = ({
   height = 350,
 }: {
-  height?: number | string;
+  height?: ChartDimension;
 }) => {
   const simulatedData = useMemo(() => simulateChartData(), []);
 

@@ -8,14 +8,18 @@
     },
     "db:deploy": {
       "description": "Deploy scan database migrations",
+      "cache": false,
       "passThroughEnv": ["SCAN_DATABASE_URL_UNPOOLED"]
     },
     "db:migrate": {
       "description": "Create and apply scan database migrations",
+      "cache": false,
       "passThroughEnv": ["SCAN_DATABASE_URL_UNPOOLED"]
     },
     "studio": {
       "description": "Start Prisma Studio for the scan database",
+      "cache": false,
+      "persistent": true,
       "passThroughEnv": ["SCAN_DATABASE_URL_UNPOOLED"]
     }
   }
