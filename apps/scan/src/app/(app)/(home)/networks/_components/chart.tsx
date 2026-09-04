@@ -55,7 +55,7 @@ export const NetworksChart = ({
         0
       ),
     }))
-    .sort((a, b) => b.totalTransactions - a.totalTransactions)
+    .toSorted((a, b) => b.totalTransactions - a.totalTransactions)
     .map((item) => item.network);
 
   const chart = createUsageBarChartModel({

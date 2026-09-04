@@ -186,5 +186,5 @@ export async function applyLLMFilters(
   );
 
   // Sort by filter matches (highest first)
-  return evaluatedResults.sort((a, b) => b.filterMatches - a.filterMatches);
+  return evaluatedResults.toSorted((a, b) => b.filterMatches - a.filterMatches);
 }

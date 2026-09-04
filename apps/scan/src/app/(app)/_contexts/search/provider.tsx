@@ -34,11 +34,13 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setIsOpen((isOpen) => !isOpen);
+        setIsOpen((wasOpen) => !wasOpen);
       }
     };
     document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    return () => {
+      document.removeEventListener("keydown", down);
+    };
   }, []);
 
   const input = {
@@ -99,7 +101,9 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
                   <CommandItem
                     key={origin.id}
                     value={origin.origin}
-                    onSelect={() => handleSelect(`/server/${origin.id}`)}
+                    onSelect={() => {
+                      handleSelect(`/server/${origin.id}`);
+                    }}
                   >
                     <Origin
                       origin={origin}
@@ -121,9 +125,9 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
                   <CommandItem
                     key={resource.id}
                     value={resource.resource}
-                    onSelect={() =>
-                      handleSelect(`/server/${resource.origin.id}`)
-                    }
+                    onSelect={() => {
+                      handleSelect(`/server/${resource.origin.id}`);
+                    }}
                   >
                     <Resource resource={resource} />
                   </CommandItem>

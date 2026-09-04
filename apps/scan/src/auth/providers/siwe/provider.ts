@@ -97,7 +97,7 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
 
         // no user, create a user and an account
         if (!user) {
-          return await scanDb.user.create({
+          return scanDb.user.create({
             data: {
               email,
               accounts: {

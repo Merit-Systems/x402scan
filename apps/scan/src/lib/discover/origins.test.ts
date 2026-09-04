@@ -27,7 +27,7 @@ describe("fetchUsedOriginsFromAgentCash", () => {
   });
 
   it("returns origins from a successful response and calls the right URL", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(
         JSON.stringify({
           protocol: "x402",

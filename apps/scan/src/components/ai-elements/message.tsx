@@ -13,7 +13,7 @@ const Message = ({
     className={cn(
       "group flex flex-col w-full items-end gap-4 py-2 md:py-4",
       from === "user" ? "is-user" : "is-assistant items-start",
-      "[&>div]:max-w-[100%] md:[&>div]:max-w-[80%]",
+      "[&>div]:max-w-full md:[&>div]:max-w-[80%]",
       className
     )}
     {...props}

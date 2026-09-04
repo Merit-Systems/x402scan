@@ -43,7 +43,7 @@ export const upsertResource = async (
   }
   const originStr = getOriginFromUrl(baseResource.resource);
 
-  return await scanDb.$transaction(async (tx) => {
+  return scanDb.$transaction(async (tx) => {
     await ensureOriginExists(tx, originStr);
 
     // Merge new metadata with existing to avoid clobbering fields set by a
@@ -161,7 +161,7 @@ export const upsertResource = async (
 };
 
 export const getResource = async (id: string) => {
-  return await scanDb.resources.findUnique({
+  return scanDb.resources.findUnique({
     where: {
       id,
     },
@@ -185,7 +185,7 @@ export const getResource = async (id: string) => {
 export const listResourcesUncached = async (
   where?: Prisma.ResourcesWhereInput
 ) => {
-  return await scanDb.resources.findMany({
+  return scanDb.resources.findMany({
     where: {
       ...where,
       // Exclude deprecated resources by default
@@ -305,7 +305,7 @@ const searchResourcesUncached = async (
   } = input;
   const acceptsFilter: Prisma.AcceptsWhereInput =
     chains !== undefined ? { network: { in: chains } } : {};
-  return await scanDb.resources.findMany({
+  return scanDb.resources.findMany({
     where: {
       // Include paid resources (with accepts) and free resources
       // (siwx/public/apiKey). When filtering by chain, free resources are
@@ -380,7 +380,7 @@ export const searchResources = createCachedArrayQuery({
 });
 
 export const listResourcesForTools = async (resourceIds: string[]) => {
-  return await scanDb.resources.findMany({
+  return scanDb.resources.findMany({
     where: {
       id: { in: resourceIds },
       excluded: { is: null },

@@ -3,6 +3,6 @@ import { getComposerBalancesReport } from "@/services/composer-balances";
 
 export const adminComposerBalancesRouter = createTRPCRouter({
   report: adminProcedure.query(async () => {
-    return await getComposerBalancesReport();
+    return getComposerBalancesReport();
   }),
 });

@@ -11,7 +11,7 @@ export const createAgentConfiguration = async (
   input: z.infer<typeof agentConfigurationSchema>
 ) => {
   const { resourceIds, ...data } = input;
-  return await scanDb.agentConfiguration.create({
+  return scanDb.agentConfiguration.create({
     data: {
       ...data,
       owner: {
@@ -46,7 +46,7 @@ export const updateAgentConfiguration = async (
   updateData: z.infer<typeof updateAgentConfigurationSchema>
 ) => {
   const { id, resourceIds, ...data } = updateData;
-  return await scanDb.agentConfiguration.update({
+  return scanDb.agentConfiguration.update({
     where: { id, ownerId: userId },
     data: {
       ...data,
@@ -61,7 +61,7 @@ export const updateAgentConfiguration = async (
 };
 
 export const deleteAgentConfiguration = async (id: string, userId: string) => {
-  return await scanDb.agentConfiguration.delete({
+  return scanDb.agentConfiguration.delete({
     where: { id, ownerId: userId },
   });
 };

@@ -6,10 +6,10 @@ import {
 
 export const userAcknowledgementsRouter = createTRPCRouter({
   hasAcknowledged: protectedProcedure.query(async ({ ctx }) => {
-    return await hasUserAcknowledgedComposer(ctx.session.user.id);
+    return hasUserAcknowledgedComposer(ctx.session.user.id);
   }),
 
   upsert: protectedProcedure.mutation(async ({ ctx }) => {
-    return await upsertUserAcknowledgement(ctx.session.user.id);
+    return upsertUserAcknowledgement(ctx.session.user.id);
   }),
 });
