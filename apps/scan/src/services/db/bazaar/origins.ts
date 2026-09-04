@@ -145,6 +145,8 @@ const listBazaarOriginsUncached = async (
     "unique_buyers",
   ] as const;
   type SortableNumericKey = (typeof sortableNumericKeys)[number];
+  const isSortableNumericKey = (value: string): value is SortableNumericKey =>
+    sortableNumericKeys.some((key) => key === value);
 
   const direction = input.sorting.desc ? -1 : 1;
 
@@ -164,10 +166,8 @@ const listBazaarOriginsUncached = async (
       const bTime = b.latest_block_timestamp?.getTime() ?? 0;
       return (aTime - bTime) * direction;
     });
-  } else if (
-    sortableNumericKeys.includes(input.sorting.id as SortableNumericKey)
-  ) {
-    const key = input.sorting.id as SortableNumericKey;
+  } else if (isSortableNumericKey(input.sorting.id)) {
+    const key = input.sorting.id;
     groupedItems.sort((a, b) => (a[key] - b[key]) * direction);
   }
 

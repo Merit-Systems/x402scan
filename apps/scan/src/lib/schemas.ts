@@ -8,8 +8,13 @@ import type { Address } from "viem";
 
 export const ethereumAddressSchema = z
   .string()
-  .refine((a) => isAddress(a, { strict: false }), "Invalid EVM address")
-  .transform((a) => a.toLowerCase() as Address);
+  .transform((address) => address.toLowerCase())
+  .pipe(
+    z.custom<Address>((address) => {
+      const parsed = z.string().safeParse(address);
+      return parsed.success && isAddress(parsed.data, { strict: false });
+    }, "Invalid EVM address")
+  );
 
 export const sortingSchema = (sortIds: string[] | readonly string[]) =>
   z.object({
@@ -20,7 +25,7 @@ export const sortingSchema = (sortIds: string[] | readonly string[]) =>
 export const solanaAddressSchema = z
   .string()
   .regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/, "Invalid Solana address")
-  .transform((address) => address as SolanaAddress);
+  .pipe(z.custom<SolanaAddress>());
 
 // Create a mixed address schema
 export const mixedAddressSchema = z

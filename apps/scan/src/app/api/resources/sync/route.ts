@@ -11,11 +11,11 @@ import { checkCronSecret } from "@/lib/cron";
 import { notifyNewServer } from "@/lib/discord-notifications";
 import { getOriginFromUrl } from "@/lib/url";
 import { isVercelPreviewDeployment } from "@/lib/discovery/vercel-preview";
-import { normalizeChainId } from "@/lib/x402";
+import {
+  normalizeKnownAcceptNetworks,
+  upsertResourceSchema,
+} from "@/services/db/resources/resource-schema";
 
-import type { AcceptsNetwork } from "@x402scan/scan-db/types";
-import type z from "zod";
-import type { upsertResourceSchema } from "@/services/db/resources/resource";
 import type { NextRequest } from "next/server";
 import {
   discoverableFacilitators,
@@ -30,6 +30,7 @@ export const GET = async (request: NextRequest) => {
 
   // Facilitator sync is temporarily paused
   const FACILITATOR_SYNC_PAUSED = true;
+  // oxlint-disable-next-line typescript/no-unnecessary-condition -- Intentional emergency kill switch retained for operational recovery.
   if (FACILITATOR_SYNC_PAUSED) {
     console.log("Facilitator sync route is paused — returning early");
     return NextResponse.json(
@@ -131,13 +132,11 @@ export const GET = async (request: NextRequest) => {
             };
           }
 
-          const result = await upsertResource({
+          const resourceInput = upsertResourceSchema.parse({
             ...facilitatorResource,
-            accepts: facilitatorResource.accepts.map((accept) => ({
-              ...accept,
-              network: normalizeChainId(accept.network) as AcceptsNetwork,
-            })) as z.input<typeof upsertResourceSchema>["accepts"],
+            accepts: normalizeKnownAcceptNetworks(facilitatorResource.accepts),
           });
+          const result = await upsertResource(resourceInput);
           if (!result) {
             console.warn("Resource schema validation failed", {
               resource: facilitatorResource.resource,

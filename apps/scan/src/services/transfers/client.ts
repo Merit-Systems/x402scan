@@ -21,7 +21,8 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 function toParameterized(sql: Prisma.Sql): [string, unknown[]] {
-  let query = sql.strings[0]!;
+  const [firstSegment = ""] = sql.strings;
+  let query = firstSegment;
   for (let i = 1; i < sql.strings.length; i++) {
     query += `$${i}${sql.strings[i]}`;
   }
@@ -38,10 +39,10 @@ export const queryRaw = async <T>(
   let rows: unknown;
 
   if (transfersHttpReplicas.length > 0) {
-    const replica =
-      transfersHttpReplicas[
-        Math.floor(Math.random() * transfersHttpReplicas.length)
-      ]!;
+    const replica = transfersHttpReplicas.at(
+      Math.floor(Math.random() * transfersHttpReplicas.length)
+    );
+    if (!replica) throw new Error("Replica selection failed");
     try {
       rows = await withTimeout(
         replica.query(query, params),

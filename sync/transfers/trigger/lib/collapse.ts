@@ -35,8 +35,9 @@ export function collapseTransferChains(
 
   const collapsed: TransferEventData[] = [];
   for (const legs of byTx.values()) {
-    if (legs.length === 1) {
-      collapsed.push(legs[0]!);
+    const [onlyLeg] = legs;
+    if (legs.length === 1 && onlyLeg) {
+      collapsed.push(onlyLeg);
     } else {
       collapsed.push(...collapseTx(legs));
     }
@@ -76,12 +77,17 @@ function collapseTx(legs: TransferEventData[]): TransferEventData[] {
 
     let terminal = origin;
     while (isPassThrough(terminal.recipient)) {
-      const candidates = sorted.filter(
-        (leg) =>
+      const terminalPosition = position.get(terminal);
+      if (terminalPosition === undefined) break;
+      const candidates = sorted.filter((leg) => {
+        const legPosition = position.get(leg);
+        return (
           !consumed.has(leg) &&
           leg.sender === terminal.recipient &&
-          position.get(leg)! > position.get(terminal)!
-      );
+          legPosition !== undefined &&
+          legPosition > terminalPosition
+        );
+      });
       if (candidates.length === 0) {
         break;
       }

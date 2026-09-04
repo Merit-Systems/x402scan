@@ -28,10 +28,6 @@ async function generateAndExecuteSingleQuery(
 
     console.log(`Query ${queryIndex} - Attempt ${attempt + 1}:`, result.object);
 
-    if (!result.object) {
-      continue;
-    }
-
     const { sqlQuery, explanation } = result.object;
 
     const executionResult = await executeResourceSearch(sqlQuery);

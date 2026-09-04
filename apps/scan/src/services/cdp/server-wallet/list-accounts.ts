@@ -11,7 +11,7 @@ export const listAllServerAccounts = async (): Promise<ServerAccount[]> => {
   const allAccounts: ServerAccount[] = [];
   let response = await cdpClient.evm.listAccounts();
 
-  while (true) {
+  for (;;) {
     for (const account of response.accounts) {
       allAccounts.push({
         address: account.address,
@@ -48,7 +48,7 @@ export const listAllSolanaServerAccounts = async (): Promise<
   const allAccounts: SolanaServerAccount[] = [];
   let response = await cdpClient.solana.listAccounts();
 
-  while (true) {
+  for (;;) {
     for (const account of response.accounts) {
       allAccounts.push({
         address: account.address,

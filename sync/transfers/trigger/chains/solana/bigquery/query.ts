@@ -89,7 +89,9 @@ export async function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): Promise<TransferEventData[]> {
-  const connection = new Connection(process.env.SOLANA_RPC_URL!);
+  const rpcUrl = process.env.SOLANA_RPC_URL;
+  if (!rpcUrl) throw new Error("SOLANA_RPC_URL is required");
+  const connection = new Connection(rpcUrl);
 
   const ownerCache = new Map<string, string>();
 
@@ -139,9 +141,8 @@ async function getOwner(
 ): Promise<string> {
   const addressTokenAccount = new PublicKey(address);
   const key = addressTokenAccount.toBase58();
-  if (cache.has(key)) {
-    return cache.get(key)!;
-  }
+  const cachedOwner = cache.get(key);
+  if (cachedOwner !== undefined) return cachedOwner;
   const accountInfo = await getAccount(connection, addressTokenAccount);
   const owner = accountInfo.owner.toBase58();
   cache.set(key, owner);

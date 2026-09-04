@@ -9,6 +9,7 @@ import { searchResourcesWithNaturalLanguage as searchWithSQL } from "./database-
 import { searchResourcesWithNaturalLanguage as searchWithSQLParallel } from "./database-search-parallel-retry";
 import { generateFilterQuestions, applyLLMFilters } from "./llm-refined-search";
 import { rerankSearchResults } from "./reranker-search";
+import { z } from "zod";
 
 /**
  * Performs a combined search that:
@@ -196,7 +197,10 @@ export async function searchResourcesCombined(
     explanation: dbResults.explanation,
     totalCount: dbResults.totalCount,
     sqlCondition: dbResults.sqlCondition,
-    keywords: ("keywords" in dbResults ? dbResults.keywords : []) as string[],
+    keywords: z
+      .array(z.string())
+      .catch([])
+      .parse("keywords" in dbResults ? dbResults.keywords : []),
     filterQuestions,
     filterExplanation,
   };

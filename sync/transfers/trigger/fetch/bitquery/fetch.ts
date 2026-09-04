@@ -1,4 +1,5 @@
 import { logger } from "@trigger.dev/sdk/v3";
+import { z } from "zod";
 import type {
   SyncConfig,
   Facilitator,
@@ -7,10 +8,10 @@ import type {
   RawTransferQueryResponse,
 } from "../../types";
 
-interface BitqueryGraphqlResponse {
-  data: RawTransferQueryResponse;
-  errors?: unknown;
-}
+const bitqueryGraphqlResponseSchema = z.object({
+  data: z.custom<RawTransferQueryResponse>(),
+  errors: z.unknown().optional(),
+});
 
 export async function fetchWithOffsetPagination(
   config: SyncConfig,
@@ -73,9 +74,12 @@ async function executeBitqueryRequest(
   facilitatorConfig: FacilitatorConfig,
   query: string
 ): Promise<TransferEventData[]> {
+  const apiKey = process.env.BITQUERY_API_KEY;
+  if (!apiKey) throw new Error("BITQUERY_API_KEY is required");
+  if (!config.apiUrl) throw new Error("Bitquery apiUrl is required");
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
-  headers.append("Authorization", `Bearer ${process.env.BITQUERY_API_KEY!}`);
+  headers.append("Authorization", `Bearer ${apiKey}`);
 
   const rawQuery = JSON.stringify({ query });
 
@@ -85,7 +89,7 @@ async function executeBitqueryRequest(
     body: rawQuery,
   };
 
-  const response = await fetch(config.apiUrl!, requestOptions);
+  const response = await fetch(config.apiUrl, requestOptions);
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -95,7 +99,7 @@ async function executeBitqueryRequest(
     throw new Error(`Bitquery API returned ${response.status}: ${errorText}`);
   }
 
-  const result = (await response.json()) as BitqueryGraphqlResponse;
+  const result = bitqueryGraphqlResponseSchema.parse(await response.json());
 
   if (result.errors) {
     logger.error(`[${config.chain}] Bitquery GraphQL errors:`, {

@@ -8,6 +8,7 @@ import { getRedisClient } from "@/lib/redis";
 const usedOriginsResponseSchema = z.looseObject({
   origins: z.array(z.string()),
 });
+const cachedOriginsSchema = z.array(z.string());
 
 const PROTOCOL = "x402";
 const CACHE_KEY = "discover:origins:catalog:v1";
@@ -94,7 +95,7 @@ export const getDiscoverOrigins = async (): Promise<string[]> => {
     const cached = await redis.get(CACHE_KEY).catch(() => null);
     if (cached) {
       console.log(`[Cache] HIT: ${CACHE_KEY}`);
-      return JSON.parse(cached) as string[];
+      return cachedOriginsSchema.parse(JSON.parse(cached));
     }
   }
 
@@ -115,7 +116,7 @@ export const getDiscoverOrigins = async (): Promise<string[]> => {
         console.warn(
           "[discover] AgentCash returned empty, using stale fallback"
         );
-        return JSON.parse(stale) as string[];
+        return cachedOriginsSchema.parse(JSON.parse(stale));
       }
     }
   }

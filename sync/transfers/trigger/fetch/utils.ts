@@ -14,7 +14,10 @@ export async function fetchWithTimeWindowing(
 ): Promise<TransferEventData[]> {
   const allTransfers = [];
   let currentStart = new Date(since);
-  const timeWindowMs = config.timeWindowInMs!;
+  const timeWindowMs = config.timeWindowInMs;
+  if (timeWindowMs === undefined) {
+    throw new Error("Time-window pagination requires timeWindowInMs");
+  }
 
   while (currentStart < now) {
     const currentEnd = new Date(

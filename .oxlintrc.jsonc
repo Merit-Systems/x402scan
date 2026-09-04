@@ -64,38 +64,24 @@
     "jsx-a11y/no-static-element-interactions": "warn",
     "jsx-a11y/prefer-tag-over-role": "warn",
     "merit-brand/no-arbitrary-typography": "warn",
-    "merit-brand/no-direct-primitive-imports": "warn",
     "merit-brand/no-raw-theme-colors": "warn",
-    "merit-next/no-route-private-imports": "warn",
+    // Bare severities intentionally retain the pre-Foundation rule options.
+    // Restoring Foundation's stricter options exposes separate environment and
+    // interpolation migrations that do not belong in this safety pass.
     "no-restricted-properties": "warn",
     "no-useless-assignment": "warn",
-    "typescript/no-confusing-void-expression": "warn",
-    "typescript/no-non-null-assertion": "warn",
-    "typescript/no-import-type-side-effects": "warn",
-    "typescript/no-unsafe-assignment": "warn",
-    "typescript/no-unnecessary-condition": "warn",
     "typescript/restrict-plus-operands": "warn",
     "typescript/restrict-template-expressions": "warn",
-    "typescript/use-unknown-in-catch-callback-variable": "warn",
-    "vitest/no-conditional-expect": "warn",
-    "vitest/require-mock-type-parameters": "warn",
     "import/no-unassigned-import": "warn",
     "import/no-named-as-default-member": "warn",
     "no-await-in-loop": "warn",
-    "no-shadow": "warn",
     "no-underscore-dangle": "warn",
-    "typescript/no-unsafe-type-assertion": "warn",
-    "typescript/no-unsafe-enum-comparison": "warn",
-    "typescript/no-unnecessary-type-parameters": "warn",
-    "typescript/consistent-return": "warn",
     "react/no-array-index-key": "warn",
     "react/no-unstable-nested-components": "warn",
-    "react/no-object-type-as-default-prop": "warn",
     "react/jsx-no-constructed-context-values": "warn",
     "unicorn/consistent-function-scoping": "warn",
     "unicorn/no-array-sort": "warn",
     "oxc/no-map-spread": "warn",
-    "promise/always-return": "warn",
     // Hono async handlers remain reviewable at their use sites instead of
     // disappearing behind a repository-wide disable.
     "oxc/no-async-endpoint-handlers": "warn",
@@ -112,5 +98,12 @@
     "promise/no-multiple-resolved": "error",
     "unicorn/no-instanceof-builtins": ["error", { "exclude": ["Function"] }],
     "unicorn/require-post-message-target-origin": "error"
-  }
+  },
+  "overrides": [
+    {
+      // Registry primitives must remain byte-for-byte aligned with Foundation.
+      "files": ["apps/scan/src/components/ui/data-list.tsx"],
+      "rules": { "typescript/consistent-return": "off" }
+    }
+  ]
 }

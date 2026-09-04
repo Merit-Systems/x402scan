@@ -16,13 +16,16 @@ const globalForPrisma = global as typeof globalThis & {
   transfersDbAdapter?: PrismaNeon;
 };
 
+const transfersDatabaseUrl = process.env.TRANSFERS_DB_URL;
+if (!transfersDatabaseUrl) throw new Error("TRANSFERS_DB_URL is required");
+
 const transfersDbAdapter =
   globalForPrisma.transfersDbAdapter ??
-  new PrismaNeon({ connectionString: process.env.TRANSFERS_DB_URL! });
+  new PrismaNeon({ connectionString: transfersDatabaseUrl });
 if (process.env.NODE_ENV !== "production")
   globalForPrisma.transfersDbAdapter = transfersDbAdapter;
 
-export const transfersHttpPrimary = neon(process.env.TRANSFERS_DB_URL!);
+export const transfersHttpPrimary = neon(transfersDatabaseUrl);
 
 const replicaUrls = [
   process.env.TRANSFERS_DB_URL_REPLICA_1,
