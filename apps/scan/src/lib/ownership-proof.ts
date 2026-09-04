@@ -7,7 +7,7 @@
  * Supports both EVM (Ethereum) and Solana addresses.
  */
 
-import { recoverMessageAddress } from "viem";
+import { isHex, recoverMessageAddress } from "viem";
 
 type ChainType = "evm" | "solana";
 
@@ -49,9 +49,7 @@ function detectChainType(address: string): ChainType {
  * Ensures 0x prefix is present.
  */
 function normalizeEvmSignature(signature: string): `0x${string}` {
-  if (signature.startsWith("0x")) {
-    return signature as `0x${string}`;
-  }
+  if (isHex(signature)) return signature;
   return `0x${signature}`;
 }
 

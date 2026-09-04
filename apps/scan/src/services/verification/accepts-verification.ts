@@ -34,7 +34,7 @@ export async function verifyAcceptsOwnership(
   const { acceptIds, ownershipProofs, origin } = input;
 
   // Skip if no proofs provided
-  if (!ownershipProofs || ownershipProofs.length === 0) {
+  if (ownershipProofs.length === 0) {
     return acceptIds.map((id) => ({
       acceptId: id,
       verified: false,

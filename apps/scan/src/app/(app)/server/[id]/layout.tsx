@@ -33,7 +33,7 @@ export async function generateMetadata({
     ? cleanExternalText(origin.description)
     : `Explore ${title} on x402scan`;
 
-  const imageUrl = origin.ogImages?.[0]?.url
+  const imageUrl = origin.ogImages[0]?.url
     ? new URL(origin.ogImages[0].url, env.NEXT_PUBLIC_APP_URL).toString()
     : `${env.NEXT_PUBLIC_APP_URL}/opengraph-image.png`;
 

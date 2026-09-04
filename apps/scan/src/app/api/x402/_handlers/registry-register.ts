@@ -64,7 +64,7 @@ export async function handleRegistryRegister(
   const result = await registerEndpoint(body.url);
 
   try {
-    if (result.success && result.resource?.origin?.id) {
+    if (result.success && result.resource.origin.id) {
       revalidatePath(`/server/${result.resource.origin.id}`);
     }
   } catch (e) {

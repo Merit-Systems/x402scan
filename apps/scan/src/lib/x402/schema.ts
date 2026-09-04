@@ -76,7 +76,7 @@ export function extractFieldsFromSchema(
     !input.queryParams && !input.bodyFields && "properties" in input;
 
   if (fieldType === "query") {
-    if (hasJsonSchemaQuery && queryParams) {
+    if (hasJsonSchemaQuery) {
       return getFields(
         asJsonObject(queryParams.properties),
         asStringArray(queryParams.required)
@@ -95,7 +95,7 @@ export function extractFieldsFromSchema(
   }
 
   // fieldType === 'body'
-  if (hasJsonSchemaBody && body && method !== Methods.GET) {
+  if (hasJsonSchemaBody && method !== Methods.GET) {
     return getFields(
       asJsonObject(body.properties),
       asStringArray(body.required)

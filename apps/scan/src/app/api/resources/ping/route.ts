@@ -153,20 +153,20 @@ export const GET = async (request: NextRequest) => {
       success: true as const,
       message: "Resource ping task completed",
       validX402Responses: pingResults.filter(
-        (result) => result.status === "fulfilled" && result.value?.isValid402
+        (result) => result.status === "fulfilled" && result.value.isValid402
       ).length,
       invalidX402Responses: pingResults.filter(
-        (result) => result.status === "fulfilled" && !result.value?.isValid402
+        (result) => result.status === "fulfilled" && !result.value.isValid402
       ).length,
       failedResponses: pingResults.filter(
         (result) => result.status === "rejected"
       ).length,
       totalResponses: pingResults.length,
       resourcesPinged: pingResults.filter(
-        (result) => result.status === "fulfilled" && result.value?.success
+        (result) => result.status === "fulfilled" && result.value.success
       ).length,
       resourcesNotPinged: pingResults.filter(
-        (result) => result.status === "fulfilled" && !result.value?.success
+        (result) => result.status === "fulfilled" && !result.value.success
       ).length,
     });
   } catch (error) {

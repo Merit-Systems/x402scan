@@ -59,10 +59,11 @@ export const Addresses = ({
   side,
   disableCopy,
 }: AddressesProps) => {
-  if (addresses.length === 1) {
+  const [onlyAddress] = addresses;
+  if (addresses.length === 1 && onlyAddress) {
     return (
       <Address
-        address={addresses[0]!}
+        address={onlyAddress}
         className={cn("border-none p-0", className)}
         hideTooltip={hideTooltip}
         side={side}

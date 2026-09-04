@@ -29,6 +29,7 @@ import {
 } from "@/services/db/resources/tag";
 
 import { convertTokenAmount } from "@/lib/token";
+import { supportedChainSchema } from "@/lib/schemas";
 import { usdc } from "@/lib/tokens/usdc";
 import { fetchDiscoveryDocument } from "@/services/discovery";
 import {
@@ -37,7 +38,6 @@ import {
 } from "@/services/verification/accepts-verification";
 
 import type { Prisma } from "@x402scan/scan-db";
-import type { SupportedChain } from "@/types/chain";
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -54,7 +54,7 @@ export const resourcesRouter = createTRPCRouter({
         ...accept,
         maxAmountRequired: convertTokenAmount(
           accept.maxAmountRequired,
-          usdc(accept.network as SupportedChain).decimals
+          usdc(supportedChainSchema.parse(accept.network)).decimals
         ),
       })),
     };
@@ -152,7 +152,7 @@ export const resourcesRouter = createTRPCRouter({
 
       const result = await registerEndpoint(input.url);
       try {
-        if (result.success && result.resource?.origin?.id) {
+        if (result.success && result.resource.origin.id) {
           revalidatePath(`/server/${result.resource.origin.id}`);
         }
       } catch (e) {

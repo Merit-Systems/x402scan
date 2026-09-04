@@ -3,9 +3,22 @@ import { z } from "zod";
 import { mixedAddressSchema } from "@/lib/schemas";
 import { ChainIdToNetwork } from "@/lib/x402/chain-mapping";
 import { normalizeChainId } from "@/lib/x402";
+import { AcceptsNetwork } from "@x402scan/scan-db/types";
 
-import type { AcceptsNetwork } from "@x402scan/scan-db";
 import type { OutputSchema } from "@/lib/x402";
+
+const acceptsNetworkSchema = z.enum(AcceptsNetwork);
+
+export function normalizeKnownAcceptNetworks<T extends { network: string }>(
+  accepts: readonly T[]
+): (T & { network: AcceptsNetwork })[] {
+  return accepts.flatMap((accept) => {
+    const network = acceptsNetworkSchema.safeParse(
+      normalizeChainId(accept.network)
+    );
+    return network.success ? [{ ...accept, network: network.data }] : [];
+  });
+}
 
 export const upsertResourceSchema = z.object({
   resource: z.string(),
@@ -18,36 +31,19 @@ export const upsertResourceSchema = z.object({
     z.object({
       scheme: z.string().min(1),
       network: z.union([
-        z.enum([
-          "base_sepolia",
-          "avalanche_fuji",
-          "base",
-          "sei",
-          "sei_testnet",
-          "avalanche",
-          "iotex",
-          "solana_devnet",
-          "solana",
-        ]),
+        acceptsNetworkSchema,
         z
           .string()
-          .refine((v) => {
-            return (
-              v.startsWith("eip155:") &&
-              !!ChainIdToNetwork[Number(v.split(":")[1])]
-            );
-          })
-          .transform(
-            (v) =>
-              ChainIdToNetwork[Number(v.split(":")[1])]!.replace(
-                "-",
-                "_"
-              ) as AcceptsNetwork
-          ),
+          .refine((v) => v.startsWith("eip155:"))
+          .transform((v) =>
+            ChainIdToNetwork[Number(v.split(":")[1])]?.replace("-", "_")
+          )
+          .pipe(acceptsNetworkSchema),
         z
           .string()
           .refine((v) => v.startsWith("solana:"))
-          .transform((v) => normalizeChainId(v) as AcceptsNetwork),
+          .transform((v) => normalizeChainId(v))
+          .pipe(acceptsNetworkSchema),
       ]),
       payTo: mixedAddressSchema,
       description: z.string().optional().default(""),

@@ -14,10 +14,13 @@ export const cdpFetch = async <T>(
 
   // Split path into base path (for JWT) and query params (for actual request)
   const [basePath] = requestPath.split("?");
+  if (basePath === undefined) {
+    throw new Error("CDP request path is empty");
+  }
 
   const jwt = await generateCdpJwt({
     requestMethod: request.requestMethod,
-    requestPath: basePath!,
+    requestPath: basePath,
     requestHost: request.requestHost,
   });
 

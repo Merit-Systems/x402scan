@@ -146,10 +146,6 @@ export const searchResourcesWithNaturalLanguage = async (
     temperature: 0.3,
   });
 
-  if (!result.object) {
-    throw new Error("Failed to generate keywords");
-  }
-
   const { keywords, explanation } = result.object;
 
   // Build SQL programmatically using the keywords

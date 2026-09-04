@@ -24,40 +24,38 @@ export async function createX402AITools(
   const aiTools: Record<string, Tool> = {};
 
   for (const resource of resources) {
-    if (resource.accepts) {
-      for (const accept of resource.accepts) {
-        const acceptToParse = coerceAcceptForV1Schema({
-          x402Version: resource.x402Version,
-          accept,
-        });
+    for (const accept of resource.accepts) {
+      const acceptToParse = coerceAcceptForV1Schema({
+        x402Version: resource.x402Version,
+        accept,
+      });
 
-        const parsedAccept = paymentRequirementsSchemaV1
-          .extend({
-            outputSchema: outputSchemaV1,
-          })
-          .safeParse(acceptToParse);
-        if (!parsedAccept.success) {
-          continue;
-        }
-        const urlParts = new URL(resource.resource);
-        const toolName = urlParts.pathname
-          .split("/")
-          .filter(Boolean)
-          .join("_")
-          .replace(/[^a-zA-Z0-9_]/g, "_");
-
-        const parametersSchema = inputSchemaToZodSchema(
-          mergeInputSchemaAndRequestMetadata(
-            parsedAccept.data.outputSchema.input,
-            resource.requestMetadata ?? undefined
-          )
-        );
-
-        aiTools[resource.id] = tool({
-          description: `${toolName}: ${parsedAccept.data.description} (Paid API - ${parsedAccept.data.maxAmountRequired} on ${parsedAccept.data.network})`,
-          inputSchema: parametersSchema,
-        });
+      const parsedAccept = paymentRequirementsSchemaV1
+        .extend({
+          outputSchema: outputSchemaV1,
+        })
+        .safeParse(acceptToParse);
+      if (!parsedAccept.success) {
+        continue;
       }
+      const urlParts = new URL(resource.resource);
+      const toolName = urlParts.pathname
+        .split("/")
+        .filter(Boolean)
+        .join("_")
+        .replace(/[^a-zA-Z0-9_]/g, "_");
+
+      const parametersSchema = inputSchemaToZodSchema(
+        mergeInputSchemaAndRequestMetadata(
+          parsedAccept.data.outputSchema.input,
+          resource.requestMetadata ?? undefined
+        )
+      );
+
+      aiTools[resource.id] = tool({
+        description: `${toolName}: ${parsedAccept.data.description} (Paid API - ${parsedAccept.data.maxAmountRequired} on ${parsedAccept.data.network})`,
+        inputSchema: parametersSchema,
+      });
     }
   }
 

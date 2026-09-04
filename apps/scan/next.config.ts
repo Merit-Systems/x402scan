@@ -66,8 +66,8 @@ const withMDX = createMDX({
 });
 
 export default withPostHogConfig(withMDX(nextConfig), {
-  personalApiKey: process.env.POSTHOG_API_KEY!,
-  projectId: process.env.POSTHOG_PROJECT_ID!,
+  personalApiKey: process.env.POSTHOG_API_KEY ?? "",
+  projectId: process.env.POSTHOG_PROJECT_ID ?? "",
   // API host for source-map upload — NOT NEXT_PUBLIC_POSTHOG_HOST, which is
   // the ingestion host (us.i.posthog.com) used by the runtime SDK.
   host: "https://us.posthog.com",

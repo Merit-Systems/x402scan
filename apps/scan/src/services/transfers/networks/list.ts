@@ -12,6 +12,7 @@ import {
   NETWORKS_SORT_IDS,
 } from "@/lib/table-sort-options";
 import type { NetworksSortId } from "@/lib/table-sort-options";
+import { isSortId } from "@/lib/table-state";
 
 export const listTopNetworksInputSchema = baseQuerySchema.extend({
   startDate: z.date().optional(),
@@ -49,7 +50,10 @@ const listTopNetworksUncached = async (
     unique_sellers: "unique_sellers",
     unique_facilitators: "unique_facilitators",
   } satisfies Record<NetworksSortId, string>;
-  const sortColumn = sortColumnMap[sorting.id as NetworksSortId];
+  if (!isSortId(sorting.id, NETWORKS_SORT_IDS)) {
+    throw new Error(`Unsupported network sort: ${sorting.id}`);
+  }
+  const sortColumn = sortColumnMap[sorting.id];
   const sortDirection = Prisma.raw(sorting.desc ? "DESC" : "ASC");
 
   // Build WHERE clause for materialized view

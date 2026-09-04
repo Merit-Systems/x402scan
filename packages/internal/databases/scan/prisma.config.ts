@@ -7,6 +7,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env.SCAN_DATABASE_URL_UNPOOLED!,
+    url: process.env.SCAN_DATABASE_URL_UNPOOLED ?? "",
   },
 });
