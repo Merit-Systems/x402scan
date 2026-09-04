@@ -34,12 +34,5 @@
     "tailwindcss": {
       "entryPoint": "apps/scan/src/app/globals.css"
     }
-  },
-  "rules": {
-    // Remaining strict-Foundation migrations; bare severities preserve the
-    // legacy options until runtime boundaries and string conversions migrate.
-    "no-restricted-properties": "warn",
-    "typescript/restrict-plus-operands": "warn",
-    "typescript/restrict-template-expressions": "warn"
   }
 }

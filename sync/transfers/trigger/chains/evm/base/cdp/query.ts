@@ -31,8 +31,8 @@ export function buildQuery(
       AND block_timestamp >= '${formatDateForSql(since)}'
       AND block_timestamp < '${formatDateForSql(now)}'
     ORDER BY block_timestamp DESC
-    LIMIT ${config.limit}
-    OFFSET ${offset};
+    LIMIT ${String(config.limit)}
+    OFFSET ${String(offset)};
   `;
 }
 

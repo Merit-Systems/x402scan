@@ -29,7 +29,7 @@ export async function createTRPCContext(headers: Headers): Promise<Context> {
   // Check for cache warming header (only valid with cron secret)
   const isWarmingCache =
     headers.get("x-cache-warming") === "true" &&
-    headers.get("authorization") === `Bearer ${env.CRON_SECRET}`;
+    headers.get("authorization") === `Bearer ${String(env.CRON_SECRET)}`;
 
   return {
     headers,
@@ -63,7 +63,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 
   const end = Date.now();
   if (!env.HIDE_TRPC_LOGS) {
-    console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
+    console.log(`[TRPC] ${path} took ${String(end - start)}ms to execute`);
   }
 
   return result;

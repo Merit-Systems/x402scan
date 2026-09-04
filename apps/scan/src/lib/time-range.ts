@@ -82,5 +82,5 @@ export function getMaterializedViewSuffix(
         offset?: number | undefined;
       }
 ): string {
-  return `${toTimeframeParts(timeframe).period}d`;
+  return `${String(toTimeframeParts(timeframe).period)}d`;
 }

@@ -38,7 +38,7 @@ export const solanaWalletCookies = {
       setCookie(SOLANA_WALLET_COOKIE_KEY, JSON.stringify(validated), {
         maxAge: 60 * 60 * 24 * 365, // 1 year
         sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        secure: window.location.protocol === "https:",
       });
     } catch (error) {
       console.error("Failed to set Solana wallet cookie:", error);

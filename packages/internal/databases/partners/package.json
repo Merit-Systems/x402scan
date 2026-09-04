@@ -20,7 +20,9 @@
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
-    "@clickhouse/client": "catalog:clickhouse"
+    "@clickhouse/client": "catalog:clickhouse",
+    "@t3-oss/env-core": "catalog:env",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

@@ -85,6 +85,9 @@ catalogs:
       specifier: ^4.4.3
       version: 4.4.3
   env:
+    '@t3-oss/env-core':
+      specifier: ^0.13.10
+      version: 0.13.10
     '@t3-oss/env-nextjs':
       specifier: ^0.13.10
       version: 0.13.10
@@ -272,12 +275,18 @@ importers:
       '@hono/node-server':
         specifier: catalog:hono
         version: 1.19.9(hono@4.12.28)
+      '@t3-oss/env-core':
+        specifier: catalog:env
+        version: 0.13.10(typescript@6.0.3)(valibot@1.2.0(typescript@6.0.3))(zod@4.4.3)
       dotenv:
         specifier: catalog:env
         version: 17.2.3
       hono:
         specifier: catalog:hono
         version: 4.12.28
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
     devDependencies:
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
@@ -696,6 +705,12 @@ importers:
       '@clickhouse/client':
         specifier: catalog:clickhouse
         version: 1.12.1
+      '@t3-oss/env-core':
+        specifier: catalog:env
+        version: 0.13.10(typescript@6.0.3)(valibot@1.2.0(typescript@6.0.3))(zod@4.4.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
     devDependencies:
       '@merit-systems/tsdown-config':
         specifier: catalog:foundation
@@ -724,6 +739,9 @@ importers:
       '@prisma/client':
         specifier: catalog:prisma
         version: 7.3.0(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(typescript@6.0.3)
+      '@t3-oss/env-core':
+        specifier: catalog:env
+        version: 0.13.10(typescript@6.0.3)(valibot@1.2.0(typescript@6.0.3))(zod@4.4.3)
       dotenv:
         specifier: catalog:env
         version: 17.2.3
@@ -767,12 +785,18 @@ importers:
       '@prisma/client':
         specifier: catalog:prisma
         version: 7.3.0(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(typescript@6.0.3)
+      '@t3-oss/env-core':
+        specifier: catalog:env
+        version: 0.13.10(typescript@6.0.3)(valibot@1.2.0(typescript@6.0.3))(zod@4.4.3)
       dotenv:
         specifier: catalog:env
         version: 17.2.3
       ws:
         specifier: catalog:prisma
         version: 8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
     devDependencies:
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
@@ -820,6 +844,9 @@ importers:
 
   sync/alerts:
     dependencies:
+      '@t3-oss/env-core':
+        specifier: catalog:env
+        version: 0.13.10(typescript@6.0.3)(valibot@1.2.0(typescript@6.0.3))(zod@4.4.3)
       '@trigger.dev/sdk':
         specifier: catalog:trigger
         version: 4.3.2(ai@5.0.81(zod@4.4.3))(bufferutil@4.0.9)(supports-color@10.2.2)(typescript@6.0.3)(utf-8-validate@5.0.10)(zod@4.4.3)
@@ -860,6 +887,9 @@ importers:
       '@solana/web3.js':
         specifier: ^1.98.4
         version: 1.98.4(bufferutil@4.0.9)(typescript@6.0.3)(utf-8-validate@5.0.10)
+      '@t3-oss/env-core':
+        specifier: catalog:env
+        version: 0.13.10(typescript@6.0.3)(valibot@1.2.0(typescript@6.0.3))(zod@4.4.3)
       '@trigger.dev/sdk':
         specifier: catalog:trigger
         version: 4.3.2(ai@5.0.81(zod@4.4.3))(bufferutil@4.0.9)(supports-color@10.2.2)(typescript@6.0.3)(utf-8-validate@5.0.10)(zod@4.4.3)

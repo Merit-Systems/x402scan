@@ -2,6 +2,7 @@ import { logger } from "@trigger.dev/sdk/v3";
 import { BigQuery } from "@google-cloud/bigquery";
 import { JWT } from "google-auth-library";
 import { z } from "zod";
+import { env } from "@/trigger/env";
 import type {
   SyncConfig,
   Facilitator,
@@ -17,7 +18,7 @@ const serviceAccountCredentialsSchema = z.object({
 });
 
 const getServiceAccountCredentials = () => {
-  const credentials = process.env.GOOGLE_CLOUD_CREDENTIALS;
+  const credentials = env.GOOGLE_CLOUD_CREDENTIALS;
   if (!credentials) throw new Error("GOOGLE_CLOUD_CREDENTIALS is required");
   return serviceAccountCredentialsSchema.parse(JSON.parse(credentials));
 };
@@ -52,7 +53,7 @@ export async function fetchBigQuery(
 
   const [rows] = await bq.query({ query });
 
-  logger.log(`[${config.chain}] BigQuery returned ${rows.length} rows`);
+  logger.log(`[${config.chain}] BigQuery returned ${String(rows.length)} rows`);
 
   return config.transformResponse(rows, config, facilitator, facilitatorConfig);
 }

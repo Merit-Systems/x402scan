@@ -83,14 +83,16 @@ export async function rerankSearchResults(
   if (!response.ok) {
     const errorText = await response.text();
     console.error("[Reranker] API error:", response.status, errorText);
-    throw new Error(`Jina reranker API error: ${response.status} ${errorText}`);
+    throw new Error(
+      `Jina reranker API error: ${String(response.status)} ${errorText}`
+    );
   }
 
   const data = jinaRerankerResponseSchema.parse(await response.json());
   const duration = Date.now() - startTime;
 
   console.log(
-    `[Reranker] Reranked ${results.length} results in ${duration}ms (top ${data.results.length})`
+    `[Reranker] Reranked ${String(results.length)} results in ${String(duration)}ms (top ${String(data.results.length)})`
   );
 
   // Create a map of original index to reranker data

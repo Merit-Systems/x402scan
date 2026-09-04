@@ -262,7 +262,7 @@ export const redeemInviteCode = async ({
   }
 
   console.log(
-    `Invite wallet: ${walletAddressResult.value}, balance: ${walletBalanceResult.value} USDC, sending: ${amountFloat} USDC to ${recipientAddr}`
+    `Invite wallet: ${walletAddressResult.value}, balance: ${String(walletBalanceResult.value)} USDC, sending: ${String(amountFloat)} USDC to ${recipientAddr}`
   );
 
   const sendTokensResult = await wallet.sendTokens({

@@ -167,13 +167,13 @@ async function syncFacilitator(
               : await createManyTransferEvents(collapsed);
             totalSaved += syncResult.count;
             logger.log(
-              `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - collapsed.length} collapsed, ${collapsed.length - syncResult.count} duplicates)`
+              `[${syncConfig.chain}] Saved ${String(syncResult.count)} transfers (${String(batch.length)} fetched, ${String(batch.length - collapsed.length)} collapsed, ${String(collapsed.length - syncResult.count)} duplicates)`
             );
           },
           async (_windowStart, windowEnd, resultCount) => {
             await advanceTransferSyncState(key, windowEnd, new Date());
             logger.log(
-              `[${syncConfig.chain}] Advanced sync state to ${windowEnd.toISOString()} after ${resultCount} fetched transfers`
+              `[${syncConfig.chain}] Advanced sync state to ${windowEnd.toISOString()} after ${String(resultCount)} fetched transfers`
             );
           }
         );
@@ -183,12 +183,12 @@ async function syncFacilitator(
         if (syncConfig.paginationStrategy === PaginationStrategy.OFFSET) {
           await advanceTransferSyncState(key, now, new Date());
           logger.log(
-            `[${syncConfig.chain}] Advanced sync state to ${now.toISOString()} after ${totalFetched} fetched transfers`
+            `[${syncConfig.chain}] Advanced sync state to ${now.toISOString()} after ${String(totalFetched)} fetched transfers`
           );
         }
 
         logger.log(
-          `[${syncConfig.chain}] Completed ${facilitator.id}: ${totalFetched} fetched, ${totalSaved} saved`
+          `[${syncConfig.chain}] Completed ${facilitator.id}: ${String(totalFetched)} fetched, ${String(totalSaved)} saved`
         );
       } catch (error) {
         await recordTransferSyncStateError(key, String(error));
@@ -209,7 +209,7 @@ async function syncFacilitator(
     });
 
     logger.log(
-      `[${syncConfig.chain}] Most recent transfer: ${mostRecentTransfer[0]?.block_timestamp.toISOString()}`
+      `[${syncConfig.chain}] Most recent transfer: ${String(mostRecentTransfer[0]?.block_timestamp.toISOString())}`
     );
 
     // Start from 1 second after the most recent transfer to avoid re-fetching it
@@ -236,13 +236,13 @@ async function syncFacilitator(
           : await createManyTransferEvents(collapsed);
         totalSaved += syncResult.count;
         logger.log(
-          `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - collapsed.length} collapsed, ${collapsed.length - syncResult.count} duplicates)`
+          `[${syncConfig.chain}] Saved ${String(syncResult.count)} transfers (${String(batch.length)} fetched, ${String(batch.length - collapsed.length)} collapsed, ${String(collapsed.length - syncResult.count)} duplicates)`
         );
       }
     );
 
     logger.log(
-      `[${syncConfig.chain}] Completed ${facilitator.id}: ${totalFetched} fetched, ${totalSaved} saved`
+      `[${syncConfig.chain}] Completed ${facilitator.id}: ${String(totalFetched)} fetched, ${String(totalSaved)} saved`
     );
   }
 }

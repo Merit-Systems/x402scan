@@ -77,7 +77,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/">) {
             fallback={<p>There was an error loading the discover data</p>}
           >
             <Suspense
-              key={`${view}:${chain ?? "all"}:${timeframe}:${page}:${sorting.id}:${sorting.desc}`}
+              key={`${view}:${chain ?? "all"}:${String(timeframe)}:${String(page)}:${sorting.id}:${String(sorting.desc)}`}
               fallback={<LoadingDiscoverServices sorting={sorting} />}
             >
               <DiscoverServices

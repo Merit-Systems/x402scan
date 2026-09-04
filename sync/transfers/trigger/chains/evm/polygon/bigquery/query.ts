@@ -45,7 +45,7 @@ export function buildQuery(
     AND l.topics[SAFE_OFFSET(0)] = transfer_topic
     AND LOWER(t.from_address) IN UNNEST(facilitator_addresses)
     ORDER BY l.block_timestamp DESC
-    LIMIT ${config.limit}`;
+    LIMIT ${String(config.limit)}`;
 }
 
 export function transformResponse(

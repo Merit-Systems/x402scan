@@ -30,7 +30,7 @@ export async function fetchFreepikMysticTask({
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(
-      `Failed to fetch Freepik Mystic task: ${response.status} ${response.statusText} - ${errorText}`
+      `Failed to fetch Freepik Mystic task: ${String(response.status)} ${response.statusText} - ${errorText}`
     );
   }
 

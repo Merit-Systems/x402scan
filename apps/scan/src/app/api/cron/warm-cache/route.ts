@@ -43,13 +43,13 @@ async function withRetry<T>(
 
       if (attempt < maxRetries) {
         console.warn(
-          `[Cache Warming] ${taskName ? `${taskName}: ` : ""}Attempt ${attempt + 1} failed, retrying... Error: ${lastError.message}`
+          `[Cache Warming] ${taskName ? `${taskName}: ` : ""}Attempt ${String(attempt + 1)} failed, retrying... Error: ${lastError.message}`
         );
       }
     }
   }
 
-  const errorMessage = `[Cache Warming] ${taskName ? `${taskName}: ` : ""}All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`;
+  const errorMessage = `[Cache Warming] ${taskName ? `${taskName}: ` : ""}All ${String(maxRetries + 1)} attempts failed. Last error: ${String(lastError?.message)}`;
   console.error(errorMessage);
   throw lastError ?? new Error(errorMessage);
 }
@@ -68,7 +68,7 @@ async function limitConcurrency(
       const taskIndex = index++;
       const task = tasks[taskIndex];
       if (!task) continue;
-      await withRetry(task, MAX_RETRIES, `Task ${taskIndex + 1}`);
+      await withRetry(task, MAX_RETRIES, `Task ${String(taskIndex + 1)}`);
     }
   }
 
@@ -225,7 +225,7 @@ export async function GET(request: NextRequest) {
       : undefined;
 
     console.log(
-      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? "" : "s"} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? "" : "s"}: ${pagesToWarm.join(", ")}`
+      `[Cache Warming] Starting cache warm for ${String(timeframesToWarm.length)} timeframe${timeframesToWarm.length === 1 ? "" : "s"} and ${String(pagesToWarm.length)} page${pagesToWarm.length === 1 ? "" : "s"}: ${pagesToWarm.join(", ")}`
     );
 
     const allTasks: (() => Promise<unknown>)[] = [];
@@ -253,7 +253,7 @@ export async function GET(request: NextRequest) {
     }
 
     console.log(
-      `[Cache Warming] Collected ${allTasks.length} tasks across all timeframes`
+      `[Cache Warming] Collected ${String(allTasks.length)} tasks across all timeframes`
     );
 
     await limitConcurrency(allTasks, MAX_CONCURRENT_REQUESTS);
@@ -262,14 +262,14 @@ export async function GET(request: NextRequest) {
     const totalElapsedMinutes = totalElapsed / 1000 / 60;
 
     console.log(
-      `[Cache Warming] Completed ${allTasks.length} tasks in ${totalElapsed}ms (${totalElapsedMinutes.toFixed(2)} minutes)`
+      `[Cache Warming] Completed ${String(allTasks.length)} tasks in ${String(totalElapsed)}ms (${totalElapsedMinutes.toFixed(2)} minutes)`
     );
 
     const cacheDurationMs = CACHE_DURATION_MINUTES * 60 * 1000;
     if (totalElapsed > cacheDurationMs) {
       console.warn(
         `[Cache Warming] WARNING: Cache warming took ${totalElapsedMinutes.toFixed(2)} minutes, ` +
-          `which exceeds CACHE_DURATION_MINUTES (${CACHE_DURATION_MINUTES} minutes). ` +
+          `which exceeds CACHE_DURATION_MINUTES (${String(CACHE_DURATION_MINUTES)} minutes). ` +
           `This may cause cache misses between warming cycles.`
       );
     }
@@ -286,7 +286,7 @@ export async function GET(request: NextRequest) {
       },
       warning:
         totalElapsed > cacheDurationMs
-          ? `Cache warming exceeded ${CACHE_DURATION_MINUTES} minute interval`
+          ? `Cache warming exceeded ${String(CACHE_DURATION_MINUTES)} minute interval`
           : undefined,
     });
   } catch (error) {

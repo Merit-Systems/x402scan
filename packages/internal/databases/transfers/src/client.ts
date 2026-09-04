@@ -4,6 +4,7 @@ import { PrismaNeon } from "@prisma/adapter-neon";
 import { neon, neonConfig } from "@neondatabase/serverless";
 
 import { readReplicas } from "./read-replicas/extension";
+import { env } from "./env";
 
 import ws from "ws";
 
@@ -16,23 +17,23 @@ const globalForPrisma = global as typeof globalThis & {
   transfersDbAdapter?: PrismaNeon;
 };
 
-const transfersDatabaseUrl = process.env.TRANSFERS_DB_URL;
+const transfersDatabaseUrl = env.TRANSFERS_DB_URL;
 if (!transfersDatabaseUrl) throw new Error("TRANSFERS_DB_URL is required");
 
 const transfersDbAdapter =
   globalForPrisma.transfersDbAdapter ??
   new PrismaNeon({ connectionString: transfersDatabaseUrl });
-if (process.env.NODE_ENV !== "production")
+if (env.NODE_ENV !== "production")
   globalForPrisma.transfersDbAdapter = transfersDbAdapter;
 
 export const transfersHttpPrimary = neon(transfersDatabaseUrl);
 
 const replicaUrls = [
-  process.env.TRANSFERS_DB_URL_REPLICA_1,
-  process.env.TRANSFERS_DB_URL_REPLICA_2,
-  process.env.TRANSFERS_DB_URL_REPLICA_3,
-  process.env.TRANSFERS_DB_URL_REPLICA_4,
-  process.env.TRANSFERS_DB_URL_REPLICA_5,
+  env.TRANSFERS_DB_URL_REPLICA_1,
+  env.TRANSFERS_DB_URL_REPLICA_2,
+  env.TRANSFERS_DB_URL_REPLICA_3,
+  env.TRANSFERS_DB_URL_REPLICA_4,
+  env.TRANSFERS_DB_URL_REPLICA_5,
 ].filter((url): url is string => !!url);
 
 export const transfersHttpReplicas = replicaUrls.map((url) => neon(url));
@@ -43,39 +44,17 @@ export const transfersDb =
     adapter: transfersDbAdapter,
   });
 
-const hasReplicas =
-  process.env.TRANSFERS_DB_URL_REPLICA_1 !== undefined ||
-  process.env.TRANSFERS_DB_URL_REPLICA_2 !== undefined ||
-  process.env.TRANSFERS_DB_URL_REPLICA_3 !== undefined ||
-  process.env.TRANSFERS_DB_URL_REPLICA_4 !== undefined ||
-  process.env.TRANSFERS_DB_URL_REPLICA_5 !== undefined;
-
 const createReplicaClient = (url: string) => {
   return new PrismaClient({
     adapter: new PrismaNeon({ connectionString: url }),
   });
 };
 
-export const transfersDbReadReplicas = hasReplicas
-  ? transfersDb.$extends(
-      readReplicas({
-        replicas: [
-          ...(process.env.TRANSFERS_DB_URL_REPLICA_1
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_1)]
-            : []),
-          ...(process.env.TRANSFERS_DB_URL_REPLICA_2
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_2)]
-            : []),
-          ...(process.env.TRANSFERS_DB_URL_REPLICA_3
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_3)]
-            : []),
-          ...(process.env.TRANSFERS_DB_URL_REPLICA_4
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_4)]
-            : []),
-          ...(process.env.TRANSFERS_DB_URL_REPLICA_5
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_5)]
-            : []),
-        ],
-      })
-    )
-  : undefined;
+export const transfersDbReadReplicas =
+  replicaUrls.length > 0
+    ? transfersDb.$extends(
+        readReplicas({
+          replicas: replicaUrls.map(createReplicaClient),
+        })
+      )
+    : undefined;

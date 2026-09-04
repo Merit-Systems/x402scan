@@ -173,7 +173,10 @@ export const searchResourcesWithNaturalLanguage = async (
     if (attempt === 0) {
       console.log("Initial SQL generation:", result.object);
     } else {
-      console.log(`SQL generation retry attempt ${attempt}:`, result.object);
+      console.log(
+        `SQL generation retry attempt ${String(attempt)}:`,
+        result.object
+      );
     }
 
     const { sqlQuery, explanation } = result.object;
@@ -195,14 +198,14 @@ export const searchResourcesWithNaturalLanguage = async (
       error: executionResult.error,
     };
     console.log(
-      `SQL execution failed (attempt ${attempt + 1}/${maxRetries}):`,
+      `SQL execution failed (attempt ${String(attempt + 1)}/${String(maxRetries)}):`,
       executionResult.error
     );
   }
 
   // All retries exhausted
   throw new Error(
-    `Failed to generate valid SQL after ${maxRetries} attempts. Last error: ${lastError?.error}`
+    `Failed to generate valid SQL after ${String(maxRetries)} attempts. Last error: ${String(lastError?.error)}`
   );
 };
 

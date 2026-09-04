@@ -71,7 +71,7 @@ function scheduleDiscordNotification(options: {
 function getDiscordConfig(
   webhookUrl: string | undefined
 ): DiscordConfig | null {
-  if (process.env.VERCEL_ENV !== "production" || !webhookUrl) return null;
+  if (env.VERCEL_ENV !== "production" || !webhookUrl) return null;
 
   return {
     webhookUrl,
@@ -98,7 +98,7 @@ async function postDiscordWebhook(
   if (!response.ok) {
     const body = await response.text().catch(() => "");
     throw new Error(
-      `Discord webhook failed with ${response.status}: ${body.slice(0, 200)}`
+      `Discord webhook failed with ${String(response.status)}: ${body.slice(0, 200)}`
     );
   }
 }

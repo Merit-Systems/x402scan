@@ -26,7 +26,10 @@ async function generateAndExecuteSingleQuery(
       temperature: 0.3, // Slightly higher temperature for variation
     });
 
-    console.log(`Query ${queryIndex} - Attempt ${attempt + 1}:`, result.object);
+    console.log(
+      `Query ${String(queryIndex)} - Attempt ${String(attempt + 1)}:`,
+      result.object
+    );
 
     const { sqlQuery, explanation } = result.object;
 
@@ -45,12 +48,12 @@ async function generateAndExecuteSingleQuery(
       error: executionResult.error,
     };
     console.log(
-      `Query ${queryIndex} - SQL execution failed (attempt ${attempt + 1}/${maxRetries}):`,
+      `Query ${String(queryIndex)} - SQL execution failed (attempt ${String(attempt + 1)}/${String(maxRetries)}):`,
       executionResult.error
     );
   }
 
-  console.log(`Query ${queryIndex} - All retries exhausted`);
+  console.log(`Query ${String(queryIndex)} - All retries exhausted`);
   return null;
 }
 
@@ -93,7 +96,9 @@ export const searchResourcesWithNaturalLanguage = async (
     throw new Error("All 3 parallel query generations failed");
   }
 
-  console.log(`Successfully executed ${successfulQueries.length}/3 queries`);
+  console.log(
+    `Successfully executed ${String(successfulQueries.length)}/3 queries`
+  );
 
   // Combine results and deduplicate by resource ID
   const resultsMap = new Map<string, SearchResult>();
@@ -115,7 +120,7 @@ export const searchResourcesWithNaturalLanguage = async (
 
   // Combine explanations
   const combinedExplanation = successfulQueries
-    .map((q, idx) => `Query ${idx + 1}: ${q.explanation}`)
+    .map((q, idx) => `Query ${String(idx + 1)}: ${q.explanation}`)
     .join(" | ");
 
   // Combine SQL conditions

@@ -2,6 +2,7 @@ import { PrismaClient } from "../generated/prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
 import { neonConfig } from "@neondatabase/serverless";
+import { env } from "./env";
 
 import ws from "ws";
 
@@ -14,13 +15,13 @@ const globalForPrisma = global as typeof globalThis & {
   scanDbAdapter?: PrismaNeon;
 };
 
-const scanDatabaseUrl = process.env.SCAN_DATABASE_URL;
+const scanDatabaseUrl = env.SCAN_DATABASE_URL;
 if (!scanDatabaseUrl) throw new Error("SCAN_DATABASE_URL is required");
 
 const scanDbAdapter =
   globalForPrisma.scanDbAdapter ??
   new PrismaNeon({ connectionString: scanDatabaseUrl });
-if (process.env.NODE_ENV !== "production")
+if (env.NODE_ENV !== "production")
   globalForPrisma.scanDbAdapter = scanDbAdapter;
 
 export const scanDb =
@@ -30,4 +31,4 @@ export const scanDb =
     omit: { resourceOrigin: { email: true } },
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.scanDb = scanDb;
+if (env.NODE_ENV !== "production") globalForPrisma.scanDb = scanDb;

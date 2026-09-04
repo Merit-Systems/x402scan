@@ -9,6 +9,7 @@ import type {
   TokenBalance,
 } from "@solana/web3.js";
 import { logger } from "@trigger.dev/sdk";
+import { env } from "@/trigger/env";
 
 import { PAYMENT_CHANNELS_PROGRAM_ID } from "@/trigger/lib/constants";
 import type {
@@ -59,7 +60,7 @@ export async function transformResponse(
   const transfers = data.solana.sent;
   if (transfers.length === 0) return [];
 
-  const rpcUrl = process.env.SOLANA_RPC_URL;
+  const rpcUrl = env.SOLANA_RPC_URL;
   if (!rpcUrl) {
     throw new Error("SOLANA_RPC_URL is required for solana channel sync");
   }
@@ -96,7 +97,7 @@ export async function transformResponse(
 
   if (candidateSignatures.length === 0) return [];
   logger.log(
-    `[${config.chain}] channels: ${candidateSignatures.length}/${timestampBySignature.size} candidate transactions`
+    `[${config.chain}] channels: ${String(candidateSignatures.length)}/${String(timestampBySignature.size)} candidate transactions`
   );
 
   const events: TransferEventData[] = [];
@@ -125,7 +126,7 @@ export async function transformResponse(
   }
 
   logger.log(
-    `[${config.chain}] channels: extracted ${events.length} payout legs`
+    `[${config.chain}] channels: extracted ${String(events.length)} payout legs`
   );
   return events;
 }

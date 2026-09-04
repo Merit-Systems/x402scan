@@ -9,6 +9,7 @@
  *     pnpm probe:channels <signature> [facilitator-address]
  */
 import { Connection, PublicKey } from "@solana/web3.js";
+import { env } from "@/trigger/env";
 
 import { extractPayouts } from "../trigger/chains/solana/bitquery-channels/query";
 import {
@@ -24,7 +25,7 @@ import { QueryProvider } from "../trigger/types";
 
 async function main() {
   const [signature, facilitatorAddress] = process.argv.slice(2);
-  const rpcUrl = process.env.SOLANA_RPC_URL;
+  const rpcUrl = env.SOLANA_RPC_URL;
   if (!signature || !rpcUrl) {
     console.error(
       "Usage: SOLANA_RPC_URL=<url> pnpm probe:channels <signature> [facilitator-address]"
@@ -82,7 +83,7 @@ async function main() {
       "No payout legs extracted. Either this transaction has no payment-channels distribute, or every leg was a payer refund / payee / treasury transfer."
     );
   } else {
-    console.log(`Extracted ${events.length} payout leg(s):`);
+    console.log(`Extracted ${String(events.length)} payout leg(s):`);
     console.log(JSON.stringify(events, null, 2));
   }
 }
