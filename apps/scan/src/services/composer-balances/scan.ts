@@ -1,6 +1,6 @@
 import "server-only";
 
-import { erc20Abi } from "viem";
+import { erc20Abi, getAddress, isAddress } from "viem";
 import { address as toSolanaAddress } from "@solana/kit";
 import {
   findAssociatedTokenPda,
@@ -39,8 +39,10 @@ const chunk = <T>(items: T[], size: number): T[][] => {
 export const getBaseUsdcBalances = async (
   addresses: string[]
 ): Promise<Map<string, number>> => {
-  const unique = [...new Set(addresses.map((a) => a.toLowerCase()))];
-  const usdcAddress = USDC_ADDRESS[Chain.BASE] as Address;
+  const unique = [
+    ...new Set(addresses.map((address) => address.toLowerCase())),
+  ].filter((address): address is Address => isAddress(address));
+  const usdcAddress = getAddress(USDC_ADDRESS[Chain.BASE]);
   const balances = new Map<string, number>();
 
   for (const batch of chunk(unique, EVM_BATCH_SIZE)) {
@@ -50,7 +52,7 @@ export const getBaseUsdcBalances = async (
         abi: erc20Abi,
         address: usdcAddress,
         functionName: "balanceOf" as const,
-        args: [owner as Address],
+        args: [owner],
       })),
     });
 

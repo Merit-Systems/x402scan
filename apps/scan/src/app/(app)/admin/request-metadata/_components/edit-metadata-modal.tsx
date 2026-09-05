@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -36,10 +36,18 @@ export const EditMetadataModal = ({
   resource,
   existingMetadata,
 }: EditMetadataModalProps) => {
-  const [headers, setHeaders] = useState("");
-  const [body, setBody] = useState("");
-  const [queryParams, setQueryParams] = useState("");
-  const [inputSchema, setInputSchema] = useState("");
+  const [headers, setHeaders] = useState(() =>
+    JSON.stringify(existingMetadata?.headers ?? {}, null, 2)
+  );
+  const [body, setBody] = useState(() =>
+    JSON.stringify(existingMetadata?.body ?? {}, null, 2)
+  );
+  const [queryParams, setQueryParams] = useState(() =>
+    JSON.stringify(existingMetadata?.queryParams ?? {}, null, 2)
+  );
+  const [inputSchema, setInputSchema] = useState(() =>
+    JSON.stringify(existingMetadata?.inputSchema ?? {}, null, 2)
+  );
 
   const utils = api.useUtils();
 
@@ -84,23 +92,6 @@ export const EditMetadataModal = ({
       },
     }
   );
-
-  // Initialize form data when modal opens or existing metadata changes
-  useEffect(() => {
-    if (open) {
-      if (existingMetadata) {
-        setHeaders(JSON.stringify(existingMetadata.headers, null, 2));
-        setBody(JSON.stringify(existingMetadata.body, null, 2));
-        setQueryParams(JSON.stringify(existingMetadata.queryParams, null, 2));
-        setInputSchema(JSON.stringify(existingMetadata.inputSchema, null, 2));
-      } else {
-        setHeaders("{}");
-        setBody("{}");
-        setQueryParams("{}");
-        setInputSchema("{}");
-      }
-    }
-  }, [open, existingMetadata]);
 
   const parseJson = (jsonString: string) => {
     try {
@@ -154,7 +145,7 @@ export const EditMetadataModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
+      <DialogContent className="max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {existingMetadata ? "Edit" : "Create"} Request Metadata
@@ -198,9 +189,11 @@ export const EditMetadataModal = ({
               <Textarea
                 id="headers"
                 value={headers}
-                onChange={(e) => setHeaders(e.target.value)}
+                onChange={(e) => {
+                  setHeaders(e.target.value);
+                }}
                 placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
-                className="min-h-[200px] font-mono text-sm"
+                className=" "
               />
             </div>
           </TabsContent>
@@ -211,9 +204,11 @@ export const EditMetadataModal = ({
               <Textarea
                 id="body"
                 value={body}
-                onChange={(e) => setBody(e.target.value)}
+                onChange={(e) => {
+                  setBody(e.target.value);
+                }}
                 placeholder='{"key": "value", "nested": {"property": "value"}}'
-                className="min-h-[200px] font-mono text-sm"
+                className=" "
               />
             </div>
           </TabsContent>
@@ -224,9 +219,11 @@ export const EditMetadataModal = ({
               <Textarea
                 id="queryParams"
                 value={queryParams}
-                onChange={(e) => setQueryParams(e.target.value)}
+                onChange={(e) => {
+                  setQueryParams(e.target.value);
+                }}
                 placeholder='{"param1": "value1", "param2": "value2"}'
-                className="min-h-[200px] font-mono text-sm"
+                className=" "
               />
             </div>
           </TabsContent>
@@ -237,9 +234,11 @@ export const EditMetadataModal = ({
               <Textarea
                 id="inputSchema"
                 value={inputSchema}
-                onChange={(e) => setInputSchema(e.target.value)}
+                onChange={(e) => {
+                  setInputSchema(e.target.value);
+                }}
                 placeholder='{"type": "object", "properties": {"field": {"type": "string"}}}'
-                className="min-h-[200px] font-mono text-sm"
+                className=" "
               />
             </div>
           </TabsContent>
@@ -254,9 +253,9 @@ export const EditMetadataModal = ({
                 disabled={isLoading}
               >
                 {deleteMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                 )}
-                <Trash2 className="mr-2 h-4 w-4" />
+                <Trash2 className="mr-2 size-4" />
                 Delete
               </Button>
             )}
@@ -264,14 +263,16 @@ export const EditMetadataModal = ({
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false);
+              }}
               disabled={isLoading}
             >
               Cancel
             </Button>
             <Button onClick={handleSave} disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              <Save className="mr-2 h-4 w-4" />
+              {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              <Save className="mr-2 size-4" />
               {existingMetadata ? "Update" : "Create"}
             </Button>
           </div>

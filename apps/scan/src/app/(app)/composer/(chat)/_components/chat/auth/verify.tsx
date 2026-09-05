@@ -36,19 +36,16 @@ const VerifyEvm = () => {
 const VerifySvm = () => {
   const { connectedWallet } = useSolanaWallet();
 
-  const VerifySvmContent = ({ account }: { account: UiWalletAccount }) => {
-    const { signIn, isPending } = useSiws({
-      account,
-    });
-
-    return <VerifyContent signIn={signIn} isPending={isPending} />;
-  };
-
   if (!connectedWallet) {
     return null;
   }
 
   return <VerifySvmContent account={connectedWallet.account} />;
+};
+
+const VerifySvmContent = ({ account }: { account: UiWalletAccount }) => {
+  const { signIn, isPending } = useSiws({ account });
+  return <VerifyContent signIn={signIn} isPending={isPending} />;
 };
 
 interface VerifyProps {
@@ -61,9 +58,11 @@ const VerifyContent: React.FC<VerifyProps> = ({ signIn, isPending }) => {
     <div className="flex flex-col gap-4 pt-4">
       <div className="px-4">
         <Button
-          onClick={() => signIn()}
+          onClick={() => {
+            signIn();
+          }}
           disabled={isPending}
-          className="h-12 w-full md:h-12"
+          className="w-full"
           variant="default"
         >
           {isPending ? (
@@ -74,7 +73,7 @@ const VerifyContent: React.FC<VerifyProps> = ({ signIn, isPending }) => {
         </Button>
       </div>
       <div className="border-t bg-muted p-4">
-        <p className="text-center font-mono text-xs text-muted-foreground">
+        <p className="type-mono type-scale-caption text-center text-muted-foreground">
           Sign a message to confirm you own this wallet. This will refresh the
           page.
         </p>

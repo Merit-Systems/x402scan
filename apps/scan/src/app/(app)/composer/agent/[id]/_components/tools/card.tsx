@@ -28,10 +28,10 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
         <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
           <div className="flex flex-1 items-center gap-2 space-y-0 overflow-hidden">
             <Favicon url={resource.favicon} Fallback={Wrench} />
-            <CardTitle className="flex-1 truncate text-sm md:text-base">
+            <CardTitle className="flex-1 truncate">
               {resource.resource}
             </CardTitle>
-            <span className="font-mono text-sm font-bold text-primary">
+            <span className="type-numeric type-emphasis type-label text-primary">
               {formatTokenAmount(
                 BigInt(
                   resource.accepts.find((accept) => accept.maxAmountRequired)
@@ -42,12 +42,12 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
           </div>
           <div className="flex items-center gap-0.5">
             <Activity className="size-3" />
-            <p className="text-sm text-muted-foreground">
+            <p className="type-supporting-body text-muted-foreground">
               {resource.usageCount}
             </p>
           </div>
         </div>
-        <CardDescription className="line-clamp-2 text-xs md:text-sm">
+        <CardDescription className="line-clamp-2">
           {cleanExternalText(
             resource.accepts.find((accept) => accept.description)
               ?.description ?? ""

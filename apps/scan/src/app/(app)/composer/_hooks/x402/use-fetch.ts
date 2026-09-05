@@ -6,22 +6,22 @@ import type { UseMutationOptions } from "@tanstack/react-query";
 import type { X402FetchResponse, FetchWithPaymentWrapper } from "./types";
 import { paymentResponseHeaderSchema } from "@/lib/x402/schema";
 
-interface UseX402FetchParams<TData = unknown> {
+interface UseX402FetchParams {
   wrapperFn: FetchWithPaymentWrapper;
   targetUrl: string;
   value: bigint;
   init?: RequestInit;
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
+  options?: Omit<UseMutationOptions<X402FetchResponse>, "mutationFn">;
   isTool?: boolean;
 }
 
-export const useX402Fetch = <TData = unknown>({
+export const useX402Fetch = ({
   wrapperFn,
   targetUrl,
   init,
   options,
   isTool = false,
-}: UseX402FetchParams<TData>) => {
+}: UseX402FetchParams) => {
   return useMutation({
     mutationFn: async () => {
       const fetchWithPayment = wrapperFn(isTool ? fetch : fetchWithProxy);
@@ -43,7 +43,7 @@ export const useX402Fetch = <TData = unknown>({
       if (contentType.includes("application/json")) {
         try {
           return {
-            data: (await response.json()) as TData,
+            data: (await response.json()) as unknown,
             type: "json" as const,
             paymentResponse: paymentResponse?.success
               ? paymentResponse.data

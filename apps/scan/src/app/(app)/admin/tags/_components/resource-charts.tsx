@@ -12,7 +12,7 @@ export const ResourceCharts = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Resource Analytics</h2>
+        <h2 className="type-page-title">Resource Analytics</h2>
         <div className="flex items-center gap-2">
           <TagFilter
             selectedTagIds={selectedTagIds}

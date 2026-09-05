@@ -11,7 +11,12 @@ export const ConnectEmbeddedWalletEmail = () => {
   if (flowId) {
     return (
       <div className="space-y-4">
-        <EmbeddedWalletOTP flowId={flowId} handleReset={() => setFlowId("")} />
+        <EmbeddedWalletOTP
+          flowId={flowId}
+          handleReset={() => {
+            setFlowId("");
+          }}
+        />
       </div>
     );
   }

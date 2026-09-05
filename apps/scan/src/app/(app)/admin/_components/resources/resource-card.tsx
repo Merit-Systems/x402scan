@@ -52,6 +52,8 @@ interface Props {
   accepts?: SerializedAccept[];
 }
 
+const NO_WARNINGS: string[] = [];
+
 export const ResourceCard: React.FC<Props> = ({
   resource,
   tags,
@@ -60,7 +62,7 @@ export const ResourceCard: React.FC<Props> = ({
   className,
   hideOrigin = false,
   isFlat = false,
-  warnings = [],
+  warnings = NO_WARNINGS,
   ownershipVerified = false,
   accepts,
 }) => {
@@ -75,14 +77,8 @@ export const ResourceCard: React.FC<Props> = ({
       {!isFlat && (
         <div className="absolute top-[calc(2rem+5px)] left-0 h-px w-4 bg-border" />
       )}
-      <Card
-        className={cn(
-          className,
-          "overflow-hidden",
-          !isFlat && "border-0 shadow-none"
-        )}
-      >
-        <CardHeader className="flex w-full flex-row items-center justify-between gap-4 space-y-0 bg-muted px-4 py-2">
+      <Card className={cn(className, "overflow-hidden", !isFlat && " ")}>
+        <CardHeader className="flex w-full flex-row items-center justify-between gap-4 space-y-0">
           <Header
             resource={resource}
             tags={tags}
@@ -111,19 +107,19 @@ export const ResourceCard: React.FC<Props> = ({
                 switch (getResourceAuthMode(resource.metadata)) {
                   case "siwx":
                     return (
-                      <span className="shrink-0 font-mono text-xs font-semibold text-green-600">
+                      <span className="type-mono type-emphasis type-scale-caption shrink-0 text-success">
                         Free
                       </span>
                     );
                   case "unprotected":
                     return (
-                      <span className="shrink-0 font-mono text-xs font-semibold text-sky-600">
+                      <span className="type-mono type-emphasis type-scale-caption shrink-0 text-information">
                         Public
                       </span>
                     );
                   case "apiKey":
                     return (
-                      <span className="shrink-0 font-mono text-xs font-semibold text-muted-foreground">
+                      <span className="type-mono type-emphasis type-scale-caption shrink-0 text-muted-foreground">
                         API key
                       </span>
                     );
@@ -135,20 +131,20 @@ export const ResourceCard: React.FC<Props> = ({
             {ownershipVerified && (
               <Tooltip>
                 <TooltipTrigger
-                  render={<Shield className="size-4 text-green-600" />}
+                  render={<Shield className="size-4 text-success" />}
                 ></TooltipTrigger>
                 <TooltipContent side="left">
-                  <div className="text-xs">Ownership verified</div>
+                  <div className="type-caption">Ownership verified</div>
                 </TooltipContent>
               </Tooltip>
             )}
             {warnings.length > 0 && (
               <Tooltip>
                 <TooltipTrigger
-                  render={<AlertTriangle className="size-4 text-yellow-500" />}
+                  render={<AlertTriangle className="size-4 text-warning" />}
                 ></TooltipTrigger>
                 <TooltipContent side="left" className="max-w-md">
-                  <div className="space-y-1 text-xs">
+                  <div className="space-y-1 type-caption">
                     {warnings.map((warning, i) => (
                       <div key={i} className="break-all text-muted-foreground">
                         {warning}
@@ -164,7 +160,7 @@ export const ResourceCard: React.FC<Props> = ({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="size-fit shrink-0 p-2 md:size-fit"
+                    className="size-fit shrink-0 md:size-fit"
                     onClick={() => void copyToClipboard(prompt)}
                   />
                 }
@@ -176,7 +172,7 @@ export const ResourceCard: React.FC<Props> = ({
                 )}
               </TooltipTrigger>
               <TooltipContent side="left">
-                <div className="text-xs">Copy prompt</div>
+                <div className="type-caption">Copy prompt</div>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -197,7 +193,7 @@ const ResourcePricing: React.FC<{
   const label = formatPricingLabel({ maxUsdAmount, isDynamic, price });
 
   return (
-    <span className="shrink-0 font-mono text-xs font-semibold text-primary">
+    <span className="type-mono type-emphasis type-scale-caption shrink-0 text-primary">
       {label}
     </span>
   );

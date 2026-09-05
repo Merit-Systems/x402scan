@@ -25,14 +25,14 @@ export const NavMain = () => {
   const agentId = pathname.split("/")[3];
 
   const { data: agentConfiguration } = api.public.agents.get.useQuery(
-    agentId!,
+    agentId ?? "",
     {
       enabled: isAgent && !!session?.user.id,
     }
   );
 
   const newChatUrl = isAgent
-    ? (`/composer/agent/${agentId}/chat` as const)
+    ? (`/composer/agent/${String(agentId)}/chat` as const)
     : ("/composer/chat" as const);
 
   const items = [
@@ -45,7 +45,7 @@ export const NavMain = () => {
       ? [
           {
             title: "Edit Agent",
-            url: `/composer/agent/${agentId}/edit` as const,
+            url: `/composer/agent/${String(agentId)}/edit` as const,
             icon: Settings,
           },
         ]
@@ -60,17 +60,15 @@ export const NavMain = () => {
             <SidebarMenuButton
               key={item.title}
               tooltip={item.title}
-              asChild
+              render={<Link href={item.url} />}
               onClick={() => {
                 if (pathname === item.url) {
                   router.refresh();
                 }
               }}
             >
-              <Link href={item.url}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </Link>
+              <item.icon />
+              <span>{item.title}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

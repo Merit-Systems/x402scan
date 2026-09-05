@@ -3,11 +3,13 @@ import type { KnipConfig } from "knip";
 const config: KnipConfig = {
   workspaces: {
     ".": {
-      entry: ["foundation.config.ts", "oxfmt.config.ts", "taze.config.ts"],
-      ignoreDependencies: [
-        "@merit-systems/oxlint-config",
-        "@merit-systems/typescript-config",
+      entry: [
+        "foundation.config.ts",
+        "oxfmt.config.ts",
+        "oxlint.config.ts",
+        "taze.config.ts",
       ],
+      ignoreDependencies: ["@merit-systems/typescript-config"],
     },
     "apps/scan": {
       entry: [
@@ -72,9 +74,11 @@ const config: KnipConfig = {
   ],
   // Registry-owned components intentionally expose the complete Foundation API.
   ignoreIssues: {
-    "apps/scan/src/components/ui/{accordion,alert-dialog,avatar,badge,button,button-group,card,collapsible,command,copy-button,data-list,data-table,dialog,dropdown-menu,field,input-group,input,interactive-row,label,logo,motion-tabs,origin-avatar,origin-summary,responsive-view,select,separator,sheet,skeleton,sonner,spinner,stats-card,table,tabs,textarea,tooltip,typeset}.tsx":
+    "apps/scan/src/components/ui/{accordion,alert-dialog,avatar,badge,button,button-group,card,collapsible,command,copy-button,data-list,data-table,dialog,dropdown-menu,field,input-group,input,interactive-row,label,logo,motion-tabs,origin-avatar,origin-summary,responsive-view,select,separator,sheet,sidebar,skeleton,sonner,spinner,stats-card,table,tabs,textarea,tooltip,typeset}.tsx":
       ["exports", "types"],
     "apps/scan/src/components/ui/chart/*.{ts,tsx}": ["exports", "types"],
+    "apps/scan/src/components/ai-elements/{conversation,message,prompt-input,reasoning,shimmer,tool}.tsx":
+      ["exports", "types"],
     "apps/scan/src/components/responsive-collection.tsx": ["types"],
   },
 };

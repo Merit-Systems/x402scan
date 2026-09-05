@@ -1,8 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { LanguageModel, LanguageModelCapability } from "./types";
-import { languageModels } from "./models";
+import type {
+  LanguageModel,
+  LanguageModelCapability,
+} from "../../../../_lib/language-models/types";
+import { languageModels } from "../../../../_lib/language-models/models";
 
 interface UseModelSelectProps {
   model: LanguageModel | undefined;

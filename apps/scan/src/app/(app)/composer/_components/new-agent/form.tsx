@@ -25,9 +25,11 @@ interface Props {
   initialResourceIds?: string[];
 }
 
+const NO_RESOURCE_IDS: string[] = [];
+
 export const CreateAgentForm: React.FC<Props> = ({
   initialStep = 0,
-  initialResourceIds = [],
+  initialResourceIds = NO_RESOURCE_IDS,
 }) => {
   const router = useRouter();
 
@@ -80,6 +82,8 @@ export const CreateAgentForm: React.FC<Props> = ({
     // oxlint-disable-next-line react-hooks/exhaustive-deps
     [onNext, onPrevious, form, isSubmitting, form.formState]
   );
+  const currentStep = stepsConfig.at(step);
+  if (!currentStep) return null;
 
   return (
     <form
@@ -88,13 +92,11 @@ export const CreateAgentForm: React.FC<Props> = ({
     >
       <Stepper steps={stepsConfig} currentStep={step} />
       <Card className="overflow-hidden">
-        <CardHeader className="border-b bg-muted">
-          <CardTitle>{stepsConfig[step]!.card.title}</CardTitle>
-          <CardDescription>
-            {stepsConfig[step]!.card.description}
-          </CardDescription>
+        <CardHeader className=" ">
+          <CardTitle>{currentStep.card.title}</CardTitle>
+          <CardDescription>{currentStep.card.description}</CardDescription>
         </CardHeader>
-        {stepsConfig[step]!.component}
+        {currentStep.component}
       </Card>
     </form>
   );

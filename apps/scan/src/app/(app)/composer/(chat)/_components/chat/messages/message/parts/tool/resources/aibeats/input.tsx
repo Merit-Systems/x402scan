@@ -25,7 +25,7 @@ export const AibeatsInput: InputComponent = ({ input }) => {
   return (
     <div className="flex items-center gap-2">
       <Music className="size-4 shrink-0" />
-      <p className="text-sm font-medium">{prompt}</p>
+      <p className="type-supporting-body type-emphasis">{prompt}</p>
     </div>
   );
 };

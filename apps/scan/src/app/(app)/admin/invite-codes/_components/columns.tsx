@@ -69,7 +69,7 @@ export const createColumns = (
     cell: ({ row }) => {
       const { code, note } = row.original;
       const codeElement = (
-        <code className="rounded bg-muted px-2 py-1 font-mono text-xs">
+        <code className="type-mono type-scale-caption rounded bg-muted px-2 py-1">
           {code}
         </code>
       );
@@ -78,7 +78,7 @@ export const createColumns = (
         <Tooltip>
           <TooltipTrigger render={codeElement} />
           <TooltipContent side="right" className="max-w-[300px]">
-            <p className="text-xs">{note}</p>
+            <p className="type-caption">{note}</p>
           </TooltipContent>
         </Tooltip>
       );
@@ -92,7 +92,7 @@ export const createColumns = (
       <HeaderCell Icon={DollarSign} label="Amount" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {formatCurrency(parseFloat(formatUnits(row.original.amount, 6)))}
       </div>
     ),
@@ -108,9 +108,11 @@ export const createColumns = (
       const { redemptionCount, maxRedemptions } = row.original;
       const text =
         maxRedemptions === 0
-          ? `${redemptionCount} / ∞`
-          : `${redemptionCount} / ${maxRedemptions}`;
-      return <div className="text-center font-mono text-xs">{text}</div>;
+          ? `${String(redemptionCount)} / ∞`
+          : `${String(redemptionCount)} / ${String(maxRedemptions)}`;
+      return (
+        <div className="type-mono type-scale-caption text-center">{text}</div>
+      );
     },
     size: 120,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -122,8 +124,8 @@ export const createColumns = (
     ),
     cell: ({ row }) => {
       const { redemptions } = row.original;
-      if (!redemptions || redemptions.length === 0) {
-        return <div className="text-xs text-muted-foreground">-</div>;
+      if (redemptions.length === 0) {
+        return <div className="type-caption text-muted-foreground">-</div>;
       }
       const addresses = redemptions.map((r) => r.recipientAddr);
       const uniqueAddresses = [...new Set(addresses)];
@@ -133,8 +135,7 @@ export const createColumns = (
           <Button
             type="button"
             variant="ghost"
-            size="sm"
-            className="h-auto px-1 font-mono"
+            size="none"
             title={firstAddress}
             aria-label={`Copy ${firstAddress}`}
             onClick={() => void navigator.clipboard.writeText(firstAddress)}
@@ -144,14 +145,14 @@ export const createColumns = (
         );
       }
       return (
-        <div className="space-y-0.5 text-xs">
+        <div className="space-y-0.5 type-caption">
           {uniqueAddresses.slice(0, 2).map((addr) => (
             <Button
               key={addr}
               type="button"
               variant="ghost"
               size="sm"
-              className="block h-auto px-1 font-mono"
+              className="block"
               title={addr}
               aria-label={`Copy ${addr}`}
               onClick={() => void navigator.clipboard.writeText(addr)}
@@ -189,7 +190,7 @@ export const createColumns = (
       <HeaderCell Icon={User} label="Unique Only" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <div className="text-center text-xs">
+      <div className="text-center type-caption">
         {row.original.uniqueRecipients ? "Yes" : "No"}
       </div>
     ),
@@ -202,7 +203,7 @@ export const createColumns = (
       <HeaderCell Icon={User} label="Created By" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <div className="max-w-[120px] truncate text-center text-xs text-muted-foreground">
+      <div className="max-w-[120px] truncate text-center type-caption text-muted-foreground">
         {row.original.createdBy.email ?? row.original.createdBy.name ?? "N/A"}
       </div>
     ),
@@ -215,7 +216,7 @@ export const createColumns = (
       <HeaderCell Icon={Calendar} label="Expires" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {row.original.expiresAt
           ? formatCompactAgo(row.original.expiresAt, { allowFuture: true })
           : "Never"}
@@ -230,7 +231,7 @@ export const createColumns = (
       <HeaderCell Icon={Calendar} label="Created" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {formatCompactAgo(row.original.createdAt)}
       </div>
     ),
@@ -246,11 +247,9 @@ export const createColumns = (
 
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<Button variant="ghost" className="h-8 w-8 p-0" />}
-          >
+          <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
             <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
@@ -263,7 +262,7 @@ export const createColumns = (
             {canDisable && (
               <DropdownMenuItem
                 onClick={() => handlers?.onDisable?.(id)}
-                className="text-destructive"
+                variant="destructive"
               >
                 Disable
               </DropdownMenuItem>

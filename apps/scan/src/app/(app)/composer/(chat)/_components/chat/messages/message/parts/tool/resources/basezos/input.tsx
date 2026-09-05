@@ -21,10 +21,10 @@ export const BasezosInput: InputComponent = ({ input }) => {
   return (
     <div className="flex items-center gap-2">
       <Search className="size-4 shrink-0" />
-      <p className="text-sm font-medium">
+      <p className="type-supporting-body type-emphasis">
         {searchQuery}{" "}
         {pages > 1 ? (
-          <span className="text-xs text-muted-foreground">
+          <span className="type-caption text-muted-foreground">
             ({pages} page{pages > 1 ? "s" : ""})
           </span>
         ) : (

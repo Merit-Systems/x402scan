@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import type { SearchResult } from "./types";
 import {
@@ -19,19 +19,19 @@ async function generateAndExecuteSingleQuery(
   let lastError: { sql: string; error: string } | undefined;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
-    const result = await generateObject({
+    const result = await generateText({
       model: openai("gpt-4.1-nano"),
       prompt: buildSearchPrompt(naturalLanguageQuery, lastError),
-      schema: sqlGenerationSchema,
+      output: Output.object({ schema: sqlGenerationSchema }),
       temperature: 0.3, // Slightly higher temperature for variation
     });
 
     console.log(
       `Query ${String(queryIndex)} - Attempt ${String(attempt + 1)}:`,
-      result.object
+      result.output
     );
 
-    const { sqlQuery, explanation } = result.object;
+    const { sqlQuery, explanation } = result.output;
 
     const executionResult = await executeResourceSearch(sqlQuery);
 

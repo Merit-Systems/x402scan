@@ -4,6 +4,8 @@ import type { getTokenBalanceSchema, sendTokensSchema } from "./schemas";
 import type { SolanaAddress } from "@/types/address";
 import type { Address } from "viem";
 import type { CdpResultAsync } from "../../result";
+import type { ClientEvmSigner } from "@x402/evm";
+import type { ClientSvmSigner } from "@x402/svm";
 
 export type NetworkServerWallet<T extends Chain> = (name: string) => {
   address: () => CdpResultAsync<
@@ -13,7 +15,9 @@ export type NetworkServerWallet<T extends Chain> = (name: string) => {
     input: z.infer<typeof getTokenBalanceSchema>
   ) => CdpResultAsync<number>;
   export: () => CdpResultAsync<string>;
-  signer: () => Promise<unknown>;
+  signer: () => Promise<
+    T extends Chain.SOLANA ? ClientSvmSigner : ClientEvmSigner
+  >;
   sendTokens: (
     input: z.infer<typeof sendTokensSchema>
   ) => CdpResultAsync<string>;

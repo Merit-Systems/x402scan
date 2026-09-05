@@ -23,11 +23,11 @@ export const columns: DataTableColumnDef<BalanceRow>[] = [
     header: () => (
       <div className="flex items-center gap-2">
         <Coins className="size-4" />
-        <span className="text-xs font-medium">Balance</span>
+        <span className="type-emphasis type-caption">Balance</span>
       </div>
     ),
     cell: ({ row }) => (
-      <span className="font-mono text-xs font-medium tabular-nums">
+      <span className="type-mono type-emphasis type-scale-caption tabular-nums">
         {formatCurrency(row.original.usdc)}
       </span>
     ),
@@ -36,9 +36,9 @@ export const columns: DataTableColumnDef<BalanceRow>[] = [
   },
   {
     accessorKey: "chain",
-    header: () => <span className="text-xs font-medium">Chain</span>,
+    header: () => <span className="type-emphasis type-caption">Chain</span>,
     cell: ({ row }) => (
-      <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs text-primary">
+      <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 type-caption text-primary">
         {CHAIN_LABELS[row.original.chain]}
       </span>
     ),
@@ -47,18 +47,20 @@ export const columns: DataTableColumnDef<BalanceRow>[] = [
   },
   {
     accessorKey: "source",
-    header: () => <span className="text-xs font-medium">Wallet Type</span>,
+    header: () => (
+      <span className="type-emphasis type-caption">Wallet Type</span>
+    ),
     cell: ({ row }) =>
       row.original.source === "server" ? (
         <span
-          className="inline-flex items-center rounded-md bg-blue-500/10 px-2 py-0.5 text-xs text-blue-600"
+          className="inline-flex items-center rounded-md bg-information-subtle px-2 py-0.5 type-caption text-information"
           title="CDP server wallet — we hold the keys and can sweep it"
         >
           Server
         </span>
       ) : (
         <span
-          className="inline-flex items-center rounded-md bg-purple-500/10 px-2 py-0.5 text-xs text-purple-600"
+          className="inline-flex items-center rounded-md bg-accent px-2 py-0.5 type-caption text-accent-foreground"
           title="CDP embedded wallet — non-custodial, only the user can withdraw"
         >
           Embedded
@@ -72,19 +74,19 @@ export const columns: DataTableColumnDef<BalanceRow>[] = [
     header: () => (
       <div className="flex items-center gap-2">
         <Mail className="size-4" />
-        <span className="text-xs font-medium">Email</span>
+        <span className="type-emphasis type-caption">Email</span>
       </div>
     ),
     cell: ({ row }) => {
       const { email } = row.original;
       if (!email) {
-        return <span className="text-xs text-muted-foreground">—</span>;
+        return <span className="type-caption text-muted-foreground">—</span>;
       }
       return (
         <Copyable
           value={email}
           toastMessage="Email copied"
-          className="block max-w-[220px] truncate text-xs"
+          className="block max-w-[220px] truncate"
         >
           {email}
         </Copyable>
@@ -98,13 +100,13 @@ export const columns: DataTableColumnDef<BalanceRow>[] = [
     header: () => (
       <div className="flex items-center gap-2">
         <KeyRound className="size-4" />
-        <span className="text-xs font-medium">Signed in with</span>
+        <span className="type-emphasis type-caption">Signed in with</span>
       </div>
     ),
     cell: ({ row }) => {
       const { loginAddresses } = row.original;
       if (loginAddresses.length === 0) {
-        return <span className="text-xs text-muted-foreground">—</span>;
+        return <span className="type-caption text-muted-foreground">—</span>;
       }
       return (
         <div className="flex flex-col gap-1">
@@ -113,7 +115,7 @@ export const columns: DataTableColumnDef<BalanceRow>[] = [
               key={loginAddress}
               value={loginAddress}
               toastMessage="Address copied"
-              className="block font-mono text-xs"
+              className="block"
             >
               {truncateAddress(loginAddress)}
             </Copyable>
@@ -129,14 +131,14 @@ export const columns: DataTableColumnDef<BalanceRow>[] = [
     header: () => (
       <div className="flex items-center gap-2">
         <Wallet className="size-4" />
-        <span className="text-xs font-medium">Composer Wallet</span>
+        <span className="type-emphasis type-caption">Composer Wallet</span>
       </div>
     ),
     cell: ({ row }) => (
       <Copyable
         value={row.original.address}
         toastMessage="Address copied"
-        className="block font-mono text-xs"
+        className="block"
       >
         {truncateAddress(row.original.address)}
       </Copyable>
@@ -146,12 +148,12 @@ export const columns: DataTableColumnDef<BalanceRow>[] = [
   },
   {
     accessorKey: "userId",
-    header: () => <span className="text-xs font-medium">User</span>,
+    header: () => <span className="type-emphasis type-caption">User</span>,
     cell: ({ row }) => {
       const { userId } = row.original;
       if (!userId) {
         return (
-          <span className="inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-xs text-amber-600">
+          <span className="inline-flex items-center rounded-md bg-warning-subtle px-2 py-0.5 type-caption text-warning">
             Orphaned
           </span>
         );
@@ -160,7 +162,7 @@ export const columns: DataTableColumnDef<BalanceRow>[] = [
         <Copyable
           value={userId}
           toastMessage="User ID copied"
-          className="block max-w-[160px] truncate font-mono text-xs"
+          className="block max-w-[160px] truncate"
         >
           {userId}
         </Copyable>

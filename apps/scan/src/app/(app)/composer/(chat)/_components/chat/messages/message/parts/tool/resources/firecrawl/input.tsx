@@ -21,10 +21,10 @@ export const FirecrawlInput: InputComponent = ({ input }) => {
   return (
     <div className="flex items-center gap-2">
       <Search className="size-4 shrink-0" />
-      <p className="text-sm font-medium">
+      <p className="type-supporting-body type-emphasis">
         {query}{" "}
         {limit ? (
-          <span className="text-xs text-muted-foreground">
+          <span className="type-caption text-muted-foreground">
             ({limit} Result{limit > 1 ? "s" : ""})
           </span>
         ) : (

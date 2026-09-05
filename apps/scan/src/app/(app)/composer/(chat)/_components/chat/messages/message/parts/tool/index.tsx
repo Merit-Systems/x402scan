@@ -11,16 +11,18 @@ import { ToolInvoke } from "./invoke";
 
 import { api } from "@/trpc/client";
 
-import type { ToolUIPart, UIMessage } from "ai";
+import { getToolName } from "ai";
+
+import type { DynamicToolUIPart, ToolUIPart, UIMessage } from "ai";
 import type { UseChatHelpers } from "@ai-sdk/react";
 
 interface Props {
-  part: ToolUIPart;
+  part: ToolUIPart | DynamicToolUIPart;
   chatId: string;
-  addToolResult: UseChatHelpers<UIMessage>["addToolResult"];
+  addToolOutput: UseChatHelpers<UIMessage>["addToolOutput"];
 }
-export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
-  const resourceId = part.type.slice(5);
+export const ToolPart: React.FC<Props> = ({ part, chatId, addToolOutput }) => {
+  const resourceId = getToolName(part);
   const { data: resource, isLoading: isResourceLoading } =
     api.public.resources.get.useQuery(resourceId, {
       enabled: part.state !== "input-streaming",
@@ -29,11 +31,7 @@ export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
   if (part.state === "input-streaming" || isResourceLoading) {
     return (
       <Tool defaultOpen={false} key="streaming">
-        <ToolHeader
-          state={part.state}
-          isResourceLoading={true}
-          resource={undefined}
-        />
+        <ToolHeader status={part.state} title={resourceId} />
       </Tool>
     );
   }
@@ -48,9 +46,8 @@ export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
       key={"available"}
     >
       <ToolHeader
-        state={part.state}
-        isResourceLoading={isResourceLoading}
-        resource={resource}
+        status={part.state}
+        title={resource?.resource ?? resourceId}
       />
       <ToolContent className="flex flex-col gap-2 px-4">
         {components ? (
@@ -60,7 +57,7 @@ export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
         )}
         {part.state === "output-error" ? (
           <div className="flex flex-col gap-4">
-            <div className="overflow-x-auto rounded-md bg-destructive/10 font-mono text-xs text-destructive [&_table]:w-full">
+            <div className="type-mono type-scale-caption overflow-x-auto rounded-md bg-destructive/10 text-destructive [&_table]:w-full">
               <div className="p-3">{part.errorText}</div>
             </div>
           </div>
@@ -80,7 +77,7 @@ export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
             input={part.input}
             chatId={chatId}
             toolCallId={part.toolCallId}
-            addToolResult={addToolResult}
+            addToolOutput={addToolOutput}
           />
         )}
       </ToolContent>

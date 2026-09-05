@@ -5,7 +5,7 @@ import {
   assignTagToResource,
 } from "@/services/db/resources/tag";
 import type { listResourcesWithPagination } from "@/services/db/resources/resource";
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { getTracer } from "@lmnr-ai/lmnr";
@@ -81,10 +81,10 @@ export const labelingPass = async (
       tags.map((tag) => `- ${tag.name}`).join("\n")
     );
 
-  const result = await generateObject({
+  const result = await generateText({
     model: openai("gpt-4o-mini"),
     prompt,
-    schema: labelingSchema,
+    output: Output.object({ schema: labelingSchema }),
     temperature: 0.1,
     experimental_telemetry: {
       isEnabled: true,
@@ -96,7 +96,7 @@ export const labelingPass = async (
     },
   });
 
-  const tag = result.object.tag;
+  const tag = result.output.tag;
   const tagData = await scanDb.tag.findFirst({ where: { name: tag } });
   if (!tagData) {
     const newTag = await createTag({ name: tag, color: randomColor() });

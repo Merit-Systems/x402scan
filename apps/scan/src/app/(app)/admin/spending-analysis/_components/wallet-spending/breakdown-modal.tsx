@@ -40,9 +40,9 @@ export const WalletBreakdownModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-7xl">
+      <DialogContent className="overflow-y-auto sm:max-w-7xl">
         <DialogHeader>
-          <DialogTitle className="font-mono text-sm break-all">
+          <DialogTitle className="break-all">
             Wallet Breakdown - {resourceUrl}
           </DialogTitle>
           <DialogDescription>
@@ -58,7 +58,7 @@ export const WalletBreakdownModal = ({
             data={breakdown}
             pageSize={20}
             isLoading={isLoading}
-            getRowId={(row, index) => row?.walletId ?? `loading-${index}`}
+            getRowId={(row) => row.walletId}
           />
         </div>
       </DialogContent>

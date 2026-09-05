@@ -64,23 +64,29 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
           type="email"
           placeholder="richard@piedpiper.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
           disabled={isSigningIn}
-          className={cn(signInError && "border-destructive")}
+          className={cn(signInError && "")}
         />
         {signInError && (
-          <p className="text-sm text-red-500">{signInError.message}</p>
+          <p className="type-supporting-body text-destructive">
+            {signInError.message}
+          </p>
         )}
       </div>
       <Button
-        onClick={() => handleSignIn()}
+        onClick={() => {
+          handleSignIn();
+        }}
         disabled={isSigningIn || !z.email().safeParse(email).success}
         className="w-full"
         variant="default"
       >
         {isSigningIn ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 size-4 animate-spin" />
             Sending OTP...
           </>
         ) : (

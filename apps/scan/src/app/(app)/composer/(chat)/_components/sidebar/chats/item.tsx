@@ -34,26 +34,31 @@ const PureChatItem: React.FC<Props> = ({
 }: Props) => {
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton asChild isActive={isActive}>
-        <Link
-          href={
-            chat.userAgentConfiguration?.agentConfigurationId
-              ? `/composer/agent/${chat.userAgentConfiguration.agentConfigurationId}/chat/${chat.id}`
-              : `/composer/chat/${chat.id}`
-          }
-          onClick={() => setOpenMobile(false)}
-        >
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="truncate">{chat.title}</span>
-          </div>
-        </Link>
+      <SidebarMenuButton
+        isActive={isActive}
+        render={
+          <Link
+            href={
+              chat.userAgentConfiguration?.agentConfigurationId
+                ? `/composer/agent/${chat.userAgentConfiguration.agentConfigurationId}/chat/${chat.id}`
+                : `/composer/chat/${chat.id}`
+            }
+            onClick={() => {
+              setOpenMobile(false);
+            }}
+          />
+        }
+      >
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="truncate">{chat.title}</span>
+        </div>
       </SidebarMenuButton>
 
       <DropdownMenu modal={true}>
         <DropdownMenuTrigger
           render={
             <SidebarMenuAction
-              className="mr-0.5 cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="mr-0.5 cursor-pointer"
               showOnHover={!isActive}
             />
           }
@@ -64,8 +69,10 @@ const PureChatItem: React.FC<Props> = ({
 
         <DropdownMenuContent side="right" align="center" sideOffset={8}>
           <DropdownMenuItem
-            className="cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive"
-            onSelect={() => onDelete(chat.id)}
+            className="cursor-pointer"
+            onSelect={() => {
+              onDelete(chat.id);
+            }}
           >
             <Trash className="size-4 text-destructive" />
             <span>Delete</span>

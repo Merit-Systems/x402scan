@@ -21,7 +21,7 @@ interface MessagesProps {
   model: string;
   chatId: string;
   onRegenerate: () => void;
-  addToolResult: UseChatHelpers<UIMessage>["addToolResult"];
+  addToolOutput: UseChatHelpers<UIMessage>["addToolOutput"];
   errorMessage?: string;
   emptyState?: EmptyStateProps;
 }
@@ -33,11 +33,11 @@ export const Messages: React.FC<MessagesProps> = ({
   chatId,
   errorMessage,
   onRegenerate,
-  addToolResult,
+  addToolOutput,
   emptyState,
 }) => {
   return (
-    <Conversation className="h-full w-full">
+    <Conversation className="size-full">
       {messages.length > 0 ? (
         <>
           <ConversationContent className="mx-auto max-w-4xl pb-8">
@@ -48,16 +48,16 @@ export const Messages: React.FC<MessagesProps> = ({
                 status={status}
                 isLast={message.id === messages.at(-1)?.id}
                 chatId={chatId}
-                addToolResult={addToolResult}
+                addToolOutput={addToolOutput}
               />
             ))}
-            {status === "submitted" ||
+            {(status === "submitted" ||
               (status === "streaming" &&
-                messages[messages.length - 1]!.parts.length === 0 && (
-                  <AnimatedShinyText className="pb-4 text-xs md:text-sm">
-                    Calling {model} with x402...
-                  </AnimatedShinyText>
-                ))}
+                messages.at(-1)?.parts.length === 0)) && (
+              <AnimatedShinyText className="type-supporting-body pb-4">
+                Calling {model} with x402...
+              </AnimatedShinyText>
+            )}
             {errorMessage !== undefined && (
               <ErrorState message={errorMessage} onRegenerate={onRegenerate} />
             )}
@@ -77,7 +77,7 @@ export const EmptyMessages = ({
   icon,
 }: EmptyStateProps) => {
   return (
-    <Conversation className="h-full w-full">
+    <Conversation className="size-full">
       <EmptyState title={title} description={description} icon={icon} />
     </Conversation>
   );
@@ -85,7 +85,7 @@ export const EmptyMessages = ({
 
 export const LoadingMessages = () => {
   return (
-    <Conversation className="h-full w-full">
+    <Conversation className="size-full">
       <ConversationContent className="mx-auto max-w-4xl">
         <LoadingMessage from="user" numLines={2} />
         <LoadingMessage from="assistant" numLines={4} />

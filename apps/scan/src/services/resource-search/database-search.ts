@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { scanDb, Prisma } from "@x402scan/scan-db";
@@ -163,23 +163,23 @@ export const searchResourcesWithNaturalLanguage = async (
   let lastError: { sql: string; error: string } | undefined;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
-    const result = await generateObject({
+    const result = await generateText({
       model: openai("gpt-4.1-nano"),
       prompt: buildSearchPrompt(naturalLanguageQuery, lastError),
-      schema: sqlGenerationSchema,
+      output: Output.object({ schema: sqlGenerationSchema }),
       temperature: 0.1,
     });
 
     if (attempt === 0) {
-      console.log("Initial SQL generation:", result.object);
+      console.log("Initial SQL generation:", result.output);
     } else {
       console.log(
         `SQL generation retry attempt ${String(attempt)}:`,
-        result.object
+        result.output
       );
     }
 
-    const { sqlQuery, explanation } = result.object;
+    const { sqlQuery, explanation } = result.output;
 
     const executionResult = await executeResourceSearch(sqlQuery);
 

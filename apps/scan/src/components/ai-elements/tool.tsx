@@ -1,210 +1,203 @@
 "use client";
 
-import { Check, ChevronDownIcon, CircleDot, Loader2, X } from "lucide-react";
+/* oxlint-disable merit-core/no-runtime-typeof -- Tool output is an intentionally runtime-neutral presentation boundary for consumer-owned values. */
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Code } from "@/components/ui/code";
-import { Loading } from "@/components/ui/loading";
-import { Skeleton } from "@/components/ui/skeleton";
-
-import { z } from "zod";
-
-import { Favicon } from "@/app/(app)/_components/favicon";
-import { jsonObjectSchema } from "@/lib/json";
-import { cleanExternalText } from "@/lib/utils";
-
-import { JsonViewer } from "./json-viewer";
-
 import { cn } from "@/lib/utils";
-
+import type { DynamicToolUIPart } from "ai";
+import {
+  CheckCircleIcon,
+  ChevronRightIcon,
+  CircleAlertIcon,
+  CircleIcon,
+  ClockIcon,
+  WrenchIcon,
+  XIcon,
+} from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
-import type { ToolUIPart } from "ai";
-import type { RouterOutputs } from "@/trpc/client";
+import { isValidElement } from "react";
 
-type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
-interface JsonObject {
-  [key: string]: JsonValue;
+type ToolStatus = DynamicToolUIPart["state"];
+
+const statusPresentation = {
+  "approval-requested": {
+    icon: <ClockIcon className="size-4" />,
+    label: "Awaiting approval",
+  },
+  "approval-responded": {
+    icon: <CheckCircleIcon className="size-4" />,
+    label: "Responded",
+  },
+  "input-available": {
+    icon: <CircleIcon className="size-4 animate-pulse" />,
+    label: "Running",
+  },
+  "input-streaming": {
+    icon: <CircleIcon className="size-4" />,
+    label: "Pending",
+  },
+  "output-available": {
+    icon: <CheckCircleIcon className="size-4" />,
+    label: "Completed",
+  },
+  "output-denied": {
+    icon: <XIcon className="size-4" />,
+    label: "Denied",
+  },
+  "output-error": {
+    icon: <CircleAlertIcon className="size-4" />,
+    label: "Error",
+  },
+} satisfies Record<ToolStatus, { icon: ReactNode; label: string }>;
+
+type ToolProps = ComponentProps<typeof Collapsible>;
+
+function Tool({ className, ...props }: ToolProps) {
+  return (
+    <Collapsible
+      className={cn("group not-prose w-full", className)}
+      data-slot="chat-tool"
+      {...props}
+    />
+  );
 }
-type JsonArray = JsonValue[];
 
-const Tool = ({ className, ...props }: ComponentProps<typeof Collapsible>) => (
-  <Collapsible
-    className={cn("not-prose w-full rounded-md border", className)}
-    {...props}
-  />
-);
+interface ToolHeaderProps extends Omit<
+  ComponentProps<typeof CollapsibleTrigger>,
+  "children" | "title"
+> {
+  icon?: ReactNode;
+  meta?: ReactNode;
+  status?: ToolStatus;
+  statusIcon?: ReactNode;
+  statusLabel?: ReactNode;
+  title: ReactNode;
+}
 
-const ToolHeader = ({
+function ToolHeader({
   className,
-  state,
-  resource,
-  isResourceLoading,
+  icon,
+  meta,
+  status,
+  statusIcon,
+  statusLabel,
+  title,
   ...props
-}: {
-  state: ToolUIPart["state"];
-  isResourceLoading: boolean;
-  resource: RouterOutputs["public"]["resources"]["get"] | undefined;
-  className?: string;
-}) => {
+}: ToolHeaderProps) {
+  const presentation = status ? statusPresentation[status] : undefined;
+
   return (
     <CollapsibleTrigger
       className={cn(
-        "flex w-full items-center justify-between gap-4 p-3 bg-muted/50 cursor-pointer hover:bg-muted/80 transition-all duration-200 overflow-hidden",
+        "flex w-full items-center gap-2 py-0.5 text-left text-muted-foreground transition-colors hover:text-foreground",
         className
       )}
+      data-slot="chat-tool-trigger"
       {...props}
     >
-      <div className="flex flex-1 items-center gap-2 overflow-hidden">
-        <Loading
-          value={resource}
-          isLoading={isResourceLoading ?? state === "input-streaming"}
-          component={(loadedResource) => (
-            <Favicon
-              url={loadedResource.origin.favicon ?? null}
-              className="size-6 rounded-md md:size-8"
-            />
+      {icon ?? <WrenchIcon className="size-4 shrink-0" />}
+      <span className="min-w-0 flex-1 truncate type-label">{title}</span>
+      {meta ? (
+        <span
+          className="flex shrink-0 items-center gap-1"
+          data-slot="chat-tool-meta"
+        >
+          {meta}
+        </span>
+      ) : null}
+      {presentation ? (
+        <span
+          className={cn(
+            "flex shrink-0 items-center gap-1 type-caption",
+            status === "output-error" && "text-destructive"
           )}
-          loadingComponent={<Skeleton className="size-6 md:size-8" />}
-        />
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <Loading
-            value={resource}
-            isLoading={isResourceLoading ?? state === "input-streaming"}
-            component={(loadedResource) => (
-              <div className="flex w-full items-center gap-2 overflow-hidden">
-                <span className="truncate text-left font-mono text-xs font-semibold md:text-sm">
-                  {loadedResource.resource}
-                </span>
-                {state === "input-streaming" ? (
-                  <Loader2 className="size-3 shrink-0 animate-spin" />
-                ) : state === "input-available" ? (
-                  <CircleDot className="size-3 shrink-0" />
-                ) : state === "output-available" ? (
-                  <Check className="size-3 shrink-0 text-green-600" />
-                ) : state === "output-error" ? (
-                  <X className="size-3 shrink-0 text-red-600" />
-                ) : null}
-              </div>
-            )}
-            loadingComponent={<Skeleton className="my-[3px] h-[14px] w-32" />}
-            errorComponent={<p>Unknown resource</p>}
-          />
-          <Loading
-            value={resource}
-            isLoading={isResourceLoading ?? state === "input-streaming"}
-            component={(loadedResource) => (
-              <span className="text-left text-[10px] text-muted-foreground md:text-xs">
-                {cleanExternalText(
-                  loadedResource.accepts.find((accept) => accept.description)
-                    ?.description ?? ""
-                )}
-              </span>
-            )}
-            loadingComponent={<Skeleton className="my-[2px] h-[12px] w-32" />}
-            errorComponent={<p>Unknown resource</p>}
-          />
-        </div>
-      </div>
-      <ChevronDownIcon className="hidden size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180 md:block" />
+          data-status={status}
+        >
+          {statusIcon === undefined ? presentation.icon : statusIcon}
+          {statusLabel === undefined ? presentation.label : statusLabel}
+        </span>
+      ) : null}
+      <ChevronRightIcon className="size-3.5 shrink-0 transition-transform group-data-[state=open]:rotate-90" />
     </CollapsibleTrigger>
   );
-};
+}
 
-const ToolContent = ({
-  className,
-  ...props
-}: ComponentProps<typeof CollapsibleContent>) => (
-  <CollapsibleContent
-    className={cn(
-      "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in space-y-2 py-4 border-t",
-      className
-    )}
-    {...props}
-  />
-);
+type ToolContentProps = ComponentProps<typeof CollapsibleContent>;
 
-const ToolInput = ({
-  className,
-  input,
-  ...props
-}: ComponentProps<"div"> & {
-  input: ToolUIPart["input"];
-}) => {
-  // Tool inputs are JSON objects; parse the untyped value at the boundary.
-  const parsedInput = jsonObjectSchema.safeParse(input);
-  if (!parsedInput.success || Object.keys(parsedInput.data).length === 0) {
-    return (
-      <h4 className="font-mono text-xs font-medium text-muted-foreground uppercase">
-        No Parameters
-      </h4>
-    );
-  }
+function ToolContent({ className, ...props }: ToolContentProps) {
+  return (
+    <CollapsibleContent
+      className={cn(
+        "space-y-4 py-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:animate-in data-[state=open]:slide-in-from-top-2",
+        className
+      )}
+      data-slot="chat-tool-content"
+      {...props}
+    />
+  );
+}
+
+interface ToolInputProps extends ComponentProps<"div"> {
+  input: unknown;
+}
+
+function ToolInput({ className, input, ...props }: ToolInputProps) {
   return (
     <div className={cn("space-y-2 overflow-hidden", className)} {...props}>
-      <h4 className="font-mono text-xs font-medium text-muted-foreground uppercase">
-        Parameters
-      </h4>
-      <div className="rounded-md bg-muted">
-        <JsonViewer data={parsedInput.data} />
-      </div>
+      <p className="type-label text-muted-foreground">Parameters</p>
+      <pre className="type-code overflow-x-auto rounded-md bg-muted/50 p-3">
+        <code>{JSON.stringify(input, null, 2)}</code>
+      </pre>
     </div>
   );
-};
+}
 
-const ToolOutput = ({
+interface ToolOutputProps extends ComponentProps<"div"> {
+  errorText?: string;
+  output?: unknown;
+}
+
+function ToolOutput({
   className,
+  errorText,
   output,
   ...props
-}: ComponentProps<"div"> & {
-  output: ReactNode;
-}) => {
-  if (!output) {
-    return null;
-  }
+}: ToolOutputProps) {
+  if (output === undefined && !errorText) return null;
 
-  const parseOutput = (value: ReactNode) => {
-    const text = z.string().safeParse(value);
-    if (!text.success) {
-      return { raw: value, parsed: null };
-    }
-
-    const trimmed = text.data.trim();
-    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-      try {
-        return { raw: value, parsed: JSON.parse(trimmed) as JsonValue };
-      } catch {
-        return { raw: value, parsed: null };
-      }
-    }
-
-    return { raw: value, parsed: null };
-  };
-
-  const result = output ? parseOutput(output) : { raw: null, parsed: null };
-  const { raw, parsed } = result;
+  const content = isValidElement(output)
+    ? output
+    : typeof output === "string"
+      ? output
+      : JSON.stringify(output, null, 2);
 
   return (
     <div className={cn("space-y-2", className)} {...props}>
-      <h4 className="font-mono text-xs font-medium text-muted-foreground uppercase">
-        Result
-      </h4>
+      <p className="type-label text-muted-foreground">
+        {errorText ? "Error" : "Result"}
+      </p>
       <div
         className={cn(
-          "overflow-x-auto rounded-md text-xs [&_table]:w-full font-mono",
-          "bg-muted text-foreground"
+          "overflow-x-auto rounded-md bg-muted/50 p-3 type-supporting-body whitespace-pre-wrap",
+          errorText && "bg-destructive/10 text-destructive"
         )}
       >
-        {parsed && <JsonViewer data={parsed} defaultCollapsed={true} />}
-        {!parsed && raw && (
-          <Code value={JSON.stringify(raw, null, 2)} lang="json" />
-        )}
+        {errorText ?? (content as ReactNode)}
       </div>
     </div>
   );
-};
+}
 
-export { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput };
+export { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput };
+export type {
+  ToolContentProps,
+  ToolHeaderProps,
+  ToolInputProps,
+  ToolOutputProps,
+  ToolProps,
+  ToolStatus,
+};
