@@ -62,7 +62,10 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
 
   const otpSlotProps = (isSuccess: boolean) => {
     return {
-      className: cn("h-12 flex-1 text-xl", isSuccess && "border-green-600"),
+      className: cn(
+        "type-product-title h-12 flex-1",
+        isSuccess && "border-success-border"
+      ),
     };
   };
 
@@ -81,9 +84,7 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
             <InputOTPSlot index={1} {...otpSlotProps(verifyOTPSuccess)} />
             <InputOTPSlot index={2} {...otpSlotProps(verifyOTPSuccess)} />
           </InputOTPGroup>
-          <InputOTPSeparator
-            className={cn(verifyOTPSuccess && "text-green-600")}
-          />
+          <InputOTPSeparator className={cn(verifyOTPSuccess && "")} />
           <InputOTPGroup {...otpGroupProps(verifyOTPSuccess)}>
             <InputOTPSlot index={3} {...otpSlotProps(verifyOTPSuccess)} />
             <InputOTPSlot index={4} {...otpSlotProps(verifyOTPSuccess)} />
@@ -91,11 +92,11 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
           </InputOTPGroup>
         </InputOTP>
         {verifyOTPError ? (
-          <p className="text-xs text-muted-foreground">
+          <p className="type-caption text-muted-foreground">
             {verifyOTPError.message}
           </p>
         ) : (
-          <p className="text-xs text-muted-foreground">
+          <p className="type-caption text-muted-foreground">
             Check your email for the OTP code
           </p>
         )}
@@ -104,7 +105,7 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
         <Button
           onClick={() => void verifyOTP({ flowId, otp })}
           disabled={isVerifyingOTP || verifyOTPSuccess || otp.length !== 6}
-          className="h-12 md:h-12"
+          className=" "
           variant="default"
         >
           {isVerifyingOTP || verifyOTPSuccess ? (

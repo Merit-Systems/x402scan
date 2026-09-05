@@ -59,7 +59,7 @@ export default async function ComposerPage({
   ];
 
   // Conditionally prefetch user's agents if authenticated
-  if (session?.user?.id) {
+  if (session?.user.id) {
     prefetches.push(
       api.public.agents.list.prefetch({
         timeframe: ActivityTimeframe.ThirtyDays,

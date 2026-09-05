@@ -27,7 +27,7 @@ export const Method: React.FC<Props> = ({ method }) => {
   return (
     <div
       className={cn(
-        "font-mono px-1 rounded-md text-xs",
+        "type-mono type-scale-caption rounded-md px-1",
         method ? methodClassName[method] : undefinedMethodClassName
       )}
     >

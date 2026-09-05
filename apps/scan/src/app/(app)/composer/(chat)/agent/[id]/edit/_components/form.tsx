@@ -27,7 +27,7 @@ import {
 import { Dropzone } from "@/components/ui/dropzone";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-import { ResourceList } from "../../../../_components/resource-list";
+import { ResourceList } from "@/app/(app)/composer/_components/resource-list";
 
 import { api } from "@/trpc/client";
 
@@ -115,7 +115,7 @@ export const AgentForm: React.FC<Props> = ({
               control={form.control}
               name="image"
               render={({ field }) => (
-                <Field className="h-[156px] w-[136px] shrink-0">
+                <Field className="w-[136px] shrink-0">
                   <FieldLabel htmlFor="image">Image</FieldLabel>
                   <Dropzone
                     accept={{
@@ -128,12 +128,13 @@ export const AgentForm: React.FC<Props> = ({
                         toast.error("No file selected");
                         return;
                       }
-                      uploadImage(files[0]!);
+                      const file = files.at(0);
+                      if (file) uploadImage(file);
                     }}
                     disabled={isUploading}
                     className={cn(
-                      "flex-1 p-0 flex flex-col items-center justify-center gap-1 overflow-hidden bg-transparent",
-                      field.value && "border-none shadow-none"
+                      "flex-1 flex flex-col items-center justify-center gap-1 overflow-hidden ",
+                      field.value && " "
                     )}
                   >
                     {field.value ? (
@@ -292,7 +293,7 @@ export const AgentForm: React.FC<Props> = ({
                           newPrompts[idx] = e.target.value;
                           field.onChange(newPrompts);
                         }}
-                        placeholder={`Starter prompt ${idx + 1}`}
+                        placeholder={`Starter prompt ${String(idx + 1)}`}
                         disabled={isSubmitting}
                         className="flex-1"
                       />
@@ -316,7 +317,9 @@ export const AgentForm: React.FC<Props> = ({
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => field.onChange([...prompts, ""])}
+                    onClick={() => {
+                      field.onChange([...prompts, ""]);
+                    }}
                     disabled={isSubmitting || prompts.length >= 10}
                     className="w-full"
                   >
@@ -338,7 +341,7 @@ export const AgentForm: React.FC<Props> = ({
           type="submit"
           variant="default"
           disabled={!form.formState.isValid || isSubmitting}
-          className="sticky bottom-0 h-12 w-full md:h-12"
+          className="sticky bottom-0 w-full"
         >
           {isSubmitting ? submitText.submitting : submitText.default}
         </Button>

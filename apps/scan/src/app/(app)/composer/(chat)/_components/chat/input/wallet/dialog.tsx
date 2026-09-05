@@ -21,6 +21,9 @@ import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain
 import { WalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/component";
 
 import type { SupportedChain } from "@/types/chain";
+import z from "zod";
+
+const walletTabSchema = z.enum(["send", "export"]);
 
 interface Props {
   children: React.ReactElement;
@@ -42,20 +45,23 @@ export const WalletDialog: React.FC<Props> = ({
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger render={children} />
         <DialogContent
-          className="overflow-hidden p-0 sm:max-w-md"
+          className="overflow-hidden sm:max-w-md"
           showCloseButton={false}
         >
           <Tabs
             className="flex w-full flex-col gap-4 overflow-hidden"
             value={tab}
-            onValueChange={(value) => setTab(value as "send" | "export")}
+            onValueChange={(value) => {
+              const parsed = walletTabSchema.safeParse(value);
+              if (parsed.success) setTab(parsed.data);
+            }}
           >
-            <DialogHeader className="gap-2 bg-muted">
+            <DialogHeader className="gap-2">
               <div className="flex flex-row items-center justify-between p-4">
                 <div className="flex flex-row items-center gap-2">
                   <Logo className="size-8" />
                   <div className="flex flex-col gap-2">
-                    <DialogTitle className="text-xl text-primary">
+                    <DialogTitle className=" ">
                       Your Composer Wallet
                     </DialogTitle>
                     <DialogDescription className="hidden">
@@ -65,39 +71,25 @@ export const WalletDialog: React.FC<Props> = ({
                 </div>
                 <WalletChain options={chainsWithBalance} />
               </div>
-              <TabsList className="no-scrollbar h-fit w-full max-w-full overflow-x-auto">
+              <TabsList className="no-scrollbar w-full max-w-full overflow-x-auto">
                 <div className="h-[34px] w-4 border-b" />
-                <TabsTrigger
-                  value="send"
-                  appearance="default"
-                  className="data-[state=active]:bg-background"
-                >
+                <TabsTrigger value="send" appearance="default" className="">
                   <ArrowUp className="size-4" /> Withdraw
                 </TabsTrigger>
-                <TabsTrigger
-                  value="export"
-                  appearance="default"
-                  className="data-[state=active]:bg-background"
-                >
+                <TabsTrigger value="export" appearance="default" className="">
                   <Key className="size-4" /> Export
                 </TabsTrigger>
                 <div className="h-[34px] flex-1 border-b" />
               </TabsList>
             </DialogHeader>
-            <div className="mx-4 rounded-md border border-primary bg-primary/10 p-4 font-mono text-xs text-primary">
+            <div className="type-mono type-scale-caption mx-4 rounded-md border border-primary bg-primary/10 p-4 text-primary">
               Composer no longer uses these funds. Withdraw all funds deposited
               on the Composer to your wallet.
             </div>
-            <TabsContent
-              value="send"
-              className="mt-0 w-full overflow-hidden px-4 pb-4"
-            >
+            <TabsContent value="send" className="mt-0 w-full overflow-hidden">
               <Send />
             </TabsContent>
-            <TabsContent
-              value="export"
-              className="mt-0 w-full overflow-hidden px-4 pb-4"
-            >
+            <TabsContent value="export" className="mt-0 w-full overflow-hidden">
               <WalletExport />
             </TabsContent>
           </Tabs>

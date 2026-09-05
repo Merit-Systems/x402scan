@@ -41,7 +41,7 @@ export const SearchContainer = () => {
 
   return (
     <div className="space-y-8">
-      <Card className="p-12">
+      <Card className="">
         <SearchInput
           onSearch={handleSearch}
           isLoading={isLoading}
@@ -61,7 +61,7 @@ export const SearchContainer = () => {
             isLoading={isLoading}
           />
 
-          <Card className="p-8">
+          <Card className="">
             <ResourceSearchSortingProvider
               initialSorting={defaultResourceSearchSorting}
             >

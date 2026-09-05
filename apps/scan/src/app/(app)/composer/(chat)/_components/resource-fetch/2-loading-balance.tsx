@@ -17,7 +17,7 @@ export const LoadingState: React.FC<Props> = ({ chain, maxAmountRequired }) => {
   return (
     <Button variant="outline" size="lg" className="w-full" disabled>
       <Chain chain={chain} />
-      <Loader2 className="h-4 w-4 animate-spin" />
+      <Loader2 className="size-4 animate-spin" />
       <span>{formatTokenAmount(maxAmountRequired)}</span>
     </Button>
   );

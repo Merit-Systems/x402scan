@@ -10,7 +10,7 @@ import { EmptyMessages, LoadingMessages, Messages } from "./messages";
 import { LoadingPromptInputSection, PromptInputSection } from "./input";
 
 import type { Message } from "@x402scan/scan-db/types";
-import type { ChatConfig } from "../../_types/chat-config";
+import type { ChatConfig } from "../../../_types/chat-config";
 import type { RouterOutputs } from "@/trpc/client";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
@@ -45,7 +45,7 @@ export const ChatContent: React.FC<Props> = ({
     selectedResources,
     input,
     setInput,
-    addToolResult,
+    addToolOutput,
   } = useChat({
     id,
     initialMessages,
@@ -55,14 +55,14 @@ export const ChatContent: React.FC<Props> = ({
 
   return (
     <div className="relative flex h-0 flex-1 flex-col overflow-hidden">
-      <SidebarTrigger className="absolute top-2 left-2 z-2 bg-card md:hidden" />
+      <SidebarTrigger className="absolute top-2 left-2 z-2 md:hidden" />
       <Messages
         messages={messages}
         status={status}
         model={model.name}
         errorMessage={errorMessage}
         chatId={id}
-        addToolResult={addToolResult}
+        addToolOutput={addToolOutput}
         onRegenerate={() => void regenerate()}
         emptyState={
           agentConfig
@@ -81,7 +81,7 @@ export const ChatContent: React.FC<Props> = ({
                     className="size-12 overflow-hidden rounded-md md:size-16"
                   />
                 ) : (
-                  <Card className="border p-2">
+                  <Card className="border">
                     <Bot className="size-8 md:size-12" />
                   </Card>
                 ),

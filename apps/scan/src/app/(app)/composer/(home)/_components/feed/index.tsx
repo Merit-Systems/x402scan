@@ -5,7 +5,7 @@ import { Section } from "@/app/(app)/_components/deferred/page-utils";
 import {
   FeedTableContent,
   LoadingFeedTableContent,
-} from "@/app/(app)/composer/feed/_components/table/table";
+} from "@/app/(app)/composer/_components/feed-table/table";
 
 export const Feed = () => {
   return (

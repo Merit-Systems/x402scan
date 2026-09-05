@@ -20,7 +20,7 @@ export const SourcesParts: React.FC<Props> = ({ parts }) => {
     <Sources>
       <SourcesTrigger count={parts.length} />
       {parts.map((part, i) => (
-        <SourcesContent key={`${part.sourceId}-${i}`}>
+        <SourcesContent key={`${part.sourceId}-${String(i)}`}>
           <Source href={part.url} title={part.url} />
         </SourcesContent>
       ))}

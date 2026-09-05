@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export interface StepType {
@@ -52,10 +53,7 @@ export const Stepper: React.FC<Props> = ({
             />
             {index < steps.length - 1 && (
               <Progress
-                className={cn(
-                  "h-[2px] min-w-4 shrink bg-border opacity-50",
-                  index < currentStep && "opacity-100"
-                )}
+                className={cn(" min-w-4 shrink ", index < currentStep && "")}
                 value={index < currentStep ? 100 : 0}
               />
             )}
@@ -66,14 +64,14 @@ export const Stepper: React.FC<Props> = ({
       {/* Mobile step indicator */}
       {currentStepData?.title && (
         <div className="flex items-center justify-center py-2 md:hidden">
-          <span
+          <div
             className={cn(
-              "font-bold text-base text-foreground",
+              "type-card-title text-foreground",
               currentStepData.activeClassName
             )}
           >
             {currentStepData.title}
-          </span>
+          </div>
         </div>
       )}
     </div>
@@ -100,8 +98,10 @@ const Step: React.FC<StepProps> = ({
   onClick,
 }) => {
   return (
-    <button
+    <Button
       type="button"
+      variant="plain"
+      size="none"
       disabled={!onClick}
       className={cn(
         "flex items-center shrink-0",
@@ -117,7 +117,7 @@ const Step: React.FC<StepProps> = ({
           (isCompleted || isActive) && "opacity-100",
           isCompleted &&
             cn(
-              "bg-primary border-primary dark:border-primary text-white",
+              "bg-primary border-primary dark:border-primary text-primary-foreground",
               completedClassName
             ),
           isActive && cn("border-primary text-primary", activeClassName)
@@ -128,7 +128,7 @@ const Step: React.FC<StepProps> = ({
       {title && (
         <span
           className={cn(
-            "font-bold text-sm max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,padding] duration-50 ease-in-out md:block hidden",
+            "type-label max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,padding] duration-50 ease-in-out md:block hidden",
             isActive &&
               "max-w-[200px] opacity-100 pl-2 duration-300 delay-50 text-primary"
           )}
@@ -136,6 +136,6 @@ const Step: React.FC<StepProps> = ({
           {title}
         </span>
       )}
-    </button>
+    </Button>
   );
 };

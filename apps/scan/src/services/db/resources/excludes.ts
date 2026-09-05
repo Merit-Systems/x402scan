@@ -27,6 +27,7 @@ export const getAllExcludedResources = async () => {
       resource: {
         include: {
           origin: true,
+          excluded: true,
           _count: {
             select: {
               invocations: true,

@@ -12,7 +12,7 @@ export const ConnectInjectedWalletButtonsWrapper: React.FC<Props> = ({
       {children}
       <div className="flex w-full items-center gap-2">
         <Separator className="flex-1" />
-        <p className="text-xs text-muted-foreground">or</p>
+        <p className="type-caption text-muted-foreground">or</p>
         <Separator className="flex-1" />
       </div>
     </>

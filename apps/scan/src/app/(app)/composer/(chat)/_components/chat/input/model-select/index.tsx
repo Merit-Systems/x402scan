@@ -1,7 +1,5 @@
 "use client";
 
-import { X } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { ModelProviderIcon } from "@/app/(app)/composer/(chat)/_components/model-icon";
 import {
@@ -26,14 +24,14 @@ import {
 } from "@/components/ui/drawer";
 
 import { capabilityColors, capabilityIcons, modelProviderNames } from "./utils";
-import type { LanguageModelCapability } from "./types";
+import type { LanguageModelCapability } from "../../../../_lib/language-models/types";
 
 import { useModelSelect } from "./use-model-select";
 
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import type { LanguageModel } from "./types";
-import { languageModels } from "./models";
+import type { LanguageModel } from "../../../../_lib/language-models/types";
+import { languageModels } from "../../../../_lib/language-models/models";
 import { PromptInputButton } from "@/components/ai-elements/prompt-input";
 
 const MODEL_HEIGHT = 36;
@@ -75,7 +73,7 @@ const ModelSelectContent: React.FC<{
 
       return nameMatch || descriptionMatch;
     }}
-    className="gap-2 bg-transparent"
+    className="gap-2"
   >
     <CommandInput
       placeholder="Search models..."
@@ -83,7 +81,7 @@ const ModelSelectContent: React.FC<{
       onValueChange={setSearchQuery}
     />
     <div>
-      <div className="mb-1.5 px-2 text-xs font-medium text-muted-foreground">
+      <div className="type-emphasis mb-1.5 px-2 type-caption text-muted-foreground">
         Providers
       </div>
       <div className="no-scrollbar flex gap-1 overflow-x-auto px-2">
@@ -93,8 +91,10 @@ const ModelSelectContent: React.FC<{
             variant={
               selectedProviders.includes(provider) ? "default" : "outline"
             }
-            className="shrink-0 cursor-pointer gap-1 px-1.5 py-0.5"
-            onClick={() => toggleProvider(provider)}
+            className="shrink-0 cursor-pointer gap-1"
+            onClick={() => {
+              toggleProvider(provider);
+            }}
           >
             <ModelProviderIcon provider={provider} className="size-3" />
             {modelProviderNames.get(provider)}
@@ -130,31 +130,35 @@ const ModelSelectContent: React.FC<{
       </div>
     </div> */}
     <CommandList
-      className={cn("w-full max-w-full overflow-x-hidden overflow-y-auto p-0")}
+      className={cn("w-full max-w-full overflow-x-hidden overflow-y-auto ")}
       style={{
-        height: `${MODEL_HEIGHT * (NUM_MODELS_TO_SHOW + 0.5)}px`,
+        height: `${String(MODEL_HEIGHT * (NUM_MODELS_TO_SHOW + 0.5))}px`,
       }}
     >
       <CommandEmpty>No models found.</CommandEmpty>
-      <CommandGroup className="p-0">
+      <CommandGroup className="">
         {filteredModels.map((model) => (
           <CommandItem
             key={model.modelId}
             value={model.modelId}
-            onSelect={() => handleModelSelect(model)}
+            onSelect={() => {
+              handleModelSelect(model);
+            }}
             className={cn(
-              "flex w-full max-w-full cursor-pointer items-center gap-2 rounded-none px-3 py-2 transition-colors"
+              "flex w-full max-w-full cursor-pointer items-center gap-2 "
             )}
           >
             {/* Name, provider, new badge stack */}
-            <div className="flex max-w-full min-w-0 flex-1 flex-shrink-0 items-center gap-2 overflow-hidden">
+            <div className="flex max-w-full min-w-0 flex-1 shrink-0 items-center gap-2 overflow-hidden">
               <ModelProviderIcon
                 provider={model.provider}
-                className="size-4 flex-shrink-0"
+                className="size-4 shrink-0"
               />
-              <span className="truncate text-sm font-medium">{model.name}</span>
+              <span className="type-supporting-body type-emphasis truncate">
+                {model.name}
+              </span>
               {model.isNew && (
-                <Badge variant="secondary" className="h-5 text-xs">
+                <Badge variant="secondary" className=" ">
                   New
                 </Badge>
               )}
@@ -167,9 +171,9 @@ const ModelSelectContent: React.FC<{
                   <Badge
                     key={capability}
                     variant="secondary"
-                    className={`h-5 gap-1 px-1 text-xs ${capabilityColors[capability]}`}
+                    className={`gap-1 ${capabilityColors[capability]}`}
                   >
-                    {Icon && <Icon className="size-3" />}
+                    <Icon className="size-3" />
                   </Badge>
                 );
               })}
@@ -212,28 +216,19 @@ export const ModelSelect: React.FC<Props> = ({ model, setModel }) => {
       size={isMobile ? "icon-sm" : "sm"}
       className={cn("justify-center bg-transparent md:justify-start")}
       onClick={(event) => {
-        const target = event.target as HTMLElement;
-        const isNativeSearchToggle = target.closest(
-          '[data-native-search-toggle="true"]'
-        );
+        const isNativeSearchToggle =
+          event.target instanceof Element
+            ? event.target.closest('[data-native-search-toggle="true"]')
+            : null;
         if (!isNativeSearchToggle) {
           setIsOpen(!isOpen);
         }
       }}
     >
-      {model ? (
-        <>
-          <ModelProviderIcon provider={model.provider} className="size-4" />
-          <span className="hidden flex-1 truncate text-left text-xs md:block">
-            {model.name}
-          </span>
-        </>
-      ) : (
-        <>
-          <X className="mr-2 size-4" />
-          Select a model
-        </>
-      )}
+      <ModelProviderIcon provider={model.provider} className="size-4" />
+      <span className="hidden flex-1 truncate text-left type-caption md:block">
+        {model.name}
+      </span>
     </PromptInputButton>
   );
 
@@ -268,7 +263,7 @@ export const ModelSelect: React.FC<Props> = ({ model, setModel }) => {
         >
           <DropdownMenuTrigger render={triggerButton} />
           <DropdownMenuContent
-            className="w-xs overflow-hidden p-0 md:w-lg"
+            className="w-xs overflow-hidden md:w-lg"
             align="start"
             sideOffset={8}
           >

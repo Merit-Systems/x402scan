@@ -1,5 +1,6 @@
 import { useAccount } from "wagmi";
 import { useSolanaWallet } from "@/app/_contexts/solana/hook";
+import { solanaAddressSchema } from "@/lib/schemas";
 import type { EthereumAddress, SolanaAddress } from "@/types/address";
 
 interface NotConnectedWallets {
@@ -31,22 +32,28 @@ export const useConnectedWallets = (): UseConnectedWalletsReturnType => {
   const { address } = useAccount();
 
   const { connectedWallet } = useSolanaWallet();
+  const solanaAddressResult = solanaAddressSchema.safeParse(
+    connectedWallet?.account.address
+  );
+  const solanaAddress = solanaAddressResult.success
+    ? solanaAddressResult.data
+    : undefined;
 
-  if (address && connectedWallet?.account?.address) {
+  if (address && solanaAddress) {
     return {
       isConnected: true,
       evmAddress: address,
-      solanaAddress: connectedWallet.account.address as SolanaAddress,
+      solanaAddress,
     };
   }
-  if (connectedWallet?.account?.address && !address) {
+  if (solanaAddress && !address) {
     return {
       isConnected: true,
       evmAddress: undefined,
-      solanaAddress: connectedWallet.account.address as SolanaAddress,
+      solanaAddress,
     };
   }
-  if (address && !connectedWallet?.account?.address) {
+  if (address && !solanaAddress) {
     return {
       isConnected: true,
       evmAddress: address,

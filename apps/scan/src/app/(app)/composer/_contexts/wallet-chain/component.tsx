@@ -39,7 +39,7 @@ const ChainDisplay = () => {
   const { chain } = useWalletChain();
 
   return (
-    <div className="flex items-center gap-2 font-medium">
+    <div className="type-emphasis flex items-center gap-2 type-label">
       <Chain chain={chain} iconClassName="size-4" />
       <span className="hidden md:block">{CHAIN_LABELS[chain]}</span>
     </div>
@@ -66,12 +66,12 @@ const WalletChainSelector: React.FC<Props> = ({ options }) => {
           <ChevronDown className="size-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[140px] p-1">
+      <PopoverContent className="w-[140px]">
         {(options ?? SUPPORTED_CHAINS).map((value) => (
           <Button
             key={value}
             variant="ghost"
-            className="h-8 w-full justify-start gap-2"
+            className="w-full justify-start gap-2"
             onClick={() => {
               setChain(value);
               setIsOpen(false);

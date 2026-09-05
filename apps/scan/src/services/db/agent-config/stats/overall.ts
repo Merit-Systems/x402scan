@@ -48,7 +48,8 @@ const getOverallActivityUncached = async (
     )
   );
 
-  return result!;
+  if (!result) throw new Error("Overall activity query returned no row");
+  return result;
 };
 
 export const getOverallActivity = createCachedQuery({

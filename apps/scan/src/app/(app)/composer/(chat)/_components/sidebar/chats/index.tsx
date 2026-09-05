@@ -71,7 +71,7 @@ export const NavChats = () => {
       <SidebarGroup>
         <SidebarGroupLabel>Chats</SidebarGroupLabel>
         <SidebarMenu>
-          <div className="px-2 py-2 text-xs text-muted-foreground">
+          <div className="p-2 type-caption text-muted-foreground">
             No chats yet.
           </div>
         </SidebarMenu>
@@ -125,7 +125,7 @@ export const UnauthedNavChats = () => {
     <SidebarGroup>
       <SidebarGroupLabel>Chats</SidebarGroupLabel>
       <SidebarMenu>
-        <div className="px-2 py-2 text-xs text-muted-foreground">
+        <div className="p-2 type-caption text-muted-foreground">
           No chats yet.
         </div>
       </SidebarMenu>

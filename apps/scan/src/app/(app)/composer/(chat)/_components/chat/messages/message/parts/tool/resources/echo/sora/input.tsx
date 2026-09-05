@@ -25,14 +25,16 @@ export const SoraInput: InputComponent = ({ input }) => {
   return (
     <div className="flex items-center gap-2">
       <Video className="size-4 shrink-0" />
-      <p className="text-sm font-medium">
+      <p className="type-supporting-body type-emphasis">
         {prompt}{" "}
         {seconds ? (
-          <span className="text-xs text-muted-foreground">
+          <span className="type-caption text-muted-foreground">
             ({seconds} seconds)
           </span>
         ) : (
-          <span className="text-xs text-muted-foreground">(4 seconds)</span>
+          <span className="type-caption text-muted-foreground">
+            (4 seconds)
+          </span>
         )}
       </p>
     </div>

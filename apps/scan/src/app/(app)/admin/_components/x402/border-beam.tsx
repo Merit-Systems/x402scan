@@ -68,7 +68,7 @@ export const BorderBeam = ({
   const borderBeamStyle: React.CSSProperties & {
     "--border-beam-width": string;
   } = {
-    "--border-beam-width": `${borderWidth}px`,
+    "--border-beam-width": `${String(borderWidth)}px`,
   };
 
   return (
@@ -85,17 +85,17 @@ export const BorderBeam = ({
         style={
           {
             width: size,
-            offsetPath: `rect(0 auto auto 0 round ${size}px)`,
+            offsetPath: `rect(0 auto auto 0 round ${String(size)}px)`,
             "--color-from": colorFrom,
             "--color-to": colorTo,
             ...style,
           } as MotionStyle
         }
-        initial={{ offsetDistance: `${initialOffset}%` }}
+        initial={{ offsetDistance: `${String(initialOffset)}%` }}
         animate={{
           offsetDistance: reverse
-            ? [`${100 - initialOffset}%`, `${-initialOffset}%`]
-            : [`${initialOffset}%`, `${100 + initialOffset}%`],
+            ? [`${String(100 - initialOffset)}%`, `${String(-initialOffset)}%`]
+            : [`${String(initialOffset)}%`, `${String(100 + initialOffset)}%`],
         }}
         transition={{
           repeat: Infinity,

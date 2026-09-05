@@ -41,7 +41,7 @@ const ChainWalletInformation = async ({ chain }: { chain: SupportedChain }) => {
           <CardTitle>{CHAIN_LABELS[chain]} Wallet Address</CardTitle>
         </CardHeader>
         <CardContent>
-          <code className="block rounded bg-muted p-2 text-sm break-all">
+          <code className="type-mono type-scale-supporting block rounded bg-muted p-2 break-all">
             {await wallet.address().match(
               (ok) => ok,
               (err) => err.message
@@ -56,7 +56,7 @@ const ChainWalletInformation = async ({ chain }: { chain: SupportedChain }) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <p className="text-3xl font-bold">
+            <p className="type-banner-metric">
               {await wallet.getTokenBalance({ token: usdc(chain) }).match(
                 (ok) => formatCurrency(ok),
                 (err) => err.message

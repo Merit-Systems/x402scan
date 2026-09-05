@@ -9,6 +9,6 @@ import { createTRPCRouter, publicProcedure } from "@/trpc/trpc";
 export const publicChatsRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
     const session = await auth();
-    return getChat(input, session?.user?.id);
+    return getChat(input, session?.user.id);
   }),
 });

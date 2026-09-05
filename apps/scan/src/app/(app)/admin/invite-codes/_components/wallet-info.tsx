@@ -17,7 +17,9 @@ export const WalletInfo = () => {
     if (data?.address) {
       void navigator.clipboard.writeText(data.address);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
     }
   };
 
@@ -59,10 +61,12 @@ export const WalletInfo = () => {
   if (!data.configured) {
     return (
       <div className="flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-destructive" />
         <div>
-          <p className="font-medium text-destructive">Wallet Not Configured</p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="type-supporting-body type-emphasis text-destructive">
+            Wallet Not Configured
+          </p>
+          <p className="type-supporting-body mt-1 text-muted-foreground">
             {data.error ??
               "The invite wallet is not configured. Set the INVITE_WALLET_NAME environment variable."}
           </p>
@@ -80,18 +84,18 @@ export const WalletInfo = () => {
           <CardTitle>{CHAIN_LABELS[data.chain]} Invite Wallet</CardTitle>
         </CardHeader>
         <CardContent>
-          <code className="flex items-center gap-2 rounded bg-muted p-2 text-sm">
+          <code className="type-mono type-scale-supporting flex items-center gap-2 rounded bg-muted p-2">
             <span className="flex-1 break-all">{data.address}</span>
             <Button
               variant="ghost"
               size="icon"
               onClick={copyAddress}
-              className="h-6 w-6 shrink-0"
+              className="size-6 shrink-0"
             >
               {copied ? (
-                <Check className="h-3 w-3" />
+                <Check className="size-3" />
               ) : (
-                <Copy className="h-3 w-3" />
+                <Copy className="size-3" />
               )}
             </Button>
           </code>
@@ -102,26 +106,26 @@ export const WalletInfo = () => {
           <CardTitle>USDC Balance</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-3xl font-bold">
+          <p className="type-banner-metric">
             {formatCurrency(data.usdcBalance ?? 0)}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="type-supporting-body mt-1 text-muted-foreground">
             Available for invite code redemptions
           </p>
         </CardContent>
       </Card>
-      <Card className={lowEth ? "border-destructive/50" : undefined}>
+      <Card className={lowEth ? "" : undefined}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             ETH Balance
-            {lowEth && <AlertTriangle className="h-4 w-4 text-destructive" />}
+            {lowEth && <AlertTriangle className="size-4 text-destructive" />}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-3xl font-bold">
+          <p className="type-banner-metric">
             {(data.ethBalance ?? 0).toFixed(6)} ETH
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="type-supporting-body mt-1 text-muted-foreground">
             {lowEth
               ? "Low balance - fund wallet for gas fees"
               : "Available for gas fees"}

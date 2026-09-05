@@ -30,10 +30,10 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
           Fallback={Wrench}
         />
         <div className="flex w-0 flex-1 flex-col overflow-hidden">
-          <p className="w-full truncate font-mono text-xs font-semibold md:text-sm">
+          <p className="type-mono type-emphasis type-scale-supporting w-full truncate">
             {row.original.resource}
           </p>
-          <p className="line-clamp-2 w-full text-[10px] break-words whitespace-normal text-muted-foreground md:text-xs">
+          <p className="line-clamp-2 w-full type-caption wrap-break-word whitespace-normal text-muted-foreground">
             {cleanExternalText(
               row.original.accepts.find((accept) => accept.description)
                 ?.description ?? ""
@@ -75,7 +75,7 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
       <DataTableColumnHeader column={column} title="Calls" />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {row.original.tool_calls.toLocaleString(undefined, {
           notation: "compact",
           maximumFractionDigits: 2,
@@ -93,7 +93,7 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
       <DataTableColumnHeader column={column} title="Agents" />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {row.original.agent_configurations.toLocaleString(undefined, {
           notation: "compact",
           maximumFractionDigits: 2,
@@ -111,7 +111,7 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
       <DataTableColumnHeader column={column} title="Users" />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {row.original.unique_users.toLocaleString(undefined, {
           notation: "compact",
           maximumFractionDigits: 2,
@@ -129,7 +129,7 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
       <DataTableColumnHeader column={column} title="Latest" />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {formatCompactAgo(row.original.latest_call_time ?? new Date())}
       </div>
     ),

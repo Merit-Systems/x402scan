@@ -13,12 +13,12 @@ import type { UseMutationOptions } from "@tanstack/react-query";
 import type { FetchWithPaymentWrapper, X402FetchResponse } from "./types";
 import type { UiWalletAccount } from "@wallet-standard/react";
 
-interface UseSvmX402FetchWithConfirmationParams<TData = unknown> {
+interface UseSvmX402FetchWithConfirmationParams {
   targetUrl: string;
   value: bigint;
   account: UiWalletAccount;
   init?: RequestInit;
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
+  options?: Omit<UseMutationOptions<X402FetchResponse>, "mutationFn">;
   isTool?: boolean;
 }
 
@@ -29,21 +29,17 @@ interface UseSvmX402FetchWithConfirmationParams<TData = unknown> {
  * handling price increases gracefully by prompting for user confirmation.
  */
 
-export const useSvmX402FetchWithConfirmation = <TData = unknown>({
+export const useSvmX402FetchWithConfirmation = ({
   account,
   isTool = false,
   ...params
-}: UseSvmX402FetchWithConfirmationParams<TData>) => {
+}: UseSvmX402FetchWithConfirmationParams) => {
   const transactionSigner = useWalletAccountTransactionSigner(
     account,
     "solana:mainnet"
   );
 
   const wrapperFn: FetchWithPaymentWrapper = (baseFetch) => {
-    if (!transactionSigner) {
-      throw new Error("Solana wallet not available");
-    }
-
     const client = registerSvmX402Client({
       signer: transactionSigner,
       rpcUrl: env.NEXT_PUBLIC_SOLANA_RPC_URL,
@@ -52,7 +48,7 @@ export const useSvmX402FetchWithConfirmation = <TData = unknown>({
     return wrapFetchWithPayment(baseFetch, client);
   };
 
-  return useX402FetchWithPriceConfirmation<TData>({
+  return useX402FetchWithPriceConfirmation({
     wrapperFn,
     fetchFn: isTool ? fetch : fetchWithProxy,
     initialMaxValue: params.value,

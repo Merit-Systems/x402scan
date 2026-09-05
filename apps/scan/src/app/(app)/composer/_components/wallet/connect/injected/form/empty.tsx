@@ -12,12 +12,12 @@ export const ConnectInjectedWalletEmpty = () => {
   const { chain } = useWalletChain();
 
   return (
-    <Empty className="w-full border border-solid bg-muted/80 p-2 md:p-4">
+    <Empty className="w-full border">
       <EmptyHeader className="gap-2">
         <EmptyMedia variant="icon" className="mb-0">
           <Chain chain={chain} iconClassName="size-6" />
         </EmptyMedia>
-        <EmptyTitle className="text-sm">
+        <EmptyTitle className="">
           No {CHAIN_LABELS[chain]} Injected Wallets Detected
         </EmptyTitle>
       </EmptyHeader>

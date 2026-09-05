@@ -43,7 +43,9 @@ export const ToolsTable = ({
         pageSize,
         pageCount: topTools.total_pages,
       }}
-      onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
+      onPaginationChange={({ pageIndex }) => {
+        setPage(pageIndex);
+      }}
     />
   );
 };

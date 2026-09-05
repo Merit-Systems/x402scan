@@ -88,10 +88,10 @@ export const CreateInviteCodeButton = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button />}>
-        <Plus className="mr-2 h-4 w-4" />
+        <Plus className="mr-2 size-4" />
         Create Invite Code
       </DialogTrigger>
-      <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-[500px]">
+      <DialogContent className="flex flex-col sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Create Invite Code</DialogTitle>
           <DialogDescription>
@@ -108,13 +108,13 @@ export const CreateInviteCodeButton = () => {
                 id="code"
                 placeholder="WELCOME10 (auto-generated if empty)"
                 value={code}
-                onChange={(e) =>
+                onChange={(e) => {
                   setCode(
                     e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "")
-                  )
-                }
+                  );
+                }}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="type-caption text-muted-foreground">
                 Leave empty to auto-generate a code like MRTXXXXX
               </p>
             </div>
@@ -127,10 +127,12 @@ export const CreateInviteCodeButton = () => {
                 step="0.01"
                 placeholder="10"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                }}
                 required
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="type-caption text-muted-foreground">
                 Amount of USDC to send when code is redeemed
               </p>
             </div>
@@ -143,25 +145,27 @@ export const CreateInviteCodeButton = () => {
                 min="0"
                 placeholder="1"
                 value={maxRedemptions}
-                onChange={(e) => setMaxRedemptions(e.target.value)}
+                onChange={(e) => {
+                  setMaxRedemptions(e.target.value);
+                }}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="type-caption text-muted-foreground">
                 0 = unlimited redemptions
               </p>
             </div>
 
             <div className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <Label className="text-base">Unique Recipients Only</Label>
-                <p className="text-xs text-muted-foreground">
+                <Label className="">Unique Recipients Only</Label>
+                <p className="type-caption text-muted-foreground">
                   Each wallet can only redeem this code once
                 </p>
               </div>
               <Checkbox
                 checked={uniqueRecipients}
-                onCheckedChange={(checked) =>
-                  setUniqueRecipients(checked === true)
-                }
+                onCheckedChange={(checked) => {
+                  setUniqueRecipients(checked === true);
+                }}
               />
             </div>
 
@@ -171,9 +175,11 @@ export const CreateInviteCodeButton = () => {
                 id="expiresAt"
                 type="datetime-local"
                 value={expiresAt}
-                onChange={(e) => setExpiresAt(e.target.value)}
+                onChange={(e) => {
+                  setExpiresAt(e.target.value);
+                }}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="type-caption text-muted-foreground">
                 Leave empty for no expiration
               </p>
             </div>
@@ -184,7 +190,9 @@ export const CreateInviteCodeButton = () => {
                 id="note"
                 placeholder="Internal note about this invite code..."
                 value={note}
-                onChange={(e) => setNote(e.target.value)}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
               />
             </div>
           </div>
@@ -193,7 +201,9 @@ export const CreateInviteCodeButton = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+              }}
             >
               Cancel
             </Button>

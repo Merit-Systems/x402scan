@@ -41,7 +41,7 @@ export const Header: React.FC<Props> = ({
       <div className="flex flex-1 flex-col justify-between gap-4 md:flex-row md:items-center md:gap-0">
         <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
           <Method method={method} />
-          <span className="truncate font-mono text-sm">
+          <span className="type-mono type-scale-supporting truncate">
             {hideOrigin
               ? decodeURIComponent(new URL(resource.resource).pathname)
               : resource.resource}
@@ -50,7 +50,7 @@ export const Header: React.FC<Props> = ({
           {resource.x402Version === 2 && <X402V2Badge />}
         </div>
       </div>
-      <p className="line-clamp-2 text-xs text-muted-foreground">
+      <p className="line-clamp-2 type-caption text-muted-foreground">
         {description}
       </p>
     </div>

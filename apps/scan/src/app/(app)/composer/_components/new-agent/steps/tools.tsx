@@ -2,7 +2,7 @@ import { Controller } from "react-hook-form";
 
 import { Field, FieldGroup } from "@/components/ui/field";
 
-import { ResourceList } from "@/app/(app)/composer/(chat)/_components/resource-list";
+import { ResourceList } from "@/app/(app)/composer/_components/resource-list";
 
 import type { NewAgentForm } from "./types";
 import { Button } from "@/components/ui/button";
