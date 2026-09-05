@@ -2,6 +2,7 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
+  skipValidation: process.env.SKIP_ENV_VALIDATION === "1",
   server: {
     NODE_ENV: z
       .enum(["development", "test", "production"])

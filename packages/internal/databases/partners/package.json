@@ -17,7 +17,9 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsc --watch",
-    "types:check": "tsc --noEmit"
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "types:check": "tsc --noEmit && tsc --noEmit --project tsconfig.tools.json"
   },
   "dependencies": {
     "@clickhouse/client": "catalog:clickhouse",
@@ -25,9 +27,12 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@merit-systems/oxlint-config": "catalog:foundation",
     "@types/node": "catalog:",
     "@merit-systems/tsdown-config": "catalog:foundation",
     "@merit-systems/typescript-config": "catalog:foundation",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "tsdown": "catalog:bundling",
     "typescript": "catalog:"
   },

@@ -96,23 +96,23 @@ catalogs:
       version: 17.2.3
   foundation:
     '@merit-systems/foundation':
-      specifier: 0.20.2
-      version: 0.20.2
+      specifier: 0.21.0
+      version: 0.21.0
     '@merit-systems/oxfmt-config':
-      specifier: 0.20.2
-      version: 0.20.2
+      specifier: 0.21.0
+      version: 0.21.0
     '@merit-systems/oxlint-config':
-      specifier: 0.20.2
-      version: 0.20.2
+      specifier: 0.21.0
+      version: 0.21.0
     '@merit-systems/taze-config':
-      specifier: 0.20.2
-      version: 0.20.2
+      specifier: 0.21.0
+      version: 0.21.0
     '@merit-systems/tsdown-config':
-      specifier: 0.20.2
-      version: 0.20.2
+      specifier: 0.21.0
+      version: 0.21.0
     '@merit-systems/typescript-config':
-      specifier: 0.20.2
-      version: 0.20.2
+      specifier: 0.21.0
+      version: 0.21.0
   hono:
     '@hono/node-server':
       specifier: ^1.19.9
@@ -232,19 +232,19 @@ importers:
         version: 2.29.8(@types/node@24.9.2)
       '@merit-systems/foundation':
         specifier: catalog:foundation
-        version: 0.20.2(@cfworker/json-schema@4.1.1)(@cloudflare/workers-types@4.20251111.0)(@opentelemetry/api@1.9.0)(@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(typescript@6.0.3))(better-sqlite3@12.6.2)(mysql2@3.15.3)(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(supports-color@10.2.2)(typescript@6.0.3)(vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(jiti@2.7.0)(jsdom@26.1.0(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.32.0)(terser@5.49.2)(tsx@4.21.0)(yaml@2.9.0))
+        version: 0.21.0(@cfworker/json-schema@4.1.1)(@cloudflare/workers-types@4.20251111.0)(@opentelemetry/api@1.9.0)(@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(typescript@6.0.3))(better-sqlite3@12.6.2)(mysql2@3.15.3)(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(supports-color@10.2.2)(vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(jiti@2.7.0)(jsdom@26.1.0(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.32.0)(terser@5.49.2)(tsx@4.21.0)(yaml@2.9.0))
       '@merit-systems/oxfmt-config':
         specifier: catalog:foundation
-        version: 0.20.2(oxfmt@0.64.0)
+        version: 0.21.0(oxfmt@0.64.0)
       '@merit-systems/oxlint-config':
         specifier: catalog:foundation
-        version: 0.20.2(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/taze-config':
         specifier: catalog:foundation
-        version: 0.20.2(taze@19.17.2)
+        version: 0.21.0(taze@19.17.2)
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       knip:
         specifier: ^5.80.0
         version: 5.80.0(@types/node@24.9.2)(typescript@6.0.3)
@@ -288,12 +288,21 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       portless:
         specifier: 'catalog:'
         version: 0.15.6
@@ -313,9 +322,18 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20240208.0
         version: 4.20251111.0
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       portless:
         specifier: 'catalog:'
         version: 0.15.6
@@ -632,9 +650,12 @@ importers:
         specifier: npm:zod@^3.24.2
         version: zod@3.25.76
     devDependencies:
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.1.6(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       '@tailwindcss/postcss':
         specifier: catalog:tailwind
         version: 4.1.16
@@ -656,6 +677,12 @@ importers:
       '@vitest/ui':
         specifier: ^3.2.4
         version: 3.2.4(vitest@4.0.17)
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       portless:
         specifier: 'catalog:'
         version: 0.15.6
@@ -687,15 +714,24 @@ importers:
         specifier: ^0.6.6
         version: 0.6.6(@solana/sysvars@2.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@6.0.3))(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.2.2)(supports-color@10.2.2)(typescript@6.0.3)(utf-8-validate@5.0.10)(ws@8.21.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
     devDependencies:
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/tsdown-config':
         specifier: catalog:foundation
-        version: 0.20.2(tsdown@0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3))
+        version: 0.21.0(tsdown@0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3))
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       tsdown:
         specifier: catalog:bundling
         version: 0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3)
@@ -715,15 +751,24 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/tsdown-config':
         specifier: catalog:foundation
-        version: 0.20.2(tsdown@0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3))
+        version: 0.21.0(tsdown@0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3))
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       tsdown:
         specifier: catalog:bundling
         version: 0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3)
@@ -755,15 +800,24 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
       '@types/ws':
         specifier: catalog:prisma
         version: 8.18.1
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       prisma:
         specifier: catalog:prisma
         version: 7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3)
@@ -801,15 +855,24 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
       '@types/ws':
         specifier: catalog:prisma
         version: 8.18.1
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       prisma:
         specifier: catalog:prisma
         version: 7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3)
@@ -829,15 +892,24 @@ importers:
         specifier: ^8.2.0
         version: 8.2.0
     devDependencies:
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/tsdown-config':
         specifier: catalog:foundation
-        version: 0.20.2(tsdown@0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3))
+        version: 0.21.0(tsdown@0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3))
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       tsdown:
         specifier: catalog:bundling
         version: 0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3)
@@ -860,15 +932,24 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       '@trigger.dev/build':
         specifier: catalog:trigger
         version: 4.3.2(bufferutil@4.0.9)(magicast@0.3.5)(supports-color@10.2.2)(typescript@6.0.3)(utf-8-validate@5.0.10)
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       trigger.dev:
         specifier: catalog:trigger
         version: 4.3.2(@cfworker/json-schema@4.1.1)(bufferutil@4.0.9)(superstruct@2.0.2)(typescript@6.0.3)(utf-8-validate@5.0.10)(valibot@1.2.0(typescript@6.0.3))
@@ -918,15 +999,24 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
+      '@merit-systems/oxlint-config':
+        specifier: catalog:foundation
+        version: 0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)
       '@merit-systems/typescript-config':
         specifier: catalog:foundation
-        version: 0.20.2(typescript@6.0.3)
+        version: 0.21.0(typescript@6.0.3)
       '@trigger.dev/build':
         specifier: catalog:trigger
         version: 4.3.2(bufferutil@4.0.9)(magicast@0.3.5)(supports-color@10.2.2)(typescript@6.0.3)(utf-8-validate@5.0.10)
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tsgolint:
+        specifier: 'catalog:'
+        version: 7.0.2001
       trigger.dev:
         specifier: catalog:trigger
         version: 4.3.2(@cfworker/json-schema@4.1.1)(bufferutil@4.0.9)(superstruct@2.0.2)(typescript@6.0.3)(utf-8-validate@5.0.10)(valibot@1.2.0(typescript@6.0.3))
@@ -3016,41 +3106,41 @@ packages:
   '@merit-systems/credentials-sdk@0.1.2':
     resolution: {integrity: sha512-jOnpjH1JiP2YLw+88moVqR8PEcf+VfuGJ7SGGoXgUfj0hMfrKiDV83OkJtZ5y17rTqVCuY7AGqBisN4/+8vEKQ==, tarball: https://npm.pkg.github.com/download/@merit-systems/credentials-sdk/0.1.2/5e5cc6c64ee81bab4c0f216441d6ee3edc5bdb18}
 
-  '@merit-systems/foundation@0.20.2':
-    resolution: {integrity: sha512-+cjYuPKKRA4e7HcOBb6NPKg1hfI7Phz1Os8Te1YoF87B6Xp/rT6SMD2q8YZ760AfG4f4B0rlVlN+mxVZf+5wow==, tarball: https://npm.pkg.github.com/download/@merit-systems/foundation/0.20.2/eefdf2797d4403fddc339ed01090c522429ffd25}
+  '@merit-systems/foundation@0.21.0':
+    resolution: {integrity: sha512-+9Q5hM7TJG8vMQ7k2ibvWTDr4qNuftXq2gL3TvPl63pHIhPYQBHjEGAPgk/BZ9bdNO2rAhhmQxbS+ZErLjSTKw==, tarball: https://npm.pkg.github.com/download/@merit-systems/foundation/0.21.0/ef78c3d99c71030dd32936660773fb1d6df6c499}
     engines: {node: 24.x}
     hasBin: true
 
-  '@merit-systems/oxfmt-config@0.20.2':
-    resolution: {integrity: sha512-p0+UhJMwkM0mkrNtufmNF//YOgx/k31qqrqax9prVAvsufKdmQWx2WGW8kk+9hRXD2YqYLvuyqr+9gMxMTsAVw==, tarball: https://npm.pkg.github.com/download/@merit-systems/oxfmt-config/0.20.2/863e1191cacd938e830f90d9f47aa410e34c541b}
+  '@merit-systems/oxfmt-config@0.21.0':
+    resolution: {integrity: sha512-CeFPFVVcy/ARrifrZ/NmvVl84iiL70tngWe6Dq75ElE3vS+lDthqVklsrppEyuwOPrq58og3+9MgW4weAwGg8g==, tarball: https://npm.pkg.github.com/download/@merit-systems/oxfmt-config/0.21.0/05536d4888e073adb60e494ee97415d7177501fe}
     peerDependencies:
       oxfmt: '>=0.64 <0.65'
 
-  '@merit-systems/oxlint-config@0.20.2':
-    resolution: {integrity: sha512-ZOayQEkwj7jTmBHkEyDZrLlPSQA470IBqfdgrPZ9B+kmIOqFIljcP/aN3KM4BgFB3jkkqtTKBfAXK5R1UZmPww==, tarball: https://npm.pkg.github.com/download/@merit-systems/oxlint-config/0.20.2/503aa4c8fc4747a7e8f0365ac7117c89ed8c6306}
+  '@merit-systems/oxlint-config@0.21.0':
+    resolution: {integrity: sha512-rW8CMjH5bcZCa6m92GCLntgSiPIrDPz6b1cR33xstzrHhR67WSm8WZeVMHjKvJNBs2Yaf4VaDVXqN00U0XN/ag==, tarball: https://npm.pkg.github.com/download/@merit-systems/oxlint-config/0.21.0/d44655407ad58278e3cd7a087203758bad67d709}
     peerDependencies:
       oxlint: '>=1.78 <2'
       oxlint-tsgolint: '>=7 <8'
 
-  '@merit-systems/oxlint-plugin@0.20.2':
-    resolution: {integrity: sha512-96kJ5JzBh9EyYop9X4fSznmc0+017hamU64Zsg5lozavnX9pooLxaVZjGzlgHJMDG41Nxa5UZD6463K1ItluSw==, tarball: https://npm.pkg.github.com/download/@merit-systems/oxlint-plugin/0.20.2/d38ead5154c3dae85a14225e9b2718ef0682cf09}
+  '@merit-systems/oxlint-plugin@0.21.0':
+    resolution: {integrity: sha512-BNMNSP6moj+er6QAEHsJEAX8QlE4VivLmxdLAS/oCjSXf1Q5qpoNdjpJZQOVWU8IzzQkA5xgdR5zQARO0WA4rA==, tarball: https://npm.pkg.github.com/download/@merit-systems/oxlint-plugin/0.21.0/09ac4a65ca0b4a11c50e304650dc71e5fd0fc645}
     engines: {node: 24.x}
     peerDependencies:
       next: '>=16.2 <17'
 
-  '@merit-systems/taze-config@0.20.2':
-    resolution: {integrity: sha512-Rg8PQGzZrG2bAdDp/q/C0w24pgk1EU81szEFOfCI3AGwB/6g99sBX3hndAYDORibJKQi63NEf8Ejx+Y974OLYg==, tarball: https://npm.pkg.github.com/download/@merit-systems/taze-config/0.20.2/4f3fbe742b7a95eef43833061d3249040aa203f2}
+  '@merit-systems/taze-config@0.21.0':
+    resolution: {integrity: sha512-hyYhR83f6c56imdVCmy2WzOc0r6Vk7BuevqqHtGm6fhGBeQqEQSKFcWyvEl8RwBIuT7BjrWT880rUmJ7W8etDg==, tarball: https://npm.pkg.github.com/download/@merit-systems/taze-config/0.21.0/cdd3743f7fb74f13fd0fc4647235ea1fcdc8327c}
     peerDependencies:
       taze: '>=19.16.0 <20'
 
-  '@merit-systems/tsdown-config@0.20.2':
-    resolution: {integrity: sha512-z4nPwYJ+/uqZhGvnLz70wTS1sDvmTPySwEchZqMkG/6913qQ05RTWwhwbW6yt9bEsVp5E8hn8YuAmOm8kmpSog==, tarball: https://npm.pkg.github.com/download/@merit-systems/tsdown-config/0.20.2/e498db5270492686f48d67564a69d16f2fb00e6c}
+  '@merit-systems/tsdown-config@0.21.0':
+    resolution: {integrity: sha512-e3BfnAI/Z5uHOtDYn0vUDC8lBvluT2BBNxQIoFJxrl7T6rOjyd3x4SF0dvF7IyEwDz3CIO6dNtJVhmZ3cfOHbA==, tarball: https://npm.pkg.github.com/download/@merit-systems/tsdown-config/0.21.0/47a89e2e13b3aa2cc4677ffe5f9a205e6091e6df}
     engines: {node: 24.x}
     peerDependencies:
       tsdown: '>=0.22 <0.23'
 
-  '@merit-systems/typescript-config@0.20.2':
-    resolution: {integrity: sha512-vszw3/u/9wC2Oics3Di/ggpYWR4kHCMA6JwRJpcdhw8iRVu6tyoXH7ea5U0vLzN9dEbfDgrrlNEBokcm4v54Bw==, tarball: https://npm.pkg.github.com/download/@merit-systems/typescript-config/0.20.2/51fe08d992e225893010b90f15346946461c984f}
+  '@merit-systems/typescript-config@0.21.0':
+    resolution: {integrity: sha512-h1Iw2RUGd61u/T8Ee5PY2Y/mqw0ybl0ATMJ9OwFUvEP2w1i0qkRPCXmzWA9oM8G/8EscQ6NmGzdts6exgq2jFg==, tarball: https://npm.pkg.github.com/download/@merit-systems/typescript-config/0.21.0/60823a22c44e10b03899e954921f762aedb5d787}
     peerDependencies:
       typescript: '>=6 <7'
 
@@ -15217,10 +15307,10 @@ snapshots:
 
   '@merit-systems/credentials-sdk@0.1.2': {}
 
-  '@merit-systems/foundation@0.20.2(@cfworker/json-schema@4.1.1)(@cloudflare/workers-types@4.20251111.0)(@opentelemetry/api@1.9.0)(@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(typescript@6.0.3))(better-sqlite3@12.6.2)(mysql2@3.15.3)(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(supports-color@10.2.2)(typescript@6.0.3)(vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(jiti@2.7.0)(jsdom@26.1.0(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.32.0)(terser@5.49.2)(tsx@4.21.0)(yaml@2.9.0))':
+  '@merit-systems/foundation@0.21.0(@cfworker/json-schema@4.1.1)(@cloudflare/workers-types@4.20251111.0)(@opentelemetry/api@1.9.0)(@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(typescript@6.0.3))(better-sqlite3@12.6.2)(mysql2@3.15.3)(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(supports-color@10.2.2)(vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(jiti@2.7.0)(jsdom@26.1.0(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.32.0)(terser@5.49.2)(tsx@4.21.0)(yaml@2.9.0))':
     dependencies:
       '@merit-systems/credentials-sdk': 0.1.2
-      '@merit-systems/oxfmt-config': 0.20.2(oxfmt@0.64.0)
+      '@merit-systems/oxfmt-config': 0.21.0(oxfmt@0.64.0)
       better-auth: 1.6.24(@cloudflare/workers-types@4.20251111.0)(@opentelemetry/api@1.9.0)(@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(typescript@6.0.3))(better-sqlite3@12.6.2)(mysql2@3.15.3)(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@6.0.3))(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(jiti@2.7.0)(jsdom@26.1.0(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@5.0.10))(lightningcss@1.32.0)(terser@5.49.2)(tsx@4.21.0)(yaml@2.9.0))
       execa: 10.0.0
       incur: 0.4.19
@@ -15228,6 +15318,7 @@ snapshots:
       oxfmt: 0.64.0
       semver: 7.8.5
       shadcn: 4.13.1(@cfworker/json-schema@4.1.1)(supports-color@10.2.2)(typescript@6.0.3)
+      typescript: 6.0.3
       yaml: 2.9.0
       zod: 4.4.3
     transitivePeerDependencies:
@@ -15253,18 +15344,17 @@ snapshots:
       - solid-js
       - supports-color
       - svelte
-      - typescript
       - vite-plus
       - vitest
       - vue
 
-  '@merit-systems/oxfmt-config@0.20.2(oxfmt@0.64.0)':
+  '@merit-systems/oxfmt-config@0.21.0(oxfmt@0.64.0)':
     dependencies:
       oxfmt: 0.64.0
 
-  '@merit-systems/oxlint-config@0.20.2(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)':
+  '@merit-systems/oxlint-config@0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.1.6(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)':
     dependencies:
-      '@merit-systems/oxlint-plugin': 0.20.2(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))
+      '@merit-systems/oxlint-plugin': 0.21.0(next@16.1.6(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))
       eslint-plugin-react-hooks: 7.1.1(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
       eslint-plugin-turbo: 2.10.6(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(turbo@2.10.12)
       oxlint: 1.78.0(oxlint-tsgolint@7.0.2001)
@@ -15276,21 +15366,61 @@ snapshots:
       - supports-color
       - turbo
 
-  '@merit-systems/oxlint-plugin@0.20.2(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))':
+  '@merit-systems/oxlint-config@0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)':
+    dependencies:
+      '@merit-systems/oxlint-plugin': 0.21.0(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))
+      eslint-plugin-react-hooks: 7.1.1(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
+      eslint-plugin-turbo: 2.10.6(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(turbo@2.10.12)
+      oxlint: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tailwindcss: 1.9.0
+      oxlint-tsgolint: 7.0.2001
+    transitivePeerDependencies:
+      - eslint
+      - next
+      - supports-color
+      - turbo
+
+  '@merit-systems/oxlint-config@0.21.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(oxlint-tsgolint@7.0.2001)(oxlint@1.78.0(oxlint-tsgolint@7.0.2001))(supports-color@10.2.2)(turbo@2.10.12)':
+    dependencies:
+      '@merit-systems/oxlint-plugin': 0.21.0(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))
+      eslint-plugin-react-hooks: 7.1.1(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
+      eslint-plugin-turbo: 2.10.6(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(turbo@2.10.12)
+      oxlint: 1.78.0(oxlint-tsgolint@7.0.2001)
+      oxlint-tailwindcss: 1.9.0
+      oxlint-tsgolint: 7.0.2001
+    transitivePeerDependencies:
+      - eslint
+      - next
+      - supports-color
+      - turbo
+
+  '@merit-systems/oxlint-plugin@0.21.0(next@16.1.6(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))':
+    dependencies:
+      '@oxlint/plugins': 1.78.0
+      next: 16.1.6(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
+      zod: 4.4.3
+
+  '@merit-systems/oxlint-plugin@0.21.0(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))':
+    dependencies:
+      '@oxlint/plugins': 1.78.0
+      next: 16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
+      zod: 4.4.3
+
+  '@merit-systems/oxlint-plugin@0.21.0(next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))':
     dependencies:
       '@oxlint/plugins': 1.78.0
       next: 16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
       zod: 4.4.3
 
-  '@merit-systems/taze-config@0.20.2(taze@19.17.2)':
+  '@merit-systems/taze-config@0.21.0(taze@19.17.2)':
     dependencies:
       taze: 19.17.2
 
-  '@merit-systems/tsdown-config@0.20.2(tsdown@0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3))':
+  '@merit-systems/tsdown-config@0.21.0(tsdown@0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3))':
     dependencies:
       tsdown: 0.22.14(oxc-resolver@11.16.2)(tsx@4.21.0)(typescript@6.0.3)
 
-  '@merit-systems/typescript-config@0.20.2(typescript@6.0.3)':
+  '@merit-systems/typescript-config@0.21.0(typescript@6.0.3)':
     dependencies:
       typescript: 6.0.3
 
@@ -25133,6 +25263,32 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
+  next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(react-dom@19.2.2(react@19.2.2))(react@19.2.2):
+    dependencies:
+      '@next/env': 16.3.4
+      '@swc/helpers': 0.5.23
+      baseline-browser-mapping: 2.11.20
+      caniuse-lite: 1.0.30001762
+      postcss: 8.5.23
+      react: 19.2.2
+      react-dom: 19.2.2(react@19.2.2)
+      styled-jsx: 5.1.6(@babel/core@7.29.7(supports-color@10.2.2))(react@19.2.2)
+    optionalDependencies:
+      '@next/swc-darwin-arm64': 16.3.4
+      '@next/swc-darwin-x64': 16.3.4
+      '@next/swc-linux-arm64-gnu': 16.3.4
+      '@next/swc-linux-arm64-musl': 16.3.4
+      '@next/swc-linux-x64-gnu': 16.3.4
+      '@next/swc-linux-x64-musl': 16.3.4
+      '@next/swc-win32-arm64-msvc': 16.3.4
+      '@next/swc-win32-x64-msvc': 16.3.4
+      '@opentelemetry/api': 1.9.0
+      sharp: 0.35.4(@types/node@20.19.27)
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@types/node'
+      - babel-plugin-macros
+
   next@16.3.4(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(react-dom@19.2.2(react@19.2.2))(react@19.2.2):
     dependencies:
       '@next/env': 16.3.4
@@ -26825,6 +26981,40 @@ snapshots:
       '@img/sharp-win32-arm64': 0.34.5
       '@img/sharp-win32-ia32': 0.34.5
       '@img/sharp-win32-x64': 0.34.5
+    optional: true
+
+  sharp@0.35.4(@types/node@20.19.27):
+    dependencies:
+      '@img/colour': 1.1.0
+      detect-libc: 2.1.2
+      semver: 7.8.5
+    optionalDependencies:
+      '@img/sharp-darwin-arm64': 0.35.4
+      '@img/sharp-darwin-x64': 0.35.4
+      '@img/sharp-freebsd-wasm32': 0.35.4
+      '@img/sharp-libvips-darwin-arm64': 1.3.3
+      '@img/sharp-libvips-darwin-x64': 1.3.3
+      '@img/sharp-libvips-linux-arm': 1.3.3
+      '@img/sharp-libvips-linux-arm64': 1.3.3
+      '@img/sharp-libvips-linux-ppc64': 1.3.3
+      '@img/sharp-libvips-linux-riscv64': 1.3.3
+      '@img/sharp-libvips-linux-s390x': 1.3.3
+      '@img/sharp-libvips-linux-x64': 1.3.3
+      '@img/sharp-libvips-linuxmusl-arm64': 1.3.3
+      '@img/sharp-libvips-linuxmusl-x64': 1.3.3
+      '@img/sharp-linux-arm': 0.35.4
+      '@img/sharp-linux-arm64': 0.35.4
+      '@img/sharp-linux-ppc64': 0.35.4
+      '@img/sharp-linux-riscv64': 0.35.4
+      '@img/sharp-linux-s390x': 0.35.4
+      '@img/sharp-linux-x64': 0.35.4
+      '@img/sharp-linuxmusl-arm64': 0.35.4
+      '@img/sharp-linuxmusl-x64': 0.35.4
+      '@img/sharp-webcontainers-wasm32': 0.35.4
+      '@img/sharp-win32-arm64': 0.35.4
+      '@img/sharp-win32-ia32': 0.35.4
+      '@img/sharp-win32-x64': 0.35.4
+      '@types/node': 20.19.27
     optional: true
 
   sharp@0.35.4(@types/node@24.9.2):

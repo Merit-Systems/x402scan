@@ -10,6 +10,8 @@
     "db:migrate": "prisma migrate dev --skip-generate",
     "db:format": "prisma format",
     "dev": "tsup src/* --watch",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "types:check": "tsc --noEmit",
     "studio": "prisma studio"
   },
@@ -23,9 +25,12 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@merit-systems/oxlint-config": "catalog:foundation",
     "@types/node": "catalog:",
     "@types/ws": "catalog:prisma",
     "@merit-systems/typescript-config": "catalog:foundation",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "prisma": "catalog:prisma",
     "rimraf": "catalog:",
     "tsup": "catalog:",

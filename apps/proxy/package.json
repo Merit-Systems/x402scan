@@ -8,7 +8,9 @@
     "dev:app": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "types:check": "tsc --noEmit"
+    "types:check": "tsc --noEmit && tsc --noEmit --project tsconfig.tools.json",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix ."
   },
   "dependencies": {
     "@t3-oss/env-core": "catalog:env",
@@ -18,8 +20,11 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@merit-systems/oxlint-config": "catalog:foundation",
     "@merit-systems/typescript-config": "catalog:foundation",
     "@types/node": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "portless": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"
