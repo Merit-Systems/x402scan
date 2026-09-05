@@ -19,6 +19,8 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "prepack": "pnpm build",
     "types:check": "tsc --noEmit"
   },
@@ -38,9 +40,12 @@
     "directory": "facilitators"
   },
   "devDependencies": {
+    "@merit-systems/oxlint-config": "catalog:foundation",
     "@merit-systems/typescript-config": "catalog:foundation",
     "@merit-systems/tsdown-config": "catalog:foundation",
     "@types/node": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "tsdown": "catalog:bundling",
     "typescript": "catalog:"
   },

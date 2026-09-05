@@ -9,6 +9,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "tsup.config.ts"],
+  "include": ["src/**/*", "tsup.config.ts", "oxlint.config.ts"],
   "exclude": ["node_modules", "dist"]
 }
