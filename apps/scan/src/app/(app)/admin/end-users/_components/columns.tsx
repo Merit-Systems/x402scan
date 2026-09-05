@@ -17,21 +17,21 @@ const AuthMethodBadge = ({
 }) => {
   if (method.type === "email") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs text-primary">
+      <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 type-caption text-primary">
         Email: {method.email}
       </span>
     );
   }
   if (method.type === "sms") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-md bg-green-500/10 px-2 py-0.5 text-xs text-green-600">
+      <span className="inline-flex items-center gap-1 rounded-md bg-success-subtle px-2 py-0.5 type-caption text-success">
         SMS: {method.phoneNumber}
       </span>
     );
   }
   if (method.type === "jwt") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-2 py-0.5 text-xs text-purple-600">
+      <span className="inline-flex items-center gap-1 rounded-md bg-accent px-2 py-0.5 type-caption text-accent-foreground">
         JWT
       </span>
     );
@@ -45,14 +45,14 @@ export const columns: DataTableColumnDef<EndUser>[] = [
     header: () => (
       <div className="flex items-center gap-2">
         <User className="size-4" />
-        <span className="text-xs font-medium">User ID</span>
+        <span className="type-emphasis type-caption">User ID</span>
       </div>
     ),
     cell: ({ row }) => (
       <Copyable
         value={row.original.userId}
         toastMessage="User ID copied"
-        className="block max-w-[200px] truncate font-mono text-xs font-medium"
+        className="block max-w-[200px] truncate"
       >
         {row.original.userId}
       </Copyable>
@@ -64,7 +64,7 @@ export const columns: DataTableColumnDef<EndUser>[] = [
     accessorKey: "authenticationMethods",
     header: () => (
       <div className="flex items-center gap-2">
-        <span className="text-xs font-medium">Authentication</span>
+        <span className="type-emphasis type-caption">Authentication</span>
       </div>
     ),
     cell: ({ row }) => (
@@ -82,12 +82,12 @@ export const columns: DataTableColumnDef<EndUser>[] = [
     header: () => (
       <div className="flex items-center gap-2">
         <Wallet className="size-4" />
-        <span className="text-xs font-medium">EVM Accounts</span>
+        <span className="type-emphasis type-caption">EVM Accounts</span>
       </div>
     ),
     cell: ({ row }) => {
       if (row.original.evmAccounts.length === 0) {
-        return <span className="text-xs text-muted-foreground">None</span>;
+        return <span className="type-caption text-muted-foreground">None</span>;
       }
       return (
         <div className="flex flex-col gap-1">
@@ -96,7 +96,7 @@ export const columns: DataTableColumnDef<EndUser>[] = [
               key={idx}
               value={account}
               toastMessage="Address copied"
-              className="block max-w-[150px] truncate font-mono text-xs"
+              className="block max-w-[150px] truncate"
             >
               {account}
             </Copyable>
@@ -112,12 +112,12 @@ export const columns: DataTableColumnDef<EndUser>[] = [
     header: () => (
       <div className="flex items-center gap-2">
         <Wallet className="size-4" />
-        <span className="text-xs font-medium">Smart Accounts</span>
+        <span className="type-emphasis type-caption">Smart Accounts</span>
       </div>
     ),
     cell: ({ row }) => {
       if (row.original.evmSmartAccounts.length === 0) {
-        return <span className="text-xs text-muted-foreground">None</span>;
+        return <span className="type-caption text-muted-foreground">None</span>;
       }
       return (
         <div className="flex flex-col gap-1">
@@ -126,7 +126,7 @@ export const columns: DataTableColumnDef<EndUser>[] = [
               key={idx}
               value={account}
               toastMessage="Address copied"
-              className="block max-w-[150px] truncate font-mono text-xs"
+              className="block max-w-[150px] truncate"
             >
               {account}
             </Copyable>
@@ -142,12 +142,12 @@ export const columns: DataTableColumnDef<EndUser>[] = [
     header: () => (
       <div className="flex items-center gap-2">
         <Wallet className="size-4" />
-        <span className="text-xs font-medium">Solana Accounts</span>
+        <span className="type-emphasis type-caption">Solana Accounts</span>
       </div>
     ),
     cell: ({ row }) => {
       if (row.original.solanaAccounts.length === 0) {
-        return <span className="text-xs text-muted-foreground">None</span>;
+        return <span className="type-caption text-muted-foreground">None</span>;
       }
       return (
         <div className="flex flex-col gap-1">
@@ -156,7 +156,7 @@ export const columns: DataTableColumnDef<EndUser>[] = [
               key={idx}
               value={account}
               toastMessage="Address copied"
-              className="block max-w-[150px] truncate font-mono text-xs"
+              className="block max-w-[150px] truncate"
             >
               {account}
             </Copyable>
@@ -172,13 +172,13 @@ export const columns: DataTableColumnDef<EndUser>[] = [
     header: () => (
       <div className="flex items-center gap-2">
         <Calendar className="size-4" />
-        <span className="text-xs font-medium">Created At</span>
+        <span className="type-emphasis type-caption">Created At</span>
       </div>
     ),
     cell: ({ row }) => {
       const date = new Date(row.original.createdAt);
       return (
-        <span className="font-mono text-xs">
+        <span className="type-mono type-scale-caption">
           {format(date, "MMM d, yyyy HH:mm")}
         </span>
       );

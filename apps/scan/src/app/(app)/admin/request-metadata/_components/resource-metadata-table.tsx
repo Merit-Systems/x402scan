@@ -23,7 +23,7 @@ export const ResourceMetadataTable = () => {
 
   const { data: searchResults, isLoading: isSearching } =
     api.admin.resources.requestMetadata.searchResources.useQuery({
-      search: searchQuery ?? undefined,
+      search: searchQuery,
     });
 
   const { data: existingMetadata, isLoading: isLoadingMetadata } =
@@ -35,7 +35,7 @@ export const ResourceMetadataTable = () => {
   );
 
   // Filter resources to show only those with existing metadata or search results
-  const resources = searchQuery
+  const resources: Resource[] = searchQuery
     ? (searchResults ?? [])
     : (existingMetadata?.map((meta) => meta.resource) ?? []);
 
@@ -53,24 +53,30 @@ export const ResourceMetadataTable = () => {
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <div className="relative max-w-sm flex-1">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
+          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 transform text-muted-foreground" />
           <Input
             placeholder="Search resources..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            className=""
           />
         </div>
-        <Button onClick={() => setSearchQuery("")} variant="outline" size="sm">
+        <Button
+          onClick={() => {
+            setSearchQuery("");
+          }}
+          variant="outline"
+          size="sm"
+        >
           Clear
         </Button>
       </div>
 
       <LoadableDataTable
         columns={columns}
-        data={
-          paginatedResources as RouterOutputs["admin"]["resources"]["requestMetadata"]["searchResources"]
-        }
+        data={paginatedResources}
         pageSize={PAGE_SIZE}
         isLoading={isSearching || isLoadingMetadata}
         onRowClick={setSelectedResource}
@@ -79,13 +85,17 @@ export const ResourceMetadataTable = () => {
           pageSize: PAGE_SIZE,
           pageCount: hasNextPage ? page + 2 : page + 1,
         }}
-        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
+        onPaginationChange={({ pageIndex }) => {
+          setPage(pageIndex);
+        }}
       />
 
       {selectedResource && (
         <EditMetadataModal
           open={!!selectedResource}
-          onOpenChange={(open: boolean) => !open && setSelectedResource(null)}
+          onOpenChange={(open: boolean) => {
+            if (!open) setSelectedResource(null);
+          }}
           resource={selectedResource}
           existingMetadata={metadataMap.get(selectedResource.id)}
         />

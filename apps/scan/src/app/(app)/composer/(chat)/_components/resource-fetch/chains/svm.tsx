@@ -20,12 +20,12 @@ import type { UiWalletAccount } from "@wallet-standard/react";
 import type { UseMutationOptions } from "@tanstack/react-query";
 import type { X402FetchResponse } from "@/app/(app)/composer/_hooks/x402/types";
 
-interface Props<TData = unknown> {
+interface Props {
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
   targetUrl: string;
   requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
+  options?: Omit<UseMutationOptions<X402FetchResponse>, "mutationFn">;
   isTool?: boolean;
   text?: string;
 }
@@ -137,7 +137,9 @@ const FetchContent: React.FC<FetchContentProps> = ({
           allRequiredFieldsFilled={allRequiredFieldsFilled}
           // Pass undefined to let the hook use its internal max value state
           // (either initial value or confirmed increased price if applicable)
-          execute={() => execute(undefined)}
+          execute={() => {
+            execute(undefined);
+          }}
           isLoading={!isInitialized}
           chains={[Chain.SOLANA]}
           maxAmountRequired={maxAmountRequired}
@@ -174,7 +176,9 @@ const FetchContent: React.FC<FetchContentProps> = ({
       allRequiredFieldsFilled={allRequiredFieldsFilled}
       // Pass undefined to let the hook use its internal max value state
       // (either initial value or confirmed increased price if applicable)
-      execute={() => execute(undefined)}
+      execute={() => {
+        execute(undefined);
+      }}
       isLoading={!isInitialized}
       chains={[Chain.SOLANA]}
       maxAmountRequired={maxAmountRequired}

@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUp, type LucideIcon } from "lucide-react";
 import type { SortingContext } from "@/app/(app)/admin/_contexts/sorting/base/context";
 import { useSorting } from "@/app/(app)/admin/_contexts/sorting/base/hook";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface BaseProps {
   Icon: LucideIcon;
@@ -94,17 +95,29 @@ function HeaderCellContent({
   children,
   onClick,
 }: HeaderCellContentProps) {
-  return (
-    <div
-      className={cn(
-        "flex w-fit items-center justify-center gap-1 text-sm text-muted-foreground",
-        className
-      )}
-      onClick={onClick}
-    >
+  const content = (
+    <>
       <Icon className="size-3" />
       {label}
       {children}
-    </div>
+    </>
+  );
+  const styles = cn(
+    "type-supporting-body flex w-fit items-center justify-center gap-1 text-muted-foreground",
+    className
+  );
+
+  return onClick ? (
+    <Button
+      type="button"
+      variant="plain"
+      size="none"
+      className={styles}
+      onClick={onClick}
+    >
+      {content}
+    </Button>
+  ) : (
+    <div className={styles}>{content}</div>
   );
 }

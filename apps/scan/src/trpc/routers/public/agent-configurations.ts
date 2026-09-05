@@ -31,7 +31,7 @@ import { auth } from "@/auth";
 export const publicAgentConfigurationsRouter = createTRPCRouter({
   get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
     const session = await auth();
-    return getAgentConfiguration(input, session?.user?.id);
+    return getAgentConfiguration(input, session?.user.id);
   }),
 
   list: paginatedProcedure

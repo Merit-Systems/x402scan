@@ -37,8 +37,8 @@ export const Onboarding = () => {
 
   return (
     <AlertDialog open={hasUserAcknowledgedComposer === false}>
-      <AlertDialogContent className="gap-2 overflow-hidden p-0 sm:max-w-sm">
-        <AlertDialogHeader className="gap-4 border-b bg-muted p-4">
+      <AlertDialogContent className="gap-2 overflow-hidden sm:max-w-sm">
+        <AlertDialogHeader>
           <div className="flex flex-col items-center gap-2">
             <Logo className="size-8" />
             <AlertDialogTitle>Let&apos;s Get Started</AlertDialogTitle>
@@ -49,11 +49,11 @@ export const Onboarding = () => {
           </div>
         </AlertDialogHeader>
         <div className="flex w-full max-w-full flex-col gap-4 overflow-hidden p-4">
-          <p className="text-center text-sm">
+          <p className="type-supporting-body text-center">
             Please acknowledge our{" "}
             <Link
               href="/tos"
-              className="font-bold text-primary underline"
+              className="text-primary underline"
               target="_blank"
             >
               Terms of Service
@@ -61,7 +61,7 @@ export const Onboarding = () => {
             and{" "}
             <Link
               href="/privacy"
-              className="font-bold text-primary underline"
+              className="text-primary underline"
               target="_blank"
             >
               Privacy Policy
@@ -71,7 +71,9 @@ export const Onboarding = () => {
         </div>
         <div className="border-t bg-muted p-4">
           <Button
-            onClick={() => acknowledgeComposerOnboarding()}
+            onClick={() => {
+              acknowledgeComposerOnboarding();
+            }}
             disabled={isAcknowledging}
             className="w-full"
           >

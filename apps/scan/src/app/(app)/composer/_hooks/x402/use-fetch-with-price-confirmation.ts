@@ -5,12 +5,12 @@ import { z } from "zod";
 import type { UseMutationOptions } from "@tanstack/react-query";
 import type { X402FetchResponse, FetchWithPaymentWrapper } from "./types";
 
-interface UseX402FetchWithPriceConfirmationParams<TData = unknown> {
+interface UseX402FetchWithPriceConfirmationParams {
   wrapperFn: FetchWithPaymentWrapper;
   targetUrl: string;
   initialMaxValue: bigint;
   init?: RequestInit;
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
+  options?: Omit<UseMutationOptions<X402FetchResponse>, "mutationFn">;
   fetchFn: typeof fetch;
 }
 
@@ -67,14 +67,14 @@ const x402ResponseSchema = z.looseObject({
  * ```
  */
 
-export const useX402FetchWithPriceConfirmation = <TData = unknown>({
+export const useX402FetchWithPriceConfirmation = ({
   wrapperFn,
   targetUrl,
   initialMaxValue,
   init,
   options,
   fetchFn,
-}: UseX402FetchWithPriceConfirmationParams<TData>) => {
+}: UseX402FetchWithPriceConfirmationParams) => {
   const [priceIncreaseInfo, setPriceIncreaseInfo] =
     useState<PriceIncreaseInfo | null>(null);
   const confirmedRef = useRef<boolean>(false);
@@ -82,11 +82,7 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
   const { onSuccess, onError, onSettled, onMutate, ...restOptions } =
     options ?? {};
 
-  const mutation = useMutation<
-    X402FetchResponse<TData>,
-    Error,
-    boolean | undefined
-  >({
+  const mutation = useMutation<X402FetchResponse, Error, boolean | undefined>({
     mutationFn: async (skipPriceCheck?: boolean) => {
       // Check price first (unless already confirmed)
       if (!skipPriceCheck && !confirmedRef.current) {
@@ -115,11 +111,11 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
       confirmedRef.current = false;
 
       const contentType = response.headers.get("content-type") ?? "";
-      let result: X402FetchResponse<TData>;
+      let result: X402FetchResponse;
       if (contentType.includes("application/json")) {
         try {
           result = {
-            data: (await response.json()) as TData,
+            data: (await response.json()) as unknown,
             type: "json" as const,
             paymentResponse: null,
           };

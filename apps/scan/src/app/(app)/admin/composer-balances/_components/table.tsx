@@ -70,10 +70,12 @@ const Stat: React.FC<{ label: string; value: string; hint?: string }> = ({
   hint,
 }) => (
   <div className="flex flex-col gap-1 rounded-md border p-4">
-    <span className="text-xs text-muted-foreground">{label}</span>
-    <span className="text-2xl font-medium tabular-nums">{value}</span>
+    <span className="type-caption text-muted-foreground">{label}</span>
+    <span className="type-supporting-body type-emphasis tabular-nums">
+      {value}
+    </span>
     {hint ? (
-      <span className="text-xs text-muted-foreground">{hint}</span>
+      <span className="type-caption text-muted-foreground">{hint}</span>
     ) : null}
   </div>
 );
@@ -95,7 +97,7 @@ export const ComposerBalancesTable = () => {
           value={totals ? totals.peopleCount.toLocaleString() : "—"}
           hint={
             totals
-              ? `${totals.walletCount} wallets · ${totals.userCount} CDP identities`
+              ? `${String(totals.walletCount)} wallets · ${String(totals.userCount)} CDP identities`
               : undefined
           }
         />
@@ -109,7 +111,7 @@ export const ComposerBalancesTable = () => {
           value={totals ? totals.withEmail.toLocaleString() : "—"}
           hint={
             totals
-              ? `${totals.withLoginAddress} have a login address`
+              ? `${String(totals.withLoginAddress)} have a login address`
               : undefined
           }
         />
@@ -126,7 +128,7 @@ export const ComposerBalancesTable = () => {
           value={bySource ? formatCurrency(bySource.server.totalUsdc) : "—"}
           hint={
             bySource
-              ? `${bySource.server.walletCount} wallets · ${bySource.server.userCount} users · we can sweep these`
+              ? `${String(bySource.server.walletCount)} wallets · ${String(bySource.server.userCount)} users · we can sweep these`
               : undefined
           }
         />
@@ -135,7 +137,7 @@ export const ComposerBalancesTable = () => {
           value={bySource ? formatCurrency(bySource.embedded.totalUsdc) : "—"}
           hint={
             bySource
-              ? `${bySource.embedded.walletCount} wallets · ${bySource.embedded.userCount} users · non-custodial, user must withdraw`
+              ? `${String(bySource.embedded.walletCount)} wallets · ${String(bySource.embedded.userCount)} users · non-custodial, user must withdraw`
               : undefined
           }
         />
@@ -143,19 +145,19 @@ export const ComposerBalancesTable = () => {
 
       {data && data.systemWallets.length > 0 ? (
         <div className="space-y-2 rounded-md border p-4">
-          <div className="text-xs font-medium text-muted-foreground">
+          <div className="type-emphasis type-caption text-muted-foreground">
             App wallets (not user funds)
           </div>
           <div className="flex flex-wrap gap-4">
             {data.systemWallets.map((wallet) => (
               <div
                 key={`${wallet.name}-${wallet.chain}`}
-                className="font-mono text-xs"
+                className="type-mono type-scale-caption"
               >
                 <span className="text-muted-foreground">
                   {wallet.name} · {CHAIN_LABELS[wallet.chain]}
                 </span>{" "}
-                <span className="font-medium">
+                <span className="type-emphasis type-label">
                   {formatCurrency(wallet.usdc)}
                 </span>
               </div>
@@ -165,9 +167,9 @@ export const ComposerBalancesTable = () => {
       ) : null}
 
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
+        <div className="type-supporting-body text-muted-foreground">
           {data
-            ? `${data.rows.length} wallets holding a balance`
+            ? `${String(data.rows.length)} wallets holding a balance`
             : "Scanning wallets…"}
         </div>
         <div className="flex gap-2">
@@ -183,7 +185,9 @@ export const ComposerBalancesTable = () => {
             Refresh
           </Button>
           <Button
-            onClick={() => data && downloadCsv(toCsv(data.rows))}
+            onClick={() => {
+              if (data) downloadCsv(toCsv(data.rows));
+            }}
             disabled={!data || data.rows.length === 0}
             variant="outline"
             size="sm"
@@ -198,9 +202,7 @@ export const ComposerBalancesTable = () => {
         columns={columns}
         data={data?.rows ?? []}
         isLoading={isLoading}
-        getRowId={(row, index) =>
-          row ? `${row.walletName}-${row.chain}` : `loading-${index}`
-        }
+        getRowId={(row) => `${row.walletName}-${row.chain}`}
       />
     </div>
   );

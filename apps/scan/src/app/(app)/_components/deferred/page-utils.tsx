@@ -40,15 +40,13 @@ export const Heading: React.FC<HeadingProps> = ({
           {isValidElement(title) ? (
             title
           ) : (
-            <h1 className="font-mono text-2xl font-bold md:text-4xl">
-              {title}
-            </h1>
+            <h1 className="type-page-title">{title}</h1>
           )}
           {description &&
             (isValidElement(description) ? (
               description
             ) : (
-              <p className="text-sm text-muted-foreground/80 md:text-base">
+              <p className="type-supporting-body text-muted-foreground/80">
                 {description}
               </p>
             ))}
@@ -122,7 +120,7 @@ const SectionHeader = ({
       {isValidElement(title) ? (
         title
       ) : (
-        <h1 className="text-xl font-bold md:text-2xl">{title}</h1>
+        <h1 className="type-page-title">{title}</h1>
       )}
       {href && (
         <div className="flex items-center gap-2 rounded-md bg-muted/0 p-0.5 transition-all group-hover:translate-x-1 hover:scale-105 hover:bg-muted">
@@ -155,7 +153,7 @@ export const Section = <T extends string>({
           {actions}
         </div>
         {description && (
-          <p className="text-sm text-muted-foreground md:text-base">
+          <p className="type-supporting-body text-muted-foreground">
             {description}
           </p>
         )}

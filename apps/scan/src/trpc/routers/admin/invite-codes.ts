@@ -19,6 +19,7 @@ import { inviteWallets } from "@/services/cdp/server-wallet/invite";
 
 import { usdc } from "@/lib/tokens/usdc";
 import { convertTokenAmount } from "@/lib/token";
+import { ethereumAddressSchema } from "@/lib/schemas";
 
 import { env } from "@/env";
 
@@ -80,7 +81,7 @@ export const adminInviteCodesRouter = createTRPCRouter({
       const [usdcBalanceRaw, ethBalanceRaw] = await Promise.all([
         readContract(client, {
           abi: erc20Abi,
-          address: token.address as `0x${string}`,
+          address: ethereumAddressSchema.parse(token.address),
           args: [address],
           functionName: "balanceOf",
         }),

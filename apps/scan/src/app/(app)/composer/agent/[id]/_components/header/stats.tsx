@@ -91,9 +91,7 @@ const BaseStatCard: React.FC<BaseStatCardProps> = ({ title, value, Icon }) => {
     <div className="flex flex-1 items-center justify-between gap-2 px-2 py-1 md:px-4">
       <div className="flex items-center gap-1 text-muted-foreground md:gap-2">
         <Icon className="size-3 shrink-0 md:size-4" />
-        <span className="text-xs font-medium tracking-wider md:text-sm">
-          {title}
-        </span>
+        <span className="type-label">{title}</span>
       </div>
       {value}
     </div>
@@ -109,7 +107,7 @@ const StatCard: React.FC<StatsCardProps> = ({ title, Icon, value }) => {
     <BaseStatCard
       title={title}
       value={
-        <div className="font-mono text-sm font-bold md:text-lg">{value}</div>
+        <div className="type-numeric type-emphasis type-label">{value}</div>
       }
       Icon={Icon}
     />

@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
 
-import { Check, CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2 } from "lucide-react";
 
 import { toast } from "sonner";
 
 import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
-import { TokenInput } from "@/app/(app)/composer/_components/token/token-input";
+import { TokenInput } from "@/app/(app)/composer/(chat)/_components/token/token-input";
 import { Input } from "@/components/ui/input";
 
 import { Chain } from "@/app/(app)/_components/chains";
@@ -76,7 +76,7 @@ export const Send: React.FC = () => {
       },
       {
         onSuccess: () => {
-          toast.success(`${amount} USDC sent`);
+          toast.success(`${String(amount)} USDC sent`);
           for (let i = 0; i < 5; i++) {
             setTimeout(() => {
               void utils.user.serverWallet.tokenBalance.invalidate({
@@ -107,9 +107,7 @@ export const Send: React.FC = () => {
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-1">
         <Chain chain={chain} iconClassName="size-4" />
-        <span className="text-sm font-bold">
-          Send USDC on {CHAIN_LABELS[chain]}
-        </span>
+        <span className="type-label">Send USDC on {CHAIN_LABELS[chain]}</span>
       </div>
       <TokenInput
         address={serverWalletAddress}
@@ -126,12 +124,14 @@ export const Send: React.FC = () => {
         }}
       />
       <div className="flex flex-col gap-1">
-        <span className="text-sm font-medium">Address</span>
+        <span className="type-supporting-body type-emphasis">Address</span>
         <Input
           placeholder={chain === ChainType.SOLANA ? "Solana Address" : "0x..."}
           value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          className="border-2 font-mono shadow-none placeholder:text-muted-foreground/60"
+          onChange={(e) => {
+            setAddress(e.target.value);
+          }}
+          className=" "
         />
       </div>
       <Button
@@ -151,11 +151,6 @@ export const Send: React.FC = () => {
             <Loader2 className="size-4 animate-spin" />
             Sending...
           </>
-        ) : isSent ? (
-          <>
-            <Check className="size-4" />
-            USDC sent
-          </>
         ) : (
           "Send USDC"
         )}
@@ -173,11 +168,16 @@ interface Props {
 const WithdrawSuccess: React.FC<Props> = ({ amount, toAddress, onReset }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-2 rounded-lg bg-muted p-4">
-      <CheckCircle className="size-10 text-green-600" />
+      <CheckCircle className="size-10 text-success" />
       <p className="text-center">
         You have successfully sent{" "}
-        <span className="font-bold">{amount} USDC</span> to{" "}
-        <span className="font-bold">{formatAddress(toAddress)}</span>
+        <span className="type-supporting-body type-emphasis">
+          {amount} USDC
+        </span>{" "}
+        to{" "}
+        <span className="type-supporting-body type-emphasis">
+          {formatAddress(toAddress)}
+        </span>
       </p>
       <Button onClick={onReset}>Send Again</Button>
     </div>

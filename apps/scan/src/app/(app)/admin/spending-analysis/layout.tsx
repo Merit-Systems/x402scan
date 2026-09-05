@@ -1,7 +1,5 @@
 export default function SpendingAnalysisLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: LayoutProps<"/admin/spending-analysis">) {
   return <>{children}</>;
 }

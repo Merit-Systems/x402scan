@@ -1,10 +1,8 @@
-import type { JsonValue } from "@/components/ai-elements/json-viewer";
-import { JsonViewer } from "@/components/ai-elements/json-viewer";
+import { ToolOutput } from "@/components/ai-elements/tool";
 import type { OutputComponent } from "../../types";
 
 import z from "zod";
 import { api } from "@/trpc/client";
-import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const createSoraVideoOutputSchema = z.object({
@@ -24,19 +22,40 @@ const createSoraVideoOutputSchema = z.object({
 
 export const SoraOutput: OutputComponent = ({ output, errorText }) => {
   if (errorText) {
-    return <div className="text-sm text-destructive">{errorText}</div>;
+    return (
+      <div className="type-supporting-body text-destructive">{errorText}</div>
+    );
   }
 
   const parseResult = createSoraVideoOutputSchema.safeParse(output);
 
   if (!parseResult.success) {
-    let data: JsonValue | undefined;
-    try {
-      data = JSON.parse(output as string) as JsonValue;
-    } catch {
-      return <div className="text-sm text-destructive">Invalid output</div>;
+    const encodedOutput = z.string().safeParse(output);
+    if (!encodedOutput.success) {
+      return (
+        <div className="type-supporting-body text-destructive">
+          Invalid output
+        </div>
+      );
     }
-    return <JsonViewer data={data} />;
+    let data: unknown;
+    try {
+      data = JSON.parse(encodedOutput.data);
+    } catch {
+      return (
+        <div className="type-supporting-body text-destructive">
+          Invalid output
+        </div>
+      );
+    }
+    const json = z.json().safeParse(data);
+    return json.success ? (
+      <ToolOutput output={json.data} />
+    ) : (
+      <div className="type-supporting-body text-destructive">
+        Invalid output
+      </div>
+    );
   }
 
   const { id } = parseResult.data;
@@ -45,36 +64,37 @@ export const SoraOutput: OutputComponent = ({ output, errorText }) => {
 };
 
 const SoraVideoDisplay: React.FC<{ id: string }> = ({ id }) => {
-  const [isTaskFetched, setIsTaskFetched] = useState(false);
-
   const {
     data: task,
     isLoading: isTaskLoading,
     error: taskError,
   } = api.user.tools.echo.sora.getVideo.useQuery(id, {
-    refetchInterval: isTaskFetched ? undefined : 2000,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return status &&
+        ["completed", "failed", "cancelled", "expired"].includes(status)
+        ? false
+        : 2000;
+    },
   });
 
-  useEffect(() => {
-    if (
-      task &&
-      ["completed", "failed", "cancelled", "expired"].includes(task.status)
-    ) {
-      setIsTaskFetched(true);
-    }
-  }, [task, id]);
-
   if (taskError) {
-    return <div className="text-sm text-destructive">{taskError.message}</div>;
+    return (
+      <div className="type-supporting-body text-destructive">
+        {taskError.message}
+      </div>
+    );
   }
 
-  if (isTaskLoading || !isTaskFetched) {
+  if (isTaskLoading || !task) {
     return <Skeleton className="h-48 w-72" />;
   }
 
-  if (task?.status !== "completed") {
+  if (task.status !== "completed") {
     return (
-      <div className="text-sm text-destructive">Failed to generate video</div>
+      <div className="type-supporting-body text-destructive">
+        Failed to generate video
+      </div>
     );
   }
 
@@ -84,7 +104,14 @@ const SoraVideoDisplay: React.FC<{ id: string }> = ({ id }) => {
         src={`https://echo.router.merit.systems/v1/videos/${id}/content`}
         controls
         className="max-h-48 w-auto rounded-md"
-      />
+      >
+        <track
+          kind="captions"
+          src="data:text/vtt;charset=utf-8,WEBVTT%0A%0A"
+          srcLang="en"
+          label="Captions unavailable"
+        />
+      </video>
     </div>
   );
 };

@@ -17,14 +17,15 @@ import {
 } from "@/lib/x402/wrap-fetch";
 import { env } from "@/env";
 
-import type { ClientEvmSigner } from "@/lib/x402/wrap-fetch";
-import type { ClientSvmSigner } from "@x402/svm";
-
 const serverWalletChainFields = {
   chain: supportedChainSchema,
 };
 
 const serverWalletChainSchema = z.object(serverWalletChainFields);
+const sendUsdcResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+});
 
 export const serverWalletRouter = createTRPCRouter({
   address: protectedProcedure
@@ -110,18 +111,18 @@ export const serverWalletRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input: { chain, amount, address } }) => {
       const { wallets } = await getUserWallets(ctx.session.user.id);
-      const signer = await wallets[chain].signer();
-
       let client: InstanceType<typeof x402Client>;
       if (chain === Chain.SOLANA) {
+        const signer = await wallets[Chain.SOLANA].signer();
         client = registerSvmX402Client({
-          signer: signer as ClientSvmSigner,
+          signer,
           rpcUrl: env.NEXT_PUBLIC_SOLANA_RPC_URL,
         });
       } else {
+        const signer = await wallets[Chain.BASE].signer();
         client = new x402Client();
         registerExactEvmScheme(client, {
-          signer: signer as ClientEvmSigner,
+          signer,
         });
       }
 
@@ -133,6 +134,6 @@ export const serverWalletRouter = createTRPCRouter({
       const response = await fetchWithPayment(url.toString(), {
         method: "POST",
       });
-      return (await response.json()) as { success: boolean; message: string };
+      return sendUsdcResponseSchema.parse(await response.json());
     }),
 });

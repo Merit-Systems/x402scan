@@ -102,9 +102,9 @@ export const PartnerCollapsible = ({
 
   const handleSelectPartner = (partner: DbPartnerData) => {
     setPartnerName(partner.name);
-    setPartnerEmail(partner.email ?? "");
-    setPartnerOrganization(partner.organization ?? "");
-    setPartnerMeritContact(partner.merit_contact ?? "");
+    setPartnerEmail(partner.email);
+    setPartnerOrganization(partner.organization);
+    setPartnerMeritContact(partner.merit_contact);
     setSearchPartner(partner.name);
     // Close the dropdown by clearing search temporarily, then set it back
     // Auto-open collapsible to show the selected partner's data
@@ -130,7 +130,9 @@ export const PartnerCollapsible = ({
             <Input
               placeholder="Search partner..."
               value={searchPartner}
-              onChange={(e) => setSearchPartner(e.target.value)}
+              onChange={(e) => {
+                setSearchPartner(e.target.value);
+              }}
               className="w-full"
             />
             {searchPartner &&
@@ -139,19 +141,24 @@ export const PartnerCollapsible = ({
               searchResults.length > 0 && (
                 <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover shadow-md">
                   {searchResults.map((partner) => (
-                    <button
+                    <Button
                       key={partner.id}
                       type="button"
-                      className="w-full cursor-pointer px-3 py-2 text-left hover:bg-accent"
-                      onClick={() => handleSelectPartner(partner)}
+                      variant="plain"
+                      size="surface"
+                      onClick={() => {
+                        handleSelectPartner(partner);
+                      }}
                     >
-                      <div className="font-medium">{partner.name}</div>
+                      <div className="type-emphasis type-label">
+                        {partner.name}
+                      </div>
                       {partner.organization && (
-                        <div className="text-xs text-muted-foreground">
+                        <div className="type-caption text-muted-foreground">
                           {partner.organization}
                         </div>
                       )}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               )}
@@ -159,13 +166,19 @@ export const PartnerCollapsible = ({
           <Button
             type="button"
             variant={open ? "destructive" : "outline"}
-            onClick={open ? () => setOpen(false) : handleNewPartner}
+            onClick={
+              open
+                ? () => {
+                    setOpen(false);
+                  }
+                : handleNewPartner
+            }
           >
             {open ? (
               "Cancel"
             ) : (
               <>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 size-4" />
                 New
               </>
             )}
@@ -173,16 +186,18 @@ export const PartnerCollapsible = ({
         </div>
       </div>
 
-      <CollapsibleContent className="space-y-4 pt-2">
+      <CollapsibleContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="partnerName">Partner Name (Optional)</Label>
           <Input
             id="partnerName"
             placeholder="John Doe"
             value={partnerName}
-            onChange={(e) => setPartnerName(e.target.value)}
+            onChange={(e) => {
+              setPartnerName(e.target.value);
+            }}
           />
-          <p className="text-xs text-muted-foreground">
+          <p className="type-caption text-muted-foreground">
             Partner will be created automatically if it doesn&apos;t exist
           </p>
         </div>
@@ -192,7 +207,9 @@ export const PartnerCollapsible = ({
           {meritContacts.length > 0 ? (
             <Select
               value={partnerMeritContact}
-              onValueChange={(value) => setPartnerMeritContact(value ?? "")}
+              onValueChange={(value) => {
+                setPartnerMeritContact(value ?? "");
+              }}
             >
               <SelectTrigger id="partnerMeritContact" className="w-full">
                 <SelectValue placeholder="Select a Merit contact" />
@@ -210,10 +227,12 @@ export const PartnerCollapsible = ({
               id="partnerMeritContact"
               placeholder="Contact name at Merit"
               value={partnerMeritContact}
-              onChange={(e) => setPartnerMeritContact(e.target.value)}
+              onChange={(e) => {
+                setPartnerMeritContact(e.target.value);
+              }}
             />
           )}
-          <p className="text-xs text-muted-foreground">
+          <p className="type-caption text-muted-foreground">
             Name of the Merit team member managing this partner
           </p>
         </div>
@@ -225,9 +244,11 @@ export const PartnerCollapsible = ({
             type="email"
             placeholder="partner@example.com"
             value={partnerEmail}
-            onChange={(e) => setPartnerEmail(e.target.value)}
+            onChange={(e) => {
+              setPartnerEmail(e.target.value);
+            }}
           />
-          <p className="text-xs text-muted-foreground">
+          <p className="type-caption text-muted-foreground">
             Partner email address. Will use placeholder if not provided.
           </p>
         </div>
@@ -240,9 +261,11 @@ export const PartnerCollapsible = ({
             id="partnerOrganization"
             placeholder="Acme Inc"
             value={partnerOrganization}
-            onChange={(e) => setPartnerOrganization(e.target.value)}
+            onChange={(e) => {
+              setPartnerOrganization(e.target.value);
+            }}
           />
-          <p className="text-xs text-muted-foreground">
+          <p className="type-caption text-muted-foreground">
             Partner organization name. Will use placeholder if not provided.
           </p>
         </div>

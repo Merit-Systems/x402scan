@@ -41,7 +41,9 @@ const aibeatsOutputSchema = z.object({
 
 export const AibeatsOutput: OutputComponent = ({ output, errorText }) => {
   if (errorText) {
-    return <div className="text-sm text-destructive">{errorText}</div>;
+    return (
+      <div className="type-supporting-body text-destructive">{errorText}</div>
+    );
   }
 
   const parseResult = aibeatsOutputSchema.safeParse(output);
@@ -51,9 +53,20 @@ export const AibeatsOutput: OutputComponent = ({ output, errorText }) => {
     return <p>Error parsing output</p>;
   }
 
+  const lyricTrack = `data:text/vtt;charset=utf-8,${encodeURIComponent(
+    `WEBVTT\n\n00:00.000 --> 23:59:59.000\n${parseResult.data.result.finalLyrics}`
+  )}`;
+
   return (
     <div className="flex flex-col gap-2">
       <audio controls src={parseResult.data.result.audioUrl} className="w-full">
+        <track
+          default
+          kind="captions"
+          src={lyricTrack}
+          srcLang="en"
+          label="Lyrics"
+        />
         Your browser does not support the audio element.
       </audio>
     </div>

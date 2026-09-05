@@ -13,6 +13,7 @@ import { BarChart, LoadingBarChart } from "@/components/ui/chart";
 import type { ChartData } from "@/components/ui/chart";
 import { api } from "@/trpc/client";
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 type ResourceKey = `${string}-tool_calls`;
 
@@ -40,7 +41,7 @@ const generatePerturbedColor = (baseHue: number, seed: string) => {
   // Perturb lightness by ±10%
   const lightness = Math.max(40, Math.min(60, 50 + (rand3 * 20 - 10)));
 
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  return `hsl(${String(hue)}, ${String(saturation)}%, ${String(lightness)}%)`;
 };
 
 interface ResourceToolCallsByResourceChartProps {
@@ -65,7 +66,7 @@ export const ResourceToolCallsByResourceChart = ({
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    return timeframe < 7;
+    return timeframe < ActivityTimeframe.SevenDays;
   }, [timeframe]);
 
   // Transform data for chart
@@ -182,7 +183,7 @@ export const ResourceToolCallsByResourceChart = ({
           />
         ) : (
           <div className="flex h-[450px] flex-col items-center justify-center space-y-2 text-center text-muted-foreground">
-            <p className="text-sm">
+            <p className="type-supporting-body">
               No tool calls found for the selected tags in this time range
             </p>
           </div>

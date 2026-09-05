@@ -38,11 +38,13 @@ const WalletCell = ({
   if (showAddress && address) {
     return (
       <div className="flex items-center gap-2">
-        {isFreeTier && <span className="text-xs font-medium">Free Tier -</span>}
+        {isFreeTier && (
+          <span className="type-emphasis type-caption">Free Tier -</span>
+        )}
         <Copyable
           value={address}
           toastMessage="Wallet address copied"
-          className="block max-w-[200px] truncate font-mono text-xs font-medium"
+          className="block max-w-[200px] truncate"
         >
           {address}
         </Copyable>
@@ -52,14 +54,16 @@ const WalletCell = ({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="max-w-[150px] truncate text-xs font-medium">
+      <span className="type-emphasis max-w-[150px] truncate type-caption">
         {isFreeTier ? "Free Tier" : walletName}
       </span>
       <Button
         size="sm"
         variant="ghost"
-        className="h-6 px-2"
-        onClick={() => setShowAddress(true)}
+        className=" "
+        onClick={() => {
+          setShowAddress(true);
+        }}
         disabled={isLoading}
       >
         <Eye className="size-3" />
@@ -115,7 +119,7 @@ export const createColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {row.original.totalToolCalls.toLocaleString()}
       </div>
     ),
@@ -136,7 +140,7 @@ export const createColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {row.original.uniqueResources}
       </div>
     ),
@@ -157,7 +161,7 @@ export const createColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs font-medium">
+      <div className="type-mono type-emphasis type-scale-caption text-center">
         {formatAmount(row.original.totalMaxAmount)}
       </div>
     ),

@@ -14,7 +14,7 @@ const firecrawlOutputSchema = z.object({
   data: z.object({
     web: z.array(
       z.object({
-        url: z.string().url(),
+        url: z.url(),
         title: z.string(),
         description: z.string(),
         position: z.number(),
@@ -26,7 +26,9 @@ const firecrawlOutputSchema = z.object({
 
 export const FirecrawlOutput: OutputComponent = ({ output, errorText }) => {
   if (errorText) {
-    return <div className="text-sm text-destructive">{errorText}</div>;
+    return (
+      <div className="type-supporting-body text-destructive">{errorText}</div>
+    );
   }
 
   const parseResult = firecrawlOutputSchema.safeParse(output);
@@ -39,37 +41,39 @@ export const FirecrawlOutput: OutputComponent = ({ output, errorText }) => {
     <div className="flex flex-col gap-2">
       {parseResult.data.data.web.slice(0, 3).map((item) => (
         <div key={item.url} className="flex flex-col gap-1">
-          <h3 className="text-sm font-semibold break-all">
+          <h3 className="type-card-title break-all">
             {item.title || item.url}
           </h3>
           {item.description && (
-            <p className="text-xs text-muted-foreground">{item.description}</p>
+            <p className="type-caption text-muted-foreground">
+              {item.description}
+            </p>
           )}
-          <div className="mt-auto text-[10px] text-muted-foreground">
-            <span className="font-mono">{item.url}</span>
+          <div className="type-micro mt-auto text-muted-foreground">
+            <span className="type-mono type-scale-body">{item.url}</span>
           </div>
         </div>
       ))}
       {/* Collapsible for the rest of the results */}
       {parseResult.data.data.web.length > 3 && (
         <Collapsible className="mt-2">
-          <CollapsibleTrigger className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground">
+          <CollapsibleTrigger className="flex cursor-pointer items-center gap-2">
             Show all results ({parseResult.data.data.web.length - 3} more){" "}
             <ChevronDownIcon className="size-3" />
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-2 flex flex-col gap-2">
             {parseResult.data.data.web.slice(3).map((item) => (
               <div key={item.url} className="flex flex-col gap-1">
-                <h3 className="text-sm font-semibold break-all">
+                <h3 className="type-card-title break-all">
                   {item.title || item.url}
                 </h3>
                 {item.description && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="type-caption text-muted-foreground">
                     {item.description}
                   </p>
                 )}
-                <div className="mt-auto text-[10px] text-muted-foreground">
-                  <span className="font-mono">{item.url}</span>
+                <div className="type-micro mt-auto text-muted-foreground">
+                  <span className="type-mono type-scale-body">{item.url}</span>
                 </div>
               </div>
             ))}

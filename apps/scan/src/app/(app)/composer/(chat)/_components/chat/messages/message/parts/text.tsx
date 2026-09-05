@@ -1,8 +1,11 @@
-import { MessageContent } from "@/components/ai-elements/message";
-import { Response } from "@/components/ai-elements/response";
+import {
+  MessageAction,
+  MessageActions,
+  MessageContent,
+  MessageResponse,
+} from "@/components/ai-elements/message";
 import { toast } from "sonner";
 import { Fragment } from "react";
-import { Action, Actions } from "@/components/ai-elements/actions";
 import { CopyIcon } from "lucide-react";
 
 import type { TextUIPart } from "ai";
@@ -16,26 +19,28 @@ export const TextPart: React.FC<Props> = ({ part, showActions }) => {
   return (
     <Fragment>
       <MessageContent>
-        <Response>{part.text}</Response>
+        <MessageResponse>{part.text}</MessageResponse>
       </MessageContent>
       {showActions && (
-        <Actions className="-mt-2">
-          <Action
+        <MessageActions className="-mt-2">
+          <MessageAction
             onClick={() =>
               void navigator.clipboard
                 .writeText(part.text)
                 .then(() => {
                   toast.success("Copied to clipboard");
+                  return undefined;
                 })
                 .catch(() => {
                   toast.error("Failed to copy to clipboard");
+                  return undefined;
                 })
             }
             label="Copy"
           >
             <CopyIcon className="size-3" />
-          </Action>
-        </Actions>
+          </MessageAction>
+        </MessageActions>
       )}
     </Fragment>
   );

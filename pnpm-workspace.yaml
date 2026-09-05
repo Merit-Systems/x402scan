@@ -123,3 +123,7 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - "@merit-systems/*"
+  - "@ai-sdk/gateway@3.0.189"
+  - "@ai-sdk/openai@3.0.108"
+  - "@ai-sdk/react@3.0.280"
+  - ai@6.0.277
