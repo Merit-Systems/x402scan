@@ -9,12 +9,17 @@
     "dev": "portless",
     "dev:app": "wrangler dev src/index.ts --local",
     "deploy": "wrangler deploy src/index.ts",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "test": "vitest run",
     "types:check": "tsc --noEmit"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240208.0",
+    "@merit-systems/oxlint-config": "catalog:foundation",
     "@merit-systems/typescript-config": "catalog:foundation",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "portless": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",

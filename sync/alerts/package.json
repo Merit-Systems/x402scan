@@ -10,6 +10,8 @@
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
     "deploy": "trigger deploy",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
@@ -19,9 +21,12 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@merit-systems/oxlint-config": "catalog:foundation",
     "@merit-systems/typescript-config": "catalog:foundation",
     "@trigger.dev/build": "catalog:trigger",
     "@types/node": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "trigger.dev": "catalog:trigger",
     "typescript": "catalog:"
   }

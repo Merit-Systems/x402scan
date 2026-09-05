@@ -10,8 +10,10 @@
     "build": "next build",
     "build:deploy": "pnpm build",
     "start": "next start",
-    "types:generate": "rm -rf .next/types && next typegen",
+    "types:generate": "SKIP_ENV_VALIDATION=1 next typegen",
     "types:check": "tsc --noEmit",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "test": "vitest run",
     "ui:check": "merit ui check --root ../..",
     "ui:integrity": "merit ui integrity check --root ../.."
@@ -119,6 +121,7 @@
     "zod3": "npm:zod@^3.24.2"
   },
   "devDependencies": {
+    "@merit-systems/oxlint-config": "catalog:foundation",
     "@merit-systems/typescript-config": "catalog:foundation",
     "@tailwindcss/postcss": "catalog:tailwind",
     "@tanstack/react-query-devtools": "catalog:react-query",
@@ -127,6 +130,8 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitest/ui": "^3.2.4",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "portless": "catalog:",
     "remark-gfm": "^4.0.1",
     "shadcn": "^4.18.0",

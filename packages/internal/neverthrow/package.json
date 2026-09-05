@@ -15,15 +15,20 @@
   },
   "scripts": {
     "build": "tsdown",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
     "neverthrow": "^8.2.0"
   },
   "devDependencies": {
+    "@merit-systems/oxlint-config": "catalog:foundation",
     "@types/node": "catalog:",
     "@merit-systems/tsdown-config": "catalog:foundation",
     "@merit-systems/typescript-config": "catalog:foundation",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "tsdown": "catalog:bundling",
     "typescript": "catalog:"
   }

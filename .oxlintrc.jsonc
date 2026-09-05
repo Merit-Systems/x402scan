@@ -1,9 +1,0 @@
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "extends": ["./node_modules/@merit-systems/oxlint-config/next.jsonc"],
-  "settings": {
-    "tailwindcss": {
-      "entryPoint": "apps/scan/src/app/globals.css"
-    }
-  }
-}
