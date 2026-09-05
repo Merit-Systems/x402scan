@@ -3,15 +3,17 @@ import type { KnipConfig } from "knip";
 const config: KnipConfig = {
   workspaces: {
     ".": {
-      entry: ["foundation.config.ts", "oxfmt.config.ts", "taze.config.ts"],
-      // Knip cannot resolve the preset extended through .oxlintrc.jsonc.
-      ignoreDependencies: [
-        "@merit-systems/oxlint-config",
-        "@merit-systems/typescript-config",
+      entry: [
+        "foundation.config.ts",
+        "oxfmt.config.ts",
+        "oxlint.config.ts",
+        "taze.config.ts",
       ],
+      ignoreDependencies: ["@merit-systems/typescript-config"],
     },
     "apps/scan": {
       entry: [
+        "oxlint.config.ts",
         "src/app/**/{error,layout,loading,not-found,page,template,default,forbidden,global-not-found,global-error}.{js,jsx,ts,tsx,mdx}",
         "src/app/**/route.{js,jsx,ts,tsx}",
       ],
@@ -29,32 +31,43 @@ const config: KnipConfig = {
         "src/app/(app)/(home)/_components/v2-announcement-banner.tsx",
       ],
     },
-    "apps/proxy": {},
-    "apps/rpcs/solana": {},
+    "apps/proxy": {
+      entry: ["oxlint.config.ts"],
+    },
+    "apps/rpcs/solana": {
+      entry: ["oxlint.config.mts"],
+    },
     "packages/external/facilitators": {
+      entry: ["oxlint.config.ts"],
       project: ["src/**/*.ts"],
     },
     "packages/internal/databases/scan": {
+      entry: ["oxlint.config.ts"],
       project: ["src/**/*.ts"],
       ignoreDependencies: ["rimraf", "@prisma/client"],
       ignore: ["generated/**"],
     },
     "packages/internal/databases/partners": {
+      entry: ["oxlint.config.ts", "src/index.ts"],
       project: ["src/**/*.ts"],
     },
     "packages/internal/databases/transfers": {
+      entry: ["oxlint.config.mts"],
       project: ["src/**/*.ts"],
       ignoreDependencies: ["rimraf", "@prisma/client"],
       ignore: ["generated/**"],
     },
+    "packages/internal/neverthrow": {
+      entry: ["oxlint.config.ts"],
+    },
     "sync/transfers": {
-      entry: ["trigger/**/*.ts", "db/**/*.ts"],
+      entry: ["oxlint.config.mts", "trigger/**/*.ts", "db/**/*.ts"],
       project: ["trigger/**/*.ts", "db/**/*.ts"],
       ignoreDependencies: ["p-limit", "@trigger.dev/build"],
       ignore: ["generated/**"],
     },
     "sync/alerts": {
-      entry: ["trigger/**/*.ts"],
+      entry: ["oxlint.config.mts", "trigger/**/*.ts"],
       project: ["trigger/**/*.ts"],
       ignoreDependencies: ["@trigger.dev/build"],
     },
