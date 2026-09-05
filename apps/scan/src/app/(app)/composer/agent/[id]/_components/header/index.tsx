@@ -22,10 +22,10 @@ interface Props {
 export const HeaderCard: React.FC<Props> = ({ agentConfiguration }) => {
   return (
     <Card className={cn("relative mt-10 md:mt-12")}>
-      <Card className="absolute top-0 left-4 flex size-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-md border md:size-16">
+      <Card className="absolute top-0 left-4 flex size-12 -translate-y-1/2 items-center justify-center overflow-hidden border md:size-16">
         <Avatar
           src={agentConfiguration.image}
-          className="size-full rounded-md border-none"
+          className="size-full"
           fallback={<BotMessageSquare className="size-8" />}
         />
       </Card>
@@ -34,7 +34,7 @@ export const HeaderCard: React.FC<Props> = ({ agentConfiguration }) => {
           <div className="">
             <h1
               className={cn(
-                "text-3xl font-bold break-words line-clamp-2",
+                "type-page-title wrap-break-word line-clamp-2",
                 agentConfiguration.name
                   ? "text-foreground"
                   : "text-muted-foreground"
@@ -44,7 +44,7 @@ export const HeaderCard: React.FC<Props> = ({ agentConfiguration }) => {
             </h1>
             <p
               className={cn(
-                "break-words line-clamp-2",
+                "wrap-break-word line-clamp-2",
                 agentConfiguration.description &&
                   agentConfiguration.description.length > 0
                   ? "text-foreground"
@@ -70,7 +70,7 @@ export const HeaderCard: React.FC<Props> = ({ agentConfiguration }) => {
 export const LoadingHeaderCard = () => {
   return (
     <Card className={cn("relative mt-10 md:mt-12 mb-12")}>
-      <Card className="absolute top-0 left-4 flex size-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-md border md:size-16">
+      <Card className="absolute top-0 left-4 flex size-12 -translate-y-1/2 items-center justify-center overflow-hidden border md:size-16">
         <Avatar
           src={undefined}
           className="size-full"

@@ -15,10 +15,7 @@ import { messageSchema } from "@/lib/message-schema";
 import { coerceAcceptForV1Schema, normalizedAcceptSchema } from "@/lib/x402";
 import { fetchWithProxy } from "@/lib/x402/proxy-fetch";
 import { supportedChainSchema } from "@/lib/schemas";
-
-import { SUPPORTED_CHAINS } from "@/types/chain";
-
-import type { SupportedChain } from "@/types/chain";
+import { parseStoredJson } from "../_lib/parse-stored-json";
 
 const bodySchema = z.object({
   resourceId: z.string(),
@@ -97,11 +94,14 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const rawLastMessage = chat.messages[chat.messages.length - 1];
+  const rawLastMessage = chat.messages.at(-1);
+  if (!rawLastMessage) {
+    return NextResponse.json({ error: "No messages in chat" }, { status: 400 });
+  }
 
   const parsedLastMessage = messageSchema.safeParse({
     ...rawLastMessage,
-    parts: JSON.parse(rawLastMessage!.parts as string),
+    parts: parseStoredJson(rawLastMessage.parts),
   });
   if (!parsedLastMessage.success) {
     console.error(parsedLastMessage.error);
@@ -139,8 +139,9 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const accept = resource.accepts?.find(
-    (candidateAccept) => candidateAccept.network === chain
+  const accept = resource.accepts.find(
+    (candidateAccept) =>
+      supportedChainSchema.safeParse(candidateAccept.network).data === chain
   );
 
   if (!accept) {
@@ -196,13 +197,11 @@ export const POST = async (request: NextRequest) => {
   if (method === "GET" || method === "HEAD" || method === "OPTIONS") {
     const queryParams = new URLSearchParams();
     for (const [key, value] of Object.entries(parameters)) {
-      if (value !== undefined && value !== null) {
-        const primitive = primitiveParameterSchema.safeParse(value);
-        queryParams.append(
-          key,
-          primitive.success ? String(primitive.data) : JSON.stringify(value)
-        );
-      }
+      const primitive = primitiveParameterSchema.safeParse(value);
+      queryParams.append(
+        key,
+        primitive.success ? String(primitive.data) : JSON.stringify(value)
+      );
     }
     url = `${resource.resource}?${queryParams.toString()}`;
   }
@@ -228,8 +227,9 @@ export const POST = async (request: NextRequest) => {
     requestInit.headers = mergedHeaders;
   }
 
-  const supportedAccepts = resource.accepts.filter((candidateAccept) =>
-    SUPPORTED_CHAINS.includes(candidateAccept.network as SupportedChain)
+  const supportedAccepts = resource.accepts.filter(
+    (candidateAccept) =>
+      supportedChainSchema.safeParse(candidateAccept.network).success
   );
 
   if (supportedAccepts.length === 0) {
@@ -244,7 +244,7 @@ export const POST = async (request: NextRequest) => {
 
   const response = await fetchWithProxy(url, requestInit);
 
-  const data = await response.json();
+  const data: unknown = await response.json();
 
   after(async () => {
     if (response.status === 200) {

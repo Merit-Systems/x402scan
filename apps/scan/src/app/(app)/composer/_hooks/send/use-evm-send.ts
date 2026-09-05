@@ -48,6 +48,7 @@ export const useEvmSend = (props?: Props) => {
     () => amountProp ?? amountState,
     [amountProp, amountState]
   );
+  const transferAmount = amount ?? 0;
 
   const {
     data: balance,
@@ -67,7 +68,7 @@ export const useEvmSend = (props?: Props) => {
     chain,
     connection,
     targetUrl: `${window.location.origin}/api/x402/send`,
-    value: amount ? BigInt(amount * 10 ** token.decimals) : BigInt(0),
+    value: BigInt(transferAmount * 10 ** token.decimals),
     init: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -76,7 +77,9 @@ export const useEvmSend = (props?: Props) => {
     options: {
       onSuccess: (data) => {
         toast.success(
-          toastMessage ? toastMessage(amountProp!) : `${amountProp} USDC sent`
+          toastMessage
+            ? toastMessage(transferAmount)
+            : `${String(transferAmount)} USDC sent`
         );
         for (let i = 0; i < 5; i++) {
           setTimeout(() => {

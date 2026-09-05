@@ -1,6 +1,7 @@
 import type { OutputComponent } from "../types";
 
 import z from "zod";
+import Image from "next/image";
 import { Star, ExternalLink } from "lucide-react";
 import { ToolOutput } from "@/components/ai-elements/tool";
 
@@ -25,7 +26,9 @@ const AmazonSearchOutputSchema = z.object({
 
 export const BasezosOutput: OutputComponent = ({ output, errorText }) => {
   if (errorText) {
-    return <div className="text-sm text-destructive">{errorText}</div>;
+    return (
+      <div className="type-supporting-body text-destructive">{errorText}</div>
+    );
   }
 
   const parseResult = AmazonSearchOutputSchema.safeParse(output);
@@ -38,7 +41,9 @@ export const BasezosOutput: OutputComponent = ({ output, errorText }) => {
 
   if (items.length === 0) {
     return (
-      <div className="text-sm text-muted-foreground">No products found</div>
+      <div className="type-supporting-body text-muted-foreground">
+        No products found
+      </div>
     );
   }
 
@@ -53,29 +58,31 @@ export const BasezosOutput: OutputComponent = ({ output, errorText }) => {
           className="group flex flex-col overflow-hidden rounded-lg border bg-card transition-colors hover:border-primary"
         >
           <div className="relative aspect-square overflow-hidden bg-muted">
-            <img
+            <Image
               src={item.image}
               alt={item.name}
-              className="h-full w-full object-contain p-2 transition-transform group-hover:scale-105"
+              fill
+              unoptimized
+              className="size-full object-contain p-2 transition-transform group-hover:scale-105"
             />
             {item.isPrime && (
-              <div className="absolute top-2 left-2 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+              <div className="type-micro absolute top-2 left-2 rounded bg-primary px-1.5 py-0.5 text-primary-foreground">
                 Prime
               </div>
             )}
           </div>
           <div className="flex flex-1 flex-col gap-2 p-3">
-            <h3 className="line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">
+            <h3 className="line-clamp-2 type-card-title transition-colors group-hover:text-primary">
               {item.name}
             </h3>
             <div className="mt-auto flex items-center justify-between">
               <div className="flex flex-col gap-1">
-                <div className="text-lg font-bold text-primary">
+                <div className="type-banner-metric text-primary">
                   {item.price}
                 </div>
                 {item.stars !== undefined && (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Star className="size-3 fill-yellow-400 text-yellow-400" />
+                  <div className="flex items-center gap-1 type-caption text-muted-foreground">
+                    <Star className="size-3 fill-warning text-warning" />
                     <span>
                       {item.stars}
                       {item.reviewsCount !== undefined &&

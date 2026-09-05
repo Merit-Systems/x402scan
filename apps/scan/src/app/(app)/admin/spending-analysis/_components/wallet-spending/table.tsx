@@ -46,7 +46,7 @@ export const WalletSpendingTable = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `server-accounts-${new Date().toISOString().split("T")[0]}.csv`;
+      link.download = `server-accounts-${String(new Date().toISOString().split("T")[0])}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -68,7 +68,7 @@ export const WalletSpendingTable = () => {
           variant="outline"
           size="sm"
         >
-          <Download className="mr-2 h-4 w-4" />
+          <Download className="mr-2 size-4" />
           {isDownloading ? "Downloading..." : "Download Server Accounts CSV"}
         </Button>
       </div>
@@ -77,20 +77,26 @@ export const WalletSpendingTable = () => {
         data={wallets}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        onRowClick={(wallet) => setModalState({ type: "breakdown", wallet })}
+        onRowClick={(wallet) => {
+          setModalState({ type: "breakdown", wallet });
+        }}
         pagination={{
           pageIndex: page,
           pageSize: PAGE_SIZE,
           pageCount: hasNextPage ? page + 2 : page + 1,
         }}
-        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
-        getRowId={(row, index) => row?.walletId ?? `loading-${index}`}
+        onPaginationChange={({ pageIndex }) => {
+          setPage(pageIndex);
+        }}
+        getRowId={(row) => row.walletId}
       />
 
       {modalState.type === "breakdown" && (
         <ToolBreakdownModal
           open={true}
-          onOpenChange={(open) => !open && setModalState({ type: "none" })}
+          onOpenChange={(open) => {
+            if (!open) setModalState({ type: "none" });
+          }}
           walletId={modalState.wallet.walletId}
           walletName={modalState.wallet.walletName}
         />

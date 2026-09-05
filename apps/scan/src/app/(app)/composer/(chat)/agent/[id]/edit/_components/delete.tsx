@@ -47,7 +47,9 @@ export const DeleteAgentButton: React.FC<Props> = ({ agentId }) => {
           <Button
             variant="destructive"
             size="sm"
-            onClick={() => deleteAgent(agentId)}
+            onClick={() => {
+              deleteAgent(agentId);
+            }}
             disabled={isPending}
           >
             {isPending ? "Deleting..." : "Delete"}

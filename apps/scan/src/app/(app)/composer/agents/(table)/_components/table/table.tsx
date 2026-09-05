@@ -62,7 +62,9 @@ export const AgentsTable: React.FC<Props> = ({
         pageSize: limit,
         pageCount: agents.total_pages,
       }}
-      onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
+      onPaginationChange={({ pageIndex }) => {
+        setPage(pageIndex);
+      }}
     />
   );
 };

@@ -28,8 +28,8 @@ export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
   return (
     <WalletChainProvider>
       <AlertDialog open={true}>
-        <AlertDialogContent className="gap-0 overflow-hidden p-0">
-          <AlertDialogHeader className="flex flex-row items-center gap-4 space-y-0 border-b bg-muted p-4">
+        <AlertDialogContent className="overflow-hidden">
+          <AlertDialogHeader className="flex flex-row items-center gap-2 space-y-0">
             {agentConfig?.image ? (
               <Image
                 src={agentConfig.image}
@@ -47,7 +47,7 @@ export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
                   ? `Welcome to ${agentConfig.name}`
                   : "Welcome to x402scan Composer"}
               </AlertDialogTitle>
-              <AlertDialogDescription className="font-mono text-xs">
+              <AlertDialogDescription className=" ">
                 {agentConfig?.description ??
                   "A playground for building agents that use x402 resources"}
               </AlertDialogDescription>

@@ -31,20 +31,19 @@ export const WalletButton = () => {
     return null;
   }
 
-  // if (chainsWithBalances.length === 0) {
-  //   return null;
-  // }
+  const [firstChain, ...otherChains] = chainsWithBalances;
+  if (!firstChain) return null;
+  const availableChains: [SupportedChain, ...SupportedChain[]] = [
+    firstChain,
+    ...otherChains,
+  ];
 
   return (
     <WalletChainProvider>
-      <WalletDialog
-        chainsWithBalance={
-          chainsWithBalances as [SupportedChain, ...SupportedChain[]]
-        }
-      >
+      <WalletDialog chainsWithBalance={availableChains}>
         <PromptInputButton variant="outline" size="sm">
           <Bot className="size-4" />
-          <span className="text-xs">Withdraw Funds</span>
+          <span className="type-caption">Withdraw Funds</span>
         </PromptInputButton>
       </WalletDialog>
     </WalletChainProvider>

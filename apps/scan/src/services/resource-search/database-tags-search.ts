@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { Prisma } from "@x402scan/scan-db";
@@ -139,14 +139,14 @@ export const searchResourcesWithNaturalLanguage = async (
   }
 
   // Generate expanded keywords using LLM
-  const result = await generateObject({
+  const result = await generateText({
     model: openai("gpt-4.1-nano"),
     prompt: buildKeywordExpansionPrompt(naturalLanguageQuery),
-    schema: keywordExpansionSchema,
+    output: Output.object({ schema: keywordExpansionSchema }),
     temperature: 0.3,
   });
 
-  const { keywords, explanation } = result.object;
+  const { keywords, explanation } = result.output;
 
   // Build SQL programmatically using the keywords
   const sqlCondition = buildSearchCondition(keywords);

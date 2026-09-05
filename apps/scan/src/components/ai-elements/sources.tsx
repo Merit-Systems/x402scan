@@ -10,10 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const Sources = ({ className, ...props }: ComponentProps<"div">) => (
-  <Collapsible
-    className={cn("not-prose mb-4 text-primary text-xs", className)}
-    {...props}
-  />
+  <Collapsible className={cn("mb-4", className)} {...props} />
 );
 
 const SourcesTrigger = ({
@@ -30,7 +27,7 @@ const SourcesTrigger = ({
   >
     {children ?? (
       <>
-        <p className="font-medium">Used {count} sources</p>
+        <p className="type-label text-primary">Used {count} sources</p>
         <ChevronDownIcon className="size-4" />
       </>
     )}
@@ -42,11 +39,7 @@ const SourcesContent = ({
   ...props
 }: ComponentProps<typeof CollapsibleContent>) => (
   <CollapsibleContent
-    className={cn(
-      "mt-3 flex w-fit flex-col gap-2",
-      "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
-      className
-    )}
+    className={cn("mt-3 flex w-fit flex-col gap-2", className)}
     {...props}
   />
 );
@@ -62,7 +55,7 @@ const Source = ({ href, title, children, ...props }: ComponentProps<"a">) => (
     {children ?? (
       <>
         <BookIcon className="size-4" />
-        <span className="block font-medium">{title}</span>
+        <span className="block type-label">{title}</span>
       </>
     )}
   </a>

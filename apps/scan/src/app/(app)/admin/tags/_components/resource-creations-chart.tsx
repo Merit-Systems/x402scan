@@ -13,10 +13,11 @@ import { BarChart, LoadingBarChart } from "@/components/ui/chart";
 import type { ChartData } from "@/components/ui/chart";
 import { api } from "@/trpc/client";
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { ActivityTimeframe } from "@/types/timeframes";
 
-type ResourceCreationData = {
+interface ResourceCreationData {
   total_resources: number;
-};
+}
 
 interface ResourceCreationsChartProps {
   selectedTagIds: string[];
@@ -36,7 +37,7 @@ export const ResourceCreationsChart = ({
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    return timeframe < 7;
+    return timeframe < ActivityTimeframe.SevenDays;
   }, [timeframe]);
 
   // Transform creations data for chart

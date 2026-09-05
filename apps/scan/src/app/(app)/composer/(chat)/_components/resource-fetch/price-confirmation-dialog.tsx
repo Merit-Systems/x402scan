@@ -49,16 +49,16 @@ export const PriceConfirmationDialog: React.FC<Props> = ({
             Do you want to proceed with the new price?
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex flex-col gap-2 rounded-md border border-border p-3 text-sm">
+        <div className="type-supporting-body flex flex-col gap-2 rounded-md border border-border p-3">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Initial price:</span>
-            <span className="font-medium">
+            <span className="type-emphasis type-label">
               {formatTokenAmount(oldPrice)} USDC
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">New price:</span>
-            <span className="font-bold text-primary">
+            <span className="type-supporting-body type-emphasis text-primary">
               {formatTokenAmount(newPrice)} USDC
             </span>
           </div>

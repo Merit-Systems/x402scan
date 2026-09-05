@@ -32,13 +32,13 @@ export const useEvmPaymentWrapper = (chain: Chain) => {
   return { wrapperFn, walletClient };
 };
 
-export const useEvmX402Fetch = <TData = unknown>({
+export const useEvmX402Fetch = ({
   chain,
   ...params
-}: UseEvmX402FetchParams<TData>) => {
+}: UseEvmX402FetchParams) => {
   const { wrapperFn } = useEvmPaymentWrapper(chain);
 
-  return useX402Fetch<TData>({
+  return useX402Fetch({
     wrapperFn,
     ...params,
   });

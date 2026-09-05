@@ -25,6 +25,7 @@ import { messageSchema } from "@/lib/message-schema";
 
 import { getAgentConfigurationDetails } from "@/services/db/agent-config/get";
 import { agentSystemPrompt, baseSystemPrompt } from "./system-prompt";
+import { parseStoredJson } from "./_lib/parse-stored-json";
 
 import type { NextRequest } from "next/server";
 import type { LanguageModel, UIMessage } from "ai";
@@ -117,9 +118,11 @@ export async function POST(request: NextRequest) {
         } catch {
           console.error("Failed to update chat title:");
         }
+        return undefined;
       })
       .catch(() => {
         console.error("Failed to generate chat title:");
+        return undefined;
       });
   } else {
     if (chat.userId !== session.user.id) {
@@ -168,7 +171,7 @@ export async function POST(request: NextRequest) {
 
   const messages = z.array(messageSchema).parse([
     ...chat.messages.map(({ parts, ...rest }) => ({
-      parts: JSON.parse(parts as string) as unknown,
+      parts: parseStoredJson(parts),
       ...rest,
     })),
     message,
@@ -176,7 +179,7 @@ export async function POST(request: NextRequest) {
 
   const result = streamText({
     model: openrouter.chat(model),
-    messages: convertToModelMessages(messages),
+    messages: await convertToModelMessages(messages),
     system: await getSystemPrompt(),
     stopWhen: stepCountIs(50),
     tools,
@@ -263,7 +266,7 @@ async function generateTitleFromUserMessage({
       - the title does not need to be a full sentence, try to pack in the most important information in a few words
       - do not use quotes or colons`,
         },
-        ...convertToModelMessages([message]),
+        ...(await convertToModelMessages([message])),
       ],
       maxOutputTokens: 100,
     });

@@ -1,7 +1,5 @@
 import { useWalletClient } from "wagmi";
 
-import { useIsInitialized } from "@coinbase/cdp-hooks";
-
 import { ConnectWalletState } from "../1-connect";
 import { LoadingState } from "../2-loading-balance";
 import { AddFundsState } from "../3-add-funds";
@@ -18,13 +16,13 @@ import type { SupportedChain } from "@/types/chain";
 import type { UseMutationOptions } from "@tanstack/react-query";
 import type { X402FetchResponse } from "@/app/(app)/composer/_hooks/x402/types";
 
-interface Props<TData = unknown> {
+interface Props {
   chain: SupportedChain;
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
   targetUrl: string;
   requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
+  options?: Omit<UseMutationOptions<X402FetchResponse>, "mutationFn">;
   isTool?: boolean;
   text?: string;
 }
@@ -41,8 +39,6 @@ export const FetchEvm: React.FC<Props> = ({
 }) => {
   const { data: walletClient, isLoading: isLoadingWalletClient } =
     useWalletClient();
-  const { isInitialized } = useIsInitialized();
-
   const {
     mutate: execute,
     isPending,
@@ -93,8 +89,10 @@ export const FetchEvm: React.FC<Props> = ({
           allRequiredFieldsFilled={allRequiredFieldsFilled}
           // Pass undefined to let the hook use its internal max value state
           // (either initial value or confirmed increased price if applicable)
-          execute={() => execute(undefined)}
-          isLoading={isLoadingWalletClient || !isInitialized}
+          execute={() => {
+            execute(undefined);
+          }}
+          isLoading={isLoadingWalletClient}
           chains={[chain]}
           maxAmountRequired={maxAmountRequired}
           text={text}
@@ -127,8 +125,10 @@ export const FetchEvm: React.FC<Props> = ({
       allRequiredFieldsFilled={allRequiredFieldsFilled}
       // Pass undefined to let the hook use its internal max value state
       // (either initial value or confirmed increased price if applicable)
-      execute={() => execute(undefined)}
-      isLoading={isLoadingWalletClient || !isInitialized}
+      execute={() => {
+        execute(undefined);
+      }}
+      isLoading={isLoadingWalletClient}
       chains={[chain]}
       maxAmountRequired={maxAmountRequired}
       text={text}

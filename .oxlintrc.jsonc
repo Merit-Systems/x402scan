@@ -1,35 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "extends": ["./node_modules/@merit-systems/oxlint-config/next.jsonc"],
-  "ignorePatterns": [
-    "**/node_modules/**",
-    "**/.next/**",
-    "**/.turbo/**",
-    "**/dist/**",
-    "**/build/**",
-    "**/generated/**",
-    "**/*.gen.ts",
-    // Deferred product surfaces are route-owned so they can be excluded as
-    // cohesive units without weakening lint coverage for shared production code.
-    "apps/scan/src/app/(app)/admin/**",
-    "apps/scan/src/app/(app)/composer/**",
-    "apps/scan/src/app/(app)/_components/deferred/**",
-    "apps/scan/src/app/api/chat/**",
-    "apps/scan/src/components/ai-elements/**",
-    "apps/scan/src/components/magicui/animated-shiny-text.tsx",
-    "apps/scan/src/components/ui/sidebar.tsx",
-    "apps/scan/src/trpc/routers/admin/**",
-    "apps/scan/src/trpc/routers/user/**",
-    "apps/scan/src/trpc/routers/public/agent-configurations.ts",
-    "apps/scan/src/trpc/routers/public/chats.ts",
-    "apps/scan/src/trpc/routers/public/tools.ts",
-    "apps/scan/src/services/composer-balances/**",
-    "apps/scan/src/services/db/agent-config/**",
-    "apps/scan/src/services/db/composer/**",
-    "apps/scan/src/services/db/composer-balances/**",
-    "apps/scan/src/services/db/spending/**",
-    "apps/scan/src/services/cdp/server-wallet/admin.ts"
-  ],
   "settings": {
     "tailwindcss": {
       "entryPoint": "apps/scan/src/app/globals.css"

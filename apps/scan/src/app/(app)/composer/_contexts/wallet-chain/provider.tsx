@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { WalletChainContext } from "./context";
 
 import { Chain } from "@/types/chain";
@@ -28,12 +28,16 @@ export const WalletChainProvider: React.FC<Props> = ({
         : Chain.SOLANA)
   );
 
-  const setChain = (chain: SupportedChain) => {
+  const setChain = useCallback((chain: SupportedChain) => {
     setChainState(chain);
-  };
+  }, []);
+  const value = useMemo(
+    () => ({ chain, setChain, isFixed }),
+    [chain, setChain, isFixed]
+  );
 
   return (
-    <WalletChainContext.Provider value={{ chain, setChain, isFixed }}>
+    <WalletChainContext.Provider value={value}>
       {children}
     </WalletChainContext.Provider>
   );

@@ -57,6 +57,12 @@ export const getAllResourceRequestMetadata = async () => {
       resource: {
         include: {
           origin: true,
+          requestMetadata: true,
+          _count: {
+            select: {
+              invocations: true,
+            },
+          },
         },
       },
     },

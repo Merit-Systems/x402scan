@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useMemo, useState } from "react";
 
 import {
   DefaultChatTransport,
@@ -10,15 +10,15 @@ import { toast } from "sonner";
 
 import { api } from "@/trpc/client";
 
-import { languageModels } from "../_components/chat/input/model-select/models";
+import { languageModels } from "../_lib/language-models/models";
 
-import { clientCookieUtils } from "../chat/_lib/cookies/client";
+import { clientCookieUtils } from "./client-cookie-utils";
 
 import { convertToUIMessages } from "@/lib/utils";
 
 import type { RouterOutputs } from "@/trpc/client";
-import type { ChatConfig, SelectedResource } from "../_types/chat-config";
-import type { LanguageModel } from "../_components/chat/input/model-select/types";
+import type { ChatConfig, SelectedResource } from "../../_types/chat-config";
+import type { LanguageModel } from "../_lib/language-models/types";
 import type { Message } from "@x402scan/scan-db/types";
 
 interface Props {
@@ -26,6 +26,11 @@ interface Props {
   initialMessages: Message[];
   agentConfig?: RouterOutputs["public"]["agents"]["get"];
   initialConfig?: ChatConfig;
+}
+
+const defaultLanguageModel = languageModels.at(0);
+if (!defaultLanguageModel) {
+  throw new Error("At least one language model must be configured");
 }
 
 export const useChat = ({
@@ -42,28 +47,35 @@ export const useChat = ({
       ? (languageModels.find(
           (model) =>
             `${model.provider}/${model.modelId}` === initialConfig.model
-        ) ?? languageModels[0]!)
-      : languageModels[0]!
+        ) ?? defaultLanguageModel)
+      : defaultLanguageModel
   );
   const [selectedResources, setSelectedResources] = useState<
     SelectedResource[]
   >(initialConfig?.resources ?? []);
 
-  // Use refs to ensure the callback always has access to the latest values
-  const modelRef = useRef(model);
-  const selectedResourcesRef = useRef(selectedResources);
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        prepareSendMessagesRequest({ messages }) {
+          return {
+            body: {
+              chatId: id,
+              model: `${model.provider}/${model.modelId}`,
+              message: messages.at(-1),
+              resourceIds: selectedResources.map((resource) => resource.id),
+              agentConfigurationId: agentConfig?.id,
+            },
+          };
+        },
+      }),
+    [agentConfig?.id, id, model, selectedResources]
+  );
 
-  useEffect(() => {
-    modelRef.current = model;
-  }, [model]);
-
-  useEffect(() => {
-    selectedResourcesRef.current = selectedResources;
-  }, [selectedResources]);
-
-  const { messages, sendMessage, status, regenerate, error, addToolResult } =
+  const { messages, sendMessage, status, regenerate, error, addToolOutput } =
     useAiChat({
-      messages: initialMessages ? convertToUIMessages(initialMessages) : [],
+      messages: convertToUIMessages(initialMessages),
       resume: true,
       id,
       onError: ({ message }) => toast.error(message),
@@ -79,24 +91,7 @@ export const useChat = ({
           void utils.user.chats.list.invalidate();
         }
       },
-      transport: new DefaultChatTransport({
-        api: "/api/chat",
-        prepareSendMessagesRequest({ messages }) {
-          const currentModel = modelRef.current;
-          const currentSelectedResources = selectedResourcesRef.current;
-          return {
-            body: {
-              chatId: id,
-              model: `${currentModel.provider}/${currentModel.modelId}`,
-              message: messages[messages.length - 1],
-              resourceIds: currentSelectedResources.map(
-                (resource) => resource.id
-              ),
-              agentConfigurationId: agentConfig?.id,
-            },
-          };
-        },
-      }),
+      transport,
       sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     });
 
@@ -104,7 +99,7 @@ export const useChat = ({
     error?.message ??
     (status === "ready" &&
     messages.length > 0 &&
-    messages[messages.length - 1]!.role === "user"
+    messages.at(-1)?.role === "user"
       ? "The last message failed. Please regenerate the message to continue."
       : undefined);
 
@@ -125,9 +120,8 @@ export const useChat = ({
     setInput("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendChatMessage(input);
+  const handleSubmit = ({ text }: { text: string }) => {
+    sendChatMessage(text);
   };
 
   const handleSetModel = (model: LanguageModel) => {
@@ -165,6 +159,6 @@ export const useChat = ({
     selectedResources,
     input,
     setInput,
-    addToolResult,
+    addToolOutput,
   };
 };

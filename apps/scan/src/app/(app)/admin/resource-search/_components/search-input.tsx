@@ -7,9 +7,13 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Search, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import z from "zod";
 
-type RefinementMode = "none" | "llm" | "reranker" | "both";
-type QueryMode = "keywords" | "sql" | "sql-parallel";
+const refinementModeSchema = z.enum(["none", "llm", "reranker", "both"]);
+const queryModeSchema = z.enum(["keywords", "sql", "sql-parallel"]);
+
+type RefinementMode = z.infer<typeof refinementModeSchema>;
+type QueryMode = z.infer<typeof queryModeSchema>;
 
 interface SearchInputProps {
   onSearch: (
@@ -44,28 +48,30 @@ const SearchInputComponent = ({
       <div className="space-y-4">
         <div className="flex items-center gap-4">
           <div className="relative flex-1">
-            <Search className="absolute top-1/2 left-4 h-7 w-7 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute top-1/2 left-4 size-7 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={localQuery}
-              onChange={(e) => setLocalQuery(e.target.value)}
+              onChange={(e) => {
+                setLocalQuery(e.target.value);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   handleSearch();
                 }
               }}
               placeholder={placeholder}
-              className="h-21 rounded-xl border-2 pl-14 text-2xl focus-visible:ring-4"
+              className=" "
             />
           </div>
           <Button
             onClick={handleSearch}
             disabled={isLoading || !localQuery.trim()}
             size="lg"
-            className="h-21 px-8 text-xl"
+            className=" "
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <Loader2 className="mr-2 size-5 animate-spin" />
                 Searching...
               </>
             ) : (
@@ -75,36 +81,30 @@ const SearchInputComponent = ({
         </div>
         <div className="space-y-6 pl-2">
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Query Generation Mode</Label>
+            <Label className=" ">Query Generation Mode</Label>
             <RadioGroup
               value={queryMode}
-              onValueChange={(value) => setQueryMode(value as QueryMode)}
+              onValueChange={(value) => {
+                const parsed = queryModeSchema.safeParse(value);
+                if (parsed.success) setQueryMode(parsed.data);
+              }}
               className="flex flex-wrap gap-4"
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="keywords" id="query-keywords" />
-                <Label
-                  htmlFor="query-keywords"
-                  className="cursor-pointer text-sm font-normal text-muted-foreground"
-                >
+                <Label htmlFor="query-keywords" className="cursor-pointer">
                   Keywords (LLM generates search terms)
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="sql" id="query-sql" />
-                <Label
-                  htmlFor="query-sql"
-                  className="cursor-pointer text-sm font-normal text-muted-foreground"
-                >
+                <Label htmlFor="query-sql" className="cursor-pointer">
                   SQL (LLM generates full query)
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="sql-parallel" id="query-sql-parallel" />
-                <Label
-                  htmlFor="query-sql-parallel"
-                  className="cursor-pointer text-sm font-normal text-muted-foreground"
-                >
+                <Label htmlFor="query-sql-parallel" className="cursor-pointer">
                   SQL Parallel (3x generations, combined results)
                 </Label>
               </div>
@@ -112,47 +112,36 @@ const SearchInputComponent = ({
           </div>
 
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Refinement Mode</Label>
+            <Label className=" ">Refinement Mode</Label>
             <RadioGroup
               value={refinementMode}
-              onValueChange={(value) =>
-                setRefinementMode(value as RefinementMode)
-              }
+              onValueChange={(value) => {
+                const parsed = refinementModeSchema.safeParse(value);
+                if (parsed.success) setRefinementMode(parsed.data);
+              }}
               className="flex flex-wrap gap-4"
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="none" id="mode-none" />
-                <Label
-                  htmlFor="mode-none"
-                  className="cursor-pointer text-sm font-normal text-muted-foreground"
-                >
+                <Label htmlFor="mode-none" className="cursor-pointer">
                   None (fastest)
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="llm" id="mode-llm" />
-                <Label
-                  htmlFor="mode-llm"
-                  className="cursor-pointer text-sm font-normal text-muted-foreground"
-                >
+                <Label htmlFor="mode-llm" className="cursor-pointer">
                   LLM filtering
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="reranker" id="mode-reranker" />
-                <Label
-                  htmlFor="mode-reranker"
-                  className="cursor-pointer text-sm font-normal text-muted-foreground"
-                >
+                <Label htmlFor="mode-reranker" className="cursor-pointer">
                   Reranker
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="both" id="mode-both" />
-                <Label
-                  htmlFor="mode-both"
-                  className="cursor-pointer text-sm font-normal text-muted-foreground"
-                >
+                <Label htmlFor="mode-both" className="cursor-pointer">
                   Both (most accurate, slowest)
                 </Label>
               </div>

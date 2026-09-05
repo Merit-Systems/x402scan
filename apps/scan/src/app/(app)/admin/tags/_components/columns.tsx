@@ -31,16 +31,22 @@ export const createColumns = (
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) => {
+          table.toggleAllPageRowsSelected(!!value);
+        }}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onCheckedChange={(value) => {
+          row.toggleSelected(!!value);
+        }}
         aria-label="Select row"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       />
     ),
     size: 40,
@@ -53,7 +59,7 @@ export const createColumns = (
       <HeaderCell Icon={Globe} label="Resource" className="justify-start" />
     ),
     cell: ({ row }) => (
-      <div className="max-w-[300px] truncate text-xs font-medium">
+      <div className="type-emphasis max-w-[300px] truncate type-caption">
         {row.original.resource}
       </div>
     ),
@@ -72,7 +78,7 @@ export const createColumns = (
         )?.description ?? "N/A"
       );
       return (
-        <div className="max-w-[200px] truncate text-center text-xs text-muted-foreground">
+        <div className="max-w-[200px] truncate text-center type-caption text-muted-foreground">
           {description}
         </div>
       );
@@ -93,11 +99,14 @@ export const createColumns = (
         }}
       />
     ),
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {row.original._count.toolCalls}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const { _count: counts } = row.original;
+      return (
+        <div className="type-mono type-scale-caption text-center">
+          {counts.toolCalls}
+        </div>
+      );
+    },
     size: 100,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
@@ -115,7 +124,7 @@ export const createColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="type-mono type-scale-caption text-center">
         {formatCompactAgo(row.original.lastUpdated)}
       </div>
     ),
@@ -135,13 +144,13 @@ export const createColumns = (
           type="button"
           variant="ghost"
           size="sm"
-          className="h-auto w-full flex-wrap justify-center gap-1"
+          className="w-full flex-wrap justify-center gap-1"
           onClick={() => {
             handlers?.onTagsClick?.(row.original);
           }}
         >
           {tags.length === 0 ? (
-            <span className="inline-flex items-center px-2 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
+            <span className="inline-flex items-center px-2 py-0.5 type-caption text-muted-foreground transition-colors hover:text-foreground">
               Add tags...
             </span>
           ) : (
@@ -153,7 +162,7 @@ export const createColumns = (
                 }) => (
                   <span
                     key={resourceTag.id}
-                    className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium"
+                    className="type-emphasis inline-flex items-center rounded-full border px-2 py-0.5 type-caption"
                     style={{
                       backgroundColor: `${resourceTag.tag.color}20`,
                       borderColor: resourceTag.tag.color,
@@ -165,7 +174,7 @@ export const createColumns = (
                 )
               )}
               {hasMore && (
-                <span className="inline-flex items-center px-2 py-0.5 text-xs text-muted-foreground">
+                <span className="inline-flex items-center px-2 py-0.5 type-caption text-muted-foreground">
                   ...
                 </span>
               )}

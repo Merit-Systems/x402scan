@@ -52,11 +52,11 @@ const listTopAgentConfigurationsUncached = async (
         INNER JOIN "Chat" c ON c."userAgentConfigurationId" = acu.id
         LEFT JOIN "Message" m ON c.id = m."chatId" 
           AND m.role = 'assistant'
-          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${Prisma.sql`AND m."createdAt" >= ${startDate.toISOString()}::timestamp`}
+          ${Prisma.sql`AND m."createdAt" <= ${endDate.toISOString()}::timestamp`}
         LEFT JOIN "ToolCall" tc ON c.id = tc."chatId"
-          ${startDate ? Prisma.sql`AND tc."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND tc."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${Prisma.sql`AND tc."createdAt" >= ${startDate.toISOString()}::timestamp`}
+          ${Prisma.sql`AND tc."createdAt" <= ${endDate.toISOString()}::timestamp`}
         WHERE acu."agentConfigurationId" IS NOT NULL
         GROUP BY acu."agentConfigurationId"
       ),

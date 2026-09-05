@@ -30,8 +30,10 @@ export const ConnectWalletForm = () => {
         <div className="flex w-full flex-col gap-2">
           <ConnectEmbeddedWalletOAuth />
           <Button
-            onClick={() => setIsEmailFlow(true)}
-            className="h-12 w-full md:h-12"
+            onClick={() => {
+              setIsEmailFlow(true);
+            }}
+            className="w-full"
             variant="outline"
             type="button"
           >
@@ -42,7 +44,9 @@ export const ConnectWalletForm = () => {
       )}
       {isEmailFlow && (
         <Button
-          onClick={() => setIsEmailFlow(false)}
+          onClick={() => {
+            setIsEmailFlow(false);
+          }}
           variant="ghost"
           type="button"
         >

@@ -5,7 +5,7 @@ import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-t
 import { createColumns } from "./columns";
 import { api, type RouterOutputs } from "@/trpc/client";
 import { EditTagModal } from "./edit-tag-modal";
-import { ResourceExecutorModal } from "./resource-executor-modal";
+import { ResourceExecutorModal } from "../../_components/resource-executor-modal";
 import { ControlMenu } from "./control-menu";
 import { TagFilter } from "./tag-filter";
 import { useResourcesSorting } from "@/app/(app)/admin/_contexts/sorting/resource-tags/hook";
@@ -53,12 +53,14 @@ export const ResourceTable = () => {
   const selectedResources = Object.keys(rowSelection)
     .filter((key) => rowSelection[key])
     .map((id) => resources.find((r: Resource) => r.id === id))
-    .filter(Boolean) as Resource[];
+    .filter((resource): resource is Resource => resource !== undefined);
 
   const columns = useMemo(
     () =>
       createColumns({
-        onTagsClick: (resource) => setModalState({ type: "tags", resource }),
+        onTagsClick: (resource) => {
+          setModalState({ type: "tags", resource });
+        },
       }),
     []
   );
@@ -73,7 +75,9 @@ export const ResourceTable = () => {
         <ControlMenu
           selectedResources={selectedResources}
           selectedTagIds={selectedTagIds}
-          onSuccess={() => setRowSelection({})}
+          onSuccess={() => {
+            setRowSelection({});
+          }}
         />
       </div>
 
@@ -82,23 +86,29 @@ export const ResourceTable = () => {
         data={resources}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        onRowClick={(resource) => setModalState({ type: "executor", resource })}
+        onRowClick={(resource) => {
+          setModalState({ type: "executor", resource });
+        }}
         pagination={{
           pageIndex: page,
           pageSize: PAGE_SIZE,
           pageCount: hasNextPage ? page + 2 : page + 1,
         }}
-        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
+        onPaginationChange={({ pageIndex }) => {
+          setPage(pageIndex);
+        }}
         enableRowSelection={true}
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
-        getRowId={(row, index) => row?.id ?? `loading-${index}`}
+        getRowId={(row) => row.id}
       />
 
       {modalState.type === "tags" && (
         <EditTagModal
           open={true}
-          onOpenChange={(open) => !open && setModalState({ type: "none" })}
+          onOpenChange={(open) => {
+            if (!open) setModalState({ type: "none" });
+          }}
           resourceId={modalState.resource.id}
           resourceName={modalState.resource.resource}
           pagination={{
@@ -113,7 +123,9 @@ export const ResourceTable = () => {
       {modalState.type === "executor" && (
         <ResourceExecutorModal
           open={true}
-          onOpenChange={(open) => !open && setModalState({ type: "none" })}
+          onOpenChange={(open) => {
+            if (!open) setModalState({ type: "none" });
+          }}
           resourceId={modalState.resource.id}
         />
       )}

@@ -77,45 +77,6 @@ export default defineConfig({
   ],
   ui: {
     stylesheets: ["src/app/globals.css"],
-    sourceIntegrity: {
-      deviations: [
-        {
-          item: "conversation",
-          reason:
-            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "message",
-          reason:
-            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "prompt-input",
-          reason:
-            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "reasoning",
-          reason:
-            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-        {
-          item: "tool",
-          reason:
-            "Foundation AI Elements require a coordinated AI SDK and Streamdown runtime upgrade.",
-          owner: "x402scan maintainers",
-          expires: "2027-03-01",
-        },
-      ],
-    },
   },
   development: { managed: false },
 });

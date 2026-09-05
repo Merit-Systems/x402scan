@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import type {
@@ -89,21 +89,21 @@ export async function generateFilterQuestions(
   }
 
   try {
-    const result = await generateObject({
+    const result = await generateText({
       model: openai("gpt-4.1-nano"),
       prompt: buildFilterGenerationPrompt(naturalLanguageQuery),
-      schema: filterQuestionsSchema,
+      output: Output.object({ schema: filterQuestionsSchema }),
       temperature: 0.3,
     });
 
-    const questions = result.object.questions.map((q, i) => ({
+    const questions = result.output.questions.map((q, i) => ({
       question: q,
       index: i,
     }));
 
     return {
       questions,
-      explanation: result.object.explanation,
+      explanation: result.output.explanation,
     };
   } catch (error) {
     console.error(
@@ -122,14 +122,14 @@ async function evaluateResourceAgainstFilter(
   resource: SearchResult
 ): Promise<boolean> {
   try {
-    const result = await generateObject({
+    const result = await generateText({
       model: openai("gpt-4o-mini"),
       prompt: buildFilterEvaluationPrompt(question, resource),
-      schema: filterEvaluationSchema,
+      output: Output.object({ schema: filterEvaluationSchema }),
       temperature: 0.1,
     });
 
-    return result.object.answer;
+    return result.output.answer;
   } catch (error) {
     console.warn(
       "[Filter Evaluation] Error evaluating filter:",
