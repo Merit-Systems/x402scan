@@ -8,30 +8,16 @@ import { paginatedQuerySchema } from "@/lib/pagination";
 
 import type { Session } from "next-auth";
 
-/**
- * Context that is passed to all TRPC procedures
- */
-interface Context {
-  headers: Headers;
-  session: Session | null;
-}
-
-/**
- * Create context for each request
- */
-export async function createTRPCContext(headers: Headers): Promise<Context> {
-  const session = await auth();
-
-  return {
-    headers,
-    session,
-  };
+/** A context resolves authentication only when a protected procedure needs it. */
+export function createTRPCContext() {
+  let session: Promise<Session | null> | undefined;
+  return { getSession: () => (session ??= auth()) };
 }
 
 /**
  * Initialize TRPC with our context and transformer
  */
-const t = initTRPC.context<Context>().create({
+const t = initTRPC.context<ReturnType<typeof createTRPCContext>>().create({
   transformer: superjson,
 });
 
@@ -66,17 +52,19 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 export const publicProcedure = t.procedure.use(timingMiddleware);
 
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
-  if (!ctx.session?.user) {
+  const session = await ctx.getSession();
+  if (!session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  return next({ ctx: { ...ctx, session: ctx.session } });
+  return next({ ctx: { ...ctx, session } });
 });
 
 export const adminProcedure = t.procedure.use(async ({ ctx, next }) => {
-  if (!ctx.session?.user || ctx.session.user.role !== "admin") {
+  const session = await ctx.getSession();
+  if (!session?.user || session.user.role !== "admin") {
     throw new TRPCError({ code: "FORBIDDEN" });
   }
-  return next({ ctx: { ...ctx, session: ctx.session } });
+  return next({ ctx: { ...ctx, session } });
 });
 
 export const paginatedProcedure = t.procedure
