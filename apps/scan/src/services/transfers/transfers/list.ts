@@ -1,10 +1,12 @@
+import { cacheLife, cacheTag } from "next/cache";
+
 import { transfersDb } from "@x402scan/transfers-db";
 
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
-import { toPeekAheadResponse } from "@/lib/pagination";
+  toPeekAheadResponse,
+  type paginatedQuerySchema,
+} from "@/lib/pagination";
 import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
 import {
   DEFAULT_TRANSFERS_SORTING,
@@ -15,8 +17,6 @@ import { transfersWhereObject } from "../query-utils";
 import { baseListQuerySchema } from "../schemas";
 
 import type z from "zod";
-
-import type { paginatedQuerySchema } from "@/lib/pagination";
 
 export const listFacilitatorTransfersInputSchema = baseListQuerySchema({
   sortIds: TRANSFERS_SORT_IDS,
@@ -56,10 +56,11 @@ const listFacilitatorTransfersUncached = async (
   });
 };
 
-export const listFacilitatorTransfers = createCachedPaginatedQuery({
-  queryFn: listFacilitatorTransfersUncached,
-  cacheKeyPrefix: "transfers-list",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["block_timestamp"],
-  tags: ["transfers"],
-});
+export const listFacilitatorTransfers = async (
+  ...args: Parameters<typeof listFacilitatorTransfersUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("transfers");
+  return listFacilitatorTransfersUncached(...args);
+};
