@@ -6,7 +6,7 @@ import { TimeframeSelect } from "@/components/timeframe-select";
 import { Separator } from "@/components/ui/separator";
 import { UsageSection } from "@/components/usage-section";
 
-import { getChainForPage } from "@/app/(app)/_lib/chain/page";
+import { parseChain } from "@/app/(app)/_lib/chain/parse";
 import {
   parseDiscoverPage,
   parseServiceView,
@@ -30,7 +30,7 @@ import { OverallStatsContent } from "./_components/stats";
 
 export default async function DiscoverPage({ searchParams }: PageProps<"/">) {
   const resolvedParams = await searchParams;
-  const chain = await getChainForPage(resolvedParams);
+  const chain = parseChain(resolvedParams.chain);
   const sorting = parseTableSorting(
     resolvedParams,
     SELLERS_SORT_IDS,

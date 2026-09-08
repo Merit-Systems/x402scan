@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { TimeframeSelect } from "@/components/timeframe-select";
 
-import { getChainForPage } from "@/app/(app)/_lib/chain/page";
+import { parseChain } from "@/app/(app)/_lib/chain/parse";
 import { facilitatorIdMap } from "@/lib/facilitators";
 import { parseUsageTimeframe } from "@/lib/timeframe";
 import { api, HydrateClient } from "@/trpc/server";
@@ -37,7 +37,7 @@ export default async function FacilitatorPage({
     return notFound();
   }
 
-  const chain = await getChainForPage(resolvedSearchParams);
+  const chain = parseChain(resolvedSearchParams.chain);
   const timeframe = parseUsageTimeframe(resolvedSearchParams.d);
   void api.public.stats.overall.prefetch({
     chain,
