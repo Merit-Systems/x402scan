@@ -199,7 +199,7 @@ export async function GET(request: NextRequest) {
 
     // Query inputs remain identical to public reads; the refresh scope below
     // makes Redis refreshes explicit and waits for their publication.
-    const ctx = await createTRPCContext(new Headers());
+    const ctx = createTRPCContext();
     const api = createCaller(ctx);
 
     // Optional query params
