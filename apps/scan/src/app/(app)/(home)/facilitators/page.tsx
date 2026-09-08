@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { PageHeading } from "@/components/page-heading";
 import { TimeframeSelect } from "@/components/timeframe-select";
 
-import { getChainForPage } from "@/app/(app)/_lib/chain/page";
+import { parseChain } from "@/app/(app)/_lib/chain/parse";
 import {
   DEFAULT_FACILITATORS_SORTING,
   FACILITATORS_SORT_IDS,
@@ -34,7 +34,7 @@ export default async function FacilitatorsPage({
   searchParams,
 }: PageProps<"/facilitators">) {
   const resolvedSearchParams = await searchParams;
-  const chain = await getChainForPage(resolvedSearchParams);
+  const chain = parseChain(resolvedSearchParams.chain);
   const timeframe = parseUsageTimeframe(resolvedSearchParams.d);
   const sorting = parseTableSorting(
     resolvedSearchParams,

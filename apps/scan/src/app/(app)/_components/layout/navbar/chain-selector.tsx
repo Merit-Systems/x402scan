@@ -3,7 +3,7 @@
 import { Globe } from "lucide-react";
 
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,20 +18,19 @@ import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
 
 import { CHAIN_ICONS, CHAIN_LABELS, SUPPORTED_CHAINS } from "@/types/chain";
 
-import { useChain } from "../../../_contexts/chain/hook";
+import { parseChain } from "../../../_lib/chain/parse";
 
 import type { Chain } from "@/types/chain";
 
 const URL_BACKED_CHAIN_ROUTES = new Set(["/", "/facilitators", "/networks"]);
 
 export const ChainSelector = () => {
-  const { chain, setChain } = useChain();
+  const searchParams = useSearchParams();
+  const chain = parseChain(searchParams.get("chain"));
   const pathname = usePathname();
   const replaceSearchParams = useReplaceSearchParams();
 
   const handleSelectChain = (selectedChain: Chain | undefined) => {
-    setChain(selectedChain);
-
     if (URL_BACKED_CHAIN_ROUTES.has(pathname)) {
       replaceSearchParams((params) => {
         if (selectedChain) {
