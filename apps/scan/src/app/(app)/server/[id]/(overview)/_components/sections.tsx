@@ -1,6 +1,14 @@
 import { notFound } from "next/navigation";
 
-import { api, HydrateClient } from "@/trpc/server";
+import { getOriginPayToAddresses } from "@/services/db/resources/origin";
+import {
+  getBucketedStatisticsMV,
+  bucketedStatisticsMVInputSchema,
+} from "@/services/transfers/stats/bucketed-mv";
+import {
+  getOverallStatisticsMV,
+  overallStatisticsMVInputSchema,
+} from "@/services/transfers/stats/overall-mv";
 import { ActivityTimeframe } from "@/types/timeframes";
 
 import { getServerOrigin } from "../../_lib/get-origin";
@@ -22,20 +30,18 @@ export async function Statistics({
 }: Pick<PageProps<"/server/[id]">, "params">) {
   const { id } = await params;
   if (!(await getServerOrigin(id))) notFound();
-  void api.public.stats.overallByOrigin.prefetch({
-    originId: id,
+  const addresses = await getOriginPayToAddresses(id);
+  const input = {
+    recipients: { include: addresses },
     timeframe: ActivityTimeframe.ThirtyDays,
-  });
-  void api.public.stats.bucketedByOrigin.prefetch({
-    originId: id,
-    numBuckets: 48,
-    timeframe: ActivityTimeframe.ThirtyDays,
-  });
-  return (
-    <HydrateClient>
-      <ServerStatCards originId={id} />
-    </HydrateClient>
-  );
+  };
+  const [overall, timeSeries] = await Promise.all([
+    getOverallStatisticsMV(overallStatisticsMVInputSchema.parse(input)),
+    getBucketedStatisticsMV(
+      bucketedStatisticsMVInputSchema.parse({ ...input, numBuckets: 48 })
+    ),
+  ]);
+  return <ServerStatCards overall={overall} timeSeries={timeSeries} />;
 }
 
 export async function Resources({

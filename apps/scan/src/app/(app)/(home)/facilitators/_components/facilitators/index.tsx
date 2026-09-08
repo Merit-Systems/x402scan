@@ -7,20 +7,17 @@ import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
 
 import { FACILITATORS_SORT_IDS } from "@/lib/table-sort-options";
-import { api } from "@/trpc/client";
 
 import { columns } from "./columns";
 
 import type { FacilitatorsSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
-import type { Chain } from "@/types/chain";
-import type { ActivityTimeframe } from "@/types/timeframes";
+import type { listTopFacilitators } from "@/services/transfers/facilitators/list";
 
 interface Props {
-  chain?: Chain;
   pageSize: number;
   sorting: TableSorting<FacilitatorsSortId>;
-  timeframe: ActivityTimeframe;
+  facilitatorsData: Awaited<ReturnType<typeof listTopFacilitators>>;
 }
 
 interface LoadingProps {
@@ -29,24 +26,14 @@ interface LoadingProps {
 }
 
 export const FacilitatorsTable: React.FC<Props> = ({
-  chain,
   pageSize,
   sorting,
-  timeframe,
+  facilitatorsData,
 }) => {
   const router = useRouter();
   const tableSorting = useUrlTableSorting({
     sorting,
     sortIds: FACILITATORS_SORT_IDS,
-  });
-
-  const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
-    pagination: {
-      page_size: pageSize,
-    },
-    sorting,
-    timeframe,
-    chain,
   });
 
   return (

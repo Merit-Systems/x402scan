@@ -4,41 +4,33 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import { StatsCardGrid } from "@/components/stats-card-grid";
 
-import { api } from "@/trpc/server";
+import {
+  getBucketedStatisticsMV,
+  bucketedStatisticsMVInputSchema,
+} from "@/services/transfers/stats/bucketed-mv";
+import {
+  getOverallStatisticsMV,
+  overallStatisticsMVInputSchema,
+} from "@/services/transfers/stats/overall-mv";
 
 import { OverallCharts, LoadingOverallCharts } from "./charts";
 
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
-interface OverallStatsContentProps {
+interface Props {
   chain?: Chain;
   timeframe: ActivityTimeframe;
 }
 
-export function OverallStatsContent({
-  chain,
-  timeframe,
-}: OverallStatsContentProps) {
-  void api.public.stats.overall.prefetch({
-    timeframe,
-    chain,
-  });
-  void api.public.stats.bucketed.prefetch({
-    timeframe,
-    numBuckets: 48,
-    chain,
-  });
-
+export function OverallStatsContent({ chain, timeframe }: Props) {
   return (
     <ErrorBoundary
       key={`${chain ?? "all"}:${String(timeframe)}`}
       fallback={<p>There was an error loading the activity data</p>}
     >
       <Suspense fallback={<LoadingOverallStatsContent />}>
-        <StatsCardGrid className="grid-cols-2 md:grid-cols-4">
-          <OverallCharts chain={chain} timeframe={timeframe} />
-        </StatsCardGrid>
+        <StatisticsData chain={chain} timeframe={timeframe} />
       </Suspense>
     </ErrorBoundary>
   );
@@ -49,3 +41,26 @@ export const LoadingOverallStatsContent = () => (
     <LoadingOverallCharts />
   </StatsCardGrid>
 );
+
+async function StatisticsData({ chain, timeframe }: Props) {
+  const [overallStats, bucketedStats] = await Promise.all([
+    getOverallStatisticsMV(
+      overallStatisticsMVInputSchema.parse({ chain, timeframe })
+    ),
+    getBucketedStatisticsMV(
+      bucketedStatisticsMVInputSchema.parse({
+        chain,
+        timeframe,
+        numBuckets: 48,
+      })
+    ),
+  ]);
+  return (
+    <StatsCardGrid className="grid-cols-2 md:grid-cols-4">
+      <OverallCharts
+        overallStats={overallStats}
+        bucketedStats={bucketedStats}
+      />
+    </StatsCardGrid>
+  );
+}

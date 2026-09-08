@@ -7,29 +7,19 @@ import {
 } from "@/components/usage-bar-chart";
 
 import { facilitators } from "@/lib/facilitators";
-import { api } from "@/trpc/client";
 
 import type { ChartData } from "@/components/ui/chart";
 import type { UsageChartValues } from "@/components/usage-bar-chart";
 
-import type { Chain } from "@/types/chain";
-import type { ActivityTimeframe } from "@/types/timeframes";
-
-interface FacilitatorsChartProps {
-  chain?: Chain;
-  timeframe: ActivityTimeframe;
-}
+import type { getBucketedFacilitatorsStatistics } from "@/services/transfers/facilitators/bucketed";
 
 export const FacilitatorsChart = ({
-  chain,
-  timeframe,
-}: FacilitatorsChartProps) => {
-  const [bucketedFacilitatorData] =
-    api.public.facilitators.bucketedStatistics.useSuspenseQuery({
-      numBuckets: 48,
-      timeframe,
-      chain,
-    });
+  bucketedFacilitatorData,
+}: {
+  bucketedFacilitatorData: Awaited<
+    ReturnType<typeof getBucketedFacilitatorsStatistics>
+  >;
+}) => {
   const chartData: ChartData<UsageChartValues>[] = bucketedFacilitatorData.map(
     (item) => ({
       timestamp: item.bucket_start.toISOString(),
