@@ -13,28 +13,28 @@ import { getResourceMetadataDescription } from "@/lib/resource-auth";
 import { serializeAccepts } from "@/lib/token";
 import { cleanExternalText, cn } from "@/lib/utils";
 import { getDescription } from "@/lib/x402";
-import { api } from "@/trpc/server";
+import {
+  listOriginsWithResources,
+  listOriginsWithResourcesSchema,
+} from "@/services/db/resources/origin";
 
 import { CopyRoute } from "./copy-route";
 
-import type { RouterOutputs } from "@/trpc/client";
-
-type Resource =
-  RouterOutputs["public"]["origins"]["list"]["withResources"][number]["resources"][number];
+type Resource = Awaited<
+  ReturnType<typeof listOriginsWithResources>
+>[number]["resources"][number];
 
 const pricingMetadataSchema = z.looseObject({
   pricingMode: z.string().optional().catch(undefined),
   price: z.string().optional().catch(undefined),
 });
 
-interface OriginResourcesProps {
-  originId: string;
-}
-
-export async function OriginResources({ originId }: OriginResourcesProps) {
-  const [origin] = await api.public.origins.list.withResources({
-    originIds: [originId],
-  });
+export async function OriginResources({ originId }: { originId: string }) {
+  const [origin] = await listOriginsWithResources(
+    listOriginsWithResourcesSchema.parse({
+      originIds: [originId],
+    })
+  );
   const resources = (origin?.resources ?? []).filter(
     (resource) => resource.success
   );
@@ -56,11 +56,7 @@ export async function OriginResources({ originId }: OriginResourcesProps) {
   );
 }
 
-interface ResourceRowProps {
-  resource: Resource;
-}
-
-function ResourceRow({ resource }: ResourceRowProps) {
+function ResourceRow({ resource }: { resource: Resource }) {
   if (!resource.success) {
     return null;
   }
@@ -95,11 +91,7 @@ function ResourceRow({ resource }: ResourceRowProps) {
   );
 }
 
-interface ResourcePriceProps {
-  resource: Resource;
-}
-
-function ResourcePrice({ resource }: ResourcePriceProps) {
+function ResourcePrice({ resource }: { resource: Resource }) {
   const accepts = serializeAccepts(resource.accepts);
 
   if (accepts.length > 0) {
@@ -144,11 +136,7 @@ function ResourcePrice({ resource }: ResourcePriceProps) {
   ) : null;
 }
 
-interface MethodBadgeProps {
-  method: string;
-}
-
-function MethodBadge({ method }: MethodBadgeProps) {
+function MethodBadge({ method }: { method: string }) {
   const normalizedMethod = method.toUpperCase();
 
   return (

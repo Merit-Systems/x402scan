@@ -11,7 +11,14 @@ import {
 } from "@/lib/table-sort-options";
 import { parseTableSorting } from "@/lib/table-state";
 import { parseUsageTimeframe } from "@/lib/timeframe";
-import { api, HydrateClient } from "@/trpc/server";
+import {
+  getBucketedNetworksStatistics,
+  bucketedNetworksStatisticsInputSchema,
+} from "@/services/transfers/networks/bucketed";
+import {
+  listTopNetworks,
+  listTopNetworksInputSchema,
+} from "@/services/transfers/networks/list";
 
 import { NetworksChart, LoadingNetworksChart } from "./_components/chart";
 import { NetworksTable, LoadingNetworksTable } from "./_components/networks";
@@ -73,20 +80,19 @@ async function Chart({
   searchParams,
 }: Pick<PageProps<"/networks">, "searchParams">) {
   const { chain, timeframe } = await readFilters(searchParams);
-  void api.networks.bucketedStatistics.prefetch({
-    numBuckets: 48,
-    timeframe,
-    chain,
-  });
   return (
-    <HydrateClient>
-      <Suspense
-        key={`${chain ?? "all"}:${String(timeframe)}`}
-        fallback={<LoadingNetworksChart />}
-      >
-        <NetworksChart chain={chain} timeframe={timeframe} />
-      </Suspense>
-    </HydrateClient>
+    <Suspense
+      key={`${chain ?? "all"}:${String(timeframe)}`}
+      fallback={<LoadingNetworksChart />}
+    >
+      <ChartData
+        input={bucketedNetworksStatisticsInputSchema.parse({
+          chain,
+          timeframe,
+          numBuckets: 48,
+        })}
+      />
+    </Suspense>
   );
 }
 
@@ -94,15 +100,39 @@ async function Table({
   searchParams,
 }: Pick<PageProps<"/networks">, "searchParams">) {
   const { chain, timeframe, sorting } = await readFilters(searchParams);
-  void api.networks.list.prefetch({ sorting, timeframe, chain });
   return (
-    <HydrateClient>
-      <Suspense
-        key={`${chain ?? "all"}:${String(timeframe)}:${sorting.id}:${String(sorting.desc)}`}
-        fallback={<LoadingNetworksTable sorting={sorting} />}
-      >
-        <NetworksTable chain={chain} timeframe={timeframe} sorting={sorting} />
-      </Suspense>
-    </HydrateClient>
+    <Suspense
+      key={`${chain ?? "all"}:${String(timeframe)}:${sorting.id}:${String(sorting.desc)}`}
+      fallback={<LoadingNetworksTable sorting={sorting} />}
+    >
+      <TableData
+        sorting={sorting}
+        input={listTopNetworksInputSchema.parse({ chain, timeframe, sorting })}
+      />
+    </Suspense>
+  );
+}
+
+async function ChartData({
+  input,
+}: {
+  input: Parameters<typeof getBucketedNetworksStatistics>[0];
+}) {
+  return (
+    <NetworksChart
+      bucketedNetworkData={await getBucketedNetworksStatistics(input)}
+    />
+  );
+}
+
+async function TableData({
+  input,
+  sorting,
+}: {
+  input: Parameters<typeof listTopNetworks>[0];
+  sorting: Parameters<typeof NetworksTable>[0]["sorting"];
+}) {
+  return (
+    <NetworksTable networks={await listTopNetworks(input)} sorting={sorting} />
   );
 }

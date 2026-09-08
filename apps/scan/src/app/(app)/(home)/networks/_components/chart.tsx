@@ -7,26 +7,19 @@ import {
 } from "@/components/usage-bar-chart";
 
 import { networks } from "@/lib/charts";
-import { api } from "@/trpc/client";
 
 import type { ChartData } from "@/components/ui/chart";
 import type { UsageChartValues } from "@/components/usage-bar-chart";
 
-import type { Chain } from "@/types/chain";
-import type { ActivityTimeframe } from "@/types/timeframes";
+import type { getBucketedNetworksStatistics } from "@/services/transfers/networks/bucketed";
 
-interface NetworksChartProps {
-  chain?: Chain;
-  timeframe: ActivityTimeframe;
-}
-
-export const NetworksChart = ({ chain, timeframe }: NetworksChartProps) => {
-  const [bucketedNetworkData] =
-    api.networks.bucketedStatistics.useSuspenseQuery({
-      numBuckets: 48,
-      timeframe,
-      chain,
-    });
+export const NetworksChart = ({
+  bucketedNetworkData,
+}: {
+  bucketedNetworkData: Awaited<
+    ReturnType<typeof getBucketedNetworksStatistics>
+  >;
+}) => {
   const chartData: ChartData<UsageChartValues>[] = bucketedNetworkData.map(
     (item) => {
       // Buckets only include networks with data, so start every known

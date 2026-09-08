@@ -5,35 +5,23 @@ import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
 
 import { NETWORKS_SORT_IDS } from "@/lib/table-sort-options";
-import { api } from "@/trpc/client";
 
 import { columns } from "./columns";
 
 import type { NetworksSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
-import type { Chain } from "@/types/chain";
-import type { ActivityTimeframe } from "@/types/timeframes";
-
-interface NetworksTableProps {
-  chain?: Chain;
-  sorting: TableSorting<NetworksSortId>;
-  timeframe: ActivityTimeframe;
-}
+import type { listTopNetworks } from "@/services/transfers/networks/list";
 
 export const NetworksTable = ({
-  chain,
   sorting,
-  timeframe,
-}: NetworksTableProps) => {
+  networks,
+}: {
+  sorting: TableSorting<NetworksSortId>;
+  networks: Awaited<ReturnType<typeof listTopNetworks>>;
+}) => {
   const tableSorting = useUrlTableSorting({
     sorting,
     sortIds: NETWORKS_SORT_IDS,
-  });
-
-  const [networks] = api.networks.list.useSuspenseQuery({
-    sorting,
-    timeframe,
-    chain,
   });
 
   return (
@@ -48,13 +36,11 @@ export const NetworksTable = ({
   );
 };
 
-interface LoadingNetworksTableProps {
-  sorting?: TableSorting<NetworksSortId>;
-}
-
 export const LoadingNetworksTable = ({
   sorting,
-}: LoadingNetworksTableProps) => {
+}: {
+  sorting?: TableSorting<NetworksSortId>;
+}) => {
   return (
     <DataTableLoading
       columns={columns}
