@@ -23,7 +23,7 @@ export const FeedTable = async ({ limit = 10 }: Props) => {
 
   return (
     <HydrateClient>
-      <Suspense fallback={<LoadingFeedTableContent />}>
+      <Suspense fallback={<LoadingFeedTableContent limit={limit} />}>
         <FeedTableContent limit={limit} />
       </Suspense>
     </HydrateClient>

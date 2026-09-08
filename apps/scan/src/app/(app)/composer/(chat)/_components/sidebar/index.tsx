@@ -15,10 +15,39 @@ import {
   LoadingAgentSelect,
   UnauthedAgentSelect,
 } from "./agent-select";
-import { NavChats, UnauthedNavChats } from "./chats";
+import { NavChats, LoadingNavChats, UnauthedNavChats } from "./chats";
 import { NavMain } from "./main";
 
-export async function Sidebar({
+export function Sidebar(props: React.ComponentProps<typeof BaseSidebar>) {
+  return (
+    <Suspense fallback={<LoadingSidebar {...props} />}>
+      <SidebarContentWithSession {...props} />
+    </Suspense>
+  );
+}
+
+function LoadingSidebar(props: React.ComponentProps<typeof BaseSidebar>) {
+  return (
+    <BaseSidebar
+      collapsible="icon"
+      className="relative h-full max-h-full min-h-full"
+      {...props}
+    >
+      <SidebarHeader>
+        <div className="group-data-[collapsible=icon]:mt-1">
+          <LoadingAgentSelect />
+        </div>
+      </SidebarHeader>
+      <SidebarContent className="gap-0">
+        <NavMain />
+        <LoadingNavChats />
+      </SidebarContent>
+      <SidebarRail />
+    </BaseSidebar>
+  );
+}
+
+async function SidebarContentWithSession({
   ...props
 }: React.ComponentProps<typeof BaseSidebar>) {
   const session = await auth();

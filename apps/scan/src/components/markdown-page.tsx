@@ -9,6 +9,7 @@ interface MarkdownPageProps {
 }
 
 export async function MarkdownPage({ filename }: MarkdownPageProps) {
+  "use cache";
   let content: string;
   try {
     const filePath = join(process.cwd(), "public", filename);

@@ -2,8 +2,10 @@
 
 import { Globe } from "lucide-react";
 
+import { Suspense } from "react";
+
 import Image from "next/image";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,28 +15,40 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
 
+import { parseChain } from "@/app/(app)/_lib/chain/parse";
 import { CHAIN_ICONS, CHAIN_LABELS, SUPPORTED_CHAINS } from "@/types/chain";
-
-import { parseChain } from "../../../_lib/chain/parse";
 
 import type { Chain } from "@/types/chain";
 
-const URL_BACKED_CHAIN_ROUTES = new Set(["/", "/facilitators", "/networks"]);
+export const ChainSelector = () => (
+  <Suspense fallback={<LoadingChainSelector />}>
+    <ChainSelectorContent />
+  </Suspense>
+);
 
-export const ChainSelector = () => {
+function LoadingChainSelector() {
+  return (
+    <Button
+      variant="outline"
+      size="default"
+      className="w-8 xl:w-32"
+      disabled
+      aria-label="Loading network filter"
+    >
+      <Skeleton className="size-4 shrink-0" />
+      <Skeleton className="hidden h-4 w-16 xl:block" />
+    </Button>
+  );
+}
+
+const ChainSelectorContent = () => {
   const searchParams = useSearchParams();
   const chain = parseChain(searchParams.get("chain"));
-  const pathname = usePathname();
   const replaceSearchParams = useReplaceSearchParams();
-
-  const supportsChainFilter =
-    URL_BACKED_CHAIN_ROUTES.has(pathname) ||
-    /^\/facilitator\/[^/]+$/.test(pathname);
-
-  if (!supportsChainFilter) return null;
 
   const handleSelectChain = (selectedChain: Chain | undefined) => {
     replaceSearchParams((params) => {
@@ -52,6 +66,7 @@ export const ChainSelector = () => {
       <DropdownMenuTrigger
         render={
           <Button
+            className="w-8 xl:w-32"
             variant="outline"
             size="default"
             aria-label={
