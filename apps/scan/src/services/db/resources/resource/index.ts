@@ -1,12 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 
 import { scanDb } from "@x402scan/scan-db";
 
-import {
-  createCachedArrayQuery,
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { jsonObjectSchema } from "@/lib/json";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { supportedChainSchema } from "@/lib/schemas";
@@ -193,13 +190,14 @@ export const listResourcesUncached = async (
   });
 };
 
-export const listResources = createCachedArrayQuery({
-  queryFn: listResourcesUncached,
-  cacheKeyPrefix: "resources:list",
-  createCacheKey: (where) => createStandardCacheKey({ where }),
-  dateFields: [],
-  tags: ["resources"],
-});
+export const listResources = async (
+  ...args: Parameters<typeof listResourcesUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("resources");
+  return listResourcesUncached(...args);
+};
 
 export type ResourceSortId = "lastUpdated" | "toolCalls";
 
@@ -268,13 +266,14 @@ export const listResourcesWithPaginationUncached = async (
   });
 };
 
-export const listResourcesWithPagination = createCachedPaginatedQuery({
-  queryFn: listResourcesWithPaginationUncached,
-  cacheKeyPrefix: "resources:list-paginated",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: [],
-  tags: ["resources"],
-});
+export const listResourcesWithPagination = async (
+  ...args: Parameters<typeof listResourcesWithPaginationUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("resources");
+  return listResourcesWithPaginationUncached(...args);
+};
 
 export const searchResourcesSchema = z.object({
   search: z.string().optional(),
@@ -366,13 +365,14 @@ const searchResourcesUncached = async (
   });
 };
 
-export const searchResources = createCachedArrayQuery({
-  queryFn: searchResourcesUncached,
-  cacheKeyPrefix: "resources:search",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: [],
-  tags: ["resources"],
-});
+export const searchResources = async (
+  ...args: Parameters<typeof searchResourcesUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("resources");
+  return searchResourcesUncached(...args);
+};
 
 export const listResourcesForTools = async (resourceIds: string[]) => {
   return scanDb.resources.findMany({
