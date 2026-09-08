@@ -187,7 +187,7 @@ const listAllBazaarOrigins = async (
 ) => {
   "use cache: remote";
   cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("transfers");
+  cacheTag("transfers", "resources");
   return listBazaarOriginsUncached(...args);
 };
 

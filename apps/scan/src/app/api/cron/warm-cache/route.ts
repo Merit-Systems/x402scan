@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
-import { env } from "@/env";
 import { CACHE_DURATION_MINUTES } from "@/lib/cache/constants";
 import { checkCronSecret } from "@/lib/cron";
 import { facilitatorAddresses } from "@/lib/facilitators";
@@ -108,7 +107,7 @@ function getHomePageTasks(
 
     // Discover page variant — bazaar.featured resolves the AgentCash catalog
     // origin set server-side, so the cache key omits the 305-element URL list.
-    // Warms both getDiscoverOrigins() (its own Redis cache) and the
+    // Warms both getDiscoverOrigins() (native remote cache) and the
     // bazaar.list cache for the resulting input shape.
     () =>
       api.public.sellers.bazaar.featured({
@@ -192,15 +191,14 @@ export async function GET(request: NextRequest) {
     return cronCheck;
   }
 
+  await connection();
+
   try {
     const startTime = Date.now();
 
-    // Create cache warming API with authenticated headers
-    const warmingHeaders = new Headers();
-    warmingHeaders.set("x-cache-warming", "true");
-    warmingHeaders.set("authorization", `Bearer ${env.CRON_SECRET ?? ""}`);
-
-    const ctx = await createTRPCContext(warmingHeaders);
+    // Normal reads populate missing entries and trigger native background
+    // revalidation for stale entries; no request context belongs in cache keys.
+    const ctx = await createTRPCContext(new Headers());
     const api = createCaller(ctx);
 
     // Optional query params
