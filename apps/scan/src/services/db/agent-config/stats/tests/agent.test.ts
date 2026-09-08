@@ -1,8 +1,9 @@
+import type { queryRaw } from "@/services/db/query";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@x402scan/scan-db", () => ({ scanDb: {}, Prisma: {} }));
 vi.mock("@/services/db/query", () => ({
-  queryRaw: vi.fn<typeof import("@/services/db/query").queryRaw>(),
+  queryRaw: vi.fn<typeof queryRaw>(),
 }));
 
 import { agentConfigBucketedActivityInputSchema } from "../agent";
