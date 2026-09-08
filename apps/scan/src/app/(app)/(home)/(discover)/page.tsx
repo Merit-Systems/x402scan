@@ -12,13 +12,15 @@ import {
   parseServiceView,
   SERVICES_PAGE_SIZE,
 } from "@/lib/discover/filters";
+import { getDiscoverOrigins } from "@/lib/discover/origins";
 import {
   DEFAULT_SELLERS_SORTING,
   SELLERS_SORT_IDS,
 } from "@/lib/table-sort-options";
 import { parseTableSorting } from "@/lib/table-state";
 import { parseUsageTimeframe } from "@/lib/timeframe";
-import { api, HydrateClient } from "@/trpc/server";
+import { listBazaarOrigins } from "@/services/db/bazaar/origins";
+import { listBazaarOriginsInputSchema } from "@/services/db/bazaar/schema";
 
 import {
   DiscoverServices,
@@ -54,53 +56,60 @@ async function DiscoverUsage({
   const view = parseServiceView(resolvedParams.v);
   const page = parseDiscoverPage(resolvedParams.p);
 
-  const sellersInputBase = {
-    chain,
-    timeframe,
-    sorting,
-  };
-
-  if (view === "featured") {
-    void api.public.sellers.bazaar.featured.prefetch({
-      ...sellersInputBase,
-      pagination: { page, page_size: SERVICES_PAGE_SIZE },
-    });
-  } else {
-    void api.public.sellers.bazaar.list.prefetch({
-      ...sellersInputBase,
-      pagination: { page, page_size: SERVICES_PAGE_SIZE },
-    });
-  }
-
   return (
-    <HydrateClient>
-      <UsageSection
-        controls={
-          <div className="flex flex-wrap items-center gap-0 sm:gap-2">
-            <ServiceViewToggle view={view} />
-            <Separator orientation="vertical" className="hidden sm:block" />
-            <TimeframeSelect timeframe={timeframe} />
-          </div>
-        }
+    <UsageSection
+      controls={
+        <div className="flex flex-wrap items-center gap-0 sm:gap-2">
+          <ServiceViewToggle view={view} />
+          <Separator orientation="vertical" className="hidden sm:block" />
+          <TimeframeSelect timeframe={timeframe} />
+        </div>
+      }
+    >
+      <OverallStatsContent chain={chain} timeframe={timeframe} />
+      <ErrorBoundary
+        fallback={<p>There was an error loading the discover data</p>}
       >
-        <OverallStatsContent chain={chain} timeframe={timeframe} />
-        <ErrorBoundary
-          fallback={<p>There was an error loading the discover data</p>}
+        <Suspense
+          key={`${view}:${chain ?? "all"}:${String(timeframe)}:${String(page)}:${sorting.id}:${String(sorting.desc)}`}
+          fallback={<LoadingDiscoverServices sorting={sorting} />}
         >
-          <Suspense
-            key={`${view}:${chain ?? "all"}:${String(timeframe)}:${String(page)}:${sorting.id}:${String(sorting.desc)}`}
-            fallback={<LoadingDiscoverServices sorting={sorting} />}
-          >
-            <DiscoverServices
-              chain={chain}
-              page={page}
-              sorting={sorting}
-              timeframe={timeframe}
-              view={view}
-            />
-          </Suspense>
-        </ErrorBoundary>
-      </UsageSection>
-    </HydrateClient>
+          <ServicesData
+            chain={chain}
+            page={page}
+            sorting={sorting}
+            timeframe={timeframe}
+            view={view}
+          />
+        </Suspense>
+      </ErrorBoundary>
+    </UsageSection>
   );
+}
+
+async function ServicesData({
+  chain,
+  timeframe,
+  sorting,
+  page,
+  view,
+}: {
+  chain?: Parameters<typeof listBazaarOrigins>[0]["chain"];
+  timeframe: Parameters<typeof listBazaarOrigins>[0]["timeframe"];
+  sorting: Parameters<typeof DiscoverServices>[0]["sorting"];
+  page: number;
+  view: ReturnType<typeof parseServiceView>;
+}) {
+  const originUrls =
+    view === "featured" ? await getDiscoverOrigins() : undefined;
+  const result = await listBazaarOrigins(
+    listBazaarOriginsInputSchema.parse({
+      chain,
+      timeframe,
+      sorting,
+      originUrls,
+    }),
+    { page, page_size: SERVICES_PAGE_SIZE }
+  );
+  return <DiscoverServices result={result} page={page} sorting={sorting} />;
 }
