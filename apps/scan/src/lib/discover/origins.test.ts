@@ -1,3 +1,4 @@
+import type { cacheLife, cacheTag } from "next/cache";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("@/env", () => ({
@@ -8,8 +9,8 @@ vi.mock("@/env", () => ({
 }));
 
 vi.mock("next/cache", () => ({
-  cacheLife: vi.fn<typeof import("next/cache").cacheLife>(),
-  cacheTag: vi.fn<typeof import("next/cache").cacheTag>(),
+  cacheLife: vi.fn<typeof cacheLife>(),
+  cacheTag: vi.fn<typeof cacheTag>(),
 }));
 
 import { fetchUsedOriginsFromAgentCash, getDiscoverOrigins } from "./origins";
