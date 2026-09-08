@@ -12,7 +12,13 @@ interface Props {
   limit?: number;
 }
 
-export const FeedTable = async ({ limit = 10 }: Props) => {
+export const FeedTable = ({ limit = 10 }: Props) => (
+  <Suspense fallback={<LoadingFeedTable limit={limit} />}>
+    <FeedTableData limit={limit} />
+  </Suspense>
+);
+
+const FeedTableData = async ({ limit = 10 }: Props) => {
   await connection();
   void api.public.agents.activity.feed.prefetch({
     pagination: {
@@ -30,6 +36,6 @@ export const FeedTable = async ({ limit = 10 }: Props) => {
   );
 };
 
-export const LoadingFeedTable = ({ limit = 10 }: Props) => {
+const LoadingFeedTable = ({ limit = 10 }: Props) => {
   return <LoadingFeedTableContent limit={limit} />;
 };

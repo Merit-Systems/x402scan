@@ -27,16 +27,6 @@ export const OverallStats = () => {
   );
 };
 
-export const LoadingOverallStats = () => {
-  return (
-    <TimeRangeProvider initialTimeframe={ActivityTimeframe.SevenDays}>
-      <ActivityContainer>
-        <LoadingOverallCharts />
-      </ActivityContainer>
-    </TimeRangeProvider>
-  );
-};
-
 const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section

@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { Body } from "@/app/(app)/_components/deferred/page-utils";
 import { auth } from "@/auth";
 
@@ -8,15 +10,15 @@ import { OverallStats } from "./_components/stats";
 import { Tools } from "./_components/tools";
 import { YourAgents } from "./_components/your-agents";
 
-export default async function ComposerPage({
-  searchParams,
-}: PageProps<"/composer">) {
-  const session = await auth();
+export default function ComposerPage({ searchParams }: PageProps<"/composer">) {
   return (
     <>
       <ComposerHomeHeading />
       <Body>
-        {session?.user.id && <YourAgents userId={session.user.id} />}
+        {/* This optional section has no placeholder until a user is known. */}
+        <Suspense fallback={null}>
+          <SignedInYourAgents />
+        </Suspense>
         <Agents />
         <Tools searchParams={searchParams} />
         <Feed />
@@ -24,4 +26,9 @@ export default async function ComposerPage({
       </Body>
     </>
   );
+}
+
+async function SignedInYourAgents() {
+  const session = await auth();
+  return session?.user.id ? <YourAgents userId={session.user.id} /> : null;
 }

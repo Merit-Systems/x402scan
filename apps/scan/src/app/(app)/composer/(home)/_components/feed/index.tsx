@@ -1,12 +1,13 @@
-import { connection } from "next/server";
-import { api, HydrateClient } from "@/trpc/server";
 import { Suspense } from "react";
+
+import { connection } from "next/server";
 
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
 import {
   FeedTableContent,
   LoadingFeedTableContent,
 } from "@/app/(app)/composer/_components/feed-table/table";
+import { api, HydrateClient } from "@/trpc/server";
 
 export const Feed = () => {
   return (
@@ -14,14 +15,6 @@ export const Feed = () => {
       <Suspense fallback={<LoadingFeedTableContent />}>
         <Data />
       </Suspense>
-    </FeedContainer>
-  );
-};
-
-export const LoadingFeed = () => {
-  return (
-    <FeedContainer>
-      <LoadingFeedTableContent />
     </FeedContainer>
   );
 };
