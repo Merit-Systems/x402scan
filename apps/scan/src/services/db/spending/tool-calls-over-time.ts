@@ -89,7 +89,7 @@ export const getToolCallsOverTime = async (
   ...args: Parameters<typeof getToolCallsOverTimeUncached>
 ) => {
   "use cache: remote";
-  cacheLife({ stale: 60, revalidate: 60, expire: 120 });
+  cacheLife({ stale: 30, revalidate: 30, expire: 60 });
   cacheTag("spending", "tool-calls");
   return getToolCallsOverTimeUncached(...args);
 };
