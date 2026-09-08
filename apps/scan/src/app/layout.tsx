@@ -2,7 +2,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "next-themes";
-import { Geist, Geist_Mono } from "next/font/google";
 import { connection } from "next/server";
 
 import { JsonLd } from "@/components/json-ld";
@@ -17,16 +16,6 @@ import type { Metadata, Viewport } from "next";
 
 // oxfmt-ignore
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const siteDescription =
   "Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.";
@@ -74,9 +63,6 @@ export const viewport: Viewport = {
   width: "device-width",
   height: "device-height",
   initialScale: 1,
-  minimumScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: [
     { media: "(prefers-color-scheme: dark)", color: "#090909" },
     { media: "(prefers-color-scheme: light)", color: "white" },
@@ -113,9 +99,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="antialiased">
         <JsonLd data={jsonLd} />
         <Toaster />
         <SpeedInsights />
