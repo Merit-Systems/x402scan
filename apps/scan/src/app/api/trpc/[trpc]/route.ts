@@ -6,10 +6,6 @@ import { createTRPCContext } from "@/trpc/trpc";
 
 import type { NextRequest } from "next/server";
 
-const createContext = async (req: NextRequest) => {
-  return createTRPCContext(req.headers);
-};
-
 /**
  * TRPC request handler for all HTTP methods
  */
@@ -18,7 +14,7 @@ const handler = (req: NextRequest) =>
     endpoint: "/api/trpc",
     req,
     router: appRouter,
-    createContext: () => createContext(req),
+    createContext: createTRPCContext,
     allowMethodOverride: true,
     onError: ({ path, error }) => {
       // Also log to console in development for immediate feedback
