@@ -1,8 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedQuery, createStandardCacheKey } from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
 
@@ -119,10 +120,11 @@ const getOverallStatisticsMVUncached = async (
   );
 };
 
-export const getOverallStatisticsMV = createCachedQuery({
-  queryFn: getOverallStatisticsMVUncached,
-  cacheKeyPrefix: "overall-statistics-mv",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["latest_block_timestamp"],
-  tags: ["statistics"],
-});
+export const getOverallStatisticsMV = async (
+  ...args: Parameters<typeof getOverallStatisticsMVUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("statistics");
+  return getOverallStatisticsMVUncached(...args);
+};

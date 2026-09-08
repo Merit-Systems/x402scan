@@ -26,32 +26,32 @@ const bucketedByOriginInputSchema = bucketedStatisticsMVInputSchema
 export const statsRouter = createTRPCRouter({
   overall: publicProcedure
     .input(overallStatisticsMVInputSchema)
-    .query(async ({ input, ctx }) => {
-      return getOverallStatisticsMV(input, ctx);
+    .query(async ({ input }) => {
+      return getOverallStatisticsMV(input);
     }),
   bucketed: publicProcedure
     .input(bucketedStatisticsMVInputSchema)
-    .query(async ({ input, ctx }) => {
-      return getBucketedStatisticsMV(input, ctx);
+    .query(async ({ input }) => {
+      return getBucketedStatisticsMV(input);
     }),
   overallByOrigin: publicProcedure
     .input(overallByOriginInputSchema)
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input }) => {
       const { originId, ...rest } = input;
       const addresses = await getOriginPayToAddresses(originId);
-      return getOverallStatisticsMV(
-        { ...rest, recipients: { include: addresses } },
-        ctx
-      );
+      return getOverallStatisticsMV({
+        ...rest,
+        recipients: { include: addresses },
+      });
     }),
   bucketedByOrigin: publicProcedure
     .input(bucketedByOriginInputSchema)
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input }) => {
       const { originId, ...rest } = input;
       const addresses = await getOriginPayToAddresses(originId);
-      return getBucketedStatisticsMV(
-        { ...rest, recipients: { include: addresses } },
-        ctx
-      );
+      return getBucketedStatisticsMV({
+        ...rest,
+        recipients: { include: addresses },
+      });
     }),
 });
