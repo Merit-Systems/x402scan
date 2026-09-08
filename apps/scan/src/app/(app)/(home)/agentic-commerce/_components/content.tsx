@@ -91,7 +91,7 @@ export function AgenticCommerceContent() {
               <Link href="/resources/register">Register API</Link>
             </Button>
             <Button asChild size="sm" variant="outline">
-              <Link href="/resources">Browse services</Link>
+              <Link href="/">Browse services</Link>
             </Button>
           </div>
         }

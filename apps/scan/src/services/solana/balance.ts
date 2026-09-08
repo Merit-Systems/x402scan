@@ -48,10 +48,13 @@ export const getSolanaTokenBalance = async (
 };
 
 /** RPC -32602 "could not find account" — the ATA doesn't exist on-chain. */
-function isAccountNotFoundError(error: unknown): boolean {
-  if (!(error instanceof Error) || !('context' in error)) return false;
-  const ctx = (error as { context: Record<string, unknown> }).context;
-  return ctx?.__code === -32602;
+const accountNotFoundContextSchema = z.object({
+  context: z.looseObject({ __code: z.literal(-32602) }),
+});
+
+function isAccountNotFoundError(cause: unknown): boolean {
+  if (!(cause instanceof Error)) return false;
+  return accountNotFoundContextSchema.safeParse(cause).success;
 }
 
 export const getSolanaNativeBalance = async (

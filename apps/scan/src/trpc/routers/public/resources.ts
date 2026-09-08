@@ -160,7 +160,7 @@ export const resourcesRouter = createTRPCRouter({
       }
 
       const urlInSpec = discoveryResult.resources.some(r =>
-        urlMatchesDiscoveredResource(input.url.toString(), r.url)
+        urlMatchesDiscoveredResource(input.url, r.url)
       );
 
       if (!urlInSpec) {
@@ -174,7 +174,7 @@ export const resourcesRouter = createTRPCRouter({
         };
       }
 
-      const result = await registerEndpoint(input.url.toString());
+      const result = await registerEndpoint(input.url);
       try {
         if (result.success && result.resource?.origin?.id) {
           revalidatePath(`/server/${result.resource.origin.id}`);
@@ -305,10 +305,11 @@ export const resourcesRouter = createTRPCRouter({
       const candidates = normalizeRegistrationCandidates(input.resources);
       const registered = await scanDb.resources.findMany({
         where: {
-          OR: candidates.map(candidate => ({
-            resource: candidate.resource,
-            ...(candidate.method ? { method: candidate.method } : {}),
-          })),
+          OR: candidates.map(candidate =>
+            candidate.method
+              ? { resource: candidate.resource, method: candidate.method }
+              : { resource: candidate.resource }
+          ),
         },
         select: {
           resource: true,

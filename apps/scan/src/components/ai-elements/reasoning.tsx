@@ -46,7 +46,7 @@ export const Reasoning = memo(
     isStreaming = false,
     open,
     defaultOpen = true,
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+    // oxlint-disable-next-line typescript/unbound-method
     onOpenChange,
     duration: durationProp,
     children,
@@ -69,7 +69,6 @@ export const Reasoning = memo(
     useEffect(() => {
       if (isStreaming) {
         if (startTime === null) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
           setStartTime(Date.now());
         }
       } else if (startTime !== null) {

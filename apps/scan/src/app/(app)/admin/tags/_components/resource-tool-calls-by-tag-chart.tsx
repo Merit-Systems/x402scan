@@ -38,7 +38,7 @@ export const ResourceToolCallsByTagChart = () => {
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    return Number(timeframe) < 7;
+    return timeframe < 7;
   }, [timeframe]);
 
   // Transform data for chart
@@ -57,7 +57,7 @@ export const ResourceToolCallsByTagChart = () => {
       return {
         timestamp: format(new Date(item.bucket_start), dateFormat),
         ...numericData,
-      } as ChartData<Record<TagKey, number>>;
+      };
     });
   }, [toolCallsByTagsData, isLessThan7Days]);
 

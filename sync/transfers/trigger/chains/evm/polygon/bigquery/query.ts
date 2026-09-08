@@ -49,10 +49,10 @@ export function buildQuery(
 }
 
 export function transformResponse(
-  data: unknown,
+  data: BigQueryTransferRow[],
   config: SyncConfig
 ): TransferEventData[] {
-  return (data as BigQueryTransferRow[]).map(row => ({
+  return data.map(row => ({
     address: row.address,
     transaction_from: row.transaction_from,
     sender: row.sender,

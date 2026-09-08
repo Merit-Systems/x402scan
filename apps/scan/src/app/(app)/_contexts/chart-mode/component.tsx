@@ -12,10 +12,10 @@ import {
 import { useChartMode } from './hook';
 import type { ChartMode } from './context';
 
-const modeNames: Record<ChartMode, string> = {
+const modeNames = {
   bucketed: 'Per Bucket',
   cumulative: 'Cumulative',
-};
+} satisfies Record<ChartMode, string>;
 
 export const ChartModeSelector = () => {
   const { chartMode, selectChartMode } = useChartMode();

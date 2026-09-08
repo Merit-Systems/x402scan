@@ -1,5 +1,5 @@
 import type { BalanceCheckResult } from './types';
-import { CURRENCY_CONFIG } from './config';
+import { CURRENCY_CONFIG } from './constants';
 
 export async function sendDiscordAlert(
   balanceResult: BalanceCheckResult

@@ -16,6 +16,16 @@ interface JsonObject {
 }
 export type JsonArray = JsonValue[];
 
+/** JSON objects are the only non-null, non-array containers in the domain. */
+function isJsonObject(value: JsonValue): value is JsonObject {
+  return value instanceof Object && !Array.isArray(value);
+}
+
+/** JSON numbers are always finite; strings and booleans never are. */
+function isJsonNumber(value: string | number | boolean): value is number {
+  return Number.isFinite(value);
+}
+
 interface JsonNodeProps {
   data: JsonValue;
   keyName?: string;
@@ -31,30 +41,12 @@ const JsonNode = ({
 }: JsonNodeProps) => {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed && depth > 0);
 
-  const getValueType = (value: JsonValue): string => {
-    if (value === null) return 'null';
-    if (Array.isArray(value)) return 'array';
-    return typeof value;
-  };
-
-  const renderPrimitiveValue = (value: JsonValue) => {
+  const renderPrimitiveValue = (value: string | number | boolean | null) => {
     if (value === null) {
       return <span className="text-muted-foreground">null</span>;
     }
 
-    if (typeof value === 'string') {
-      return (
-        <span className="text-green-600 dark:text-green-400">
-          &quot;{value}&quot;
-        </span>
-      );
-    }
-
-    if (typeof value === 'number') {
-      return <span className="text-blue-600 dark:text-blue-400">{value}</span>;
-    }
-
-    if (typeof value === 'boolean') {
+    if (value === true || value === false) {
       return (
         <span className="text-purple-600 dark:text-purple-400">
           {value.toString()}
@@ -62,36 +54,34 @@ const JsonNode = ({
       );
     }
 
+    if (isJsonNumber(value)) {
+      return <span className="text-blue-600 dark:text-blue-400">{value}</span>;
+    }
+
     return (
-      <span>
-        {value !== null && value !== undefined ? JSON.stringify(value) : 'null'}
+      <span className="text-green-600 dark:text-green-400">
+        &quot;{value}&quot;
       </span>
     );
   };
 
-  const renderCollapsedPreview = (value: JsonValue): string => {
+  const renderCollapsedPreview = (value: JsonArray | JsonObject): string => {
     if (Array.isArray(value)) {
       if (value.length === 0) return '[]';
       return `[${value.length}]`;
     }
 
-    if (typeof value === 'object' && value !== null) {
-      const keys = Object.keys(value);
-      if (keys.length === 0) return '{}';
-      return `{${keys.length}}`;
-    }
-
-    return '';
+    const keys = Object.keys(value);
+    if (keys.length === 0) return '{}';
+    return `{${keys.length}}`;
   };
 
-  const valueType = getValueType(data);
-
-  if (valueType === 'array' || valueType === 'object') {
+  if (data !== null && (Array.isArray(data) || isJsonObject(data))) {
     const isArray = Array.isArray(data);
-    const items = isArray ? data : Object.entries(data as JsonObject);
+    const items = isArray ? data : Object.entries(data);
     const isEmpty = isArray
       ? data.length === 0
-      : Object.keys(data as JsonObject).length === 0;
+      : Object.keys(data).length === 0;
     const openBracket = isArray ? '[' : '{';
     const closeBracket = isArray ? ']' : '}';
 

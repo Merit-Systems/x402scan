@@ -9,7 +9,6 @@ import {
   SIWE_PROVIDER_NAME,
   SIWE_STATEMENT,
 } from './constants';
-import { auth } from '@/auth';
 
 const siweCredentialsSchema = z.object({
   message: z.string().transform((val: string) => {
@@ -48,6 +47,9 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
 
       const email = parseResult.data.email;
 
+      // Imported lazily: '@/auth' statically imports this provider, so a
+      // top-level import would create a module cycle.
+      const { auth } = await import('@/auth');
       const session = await auth();
 
       if (session?.user?.id) {

@@ -146,7 +146,10 @@ async function fetchWithOffset(
   now: Date,
   onBatchFetched?: (batch: TransferEventData[]) => Promise<void>
 ): Promise<{ totalFetched: number }> {
-  if (config.provider === QueryProvider.BITQUERY) {
+  if (
+    config.provider === QueryProvider.BITQUERY ||
+    config.provider === QueryProvider.BITQUERY_CHANNELS
+  ) {
     const results = await fetchWithOffsetPagination(
       config,
       facilitator,

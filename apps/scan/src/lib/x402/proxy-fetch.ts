@@ -1,6 +1,31 @@
+import z from 'zod';
+
 import { env } from '@/env';
+import { jsonObjectSchema, jsonValueSchema } from '@/lib/json';
+
+import type { JsonValue } from '@/lib/json';
 
 const PROXY_ENDPOINT = '/api/proxy' as const;
+
+/**
+ * JSON "containers": the values `JSON.parse` can produce that are not
+ * string/number/boolean primitives.
+ */
+const jsonContainerSchema = z.union([
+  jsonObjectSchema,
+  z.array(jsonValueSchema),
+  z.null(),
+]);
+
+const tryParseJson = (
+  text: string
+): { ok: true; value: JsonValue } | { ok: false } => {
+  try {
+    return { ok: true, value: jsonValueSchema.parse(JSON.parse(text)) };
+  } catch {
+    return { ok: false };
+  }
+};
 
 export const fetchWithProxy = async (
   input: URL | RequestInfo,
@@ -44,7 +69,7 @@ export const fetchWithProxy = async (
   proxyUrl.searchParams.set('share_data', 'true');
 
   const { method = 'GET', ...restInit } = effectiveInit ?? {};
-  const normalizedMethod = method.toString().toUpperCase();
+  const normalizedMethod = method.toUpperCase();
 
   const headers = new Headers(effectiveInit?.headers);
 
@@ -69,36 +94,33 @@ export const fetchWithProxy = async (
     finalInit.body = undefined;
   }
 
+  const bodyText = z.string().safeParse(finalInit.body);
   if (
     normalizedMethod !== 'GET' &&
     normalizedMethod !== 'HEAD' &&
-    typeof finalInit.body === 'string'
+    bodyText.success
   ) {
     const ct = headers.get('content-type') ?? '';
-    const bodyText = finalInit.body;
 
-    const tryParse = (s: string): unknown => {
-      try {
-        return JSON.parse(s) as unknown;
-      } catch {
-        return undefined;
-      }
-    };
-
-    const parsedOnce = tryParse(bodyText);
-    // If body is a JSON string literal whose contents are JSON, unwrap one layer.
-    if (typeof parsedOnce === 'string') {
-      const parsedTwice = tryParse(parsedOnce);
-      if (parsedTwice !== undefined && typeof parsedTwice === 'object') {
-        finalInit.body = parsedOnce;
+    const parsedOnce = tryParseJson(bodyText.data);
+    if (parsedOnce.ok) {
+      const innerJsonString = z.string().safeParse(parsedOnce.value);
+      if (innerJsonString.success) {
+        // If body is a JSON string literal whose contents are JSON, unwrap one layer.
+        const parsedTwice = tryParseJson(innerJsonString.data);
+        if (
+          parsedTwice.ok &&
+          jsonContainerSchema.safeParse(parsedTwice.value).success
+        ) {
+          finalInit.body = innerJsonString.data;
+          headers.set('Content-Type', 'application/json');
+        }
+      } else if (
+        jsonContainerSchema.safeParse(parsedOnce.value).success &&
+        (ct.toLowerCase().startsWith('text/plain') || ct === '')
+      ) {
         headers.set('Content-Type', 'application/json');
       }
-    } else if (
-      parsedOnce !== undefined &&
-      typeof parsedOnce === 'object' &&
-      (ct.toLowerCase().startsWith('text/plain') || ct === '')
-    ) {
-      headers.set('Content-Type', 'application/json');
     }
   }
 

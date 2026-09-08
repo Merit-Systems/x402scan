@@ -34,4 +34,4 @@ export const bitrefillFacilitator = {
       },
     ],
   },
-} as const satisfies Facilitator<void>;
+} as const satisfies Facilitator;

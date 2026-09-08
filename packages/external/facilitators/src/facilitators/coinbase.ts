@@ -5,8 +5,27 @@ import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig } from '../types';
 
-export const coinbase = facilitator as unknown as FacilitatorConfig;
-export const coinbaseDiscovery = facilitator as unknown as FacilitatorConfig;
+function isFacilitatorUrl(url: string): url is `${string}://${string}` {
+  return url.includes('://');
+}
+
+// @coinbase/x402 types its facilitator against @x402/core (optional url),
+// while this package uses the x402 FacilitatorConfig (required url). Parse the
+// url once at this boundary instead of asserting the whole config.
+function parseFacilitatorConfig(config: typeof facilitator): FacilitatorConfig {
+  const { url, createAuthHeaders } = config;
+  if (!url || !isFacilitatorUrl(url)) {
+    throw new Error(
+      `@coinbase/x402 facilitator config has an invalid url: ${String(url)}`
+    );
+  }
+  return { url, createAuthHeaders };
+}
+
+const coinbaseConfig = parseFacilitatorConfig(facilitator);
+
+export const coinbase = coinbaseConfig;
+export const coinbaseDiscovery = coinbaseConfig;
 
 export const coinbaseFacilitator = {
   id: 'coinbase',
@@ -281,4 +300,4 @@ export const coinbaseFacilitator = {
       },
     ],
   },
-} as const satisfies Facilitator<void>;
+} as const satisfies Facilitator;

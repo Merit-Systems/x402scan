@@ -45,9 +45,7 @@ const listTopAgentConfigurationsUncached = async (
     scanDb.agentConfiguration.count({
       where: {
         visibility: 'public',
-        ...(originId
-          ? { resources: { some: { resource: { originId } } } }
-          : {}),
+        resources: originId ? { some: { resource: { originId } } } : undefined,
       },
     }),
     queryRaw(

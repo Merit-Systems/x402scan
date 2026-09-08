@@ -4,10 +4,6 @@ import { z } from 'zod';
 
 import { env } from '@/env';
 import { searchResourcesCombined } from '@/services/resource-search/combined-search';
-import type {
-  QueryMode,
-  RefinementMode,
-} from '@/services/resource-search/types';
 
 const searchSchema = z.object({
   q: z.string().min(1),
@@ -62,8 +58,8 @@ export const GET = async (request: NextRequest) => {
   try {
     // 3. Execution
     const result = await searchResourcesCombined(query, {
-      queryMode: parsedQueryMode as QueryMode,
-      refinementMode: parsedRefinementMode as RefinementMode,
+      queryMode: parsedQueryMode,
+      refinementMode: parsedRefinementMode,
     });
 
     // 4. Response

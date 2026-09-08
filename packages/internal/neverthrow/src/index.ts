@@ -13,7 +13,7 @@ export function resultFromPromise<E extends BaseError, T = unknown>(
   type: string,
   surface: string,
   promise: Promise<T>,
-  error: (e: unknown) => E
+  error: (cause: unknown) => E
 ): ResultAsync<T, E> {
   return NeverthrowResultAsync.fromPromise(promise, e => ({
     ...error(e),
@@ -26,7 +26,7 @@ export function resultFromThrowable<E extends BaseError, T = unknown>(
   type: string,
   surface: string,
   fn: () => T,
-  error: (e: unknown) => E
+  error: (cause: unknown) => E
 ): Result<T, E> {
   return NeverthrowResult.fromThrowable(fn, e => ({
     ...error(e),

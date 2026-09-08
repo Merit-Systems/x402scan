@@ -54,7 +54,6 @@ sync/generated/prisma/
 # Lock files (keep only root)
 scan/pnpm-lock.yaml
 sync/pnpm-lock.yaml
-scan/bun.lock
 
 # IDE
 .vscode/

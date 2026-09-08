@@ -74,7 +74,7 @@ export const labelingPass = async (
     `;
 
   const prompt = buildLabelingPrompt()
-    .replace('{_RESOURCE_URL_}', resource.resource.toString())
+    .replace('{_RESOURCE_URL_}', resource.resource)
     .replace('{_RESOURCE_DESCRIPTIONS_}', resourceDescription)
     .replace(
       '{_CURRENT_AVAILABLE_TAGS_}',

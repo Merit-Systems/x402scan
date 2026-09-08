@@ -91,9 +91,7 @@ export const TokenInput: React.FC<Props> = ({
   useEffect(() => {
     if (inputRef.current) {
       const maximumValue =
-        balance && Number(balance) > 0
-          ? balance.toString()
-          : '99999999999999.99';
+        balance && balance > 0 ? balance.toString() : '99999999999999.99';
 
       autoNumericRef.current = new AutoNumeric(inputRef.current, {
         digitGroupSeparator: '',
@@ -127,7 +125,7 @@ export const TokenInput: React.FC<Props> = ({
 
   const handlePercentageClick = (percentage: number) => {
     if (inputRef.current && balance) {
-      const amount = (Number(balance) * percentage) / 100;
+      const amount = (balance * percentage) / 100;
       autoNumericRef.current?.set(amount);
       onChange(amount);
     }

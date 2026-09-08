@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Tag, Plus, X, Trash2 } from 'lucide-react';
-import { api } from '@/trpc/client';
+import { api, type RouterInputs } from '@/trpc/client';
 import {
   Dialog,
   DialogContent,
@@ -60,24 +60,24 @@ export function EditTagModal({
     });
 
   function invalidateResourcesList() {
-    void utils.public.resources.list.paginated.invalidate({
+    const input: RouterInputs['public']['resources']['list']['paginated'] = {
       pagination,
-      ...(selectedTagIds.length > 0
-        ? {
-            AND: [
-              {
-                tags: {
-                  some: {
-                    tagId: {
-                      in: selectedTagIds,
-                    },
-                  },
-                },
-              },
-            ],
-          }
-        : {}),
-    });
+    };
+    // Mirror the filter shape resource-table passes to the paginated query so
+    // the tag-filtered list is actually invalidated. (The previous top-level
+    // `AND` key never matched any cached query input.)
+    if (selectedTagIds.length > 0) {
+      input.where = {
+        tags: {
+          some: {
+            tagId: {
+              in: selectedTagIds,
+            },
+          },
+        },
+      };
+    }
+    void utils.public.resources.list.paginated.invalidate(input);
   }
 
   const createTag = api.admin.resources.tags.create.useMutation({

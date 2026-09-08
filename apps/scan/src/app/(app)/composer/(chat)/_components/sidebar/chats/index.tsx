@@ -53,7 +53,7 @@ export const NavChats = () => {
           onSuccess: () => {
             setShowDeleteDialog(false);
             void utils.user.chats.list.invalidate();
-            void router.push('/composer/chat');
+            router.push('/composer/chat');
           },
         }
       );

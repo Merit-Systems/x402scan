@@ -169,9 +169,9 @@ function domainFromOrigin(origin: string) {
   }
 }
 
-function logNotificationError(error: unknown, username: string) {
+function logNotificationError(cause: unknown, username: string) {
   console.error('[discord-notifications] failed to send notification', {
-    error: error instanceof Error ? error.message : String(error),
+    error: cause instanceof Error ? cause.message : String(cause),
     username,
   });
 }

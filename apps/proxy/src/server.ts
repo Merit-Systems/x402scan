@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { registerProxyRouter } from './routes/proxy.js';
-import { createResourceInvocationsTable } from '@x402scan/analytics-db';
 
 const app = new Hono();
 
@@ -46,14 +45,6 @@ app.get('/', c => {
 registerProxyRouter(app);
 
 const port = Number(process.env.PORT) || 6969;
-
-// Initialize ClickHouse table on startup
-void createResourceInvocationsTable().catch(error => {
-  console.error(
-    'Failed to initialize ClickHouse, continuing without it:',
-    error instanceof Error ? error.message : String(error)
-  );
-});
 
 serve({
   fetch: app.fetch,

@@ -71,7 +71,6 @@ const LatestTransactionsTableContainer = ({
     <Section
       title="Transactions"
       description="x402 requests made through known facilitators"
-      href="/transactions"
     >
       {children}
     </Section>

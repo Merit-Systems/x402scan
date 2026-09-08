@@ -36,7 +36,7 @@ export const KnownSellerChart = ({ addresses }: Props) => {
     value: number;
   }>[] = bucketedStats.map(stat => ({
     timestamp: stat.bucket_start.toISOString(),
-    value: Number(stat.total_transactions),
+    value: stat.total_transactions,
   }));
 
   return (

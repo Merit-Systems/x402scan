@@ -9,18 +9,11 @@
     "dev": "wrangler dev src/index.ts --local",
     "deploy": "wrangler deploy src/index.ts",
     "test": "vitest",
-    "types:check": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0",
-    "lint:fix": "eslint . --fix",
-    "knip": "pnpm -w knip --workspace ./apps/rpcs/solana",
-    "format": "pnpm -w format:dir ./apps/rpcs/solana",
-    "format:check": "pnpm -w format:check:dir ./apps/rpcs/solana"
+    "types:check": "tsc --noEmit"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240208.0",
-    "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "eslint": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "wrangler": "^4.2.0"

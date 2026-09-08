@@ -36,4 +36,4 @@ async function waitForDatabase() {
   process.exit(1);
 }
 
-waitForDatabase();
+void waitForDatabase();

@@ -3,6 +3,7 @@ import type {
   Facilitator,
   TransferEventData,
   FacilitatorConfig,
+  CdpTransferRow,
 } from '@/trigger/types';
 import { runCdpSqlQuery } from './helpers';
 import { logger } from '@trigger.dev/sdk/v3';
@@ -26,7 +27,7 @@ export async function fetchCDP(
     now,
     offset
   );
-  const rows = await runCdpSqlQuery(query);
+  const rows = await runCdpSqlQuery<CdpTransferRow>(query);
 
   return config.transformResponse(rows, config, facilitator, facilitatorConfig);
 }

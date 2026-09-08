@@ -7,16 +7,14 @@ import type {
 import { searchResourcesWithNaturalLanguage as searchWithKeywords } from './database-tags-search';
 import { searchResourcesWithNaturalLanguage as searchWithSQL } from './database-search';
 import { searchResourcesWithNaturalLanguage as searchWithSQLParallel } from './database-search-parallel-retry';
-import { enrichSearchResults } from './clickhouse-search';
 import { generateFilterQuestions, applyLLMFilters } from './llm-refined-search';
 import { rerankSearchResults } from './reranker-search';
 
 /**
  * Performs a combined search that:
  * 1. DB search with optional parallel filter question generation
- * 2. Enriches results with ClickHouse analytics
- * 3. Applies selected refinement method(s): LLM filters, reranker, both, or none
- * 4. Returns results in the order provided by the LLM/reranker
+ * 2. Applies selected refinement method(s): LLM filters, reranker, both, or none
+ * 3. Returns results in the order provided by the LLM/reranker
  */
 export async function searchResourcesCombined(
   naturalLanguageQuery: string,
@@ -86,31 +84,25 @@ export async function searchResourcesCombined(
     );
   }
 
-  // Step 2: Enrich with ClickHouse analytics
-  const step2Start = Date.now();
-  const enrichedResults = await enrichSearchResults(dbResults.results);
-  const step2Duration = Date.now() - step2Start;
-  console.log(`[Search] Step 2 - ClickHouse enrichment: ${step2Duration}ms`);
+  const searchResults = dbResults.results;
 
   let finalResults: CombinedRefinedResult[];
 
   if (refinementMode === 'none') {
-    // No refinement - return enriched results as-is
-    finalResults = enrichedResults.map(r => ({
+    finalResults = searchResults.map(r => ({
       ...r,
       filterMatches: 0,
       filterAnswers: [],
       rerankerScore: null,
       rerankerIndex: null,
     }));
-    console.log(`[Search] Step 3 - Skipped (no refinement)`);
+    console.log(`[Search] Step 2 - Skipped (no refinement)`);
   } else if (refinementMode === 'llm') {
-    // LLM filtering only - trust LLM ordering
-    const step3Start = Date.now();
+    const step2Start = Date.now();
     try {
-      const results = await applyLLMFilters(enrichedResults, filterQuestions);
+      const results = await applyLLMFilters(searchResults, filterQuestions);
       console.log(
-        `[Search] Step 3 - LLM filter: ${Date.now() - step3Start}ms (${results.length} results)`
+        `[Search] Step 2 - LLM filter: ${Date.now() - step2Start}ms (${results.length} results)`
       );
 
       finalResults = results.map(r => ({
@@ -123,7 +115,7 @@ export async function searchResourcesCombined(
         '[Search] LLM filter failed, returning unfiltered results:',
         error
       );
-      finalResults = enrichedResults.map(r => ({
+      finalResults = searchResults.map(r => ({
         ...r,
         filterMatches: 0,
         filterAnswers: [],
@@ -132,15 +124,14 @@ export async function searchResourcesCombined(
       }));
     }
   } else if (refinementMode === 'reranker') {
-    // Reranker only - trust reranker ordering
-    const step3Start = Date.now();
+    const step2Start = Date.now();
     try {
       const results = await rerankSearchResults(
-        enrichedResults,
+        searchResults,
         naturalLanguageQuery
       );
       console.log(
-        `[Search] Step 3 - Reranker: ${Date.now() - step3Start}ms (${results.length} results)`
+        `[Search] Step 2 - Reranker: ${Date.now() - step2Start}ms (${results.length} results)`
       );
 
       finalResults = results.map(r => ({
@@ -153,7 +144,7 @@ export async function searchResourcesCombined(
         '[Search] Reranker failed, returning unranked results:',
         error
       );
-      finalResults = enrichedResults.map(r => ({
+      finalResults = searchResults.map(r => ({
         ...r,
         filterMatches: 0,
         filterAnswers: [],
@@ -163,14 +154,14 @@ export async function searchResourcesCombined(
     }
   } else {
     // Both LLM and reranker - use reranker for final ordering
-    const step3Start = Date.now();
+    const step2Start = Date.now();
     try {
       const [llmResults, rerankedResults] = await Promise.all([
-        applyLLMFilters(enrichedResults, filterQuestions),
-        rerankSearchResults(enrichedResults, naturalLanguageQuery),
+        applyLLMFilters(searchResults, filterQuestions),
+        rerankSearchResults(searchResults, naturalLanguageQuery),
       ]);
       console.log(
-        `[Search] Step 3 - Parallel LLM + Reranker: ${Date.now() - step3Start}ms`
+        `[Search] Step 2 - Parallel LLM + Reranker: ${Date.now() - step2Start}ms`
       );
 
       // Use reranker order, but include LLM filter data
@@ -187,7 +178,7 @@ export async function searchResourcesCombined(
         '[Search] LLM + Reranker failed, returning unrefined results:',
         error
       );
-      finalResults = enrichedResults.map(r => ({
+      finalResults = searchResults.map(r => ({
         ...r,
         filterMatches: 0,
         filterAnswers: [],

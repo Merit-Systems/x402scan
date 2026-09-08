@@ -4,6 +4,8 @@ import { listResourcesForTools } from '@/services/db/resources/resource';
 
 import { inputSchemaToZodSchema } from './utils';
 
+import { jsonObjectSchema } from '@/lib/json';
+
 import {
   paymentRequirementsSchemaV1,
   outputSchemaV1,
@@ -65,11 +67,12 @@ export async function createX402AITools(
 const mergeInputSchemaAndRequestMetadata = (
   inputSchema: OutputSchemaV1['input'],
   requestMetadata?: ResourceRequestMetadata
-) => {
-  return {
-    ...inputSchema,
-    ...(typeof requestMetadata?.inputSchema === 'object'
-      ? requestMetadata?.inputSchema
-      : {}),
-  };
+): OutputSchemaV1['input'] => {
+  // requestMetadata.inputSchema is stored as raw DB JSON — parse it at this
+  // boundary before merging its overrides on top of the parsed input schema.
+  const override = jsonObjectSchema.safeParse(requestMetadata?.inputSchema);
+  if (!override.success) {
+    return inputSchema;
+  }
+  return { ...inputSchema, ...override.data };
 };

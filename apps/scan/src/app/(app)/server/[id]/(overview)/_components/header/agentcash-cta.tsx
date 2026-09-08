@@ -104,7 +104,6 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="gap-1.5 text-sm shrink-0">
             Try with
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={wallet.icon} alt="" className="size-4 rounded-sm" />
             {wallet.label}
             <ChevronDown className="size-3" />
@@ -117,7 +116,6 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
               onClick={() => setSelectedWallet(w.id)}
               className={`gap-2 ${w.id === selectedWallet ? 'font-semibold' : ''}`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={w.icon} alt="" className="size-4 rounded-sm" />
               {w.label}
             </DropdownMenuItem>

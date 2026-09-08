@@ -38,4 +38,4 @@ export const anyspendFacilitator = {
       },
     ],
   },
-} as const satisfies Facilitator<void>;
+} as const satisfies Facilitator;

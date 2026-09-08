@@ -40,7 +40,6 @@ export const AgentCard = <T extends string>({
         <CardHeader className="border-b flex-1">
           <div className="flex flex-row items-center gap-3">
             {agentConfiguration.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={agentConfiguration.image}
                 alt={agentConfiguration.name}

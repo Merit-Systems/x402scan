@@ -26,6 +26,34 @@ export async function createManyTransferEvents(
 }
 
 /**
+ * Upsert multiple TransferEvents on the (tx_hash, log_index, chain,
+ * block_timestamp) unique key. Unlike createMany+skipDuplicates, an existing
+ * row is overwritten, so scheme-aware syncs can correct rows a generic
+ * provider already wrote for the same transfer.
+ */
+export async function upsertManyTransferEvents(
+  data: Prisma.TransferEventCreateManyInput[]
+) {
+  let count = 0;
+  for (const row of data) {
+    await transfersDb.transferEvent.upsert({
+      where: {
+        tx_hash_log_index_chain_block_timestamp: {
+          tx_hash: row.tx_hash,
+          log_index: row.log_index ?? 0,
+          chain: row.chain,
+          block_timestamp: row.block_timestamp,
+        },
+      },
+      create: row,
+      update: row,
+    });
+    count += 1;
+  }
+  return { count };
+}
+
+/**
  * Update many TransferEvents matching a condition
  */
 export async function updateManyTransferEvents(

@@ -29,7 +29,7 @@ export const serverResultFromPromise = <T>(
   type: string,
   surface: string,
   promise: Promise<T>,
-  error: BaseServerError | ((e: unknown) => BaseServerError)
+  error: BaseServerError | ((cause: unknown) => BaseServerError)
 ) =>
   resultFromPromise(
     type,

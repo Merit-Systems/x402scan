@@ -58,14 +58,11 @@ export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
           trigger: {
             value: 'total_transactions',
             label: 'Transactions',
-            amount: Number(overallStats.total_transactions).toLocaleString(
-              undefined,
-              {
-                notation: 'compact',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              }
-            ),
+            amount: overallStats.total_transactions.toLocaleString(undefined, {
+              notation: 'compact',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+            }),
           },
           items: {
             type: 'bar',
@@ -123,14 +120,11 @@ export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
           trigger: {
             value: 'unique_buyers',
             label: 'Buyers',
-            amount: Number(overallStats.unique_buyers).toLocaleString(
-              undefined,
-              {
-                notation: 'compact',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              }
-            ),
+            amount: overallStats.unique_buyers.toLocaleString(undefined, {
+              notation: 'compact',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+            }),
           },
           items: {
             type: 'bar',

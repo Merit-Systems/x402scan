@@ -2,22 +2,21 @@
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
   "tasks": {
-    "build": {
-      "description": "Build scan database package",
-      "env": ["SCAN_DATABASE_*"],
-      "outputs": ["dist/**"]
+    "db:generate": {
+      "description": "Generate the scan database Prisma client",
+      "outputs": ["generated/**"]
     },
     "db:deploy": {
       "description": "Deploy scan database migrations",
-      "env": ["SCAN_DATABASE_*"]
+      "passThroughEnv": ["SCAN_DATABASE_URL_UNPOOLED"]
     },
-    "types:check": {
-      "description": "Type-check scan database code",
-      "dependsOn": ["db:generate"]
+    "db:migrate": {
+      "description": "Create and apply scan database migrations",
+      "passThroughEnv": ["SCAN_DATABASE_URL_UNPOOLED"]
     },
-    "lint": {
-      "description": "Lint scan database code",
-      "dependsOn": ["db:generate"]
+    "studio": {
+      "description": "Start Prisma Studio for the scan database",
+      "passThroughEnv": ["SCAN_DATABASE_URL_UNPOOLED"]
     }
   }
 }

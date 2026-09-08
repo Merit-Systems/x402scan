@@ -58,7 +58,7 @@ const listBazaarOriginsUncached = async (
 
   console.log(
     `[bazaar.list] mv=${(tMV - tAccepts).toFixed(0)}ms (${result.items.length} items)` +
-      ` chain=${input.chain ?? 'all'} timeframe=${typeof input.timeframe === 'number' ? input.timeframe : input.timeframe.period}`
+      ` chain=${input.chain ?? 'all'} timeframe=${input.timeframe instanceof Object ? input.timeframe.period : input.timeframe}`
   );
 
   // Group by origin
@@ -113,7 +113,7 @@ const listBazaarOriginsUncached = async (
       originMap.set(originId, {
         originId,
         origins,
-        recipients: [item.recipient as MixedAddress],
+        recipients: [item.recipient],
         facilitators: [...item.facilitator_ids],
         tx_count: item.tx_count,
         total_amount: item.total_amount,

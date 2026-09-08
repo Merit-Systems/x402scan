@@ -77,7 +77,7 @@ export const CreateAgentForm: React.FC<Props> = ({
 
   const stepsConfig = useMemo(
     () => steps({ onNext, onPrevious, form, isSubmitting }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
     [onNext, onPrevious, form, isSubmitting, form.formState]
   );
 

@@ -11,6 +11,7 @@ import {
 } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { buildSellersOrderByColumn } from './order-by';
 
 import type { paginatedQuerySchema } from '@/lib/pagination';
 
@@ -72,12 +73,8 @@ export const listTopSellersMVUncached = async (
   const offset = pagination.page * pagination.page_size;
 
   const orderByClause = Prisma.sql`ORDER BY ${Prisma.raw(
-    `"${sorting.id === 'editorial' ? 'recipient' : sorting.id}"`
-  )} ${
-    sorting.id !== 'editorial' && sorting.desc
-      ? Prisma.raw('DESC')
-      : Prisma.raw('ASC')
-  }`;
+    buildSellersOrderByColumn(sorting)
+  )}`;
 
   // Each MV row is already aggregated per (recipient, chain), so grouping by
   // recipient (to fold multiple chains into one) and SUM-ing is correct on its

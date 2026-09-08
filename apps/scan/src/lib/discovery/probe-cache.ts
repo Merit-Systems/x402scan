@@ -1,8 +1,10 @@
 import { randomUUID } from 'crypto';
+import { z } from 'zod';
 import type {
   AuditWarning,
   EndpointMethodAdvisory,
 } from '@agentcash/discovery';
+import { jsonObjectSchema } from '@/lib/json';
 import { getRedisClient } from '@/lib/redis';
 
 /**
@@ -22,6 +24,18 @@ interface CachedProbeResult {
   advisory: EndpointMethodAdvisory;
   warnings: AuditWarning[];
 }
+
+/**
+ * Cache entries are self-serialized (see `satisfies CachedProbeResult` in
+ * cacheProbeResult), so the read side re-establishes JSON structure and
+ * trusts the library types this process wrote.
+ */
+const cachedProbeResultSchema = z.object({
+  advisory: z.custom<EndpointMethodAdvisory>(
+    value => jsonObjectSchema.safeParse(value).success
+  ),
+  warnings: z.custom<AuditWarning[]>(Array.isArray).catch([]),
+});
 
 function cacheKey(sessionId: string, url: string): string {
   return `${KEY_PREFIX}:${sessionId}:${url}`;
@@ -61,15 +75,9 @@ export async function getCachedProbeResult(
   try {
     const raw = await redis.get(cacheKey(sessionId, url));
     if (!raw) return null;
-    const parsed: unknown = JSON.parse(raw);
-    if (
-      typeof parsed !== 'object' ||
-      parsed === null ||
-      !('advisory' in parsed)
-    ) {
-      return null;
-    }
-    return parsed as CachedProbeResult;
+    const parsed = cachedProbeResultSchema.safeParse(JSON.parse(raw));
+    if (!parsed.success) return null;
+    return parsed.data;
   } catch (err) {
     console.error('[probe-cache] Failed to read cached probe result:', err);
     return null;

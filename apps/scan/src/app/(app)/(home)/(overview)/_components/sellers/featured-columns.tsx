@@ -47,7 +47,7 @@ import type { SearchResultEndpoint } from '@/lib/discover/search';
 type BazaarItem =
   RouterOutputs['public']['sellers']['bazaar']['list']['items'][number];
 
-export type FeaturedServiceItem = BazaarItem & {
+type FeaturedServiceItem = BazaarItem & {
   searchEndpoint?: SearchResultEndpoint;
 };
 

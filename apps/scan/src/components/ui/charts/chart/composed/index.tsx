@@ -46,8 +46,7 @@ export const BaseComposedChart = <
           </linearGradient>
         ))}
       </defs>
-      {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-      {bars.map(({ dataKey, color, ref, ...barProps }, index) => {
+      {bars.map(({ dataKey, color, ref: _ref, ...barProps }, index) => {
         return (
           <Bar
             key={dataKey as string}
@@ -76,8 +75,7 @@ export const BaseComposedChart = <
           </linearGradient>
         ))}
       </defs>
-      {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-      {areas.map(({ dataKey, color, ref, ...areaProps }, index) => {
+      {areas.map(({ dataKey, color, ref: _ref, ...areaProps }, index) => {
         return (
           <Area
             key={dataKey as string}
@@ -91,8 +89,7 @@ export const BaseComposedChart = <
           />
         );
       })}
-      {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-      {lines.map(({ dataKey, color, ref, ...lineProps }, index) => {
+      {lines.map(({ dataKey, color, ref: _ref, ...lineProps }, index) => {
         return (
           <Line
             key={dataKey as string}

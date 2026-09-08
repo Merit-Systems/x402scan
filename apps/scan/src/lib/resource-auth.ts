@@ -9,26 +9,36 @@
  *
  * Pure module — safe to import from both server DB code and client components.
  */
+import { z } from 'zod';
+
+import type { Prisma } from '@x402scan/scan-db';
+
 export const FREE_AUTH_MODES = ['siwx', 'unprotected', 'apiKey'] as const;
 
 export type FreeAuthMode = (typeof FREE_AUTH_MODES)[number];
 
-export function getResourceAuthMode(metadata: unknown): FreeAuthMode | null {
-  if (
-    metadata != null &&
-    typeof metadata === 'object' &&
-    !Array.isArray(metadata) &&
-    'authMode' in metadata &&
-    (FREE_AUTH_MODES as readonly unknown[]).includes(
-      (metadata as { authMode: unknown }).authMode
-    )
-  ) {
-    return (metadata as { authMode: FreeAuthMode }).authMode;
-  }
-  return null;
+/**
+ * Resource.metadata is a free-form JSON column (Prisma.JsonValue); these
+ * schemas parse the specific fields this module cares about at the boundary.
+ */
+const authModeMetadataSchema = z.looseObject({
+  authMode: z.enum(FREE_AUTH_MODES),
+});
+
+const descriptionMetadataSchema = z.looseObject({
+  description: z.string().min(1),
+});
+
+export function getResourceAuthMode(
+  metadata: Prisma.JsonValue
+): FreeAuthMode | null {
+  const parsed = authModeMetadataSchema.safeParse(metadata);
+  return parsed.success ? parsed.data.authMode : null;
 }
 
-export function isFreeResource(resource: { metadata: unknown }): boolean {
+export function isFreeResource(resource: {
+  metadata: Prisma.JsonValue;
+}): boolean {
   return getResourceAuthMode(resource.metadata) !== null;
 }
 
@@ -38,17 +48,8 @@ export function isFreeResource(resource: { metadata: unknown }): boolean {
  * free resources; a fallback for paid ones whose 402 accepts lack one.
  */
 export function getResourceMetadataDescription(
-  metadata: unknown
+  metadata: Prisma.JsonValue
 ): string | null {
-  if (
-    metadata != null &&
-    typeof metadata === 'object' &&
-    !Array.isArray(metadata) &&
-    'description' in metadata &&
-    typeof (metadata as { description: unknown }).description === 'string' &&
-    (metadata as { description: string }).description.length > 0
-  ) {
-    return (metadata as { description: string }).description;
-  }
-  return null;
+  const parsed = descriptionMetadataSchema.safeParse(metadata);
+  return parsed.success ? parsed.data.description : null;
 }

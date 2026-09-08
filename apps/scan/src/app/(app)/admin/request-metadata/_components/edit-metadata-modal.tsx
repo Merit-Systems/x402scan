@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { api, type RouterOutputs } from '@/trpc/client';
+import { jsonObjectSchema } from '@/lib/json';
 import { toast } from 'sonner';
 import { Loader2, Save, Trash2 } from 'lucide-react';
 
@@ -88,7 +89,6 @@ export const EditMetadataModal = ({
   useEffect(() => {
     if (open) {
       if (existingMetadata) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHeaders(JSON.stringify(existingMetadata.headers, null, 2));
         setBody(JSON.stringify(existingMetadata.body, null, 2));
         setQueryParams(JSON.stringify(existingMetadata.queryParams, null, 2));
@@ -104,10 +104,11 @@ export const EditMetadataModal = ({
 
   const parseJson = (jsonString: string) => {
     try {
-      return JSON.parse(jsonString) as Record<string, unknown>;
+      return jsonObjectSchema.parse(JSON.parse(jsonString));
     } catch (error) {
       throw new Error(
-        `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       );
     }
   };

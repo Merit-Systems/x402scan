@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { isOpenApiDeclaredFree } from '@/lib/discovery/catalog-auth';
+import { jsonObjectSchema } from '@/lib/json';
 import { cleanExternalText, cn } from '@/lib/utils';
 
 import { DiscoveryActions } from './discovery-actions';
@@ -36,7 +37,7 @@ import {
   createDummyOgImage,
   createDummyResourceOrigin,
   createDummyResources,
-} from '@/app/(app)/developer/_components/dummy';
+} from './dummy';
 
 import { parseX402Response } from '@/lib/x402';
 import type {
@@ -59,10 +60,7 @@ type FailedResource = FailedResourceType;
 
 function isValidJson(str: string): boolean {
   try {
-    const parsed: unknown = JSON.parse(str);
-    return (
-      typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
-    );
+    return jsonObjectSchema.safeParse(JSON.parse(str)).success;
   } catch {
     return false;
   }
@@ -169,7 +167,7 @@ export interface DiscoveryPanelProps {
   onRegisterAll?: () => void;
   /** Whether to show the Register All button */
   showRegisterButton?: boolean;
-  /** Mode: 'register' for registration page, 'test' for developer page */
+  /** Mode: 'register' for registration actions, 'test' for read-only previews */
   mode?: 'register' | 'test';
   /** Origin preview data (favicon, OG, etc.) */
   preview?: OriginPreview | null;
@@ -545,7 +543,7 @@ export function DiscoveryPanel({
   }
 
   // Show "not found" or "invalid" message if discovery was checked but nothing found
-  // Only show in test mode (developer page), not on register page
+  // Only show in read-only test mode, not while registering resources
   if (isTestMode && !isLoading && resourceCount === 0 && !found) {
     // Check if document was found but invalid (vs not found at all)
     const isInvalidDocument = discoveryError?.includes(
@@ -791,12 +789,12 @@ export function DiscoveryPanel({
 function getResourceVerificationStatus(
   parsed: TestedResource['parsed'],
   verifiedAddresses: Record<string, boolean>
-): { verified: boolean; partial: boolean; addresses: string[] } {
+) {
   const addresses: string[] = [];
 
   // Extract all payTo addresses from payment options
   for (const opt of parsed.paymentOptions ?? []) {
-    if ('payTo' in opt && typeof opt.payTo === 'string') {
+    if (opt.payTo !== undefined) {
       addresses.push(opt.payTo);
     }
   }
@@ -1797,7 +1795,6 @@ function OriginPreviewCard({
       </div>
       {origin.ogImages.length > 0 && (
         <div className="border-l hidden md:flex items-center justify-center bg-muted p-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={origin.ogImages[0]!.url}
             alt={origin.title ? cleanExternalText(origin.title) : ''}

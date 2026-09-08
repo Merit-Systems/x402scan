@@ -1,10 +1,15 @@
 import type { registryRegisterBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
+import { jsonObjectSchema } from '@/lib/json';
 import { registerEndpoint } from '@/lib/discovery/register-endpoint';
 import { urlMatchesDiscoveredResource } from '@/lib/url';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { revalidatePath } from 'next/cache';
-import type { z } from 'zod';
+import { z } from 'zod';
+
+import type { SerializableValue } from '@/app/api/x402/_lib/utils';
+
+const bigintSchema = z.bigint();
 
 const CONTACT_EMAIL_WARNING =
   'Add info.contact.email to your openapi.json to verify ownership, let users contact you, and customize your merchant pages on tryponcho.com.';
@@ -74,11 +79,14 @@ export async function handleRegistryRegister(
   }
 
   // BigInt serialization — REST-specific (TRPC uses superjson)
-  const serialized = JSON.parse(
-    JSON.stringify(result, (_k, v: unknown) =>
-      typeof v === 'bigint' ? Number(v) : v
+  const serialized = jsonObjectSchema.parse(
+    JSON.parse(
+      JSON.stringify(result, (_k, v: SerializableValue) => {
+        const bigintValue = bigintSchema.safeParse(v);
+        return bigintValue.success ? Number(bigintValue.data) : v;
+      })
     )
-  ) as Record<string, unknown>;
+  );
 
   return jsonResponse({ ...serialized, ...contactEmailFields(contactEmail) });
 }

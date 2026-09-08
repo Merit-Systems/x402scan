@@ -8,3 +8,19 @@ export enum ActivityTimeframe {
 
 /** Use sparingly - only for explicit "all time" queries where supported */
 export const ALL_TIME_TIMEFRAME = ActivityTimeframe.AllTime;
+
+/**
+ * Every ActivityTimeframe value. The `satisfies Record<ActivityTimeframe, ...>`
+ * check keeps this list exhaustive when the enum changes.
+ */
+const ACTIVITY_TIMEFRAME_MAP = {
+  [ActivityTimeframe.AllTime]: ActivityTimeframe.AllTime,
+  [ActivityTimeframe.OneDay]: ActivityTimeframe.OneDay,
+  [ActivityTimeframe.SevenDays]: ActivityTimeframe.SevenDays,
+  [ActivityTimeframe.FifteenDays]: ActivityTimeframe.FifteenDays,
+  [ActivityTimeframe.ThirtyDays]: ActivityTimeframe.ThirtyDays,
+} satisfies Record<ActivityTimeframe, ActivityTimeframe>;
+
+export const ACTIVITY_TIMEFRAMES: ActivityTimeframe[] = Object.values(
+  ACTIVITY_TIMEFRAME_MAP
+);

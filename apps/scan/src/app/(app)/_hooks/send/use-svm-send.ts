@@ -75,7 +75,7 @@ export const useSvmSend = ({
         // Invalidate balance 5 times, once every second
         for (let i = 0; i < 5; i++) {
           setTimeout(() => {
-            void invalidateBalance();
+            invalidateBalance();
           }, i * 1000);
         }
         onSuccess?.();

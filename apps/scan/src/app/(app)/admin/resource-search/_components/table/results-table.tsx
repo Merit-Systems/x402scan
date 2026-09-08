@@ -54,18 +54,6 @@ const ResultsTableComponent = ({
           comparison = aTitle.localeCompare(bTitle);
           break;
         }
-        case 'usage': {
-          const aCalls = a.analytics?.totalCalls ?? 0;
-          const bCalls = b.analytics?.totalCalls ?? 0;
-          comparison = aCalls - bCalls;
-          break;
-        }
-        case 'performance': {
-          const aRate = a.analytics?.successRate ?? 0;
-          const bRate = b.analytics?.successRate ?? 0;
-          comparison = aRate - bRate;
-          break;
-        }
       }
 
       return sorting.desc ? -comparison : comparison;

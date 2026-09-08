@@ -300,6 +300,20 @@ describe('getBazaarMethod', () => {
     ).toBe(Methods.GET);
   });
 
+  it('returns HEAD/OPTIONS methods stored by v1 registration', () => {
+    expect(getBazaarMethod({ input: { method: 'HEAD' } })).toBe('HEAD');
+    expect(getBazaarMethod({ input: { method: 'options' } })).toBe('OPTIONS');
+  });
+
+  it('still infers from body when method is malformed', () => {
+    expect(
+      getBazaarMethod({ input: { method: null, body: { type: 'object' } } })
+    ).toBe(Methods.POST);
+    expect(
+      getBazaarMethod({ input: { method: 'TRACE', body: { type: 'object' } } })
+    ).toBe(Methods.POST);
+  });
+
   it('defaults to GET for null/undefined schema', () => {
     expect(getBazaarMethod(null)).toBe(Methods.GET);
     expect(getBazaarMethod(undefined)).toBe(Methods.GET);

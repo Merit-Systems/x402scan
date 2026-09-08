@@ -2,6 +2,7 @@ import { TRANSFER_TOPIC } from '@/trigger/lib/constants';
 import { logger } from '@trigger.dev/sdk/v3';
 import type {
   EvmBitQueryEventRow,
+  EvmBitqueryEventsResponse,
   Facilitator,
   FacilitatorConfig,
   SyncConfig,
@@ -98,13 +99,12 @@ export function buildQuery(
 }
 
 export function transformResponse(
-  data: unknown,
+  data: EvmBitqueryEventsResponse,
   config: SyncConfig,
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  const events = (data as { EVM: { Events: EvmBitQueryEventRow[] } }).EVM
-    .Events;
+  const events = data.EVM.Events;
 
   return events.flatMap(event => {
     const sender = getAddressArgument(event, 'from');

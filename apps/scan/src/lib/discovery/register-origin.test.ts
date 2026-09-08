@@ -26,7 +26,7 @@ vi.mock('./probe-cache', () => ({
 }));
 
 vi.mock('./utils', () => ({
-  getRegistrationErrorMessage: (error: unknown) => String(error),
+  getRegistrationErrorMessage: (error: { type: string }) => error.type,
 }));
 
 vi.mock('@/lib/resources', () => ({
@@ -169,7 +169,7 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
     vi.mocked(registerFreeResource).mockResolvedValueOnce({
       success: false,
       error: 'Database error',
-    } as Awaited<ReturnType<typeof registerFreeResource>>);
+    });
 
     const result = await registerResourcesFromDiscovery(
       [
@@ -214,7 +214,7 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
     vi.mocked(probeX402Endpoint).mockResolvedValueOnce({
       success: false,
       error: 'HTTP 503',
-    } as Awaited<ReturnType<typeof probeX402Endpoint>>);
+    });
 
     const result = await registerResourcesFromDiscovery(
       [

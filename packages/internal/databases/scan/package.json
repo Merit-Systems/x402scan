@@ -9,16 +9,12 @@
   "type": "module",
   "scripts": {
     "dev": "tsup src/* --watch",
-    "lint": "eslint . --max-warnings 0",
     "types:check": "tsc --noEmit",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "node scripts/wait-for-db.mjs && prisma migrate deploy",
     "db:format": "prisma format",
-    "studio": "prisma studio",
-    "knip": "pnpm -w knip --workspace ./packages/internal/databases/scan",
-    "format": "pnpm -w format:dir ./packages/internal/databases/scan",
-    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/scan"
+    "studio": "prisma studio"
   },
   "dependencies": {
     "@neondatabase/serverless": "catalog:prisma",
@@ -30,9 +26,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@types/ws": "catalog:prisma",
-    "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "eslint": "catalog:",
     "prisma": "catalog:prisma",
     "rimraf": "catalog:",
     "tsup": "catalog:",

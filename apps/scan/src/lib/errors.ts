@@ -14,13 +14,13 @@ type ErrorCode = `${ErrorType}:${Surface}`;
 
 type ErrorVisibility = 'response' | 'log' | 'none';
 
-const visibilityBySurface: Record<Surface, ErrorVisibility> = {
+const visibilityBySurface = {
   database: 'log',
   chat: 'response',
   auth: 'response',
   api: 'response',
   tool: 'response',
-};
+} satisfies Record<Surface, ErrorVisibility>;
 
 export class ChatError extends Error {
   public type: ErrorType;

@@ -37,4 +37,4 @@ export const ultravioletadaoFacilitator = {
       },
     ],
   },
-} as const satisfies Facilitator<void>;
+} as const satisfies Facilitator;

@@ -6,10 +6,7 @@ interface Props {
   message: string;
 }
 
-export const ErrorState: React.FC<Props> = ({
-  message = 'You need to regenerate the message to continue.',
-  onRegenerate,
-}) => {
+export const ErrorState: React.FC<Props> = ({ message, onRegenerate }) => {
   return (
     <div className="w-fit max-w-full flex items-center gap-4 bg-transparent border rounded-md px-4 py-2">
       <div className="flex items-center gap-2">

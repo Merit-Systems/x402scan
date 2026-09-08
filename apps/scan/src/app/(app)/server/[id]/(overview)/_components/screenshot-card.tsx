@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { cleanExternalText, truncateAtDelimiter } from '@/lib/utils';
+import { isBrowser } from '@/lib/runtime-env';
 import type { RouterOutputs } from '@/trpc/client';
 
 type Origin = NonNullable<RouterOutputs['public']['origins']['get']>;
@@ -52,8 +53,10 @@ export async function fetchImageAsDataUrl(url: string): Promise<string | null> {
     const blob = await res.blob();
     return new Promise(resolve => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = () => resolve(null);
+      reader.addEventListener('loadend', () =>
+        resolve(reader.result as string)
+      );
+      reader.addEventListener('error', () => resolve(null));
       reader.readAsDataURL(blob);
     });
   } catch {
@@ -137,18 +140,16 @@ export const ScreenshotCard: React.FC<Props> = ({
 }) => {
   const [grainDataUrl] = useState(() => generateGrainDataUrl());
 
-  const geistSans =
-    typeof document !== 'undefined'
-      ? getComputedStyle(document.documentElement)
-          .getPropertyValue('--font-geist-sans')
-          .trim()
-      : '';
-  const geistMono =
-    typeof document !== 'undefined'
-      ? getComputedStyle(document.documentElement)
-          .getPropertyValue('--font-geist-mono')
-          .trim()
-      : '';
+  const geistSans = isBrowser
+    ? getComputedStyle(document.documentElement)
+        .getPropertyValue('--font-geist-sans')
+        .trim()
+    : '';
+  const geistMono = isBrowser
+    ? getComputedStyle(document.documentElement)
+        .getPropertyValue('--font-geist-mono')
+        .trim()
+    : '';
   const sansFontFamily = geistSans
     ? `${geistSans}, -apple-system, BlinkMacSystemFont, sans-serif`
     : '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -173,27 +174,27 @@ export const ScreenshotCard: React.FC<Props> = ({
 
   const logoDataUrl = `data:image/svg+xml;base64,${btoa(X402_LOGO_SVG)}`;
 
-  const chartDataMap: Record<ChartMetric, number[]> = {
+  const chartDataMap = {
     transactions: chartData.map(d => d.transactions),
     volume: chartData.map(d => d.totalAmount),
     buyers: chartData.map(d => d.buyers),
-  };
-  const chartLabelMap: Record<ChartMetric, string> = {
+  } satisfies Record<ChartMetric, number[]>;
+  const chartLabelMap = {
     transactions: 'Transactions',
     volume: 'Volume',
     buyers: 'Buyers',
-  };
-  const chartValueMap: Record<ChartMetric, string> = {
+  } satisfies Record<ChartMetric, string>;
+  const chartValueMap = {
     transactions: formatCompact(stats.transactions),
     volume: stats.volume,
     buyers: formatCompact(stats.buyers),
-  };
+  } satisfies Record<ChartMetric, string>;
 
   const activeChartData = chartDataMap[chartMetric];
   const activeChartLabel = chartLabelMap[chartMetric];
   const activeChartValue = chartValueMap[chartMetric];
 
-  const metricLookup: Record<BottomMetric, { label: string; value: string }> = {
+  const metricLookup = {
     transactions: {
       label: 'Transactions',
       value: formatCompact(stats.transactions),
@@ -201,7 +202,7 @@ export const ScreenshotCard: React.FC<Props> = ({
     volume: { label: 'Volume', value: stats.volume },
     buyers: { label: 'Buyers', value: formatCompact(stats.buyers) },
     resources: { label: 'Resources', value: resourceCount.toString() },
-  };
+  } satisfies Record<BottomMetric, { label: string; value: string }>;
   const visibleBottomMetrics = bottomMetrics.map(id => ({
     id,
     ...metricLookup[id],
@@ -406,7 +407,6 @@ export const ScreenshotCard: React.FC<Props> = ({
                 gap: 12,
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={logoDataUrl}
                 alt=""

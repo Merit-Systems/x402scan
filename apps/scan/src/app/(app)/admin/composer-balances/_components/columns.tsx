@@ -1,0 +1,172 @@
+'use client';
+
+import { Mail, Wallet, Coins, KeyRound } from 'lucide-react';
+
+import { Copyable } from '@/components/ui/copyable';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { CHAIN_LABELS } from '@/types/chain';
+import { formatCurrency } from '@/lib/utils';
+
+import type { ExtendedColumnDef } from '@/components/ui/data-table';
+import type { RouterOutputs } from '@/trpc/client';
+
+type BalanceRow =
+  RouterOutputs['admin']['composerBalances']['report']['rows'][number];
+
+const truncateAddress = (address: string) =>
+  `${address.slice(0, 6)}…${address.slice(-4)}`;
+
+export const columns: ExtendedColumnDef<BalanceRow>[] = [
+  {
+    accessorKey: 'usdc',
+    header: () => (
+      <div className="flex items-center gap-2">
+        <Coins className="size-4" />
+        <span className="text-xs font-medium">Balance</span>
+      </div>
+    ),
+    cell: ({ row }) => (
+      <span className="text-xs font-mono font-medium tabular-nums">
+        {formatCurrency(row.original.usdc)}
+      </span>
+    ),
+    size: 110,
+    loading: () => <Skeleton className="h-4 w-full" />,
+  },
+  {
+    accessorKey: 'chain',
+    header: () => <span className="text-xs font-medium">Chain</span>,
+    cell: ({ row }) => (
+      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-primary/10 text-primary text-xs">
+        {CHAIN_LABELS[row.original.chain]}
+      </span>
+    ),
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-full" />,
+  },
+  {
+    accessorKey: 'source',
+    header: () => <span className="text-xs font-medium">Wallet Type</span>,
+    cell: ({ row }) =>
+      row.original.source === 'server' ? (
+        <span
+          className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 text-xs"
+          title="CDP server wallet — we hold the keys and can sweep it"
+        >
+          Server
+        </span>
+      ) : (
+        <span
+          className="inline-flex items-center px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-600 text-xs"
+          title="CDP embedded wallet — non-custodial, only the user can withdraw"
+        >
+          Embedded
+        </span>
+      ),
+    size: 120,
+    loading: () => <Skeleton className="h-4 w-full" />,
+  },
+  {
+    accessorKey: 'email',
+    header: () => (
+      <div className="flex items-center gap-2">
+        <Mail className="size-4" />
+        <span className="text-xs font-medium">Email</span>
+      </div>
+    ),
+    cell: ({ row }) => {
+      const { email } = row.original;
+      if (!email) {
+        return <span className="text-xs text-muted-foreground">—</span>;
+      }
+      return (
+        <Copyable
+          value={email}
+          toastMessage="Email copied"
+          className="text-xs truncate max-w-[220px] block"
+        >
+          {email}
+        </Copyable>
+      );
+    },
+    size: 240,
+    loading: () => <Skeleton className="h-4 w-full" />,
+  },
+  {
+    accessorKey: 'loginAddresses',
+    header: () => (
+      <div className="flex items-center gap-2">
+        <KeyRound className="size-4" />
+        <span className="text-xs font-medium">Signed in with</span>
+      </div>
+    ),
+    cell: ({ row }) => {
+      const { loginAddresses } = row.original;
+      if (loginAddresses.length === 0) {
+        return <span className="text-xs text-muted-foreground">—</span>;
+      }
+      return (
+        <div className="flex flex-col gap-1">
+          {loginAddresses.map(loginAddress => (
+            <Copyable
+              key={loginAddress}
+              value={loginAddress}
+              toastMessage="Address copied"
+              className="text-xs font-mono block"
+            >
+              {truncateAddress(loginAddress)}
+            </Copyable>
+          ))}
+        </div>
+      );
+    },
+    size: 180,
+    loading: () => <Skeleton className="h-4 w-full" />,
+  },
+  {
+    accessorKey: 'address',
+    header: () => (
+      <div className="flex items-center gap-2">
+        <Wallet className="size-4" />
+        <span className="text-xs font-medium">Composer Wallet</span>
+      </div>
+    ),
+    cell: ({ row }) => (
+      <Copyable
+        value={row.original.address}
+        toastMessage="Address copied"
+        className="text-xs font-mono block"
+      >
+        {truncateAddress(row.original.address)}
+      </Copyable>
+    ),
+    size: 180,
+    loading: () => <Skeleton className="h-4 w-full" />,
+  },
+  {
+    accessorKey: 'userId',
+    header: () => <span className="text-xs font-medium">User</span>,
+    cell: ({ row }) => {
+      const { userId } = row.original;
+      if (!userId) {
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 text-xs">
+            Orphaned
+          </span>
+        );
+      }
+      return (
+        <Copyable
+          value={userId}
+          toastMessage="User ID copied"
+          className="text-xs font-mono truncate max-w-[160px] block"
+        >
+          {userId}
+        </Copyable>
+      );
+    },
+    size: 180,
+    loading: () => <Skeleton className="h-4 w-full" />,
+  },
+];

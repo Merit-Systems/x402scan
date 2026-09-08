@@ -6,6 +6,7 @@ import { adminFreeTierRouter } from './free-tier';
 import { adminEndUsersRouter } from './end-users';
 import { adminInviteCodesRouter } from './invite-codes';
 import { adminPartnersRouter } from './partners';
+import { adminComposerBalancesRouter } from './composer-balances';
 
 export const adminRouter = createTRPCRouter({
   resources: adminResourcesRouter,
@@ -14,4 +15,5 @@ export const adminRouter = createTRPCRouter({
   endUsers: adminEndUsersRouter,
   inviteCodes: adminInviteCodesRouter,
   partners: adminPartnersRouter,
+  composerBalances: adminComposerBalancesRouter,
 });

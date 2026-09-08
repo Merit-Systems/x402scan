@@ -9,13 +9,15 @@ import ws from 'ws';
 
 neonConfig.webSocketConstructor = ws;
 
-const globalForPrisma = global as unknown as {
-  transfersDb: PrismaClient;
-  transfersDbAdapter: PrismaNeon;
+// TS cannot express ad-hoc properties on globalThis, so a single widening
+// assertion models the dev-mode client cache honestly (props may be unset).
+const globalForPrisma = global as typeof globalThis & {
+  transfersDb?: PrismaClient;
+  transfersDbAdapter?: PrismaNeon;
 };
 
 const transfersDbAdapter =
-  globalForPrisma.transfersDbAdapter ||
+  globalForPrisma.transfersDbAdapter ??
   new PrismaNeon({ connectionString: process.env.TRANSFERS_DB_URL! });
 if (process.env.NODE_ENV !== 'production')
   globalForPrisma.transfersDbAdapter = transfersDbAdapter;
@@ -33,7 +35,7 @@ const replicaUrls = [
 export const transfersHttpReplicas = replicaUrls.map(url => neon(url));
 
 export const transfersDb =
-  globalForPrisma.transfersDb ||
+  globalForPrisma.transfersDb ??
   new PrismaClient({
     adapter: transfersDbAdapter,
   });

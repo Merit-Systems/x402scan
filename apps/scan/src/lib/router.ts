@@ -4,7 +4,7 @@ import { env } from '@/env';
 
 import type { NextRequest } from 'next/server';
 
-const corsHeaders: Record<string, string> = {
+const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers':

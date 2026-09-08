@@ -1,3 +1,5 @@
+import z from 'zod';
+
 import { router, solanaRouter, withCors, OPTIONS } from '@/lib/router';
 import { chainSchema, sendUsdcBodySchema } from '@/lib/schemas';
 import { handleSend } from '@/app/api/x402/_handlers/send';
@@ -27,9 +29,8 @@ const createSendHandler = (sendRouter: typeof router) =>
 const baseSendHandler = createSendHandler(router);
 const solanaSendHandler = createSendHandler(solanaRouter);
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
+/** The only part of the request body this router needs to inspect. */
+const chainProbeSchema = z.object({ chain: chainSchema });
 
 async function getRequestedChain(req: NextRequest): Promise<Chain | undefined> {
   const body: unknown = await req
@@ -37,11 +38,9 @@ async function getRequestedChain(req: NextRequest): Promise<Chain | undefined> {
     .json()
     .catch(() => undefined);
 
-  if (!isRecord(body)) return undefined;
+  const parsed = chainProbeSchema.safeParse(body);
 
-  const chain = chainSchema.safeParse(body.chain);
-
-  return chain.success ? chain.data : undefined;
+  return parsed.success ? parsed.data.chain : undefined;
 }
 
 export const POST = withCors(async req => {

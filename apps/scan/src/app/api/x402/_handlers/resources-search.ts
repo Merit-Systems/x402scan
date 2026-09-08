@@ -31,13 +31,9 @@ export async function handleResourcesSearch(
   const sliced = results.slice(start, start + page_size + 1);
   const hasNextPage = sliced.length > page_size;
   return jsonResponse({
-    data: sliced.slice(0, page_size).map((item: Record<string, unknown>) => ({
+    data: sliced.slice(0, page_size).map(item => ({
       ...item,
-      accepts: item.accepts
-        ? serializeAccepts(
-            item.accepts as { maxAmountRequired: bigint; network: string }[]
-          )
-        : item.accepts,
+      accepts: serializeAccepts(item.accepts),
     })),
     pagination: { page, page_size, has_next_page: hasNextPage },
   });

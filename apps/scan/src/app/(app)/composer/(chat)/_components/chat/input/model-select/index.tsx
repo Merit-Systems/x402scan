@@ -97,7 +97,7 @@ const ModelSelectContent: React.FC<{
             onClick={() => toggleProvider(provider)}
           >
             <ModelProviderIcon provider={provider} className="size-3" />
-            {modelProviderNames[provider]}
+            {modelProviderNames.get(provider)}
           </Badge>
         ))}
       </div>

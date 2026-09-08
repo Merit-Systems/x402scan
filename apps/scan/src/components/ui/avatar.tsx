@@ -30,7 +30,6 @@ export const Avatar: React.FC<Props> = ({ src, fallback, className }) => {
 
   return (
     <div className={cn('rounded-md overflow-hidden shrink-0', className)}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt=""

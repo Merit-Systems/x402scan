@@ -52,9 +52,7 @@ export const HomeHeading = () => {
       <div
         className="relative w-full"
         onBlur={event => {
-          if (
-            !event.currentTarget.contains(event.relatedTarget as Node | null)
-          ) {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
             setIsFocused(false);
           }
         }}

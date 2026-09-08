@@ -97,17 +97,9 @@ const getBucketedStatisticsMVUncached = async (
       ORDER BY bucket
     `;
 
-  const rawResult = await queryRaw(sql, bucketedResultSchema);
-
-  const transformedResult = rawResult.map(row => ({
-    ...row,
-    total_amount:
-      typeof row.total_amount === 'number'
-        ? row.total_amount
-        : Number(row.total_amount),
-  }));
-
-  return bucketedResultSchema.parse(transformedResult);
+  // queryRaw already parses rows through bucketedResultSchema, which
+  // guarantees total_amount is a number — no post-hoc coercion needed.
+  return queryRaw(sql, bucketedResultSchema);
 };
 
 export const getBucketedStatisticsMV = createCachedArrayQuery({

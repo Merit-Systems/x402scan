@@ -268,7 +268,7 @@ export const redeemInviteCode = async ({
   const sendTokensResult = await wallet.sendTokens({
     token,
     amount: amountFloat,
-    address: recipientAddr as `0x${string}`,
+    address: recipientAddr,
   });
 
   if (sendTokensResult.isErr()) {

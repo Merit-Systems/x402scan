@@ -2,11 +2,7 @@
 
 import { createSortingContext } from '../base/context';
 
-export type ResourceSearchSortId =
-  | 'filterMatches'
-  | 'title'
-  | 'usage'
-  | 'performance';
+export type ResourceSearchSortId = 'filterMatches' | 'title';
 
 export const ResourceSearchSortingContext =
   createSortingContext<ResourceSearchSortId>();

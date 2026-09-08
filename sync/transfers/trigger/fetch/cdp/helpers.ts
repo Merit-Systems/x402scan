@@ -42,7 +42,9 @@ export async function cdpFetch<T>(
     ...init,
     method: requestMethod,
     headers: {
-      ...init?.headers,
+      // HeadersInit may be a Headers instance or entry array; normalize before
+      // merging — spreading those into an object literal drops/garbles them.
+      ...Object.fromEntries(new Headers(init?.headers).entries()),
       'Content-Type': 'application/json',
       Authorization: `Bearer ${jwt}`,
     },
@@ -56,13 +58,13 @@ export async function cdpFetch<T>(
   return response.json() as Promise<T>;
 }
 
-export async function runCdpSqlQuery(sql: string): Promise<unknown[]> {
+export async function runCdpSqlQuery<TRow>(sql: string): Promise<TRow[]> {
   const maxRetries = 5;
   let attempt = 0;
 
   while (attempt < maxRetries) {
     try {
-      const data = await cdpFetch<{ result: unknown[] | null }>(
+      const data = await cdpFetch<{ result: TRow[] | null }>(
         {
           requestMethod: 'POST',
           requestPath: '/platform/v2/data/query/run',

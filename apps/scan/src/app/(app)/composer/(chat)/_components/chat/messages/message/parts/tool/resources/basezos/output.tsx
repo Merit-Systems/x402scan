@@ -10,7 +10,10 @@ const AmazonProductSchema = z.object({
   url: z.string(),
   price: z.string(),
   image: z.string(),
-  stars: z.union([z.number(), z.string()]).optional(),
+  // Normalize numeric star ratings to display strings at the parse boundary
+  stars: z
+    .union([z.number().transform(stars => stars.toFixed(1)), z.string()])
+    .optional(),
   reviewsCount: z.coerce.number().optional(),
   isPrime: z.coerce.boolean().optional(),
   cached: z.coerce.boolean().optional(),
@@ -50,7 +53,6 @@ export const BasezosOutput: OutputComponent = ({ output, errorText }) => {
           className="group flex flex-col border rounded-lg overflow-hidden hover:border-primary transition-colors bg-card"
         >
           <div className="relative aspect-square bg-muted overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={item.image}
               alt={item.name}
@@ -75,9 +77,7 @@ export const BasezosOutput: OutputComponent = ({ output, errorText }) => {
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Star className="size-3 fill-yellow-400 text-yellow-400" />
                     <span>
-                      {typeof item.stars === 'number'
-                        ? item.stars.toFixed(1)
-                        : item.stars}
+                      {item.stars}
                       {item.reviewsCount !== undefined &&
                         ` (${item.reviewsCount.toLocaleString()})`}
                     </span>

@@ -173,8 +173,8 @@ export const DisplayStep: React.FC<Props> = ({
                   },
                 ].map(option => (
                   <FieldLabel
-                    key={option.value.toString()}
-                    htmlFor={`form-rhf-radiogroup-${option.value.toString()}`}
+                    key={option.value}
+                    htmlFor={`form-rhf-radiogroup-${option.value}`}
                   >
                     <Field
                       orientation="horizontal"
@@ -187,7 +187,7 @@ export const DisplayStep: React.FC<Props> = ({
                         </FieldDescription>
                       </FieldContent>
                       <RadioGroupItem
-                        value={option.value.toString()}
+                        value={option.value}
                         id={`form-rhf-radiogroup-${option.value}`}
                         aria-invalid={fieldState.invalid}
                       />

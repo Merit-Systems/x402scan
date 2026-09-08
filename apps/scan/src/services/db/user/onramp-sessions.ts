@@ -31,7 +31,8 @@ export const createOnrampSession = async (
       token,
       amount,
       userId,
-      ...(serverWalletId ? { serverWalletId } : {}),
+      // An empty-string id must also become undefined, not just a missing one.
+      serverWalletId: serverWalletId === '' ? undefined : serverWalletId,
     },
   });
 };

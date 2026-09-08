@@ -2,48 +2,39 @@
   "name": "@x402scan/monorepo",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@10.28.0",
+  "packageManager": "pnpm@11.22.0",
   "scripts": {
     "dev": "turbo run dev --filter=@x402scan/app",
-    "dev:mcp": "turbo run dev --filter=@x402scan/app --filter=@x402scan/mcp",
     "build": "turbo run build",
     "build:deploy": "turbo run build:deploy",
     "build:packages": "turbo run build --filter \"./packages/external/**\"",
     "clean": "rimraf .turbo node_modules .next dist",
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix",
+    "lint": "oxlint",
+    "lint:check": "turbo run lint",
+    "lint:fix": "oxlint --fix",
     "types:check": "turbo run types:check",
     "types:generate": "turbo run types:generate",
-    "format": "turbo run format",
-    "format:check": "turbo run format:check",
-    "format:dir": "prettier --write",
-    "format:check:dir": "prettier --check",
+    "format": "prettier --write apps packages sync",
+    "format:check": "prettier --check apps packages sync",
     "knip": "knip",
     "knip:check": "turbo run knip",
-    "check": "turbo run format types:check lint knip publish:check",
-    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=@x402scan/sync-analytics",
+    "test": "turbo run test --filter=@x402scan/app --filter=@x402scan/sync-transfers",
+    "check": "turbo run format:check types:check lint knip publish:check && pnpm test",
     "trigger:deploy:transfers": "turbo run trigger:deploy --filter=@x402scan/sync-transfers",
     "trigger:deploy:alerts": "turbo run trigger:deploy --filter=@x402scan/sync-alerts",
     "changeset": "changeset",
-    "changeset:version": "changeset version && pnpm --filter @x402scan/mcp build:mcpb",
+    "changeset:version": "changeset version",
     "changeset:publish": "pnpm build:packages && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
+    "@oxlint/plugins": "1.78.0",
     "knip": "^5.80.0",
+    "oxlint": "1.78.0",
+    "oxlint-tsgolint": "7.0.2001",
     "prettier": "^3.7.4",
     "rimraf": "catalog:",
     "turbo": "^2.8.0",
     "typescript": "catalog:"
-  },
-  "pnpm": {
-    "overrides": {
-      "@auth/core": "0.40.0",
-      "viem": "2.51.2",
-      "@walletconnect/utils": "^2.23.9"
-    },
-    "onlyBuiltDependencies": [
-      "@coinbase/x402"
-    ]
   }
 }

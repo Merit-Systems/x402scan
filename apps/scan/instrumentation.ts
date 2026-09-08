@@ -1,3 +1,8 @@
+declare global {
+  // Set once OTLP log export is wired up, so hot reloads don't re-initialize.
+  var __x402scanOtelLogsInitialized: boolean | undefined;
+}
+
 export async function register() {
   // prevent this from running in the edge runtime
   if (process.env.NEXT_RUNTIME === 'nodejs') {
@@ -9,11 +14,7 @@ export async function register() {
     const signozIngestionKey = process.env.SIGNOZ_INGESTION_KEY?.trim();
 
     if (signozIngestionKey) {
-      const globalForOtel = globalThis as unknown as {
-        __x402scanOtelLogsInitialized?: boolean;
-      };
-
-      if (!globalForOtel.__x402scanOtelLogsInitialized) {
+      if (!globalThis.__x402scanOtelLogsInitialized) {
         const { LoggerProvider, BatchLogRecordProcessor } =
           await import('@opentelemetry/sdk-logs');
         const { OTLPLogExporter } =
@@ -43,7 +44,7 @@ export async function register() {
         });
 
         logs.setGlobalLoggerProvider(loggerProvider);
-        globalForOtel.__x402scanOtelLogsInitialized = true;
+        globalThis.__x402scanOtelLogsInitialized = true;
       }
     }
 

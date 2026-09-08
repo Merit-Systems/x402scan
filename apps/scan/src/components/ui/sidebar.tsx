@@ -74,7 +74,7 @@ function SidebarProvider({
   const open = openProp ?? _open;
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
-      const openState = typeof value === 'function' ? value(open) : value;
+      const openState = value instanceof Function ? value(open) : value;
       if (setOpenProp) {
         setOpenProp(openState);
       } else {
@@ -418,6 +418,13 @@ const sidebarMenuButtonVariants = cva(
   }
 );
 
+/** Distinguishes full tooltip props from the bare string-label shorthand. */
+function isTooltipContentProps(
+  tooltip: string | React.ComponentProps<typeof TooltipContent>
+): tooltip is React.ComponentProps<typeof TooltipContent> {
+  return tooltip instanceof Object;
+}
+
 function SidebarMenuButton({
   asChild = false,
   isActive = false,
@@ -449,11 +456,10 @@ function SidebarMenuButton({
     return button;
   }
 
-  if (typeof tooltip === 'string') {
-    tooltip = {
-      children: tooltip,
-    };
-  }
+  // A bare label is shorthand for the tooltip content props.
+  const tooltipProps = isTooltipContentProps(tooltip)
+    ? tooltip
+    : { children: tooltip };
 
   return (
     <Tooltip>
@@ -462,7 +468,7 @@ function SidebarMenuButton({
         side="right"
         align="center"
         hidden={state !== 'collapsed' || isMobile}
-        {...tooltip}
+        {...tooltipProps}
       />
     </Tooltip>
   );

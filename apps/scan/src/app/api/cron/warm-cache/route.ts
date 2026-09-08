@@ -4,10 +4,10 @@ import { createTRPCContext } from '@/trpc/trpc';
 import { defaultBuyersSorting } from '@/app/(app)/_contexts/sorting/buyers/default';
 import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ACTIVITY_TIMEFRAMES } from '@/types/timeframes';
+import type { ActivityTimeframe } from '@/types/timeframes';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
-import { TRANSACTIONS_PAGE_SIZE } from '@/app/(app)/(home)/transactions/constants';
 import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
@@ -26,6 +26,8 @@ const MAX_CONCURRENT_REQUESTS = 20;
  * Maximum number of retries per task
  */
 const MAX_RETRIES = 3;
+
+const HOME_TRANSACTIONS_PAGE_SIZE = 10;
 
 /**
  * Execute a task with retries
@@ -88,7 +90,7 @@ function getHomePageTasks(
   timeframe: ActivityTimeframe,
   chain?: Chain
 ): (() => Promise<unknown>)[] {
-  const transactionsLimit = TRANSACTIONS_PAGE_SIZE;
+  const transactionsLimit = HOME_TRANSACTIONS_PAGE_SIZE;
 
   return [
     // Overall Stats - current period
@@ -255,94 +257,15 @@ function getFacilitatorsPageTasks(
 }
 
 /**
- * Get cache warming tasks for the Resources/Marketplace Page
- */
-function getResourcesPageTasks(
-  api: ReturnType<typeof createCaller>,
-  timeframe: ActivityTimeframe
-): (() => Promise<unknown>)[] {
-  return [
-    // All Sellers stats
-    () =>
-      api.public.sellers.all.stats.overall({
-        timeframe,
-      }),
-
-    () =>
-      api.public.sellers.all.stats.bucketed({
-        timeframe,
-      }),
-
-    // Bazaar Sellers stats (overall)
-    () =>
-      api.public.sellers.bazaar.stats.overall({
-        timeframe,
-      }),
-
-    // Bazaar Sellers stats (bucketed)
-    () =>
-      api.public.sellers.bazaar.stats.bucketed({
-        timeframe,
-      }),
-
-    // Marketplace carousels (5 different tag filters)
-    // Most Used (no tags)
-    () =>
-      api.public.sellers.bazaar.list({
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-
-    // Search Servers
-    () =>
-      api.public.sellers.bazaar.list({
-        tags: ['Search'],
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-
-    // Crypto Servers
-    () =>
-      api.public.sellers.bazaar.list({
-        tags: ['Crypto'],
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-
-    // AI Servers (Utility tag)
-    () =>
-      api.public.sellers.bazaar.list({
-        tags: ['Utility'],
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-
-    // Trading Servers
-    () =>
-      api.public.sellers.bazaar.list({
-        tags: ['Trading'],
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-  ];
-}
-
-/**
  * Page types that can be warmed
  */
-type WarmablePage =
-  | 'home'
-  | 'buyers'
-  | 'networks'
-  | 'facilitators'
-  | 'resources';
+type WarmablePage = 'home' | 'buyers' | 'networks' | 'facilitators';
 
 const ALL_PAGES: WarmablePage[] = [
   'home',
   'buyers',
   'networks',
   'facilitators',
-  'resources',
 ];
 
 export async function GET(request: NextRequest) {
@@ -367,10 +290,7 @@ export async function GET(request: NextRequest) {
     const pagesParam = searchParams.get('pages'); // e.g., "home,networks"
     const chainParam = searchParams.get('chain'); // e.g., "base", "solana", "all"
 
-    // Filter timeframes if requested
-    const timeframesToWarm = Object.values(ActivityTimeframe).filter(
-      tf => typeof tf === 'number'
-    );
+    const timeframesToWarm = ACTIVITY_TIMEFRAMES;
 
     // Filter pages if requested
     const pagesToWarm: WarmablePage[] = pagesParam
@@ -427,10 +347,6 @@ export async function GET(request: NextRequest) {
 
       if (pagesToWarm.includes('facilitators')) {
         allTasks.push(...getFacilitatorsPageTasks(api, timeframe));
-      }
-
-      if (pagesToWarm.includes('resources')) {
-        allTasks.push(...getResourcesPageTasks(api, timeframe));
       }
     }
 

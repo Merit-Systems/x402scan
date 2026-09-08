@@ -10,12 +10,8 @@
     "db:migrate": "prisma migrate dev --skip-generate",
     "db:format": "prisma format",
     "dev": "tsup src/* --watch",
-    "lint": "eslint . --max-warnings 0",
     "types:check": "tsc --noEmit",
-    "studio": "prisma studio",
-    "knip": "pnpm -w knip --workspace ./packages/internal/databases/transfers",
-    "format": "pnpm -w format:dir ./packages/internal/databases/transfers",
-    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/transfers"
+    "studio": "prisma studio"
   },
   "dependencies": {
     "@neondatabase/serverless": "catalog:prisma",
@@ -27,9 +23,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@types/ws": "catalog:prisma",
-    "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "eslint": "catalog:",
     "prisma": "catalog:prisma",
     "rimraf": "catalog:",
     "tsup": "catalog:",

@@ -31,18 +31,18 @@ export default {
     const supportedDomains = env.CORS_ALLOW_ORIGIN?.trim()
       ? env.CORS_ALLOW_ORIGIN.split(',').map(d => d.trim())
       : undefined;
-    const corsHeaders: Record<string, string> = {
+    const corsHeaders = new Headers({
       'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, OPTIONS',
       'Access-Control-Allow-Headers': '*',
-    };
+    });
 
     if (supportedDomains) {
       const origin = request.headers.get('Origin');
       if (origin && supportedDomains.includes(origin)) {
-        corsHeaders['Access-Control-Allow-Origin'] = origin;
+        corsHeaders.set('Access-Control-Allow-Origin', origin);
       }
     } else {
-      corsHeaders['Access-Control-Allow-Origin'] = '*';
+      corsHeaders.set('Access-Control-Allow-Origin', '*');
     }
 
     // Handle preflight
@@ -64,7 +64,7 @@ export default {
 function handleWebSocket(
   request: Request,
   env: Env,
-  corsHeaders: Record<string, string>
+  corsHeaders: Headers
 ): Response {
   const { search } = new URL(request.url);
   const upstreamUrl = `wss://mainnet.helius-rpc.com${search ? `${search}&` : '?'}api-key=${
@@ -258,9 +258,9 @@ function handleWebSocket(
   });
 
   // Response
-  const responseHeaders: Record<string, string> = { ...corsHeaders };
+  const responseHeaders = new Headers(corsHeaders);
   if (selectedProtocol) {
-    responseHeaders['Sec-WebSocket-Protocol'] = selectedProtocol;
+    responseHeaders.set('Sec-WebSocket-Protocol', selectedProtocol);
   }
 
   return new Response(null, {
@@ -273,7 +273,7 @@ function handleWebSocket(
 async function handleRPC(
   request: Request,
   env: Env,
-  corsHeaders: Record<string, string>
+  corsHeaders: Headers
 ): Promise<Response> {
   try {
     const { pathname, search } = new URL(request.url);

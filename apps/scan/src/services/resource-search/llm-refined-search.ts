@@ -2,7 +2,7 @@ import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import type {
-  EnrichedSearchResult,
+  SearchResult,
   FilterQuestion,
   FilteredSearchResult,
 } from './types';
@@ -50,7 +50,7 @@ Generate your questions:`;
 
 function buildFilterEvaluationPrompt(
   question: string,
-  resource: EnrichedSearchResult
+  resource: SearchResult
 ): string {
   const resourceContext = {
     title: resource.origin.title ?? resource.origin.origin,
@@ -59,15 +59,7 @@ function buildFilterEvaluationPrompt(
       'No description',
     origin: resource.origin.origin,
     tags: resource.tags.map(t => t.name).join(', ') || 'No tags',
-    hasRecentUsage: resource.analytics
-      ? resource.analytics.totalCalls > 0
-      : false,
-    sampleResponse: resource.analytics?.sampleResponseBody ?? null,
   };
-
-  const responseSection = resourceContext.sampleResponse
-    ? `- Sample Response: ${resourceContext.sampleResponse.slice(0, 500)}${resourceContext.sampleResponse.length > 500 ? '...' : ''}`
-    : '';
 
   return `Evaluate if this API resource matches the following criteria.
 
@@ -78,8 +70,6 @@ Resource Information:
 - Origin: ${resourceContext.origin}
 - Description: ${resourceContext.description}
 - Tags: ${resourceContext.tags}
-- Has Recent Usage: ${resourceContext.hasRecentUsage ? 'Yes' : 'No'}
-${responseSection}
 
 Provide:
 1. A yes/no answer (answer field) - true if the resource matches the criteria, false otherwise
@@ -139,7 +129,7 @@ export async function generateFilterQuestions(
 
 async function evaluateResourceAgainstFilter(
   question: string,
-  resource: EnrichedSearchResult
+  resource: SearchResult
 ): Promise<boolean> {
   try {
     const result = await generateObject({
@@ -165,7 +155,7 @@ async function evaluateResourceAgainstFilter(
 }
 
 export async function applyLLMFilters(
-  results: EnrichedSearchResult[],
+  results: SearchResult[],
   filterQuestions: FilterQuestion[]
 ): Promise<FilteredSearchResult[]> {
   if (filterQuestions.length === 0) {
@@ -195,17 +185,6 @@ export async function applyLLMFilters(
     })
   );
 
-  // Sort by filter matches (highest first), then by existing relevance
-  return evaluatedResults.sort((a, b) => {
-    // Primary sort: filter matches
-    if (a.filterMatches !== b.filterMatches) {
-      return b.filterMatches - a.filterMatches;
-    }
-
-    // Secondary sort: keep existing analytics-based ordering
-    if (!a.analytics && b.analytics) return 1;
-    if (a.analytics && !b.analytics) return -1;
-
-    return 0;
-  });
+  // Sort by filter matches (highest first)
+  return evaluatedResults.sort((a, b) => b.filterMatches - a.filterMatches);
 }

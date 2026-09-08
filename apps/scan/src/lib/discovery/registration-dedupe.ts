@@ -32,7 +32,7 @@ export function normalizeRegistrationCandidates(
 export function partitionRegistrationCandidates(
   candidates: NormalizedRegistrationCandidate[],
   stored: StoredResourceKey[]
-): { registered: string[]; unregistered: string[] } {
+) {
   const storedKeys = new Set(
     stored.map(row => resourceKey(row.resource, row.method))
   );

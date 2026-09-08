@@ -108,9 +108,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
     targetUrl,
     value: maxAmountRequired,
     init:
-      typeof requestInit === 'function'
-        ? requestInit(Chain.SOLANA)
-        : requestInit,
+      requestInit instanceof Function ? requestInit(Chain.SOLANA) : requestInit,
     options: {
       ...options,
       onError: (...args) => {

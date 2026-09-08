@@ -28,6 +28,7 @@ export interface TransferEventData {
   facilitator_id: string;
 
   log_index?: number;
+  scheme?: string;
 }
 
 export enum PaginationStrategy {
@@ -37,8 +38,29 @@ export enum PaginationStrategy {
 
 export enum QueryProvider {
   BITQUERY = 'bitquery',
+  BITQUERY_CHANNELS = 'bitquery-channels',
   BIGQUERY = 'bigquery',
   CDP = 'cdp',
+}
+
+/**
+ * Raw provider payloads handed to `transformResponse`. Each query module
+ * declares which member it consumes; the fetch layer passes the provider's
+ * response through unchanged.
+ */
+export type RawTransferQueryResponse =
+  | BigQueryTransferRow[]
+  | CdpTransferRow[]
+  | BitQueryTransferRowStream[]
+  | EvmBitqueryEventsResponse
+  | SolanaBitquerySentResponse;
+
+export interface EvmBitqueryEventsResponse {
+  EVM: { Events: EvmBitQueryEventRow[] };
+}
+
+export interface SolanaBitquerySentResponse {
+  solana: { sent: BitQueryTransferRow[] };
 }
 
 interface BaseQueryConfig {
@@ -52,12 +74,14 @@ interface BaseQueryConfig {
     now: Date,
     offset?: number
   ) => string;
-  transformResponse: (
-    data: unknown,
+  // Method syntax (bivariant parameters) so each query module can declare the
+  // specific RawTransferQueryResponse member its paired buildQuery produces.
+  transformResponse(
+    data: RawTransferQueryResponse,
     config: SyncConfig,
     facilitator: Facilitator,
     facilitatorConfig: FacilitatorConfig
-  ) => TransferEventData[] | Promise<TransferEventData[]>;
+  ): TransferEventData[] | Promise<TransferEventData[]>;
 }
 
 type TimeWindowQueryConfig = BaseQueryConfig & {
@@ -82,6 +106,10 @@ export type SyncConfig = QueryConfig & {
   splitSyncByFacilitator?: boolean;
   useSyncState?: boolean;
   syncStateCutoverAt?: Date;
+  // Upsert rows on the (tx_hash, log_index, chain, block_timestamp) key
+  // instead of createMany+skipDuplicates, so this sync's rows win over rows
+  // another provider already wrote for the same transfer.
+  upsertOnConflict?: boolean;
 };
 
 export interface EvmChainConfig {

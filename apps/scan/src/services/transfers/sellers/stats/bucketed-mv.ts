@@ -10,16 +10,16 @@ export const bucketedSellerStatisticsMVInputSchema = baseBucketedQuerySchema;
 
 // Map timeframe suffix to bucket interval for new sellers calculation
 // Must match the bucket intervals used in the recipient_stats_bucketed MVs
-const getBucketInterval = (mvTimeframe: string): string => {
-  const intervalMap: Record<string, string> = {
-    '1d': '30 minutes',
-    '7d': '3 hours 30 minutes',
-    '14d': '7 hours',
-    '30d': '15 hours',
-    '0d': '1 day',
-  };
-  return intervalMap[mvTimeframe] ?? '1 day';
-};
+const bucketIntervalByTimeframe = new Map<string, string>([
+  ['1d', '30 minutes'],
+  ['7d', '3 hours 30 minutes'],
+  ['14d', '7 hours'],
+  ['30d', '15 hours'],
+  ['0d', '1 day'],
+]);
+
+const getBucketInterval = (mvTimeframe: string): string =>
+  bucketIntervalByTimeframe.get(mvTimeframe) ?? '1 day';
 
 const bucketedSellerResultSchema = z.array(
   z.object({
