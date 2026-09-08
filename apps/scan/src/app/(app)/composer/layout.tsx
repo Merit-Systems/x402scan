@@ -1,5 +1,9 @@
+import { SessionProvider } from "next-auth/react";
 import { notFound } from "next/navigation";
 
+import { CDPHooksProvider } from "@/app/_contexts/cdp";
+import { SolanaWalletProvider } from "@/app/_contexts/solana/provider";
+import { WagmiProvider } from "@/app/_contexts/wagmi";
 import { auth } from "@/auth";
 import { env } from "@/env";
 
@@ -26,31 +30,41 @@ export default async function ComposerLayout({
     return notFound();
   }
   return (
-    <div className="flex flex-1 flex-col">
-      <OnrampSessionDialog />
-      <Subnav
-        tabs={[
-          {
-            label: "Home",
-            href: "/composer",
-          },
-          {
-            label: "Chat",
-            href: "/composer/chat",
-            subRoutes: ["/composer/chat/"],
-          },
-          {
-            label: "Agents",
-            href: "/composer/agents",
-            subRoutes: ["/composer/agent/", "/composer/agents/"],
-          },
-          {
-            label: "Feed",
-            href: "/composer/feed",
-          },
-        ]}
-      />
-      <div className="flex flex-1 flex-col py-6 md:py-8">{children}</div>
-    </div>
+    <SessionProvider>
+      <CDPHooksProvider>
+        <WagmiProvider>
+          <SolanaWalletProvider>
+            <div className="flex flex-1 flex-col">
+              <OnrampSessionDialog />
+              <Subnav
+                tabs={[
+                  {
+                    label: "Home",
+                    href: "/composer",
+                  },
+                  {
+                    label: "Chat",
+                    href: "/composer/chat",
+                    subRoutes: ["/composer/chat/"],
+                  },
+                  {
+                    label: "Agents",
+                    href: "/composer/agents",
+                    subRoutes: ["/composer/agent/", "/composer/agents/"],
+                  },
+                  {
+                    label: "Feed",
+                    href: "/composer/feed",
+                  },
+                ]}
+              />
+              <div className="flex flex-1 flex-col py-6 md:py-8">
+                {children}
+              </div>
+            </div>
+          </SolanaWalletProvider>
+        </WagmiProvider>
+      </CDPHooksProvider>
+    </SessionProvider>
   );
 }
