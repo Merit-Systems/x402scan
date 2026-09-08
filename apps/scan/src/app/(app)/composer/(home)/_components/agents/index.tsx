@@ -1,3 +1,6 @@
+import { ActivityTimeframe } from "@/types/timeframes";
+import { connection } from "next/server";
+import { api, HydrateClient } from "@/trpc/server";
 import { Suspense } from "react";
 
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
@@ -5,12 +8,11 @@ import { Section } from "@/app/(app)/_components/deferred/page-utils";
 import { LoadingAgentCard } from "../lib/agent-card";
 import { AgentsContent } from "./content";
 
-// Note: No HydrateClient here - parent page.tsx provides it
 export const Agents = () => {
   return (
     <AgentsContainer>
       <Suspense fallback={<LoadingAgentsContent />}>
-        <AgentsContent />
+        <Data />
       </Suspense>
     </AgentsContainer>
   );
@@ -51,3 +53,16 @@ const AgentsContainer = ({ children }: AgentsContainerProps) => {
     </Section>
   );
 };
+
+async function Data() {
+  await connection();
+  void api.public.agents.list.prefetch({
+    timeframe: ActivityTimeframe.OneDay,
+    pagination: { page: 0, page_size: 10 },
+  });
+  return (
+    <HydrateClient>
+      <AgentsContent />
+    </HydrateClient>
+  );
+}

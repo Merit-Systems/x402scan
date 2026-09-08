@@ -19,6 +19,7 @@ vi.mock("@/trpc/server", () => ({
   HydrateClient: vi.fn<() => null>(),
 }));
 vi.mock("../_components/overview", () => ({
+  LoadingServerOverview: vi.fn<() => null>(),
   ServerOverview: vi.fn<() => null>(),
 }));
 vi.mock("../_components/resources", () => ({
@@ -34,6 +35,7 @@ vi.mock("../_components/usage-error-boundary", () => ({
 }));
 
 import OriginPage from "../page";
+import { Statistics } from "../_components/sections";
 
 const id = "b8a06bde-b6e8-4a10-b4e0-cc6a25fb9efb";
 const props = () => ({
@@ -51,7 +53,9 @@ describe("server overview loading", () => {
     overall.mockReturnValue(Promise.withResolvers<undefined>().promise);
     bucketed.mockReturnValue(Promise.withResolvers<undefined>().promise);
 
-    const page = await OriginPage(props());
+    const page = OriginPage(props());
+    expect(overall).not.toHaveBeenCalled();
+    await Statistics(props());
 
     expect(page).toBeDefined();
     expect(overall).toHaveBeenCalledWith({ originId: id, timeframe: 30 });
@@ -65,7 +69,7 @@ describe("server overview loading", () => {
   it("returns not found without starting analytics for an unknown origin", async () => {
     getOrigin.mockResolvedValue(null);
 
-    await expect(OriginPage(props())).rejects.toThrow(
+    await expect(Statistics(props())).rejects.toThrow(
       "NEXT_HTTP_ERROR_FALLBACK;404"
     );
     expect(overall).not.toHaveBeenCalled();

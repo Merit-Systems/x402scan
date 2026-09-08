@@ -195,7 +195,7 @@ function resourcePath(resource: string) {
 export function LoadingOriginResources() {
   return (
     <section aria-busy="true" className="space-y-4">
-      <Skeleton className="h-8 w-48 max-w-full" />
+      <h2 className="type-section-title">Resources</h2>
       <div className="divide-y divide-border">
         <LoadingResourceRow />
         <LoadingResourceRow />
@@ -206,12 +206,15 @@ export function LoadingOriginResources() {
 
 function LoadingResourceRow() {
   return (
-    <div className="space-y-2 py-4">
-      <div className="flex items-center gap-2">
-        <Skeleton className="h-7 w-14 rounded-md" />
-        <Skeleton className="h-5 w-56 max-w-full" />
+    <div className="flex items-center justify-between gap-4 py-4">
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <Skeleton className="h-6 w-14 rounded-md" />
+          <Skeleton className="h-5 w-56 max-w-full" />
+          <Skeleton className="h-4 w-12" />
+        </div>
+        <Skeleton className="h-4 w-4/5" />
       </div>
-      <Skeleton className="h-4 w-4/5" />
     </div>
   );
 }
