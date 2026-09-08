@@ -21,7 +21,6 @@ import { ActivityTimeframe } from "@/types/timeframes";
 
 export const contentType = "image/png";
 export const size = openGraphImageSize;
-export const runtime = "nodejs";
 
 interface ServerOpenGraphImageProps {
   params: Promise<{ id: string }>;
