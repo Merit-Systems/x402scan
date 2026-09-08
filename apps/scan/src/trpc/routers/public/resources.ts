@@ -1,5 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { revalidatePath } from "next/cache";
 import z from "zod";
 
 import { scanDb } from "@x402scan/scan-db";
@@ -16,7 +15,9 @@ import {
   listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
+  type ResourceSortId,
 } from "@/services/db/resources/resource";
+import { revalidateResourceData } from "@/services/db/resources/revalidate";
 import {
   listResourceTags,
   listTags,
@@ -35,8 +36,6 @@ import {
 } from "../../trpc";
 
 import type { Prisma } from "@x402scan/scan-db";
-
-import type { ResourceSortId } from "@/services/db/resources/resource";
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -152,10 +151,10 @@ export const resourcesRouter = createTRPCRouter({
       const result = await registerEndpoint(input.url);
       try {
         if (result.success && result.resource.origin.id) {
-          revalidatePath(`/server/${result.resource.origin.id}`);
+          revalidateResourceData(result.resource.origin.id);
         }
       } catch (e) {
-        console.error("revalidatePath failed:", e);
+        console.error("Resource cache revalidation failed:", e);
       }
       return result;
     }),
@@ -215,10 +214,10 @@ export const resourcesRouter = createTRPCRouter({
 
       try {
         if (result.originId) {
-          revalidatePath(`/server/${result.originId}`);
+          revalidateResourceData(result.originId);
         }
       } catch (e) {
-        console.error("revalidatePath failed:", e);
+        console.error("Resource cache revalidation failed:", e);
       }
 
       return { success: true as const, ...result };
