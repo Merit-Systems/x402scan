@@ -41,14 +41,6 @@ async function ToolsData({
   );
 }
 
-export const LoadingTools = () => {
-  return (
-    <ToolsContainer>
-      <LoadingToolsTable />
-    </ToolsContainer>
-  );
-};
-
 const ToolsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section title="Top Tools" description="Discover the most popular tools">
