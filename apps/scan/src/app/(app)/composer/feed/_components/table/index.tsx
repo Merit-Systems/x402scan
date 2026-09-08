@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 
+import { connection } from "next/server";
+
 import {
   FeedTableContent,
   LoadingFeedTableContent,
@@ -10,7 +12,8 @@ interface Props {
   limit?: number;
 }
 
-export const FeedTable = ({ limit = 10 }: Props) => {
+export const FeedTable = async ({ limit = 10 }: Props) => {
+  await connection();
   void api.public.agents.activity.feed.prefetch({
     pagination: {
       page_size: limit,
