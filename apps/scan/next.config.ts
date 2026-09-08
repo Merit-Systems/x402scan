@@ -1,3 +1,4 @@
+import { withMeritOpenGraph } from "@merit-systems/brand/next";
 import createMDX from "@next/mdx";
 import { withPostHogConfig } from "@posthog/nextjs-config";
 
@@ -67,7 +68,7 @@ const withMDX = createMDX({
   },
 });
 
-export default withPostHogConfig(withMDX(nextConfig), {
+export default withPostHogConfig(withMeritOpenGraph(withMDX(nextConfig)), {
   personalApiKey: env.POSTHOG_API_KEY ?? "",
   projectId: env.POSTHOG_PROJECT_ID ?? "",
   // API host for source-map upload — NOT NEXT_PUBLIC_POSTHOG_HOST, which is
