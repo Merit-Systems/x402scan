@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ChainSelector } from "../navbar/chain-selector";
 import { GlobalSearch } from "../navbar/search";
 import { HeaderBrand } from "./brand";
@@ -11,19 +12,29 @@ export function Header() {
       <div className="flex h-14 w-full items-center gap-3 px-4">
         <HeaderBrand />
 
-        <PrimaryNavigation className="hidden md:block" />
+        <Suspense>
+          <PrimaryNavigation className="hidden md:block" />
+        </Suspense>
 
         <div className="ml-auto flex shrink-0 items-center gap-1.5">
-          <GlobalSearch />
+          <Suspense>
+            <GlobalSearch />
+          </Suspense>
           <div className="hidden h-5 border-l sm:block" />
-          <ChainSelector />
+          <Suspense>
+            <ChainSelector />
+          </Suspense>
           <ThemeToggle />
-          <RegisterButton />
+          <Suspense>
+            <RegisterButton />
+          </Suspense>
         </div>
       </div>
 
       <div className="no-scrollbar overflow-x-auto border-t px-2 py-1 md:hidden">
-        <PrimaryNavigation />
+        <Suspense>
+          <PrimaryNavigation />
+        </Suspense>
       </div>
     </header>
   );
