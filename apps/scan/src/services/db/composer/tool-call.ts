@@ -1,11 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { sortingSchema } from "@/lib/schemas";
 import { DEFAULT_TOOLS_SORTING, TOOL_SORT_IDS } from "@/lib/table-sort-options";
@@ -150,10 +148,11 @@ const listTopToolsUncached = async (
   });
 };
 
-export const listTopTools = createCachedPaginatedQuery({
-  queryFn: listTopToolsUncached,
-  cacheKeyPrefix: "composer:top-tools",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["latest_call_time"],
-  tags: ["composer", "tools"],
-});
+export const listTopTools = async (
+  ...args: Parameters<typeof listTopToolsUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("composer", "tools");
+  return listTopToolsUncached(...args);
+};

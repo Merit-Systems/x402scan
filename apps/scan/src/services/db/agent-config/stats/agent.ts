@@ -1,26 +1,25 @@
 import { subMonths, differenceInMilliseconds, getUnixTime } from "date-fns";
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 
 import { queryRaw } from "../../query";
 
 export const agentConfigBucketedActivityInputSchema = z.object({
   agentConfigurationId: z.string(),
   startDate: z.date().optional(),
-  endDate: z
-    .date()
-    .optional()
-    .default(() => new Date()),
+  endDate: z.date().optional(),
   numBuckets: z.number().optional().default(48),
 });
 
 const getAgentConfigBucketedActivityUncached = async (
   input: z.infer<typeof agentConfigBucketedActivityInputSchema>
 ) => {
-  const { agentConfigurationId, endDate, numBuckets } = input;
+  const { agentConfigurationId, numBuckets } = input;
+  const endDate = input.endDate ?? new Date();
 
   const startDate =
     input.startDate ??
@@ -105,10 +104,11 @@ const getAgentConfigBucketedActivityUncached = async (
   );
 };
 
-export const getAgentConfigBucketedActivity = createCachedArrayQuery({
-  queryFn: getAgentConfigBucketedActivityUncached,
-  cacheKeyPrefix: "agent-config:agent-bucketed-activity",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-  tags: ["agent-configuration", "activity"],
-});
+export const getAgentConfigBucketedActivity = async (
+  ...args: Parameters<typeof getAgentConfigBucketedActivityUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("agent-configuration", "activity");
+  return getAgentConfigBucketedActivityUncached(...args);
+};

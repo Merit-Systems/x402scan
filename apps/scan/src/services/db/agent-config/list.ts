@@ -1,11 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { sortingSchema, timeframeSchema } from "@/lib/schemas";
 import {
@@ -149,10 +147,11 @@ const listTopAgentConfigurationsUncached = async (
   });
 };
 
-export const listTopAgentConfigurations = createCachedPaginatedQuery({
-  queryFn: listTopAgentConfigurationsUncached,
-  cacheKeyPrefix: "agent-config:list",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["createdAt"],
-  tags: ["agent-configuration"],
-});
+export const listTopAgentConfigurations = async (
+  ...args: Parameters<typeof listTopAgentConfigurationsUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("agent-configuration");
+  return listTopAgentConfigurationsUncached(...args);
+};

@@ -1,15 +1,13 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import {
-  createCachedPaginatedQuery,
-  createCachedArrayQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
-import { toPaginatedResponse } from "@/lib/pagination";
-
-import type { PaginatedQueryParams } from "@/lib/pagination";
+  toPaginatedResponse,
+  type PaginatedQueryParams,
+} from "@/lib/pagination";
 
 const walletSpendingResultSchema = z.array(
   z.object({
@@ -108,13 +106,14 @@ const getSpendingByWalletUncached = async (
   });
 };
 
-export const getSpendingByWallet = createCachedPaginatedQuery({
-  queryFn: getSpendingByWalletUncached,
-  cacheKeyPrefix: "spending:by-wallet",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: [],
-  tags: ["spending", "wallet"],
-});
+export const getSpendingByWallet = async (
+  ...args: Parameters<typeof getSpendingByWalletUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("spending", "wallet");
+  return getSpendingByWalletUncached(...args);
+};
 
 export type ToolBreakdownSortId =
   | "resourceUrl"
@@ -175,11 +174,11 @@ const getToolBreakdownByWalletUncached = async (
   return walletToolBreakdownResultSchema.parse(rawResult);
 };
 
-export const getToolBreakdownByWallet = createCachedArrayQuery({
-  queryFn: getToolBreakdownByWalletUncached,
-  cacheKeyPrefix: "spending:tool-breakdown-by-wallet",
-  createCacheKey: (walletId, sorting) =>
-    createStandardCacheKey({ walletId, sorting }),
-  dateFields: [],
-  tags: ["spending", "wallet", "tool-breakdown"],
-});
+export const getToolBreakdownByWallet = async (
+  ...args: Parameters<typeof getToolBreakdownByWalletUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("spending", "wallet", "tool-breakdown");
+  return getToolBreakdownByWalletUncached(...args);
+};
