@@ -3,9 +3,13 @@ import { Header } from "./_components/layout/header";
 import { ChainProvider } from "./_contexts/chain/provider";
 import { SearchProvider } from "./_contexts/search/provider";
 
-export default function AppLayout({ children }: LayoutProps<"/">) {
+import { getDataChainCookieServer } from "./_contexts/chain/cookies/server";
+
+export default async function AppLayout({ children }: LayoutProps<"/">) {
+  const initialChain = await getDataChainCookieServer();
+
   return (
-    <ChainProvider>
+    <ChainProvider initialChain={initialChain}>
       <SearchProvider>
         <Header />
         <div className="flex flex-1 flex-col bg-background">{children}</div>
