@@ -1,5 +1,5 @@
 import { ChainSelector } from "../navbar/chain-selector";
-import { NavbarSearchButton } from "../navbar/search";
+import { GlobalSearch } from "../navbar/search";
 import { HeaderBrand } from "./brand";
 import { PrimaryNavigation } from "./navigation";
 import { RegisterButton } from "./register-button";
@@ -14,7 +14,7 @@ export function Header() {
         <PrimaryNavigation className="hidden md:block" />
 
         <div className="ml-auto flex shrink-0 items-center gap-1.5">
-          <NavbarSearchButton />
+          <GlobalSearch />
           <div className="hidden h-5 border-l sm:block" />
           <ChainSelector />
           <ThemeToggle />
