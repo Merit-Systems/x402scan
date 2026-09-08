@@ -18,14 +18,6 @@ export const Agents = () => {
   );
 };
 
-export const LoadingAgents = () => {
-  return (
-    <AgentsContainer>
-      <LoadingAgentsContent />
-    </AgentsContainer>
-  );
-};
-
 const LoadingAgentsContent = () => {
   return (
     <>
