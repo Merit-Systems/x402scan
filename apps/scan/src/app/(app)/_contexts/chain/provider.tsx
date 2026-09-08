@@ -7,22 +7,20 @@ import { useSearchParams } from "next/navigation";
 import { parseChain } from "@/app/(app)/_lib/chain/parse";
 
 import { ChainContext } from "./context";
-import {
-  getDataChainCookieClient,
-  setDataChainCookieClient,
-} from "./cookies/client";
+import { setDataChainCookieClient } from "./cookies/client";
 
 import type { Chain } from "@/types/chain";
 
 interface Props {
   children: React.ReactNode;
+  initialChain: Chain | undefined;
 }
 
-export const ChainProvider: React.FC<Props> = ({ children }) => {
+export const ChainProvider: React.FC<Props> = ({ children, initialChain }) => {
   const searchParams = useSearchParams();
   const urlChain = parseChain(searchParams.get("chain"));
-  const [storedChain, setStoredChain] = useState<Chain | undefined>(() =>
-    getDataChainCookieClient()
+  const [storedChain, setStoredChain] = useState<Chain | undefined>(
+    () => initialChain
   );
   const chain = urlChain ?? storedChain;
 

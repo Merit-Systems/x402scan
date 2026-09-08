@@ -1,7 +1,6 @@
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
 import { connection } from "next/server";
@@ -12,15 +11,12 @@ import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/env";
 import { TRPCReactProvider } from "@/trpc/client";
 
-import { CDPHooksProvider } from "./_contexts/cdp";
 import { PostHogProvider } from "./_contexts/posthog";
-import { WagmiProvider } from "./_contexts/wagmi";
 
 import type { Metadata, Viewport } from "next";
 
 // oxfmt-ignore
 import "./globals.css";
-import { SolanaWalletProvider } from "./_contexts/solana/provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -124,32 +120,25 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <Toaster />
         <SpeedInsights />
         <Analytics />
-        <SessionProvider>
-          <TRPCReactProvider>
-            <CDPHooksProvider>
-              <WagmiProvider>
-                <SolanaWalletProvider>
-                  <PostHogProvider>
-                    <ThemeProvider
-                      attribute="class"
-                      defaultTheme="light"
-                      storageKey="x402scan-theme"
-                      enableSystem={true}
-                    >
-                      <div className="relative flex min-h-screen flex-col">
-                        {children}
-                        {(env.NEXT_PUBLIC_NODE_ENV === "development" ||
-                          env.NEXT_PUBLIC_VERCEL_ENV !== "production") && (
-                          <ReactQueryDevtools />
-                        )}
-                      </div>
-                    </ThemeProvider>
-                  </PostHogProvider>
-                </SolanaWalletProvider>
-              </WagmiProvider>
-            </CDPHooksProvider>
-          </TRPCReactProvider>
-        </SessionProvider>
+
+        <TRPCReactProvider>
+          <PostHogProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              storageKey="x402scan-theme"
+              enableSystem={true}
+            >
+              <div className="relative flex min-h-screen flex-col">
+                {children}
+                {(env.NEXT_PUBLIC_NODE_ENV === "development" ||
+                  env.NEXT_PUBLIC_VERCEL_ENV !== "production") && (
+                  <ReactQueryDevtools />
+                )}
+              </div>
+            </ThemeProvider>
+          </PostHogProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );
