@@ -1,4 +1,5 @@
 "use client";
+import { renderTableRowLink } from "@/components/table-row-link";
 
 import { useState } from "react";
 
@@ -51,6 +52,7 @@ export const AgentsTable: React.FC<Props> = ({
     <DataTable
       columns={columns}
       data={agents.items}
+      renderRowLink={renderTableRowLink}
       getRowHref={({ id }) => `/composer/agent/${id}`}
       getRowLabel={({ name }) => `Open ${name}`}
       pageSize={10}
