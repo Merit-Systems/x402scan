@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { LoadingAccess } from "../_components/loading-access";
 import { connection } from "next/server";
 import { SessionProvider } from "next-auth/react";
 import { notFound } from "next/navigation";
@@ -21,9 +23,17 @@ export const metadata: Metadata = {
   description: "Build and run x402 agents",
 };
 
-export default async function ComposerLayout({
+export default function ComposerLayout({ children }: LayoutProps<"/composer">) {
+  return (
+    <Suspense fallback={<LoadingAccess />}>
+      <ComposerAccess>{children}</ComposerAccess>
+    </Suspense>
+  );
+}
+
+async function ComposerAccess({
   children,
-}: LayoutProps<"/composer">) {
+}: Pick<LayoutProps<"/composer">, "children">) {
   // Wallet providers and query hydration contain request-time state.
   await connection();
   const isEnabled =

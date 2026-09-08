@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -114,7 +112,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               enableSystem={true}
             >
               <div className="relative flex min-h-screen flex-col">
-                <Suspense>{children}</Suspense>
+                {children}
                 {(env.NEXT_PUBLIC_NODE_ENV === "development" ||
                   env.NEXT_PUBLIC_VERCEL_ENV !== "production") && (
                   <ReactQueryDevtools />

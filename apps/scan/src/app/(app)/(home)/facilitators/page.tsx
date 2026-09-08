@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 
 import { PageHeading } from "@/components/page-heading";
@@ -28,68 +29,98 @@ export const metadata: Metadata = {
   description: "Top facilitators processing x402 transactions",
 };
 
-const PAGE_SIZE = 10;
-
-export default async function FacilitatorsPage({
+export default function FacilitatorsPage({
   searchParams,
 }: PageProps<"/facilitators">) {
-  const resolvedSearchParams = await searchParams;
-  const chain = parseChain(resolvedSearchParams.chain);
-  const timeframe = parseUsageTimeframe(resolvedSearchParams.d);
-  const sorting = parseTableSorting(
-    resolvedSearchParams,
-    FACILITATORS_SORT_IDS,
-    DEFAULT_FACILITATORS_SORTING
+  return (
+    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-12 px-4 pt-6 pb-8 md:pt-4">
+      <PageHeading
+        title="Facilitators"
+        description="Top facilitators processing x402 transactions"
+        actions={
+          <Suspense fallback={<Skeleton className="h-8 w-20 sm:w-64" />}>
+            <Timeframe searchParams={searchParams} />
+          </Suspense>
+        }
+      />
+      <section className="space-y-4">
+        <Suspense fallback={<LoadingFacilitatorsChart />}>
+          <Chart searchParams={searchParams} />
+        </Suspense>
+        <Suspense fallback={<LoadingFacilitatorsTable pageSize={10} />}>
+          <Table searchParams={searchParams} />
+        </Suspense>
+      </section>
+    </main>
   );
+}
 
+async function readFilters(
+  searchParams: PageProps<"/facilitators">["searchParams"]
+) {
+  const params = await searchParams;
+  return {
+    chain: parseChain(params.chain),
+    timeframe: parseUsageTimeframe(params.d),
+    sorting: parseTableSorting(
+      params,
+      FACILITATORS_SORT_IDS,
+      DEFAULT_FACILITATORS_SORTING
+    ),
+  };
+}
+
+async function Timeframe({
+  searchParams,
+}: Pick<PageProps<"/facilitators">, "searchParams">) {
+  const { timeframe } = await readFilters(searchParams);
+  return <TimeframeSelect timeframe={timeframe} />;
+}
+
+async function Chart({
+  searchParams,
+}: Pick<PageProps<"/facilitators">, "searchParams">) {
+  const { chain, timeframe } = await readFilters(searchParams);
   void api.public.facilitators.bucketedStatistics.prefetch({
     numBuckets: 48,
     timeframe,
     chain,
   });
+  return (
+    <HydrateClient>
+      <Suspense
+        key={`${chain ?? "all"}:${String(timeframe)}`}
+        fallback={<LoadingFacilitatorsChart />}
+      >
+        <FacilitatorsChart chain={chain} timeframe={timeframe} />
+      </Suspense>
+    </HydrateClient>
+  );
+}
+
+async function Table({
+  searchParams,
+}: Pick<PageProps<"/facilitators">, "searchParams">) {
+  const { chain, timeframe, sorting } = await readFilters(searchParams);
   void api.public.facilitators.list.prefetch({
-    pagination: {
-      page_size: PAGE_SIZE,
-    },
+    pagination: { page_size: 10 },
     sorting,
     timeframe,
     chain,
   });
-
   return (
     <HydrateClient>
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-12 px-4 pt-6 pb-8 md:pt-4">
-        <PageHeading
-          title="Facilitators"
-          description="Top facilitators processing x402 transactions"
-          actions={<TimeframeSelect timeframe={timeframe} />}
+      <Suspense
+        key={`${chain ?? "all"}:${String(timeframe)}:${sorting.id}:${String(sorting.desc)}`}
+        fallback={<LoadingFacilitatorsTable pageSize={10} sorting={sorting} />}
+      >
+        <FacilitatorsTable
+          pageSize={10}
+          chain={chain}
+          timeframe={timeframe}
+          sorting={sorting}
         />
-        <section className="space-y-4">
-          {/* <FacilitatorPackageBanner /> */}
-          <Suspense
-            key={`chart:${chain ?? "all"}:${String(timeframe)}`}
-            fallback={<LoadingFacilitatorsChart />}
-          >
-            <FacilitatorsChart chain={chain} timeframe={timeframe} />
-          </Suspense>
-          <Suspense
-            key={`table:${chain ?? "all"}:${String(timeframe)}:${sorting.id}:${String(sorting.desc)}`}
-            fallback={
-              <LoadingFacilitatorsTable
-                pageSize={PAGE_SIZE}
-                sorting={sorting}
-              />
-            }
-          >
-            <FacilitatorsTable
-              chain={chain}
-              pageSize={PAGE_SIZE}
-              sorting={sorting}
-              timeframe={timeframe}
-            />
-          </Suspense>
-        </section>
-      </main>
+      </Suspense>
     </HydrateClient>
   );
 }
