@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { Footer } from "./_components/layout/footer";
 import { Header } from "./_components/layout/header";
 
@@ -5,7 +7,9 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <Header />
-      <div className="flex flex-1 flex-col bg-background">{children}</div>
+      <div className="flex flex-1 flex-col bg-background">
+        <Suspense>{children}</Suspense>
+      </div>
       <Footer />
     </>
   );
