@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
   pageExtensions: ["tsx", "mdx", "ts"],
   typedRoutes: true,
   cacheComponents: true,
+  partialPrefetching: true,
   async headers() {
     return Promise.resolve([
       {

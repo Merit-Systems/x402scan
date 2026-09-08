@@ -77,6 +77,17 @@ export default defineConfig({
   ],
   ui: {
     stylesheets: ["src/app/globals.css"],
+    sourceIntegrity: {
+      deviations: [
+        {
+          item: "data-table",
+          reason:
+            "Backport https://github.com/Merit-Systems/foundation/pull/157 for Next row links; remove after the canonical registry deployment.",
+          owner: "jasonhedman",
+          expires: "2026-09-22",
+        },
+      ],
+    },
   },
   development: { managed: false },
 });
