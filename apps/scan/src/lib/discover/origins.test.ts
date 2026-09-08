@@ -7,7 +7,10 @@ vi.mock("@/env", () => ({
   },
 }));
 
-vi.mock("next/cache", () => ({ cacheLife: vi.fn(), cacheTag: vi.fn() }));
+vi.mock("next/cache", () => ({
+  cacheLife: vi.fn<typeof import("next/cache").cacheLife>(),
+  cacheTag: vi.fn<typeof import("next/cache").cacheTag>(),
+}));
 
 import { fetchUsedOriginsFromAgentCash, getDiscoverOrigins } from "./origins";
 
