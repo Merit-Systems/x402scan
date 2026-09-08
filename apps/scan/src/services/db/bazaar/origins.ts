@@ -1,5 +1,10 @@
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
-import { toPaginatedResponse } from "@/lib/pagination";
+import { cacheLife, cacheTag } from "next/cache";
+
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import {
+  toPaginatedResponse,
+  type paginatedQuerySchema,
+} from "@/lib/pagination";
 import { mixedAddressSchema } from "@/lib/schemas";
 import { getOriginTransactionSparklines } from "@/services/transfers/origins/stats/sparklines";
 import { listTopSellersMVUncached } from "@/services/transfers/sellers/list-mv";
@@ -8,7 +13,6 @@ import { getAcceptsAddresses } from "../resources/accepts";
 
 import type z from "zod";
 
-import type { paginatedQuerySchema } from "@/lib/pagination";
 import type { MixedAddress } from "@/types/address";
 import type { Chain } from "@/types/chain";
 
@@ -180,21 +184,14 @@ const listBazaarOriginsUncached = async (
   return groupedItems;
 };
 
-const listAllBazaarOrigins = createCachedArrayQuery({
-  queryFn: listBazaarOriginsUncached,
-  cacheKeyPrefix: "bazaar-origins",
-  // createStandardCacheKey sorts arrays for normalization, so the cache key
-  // is order-insensitive in `originUrls`. That's safe today because the only
-  // producer (getDiscoverOrigins) returns a deterministic order. When sorting
-  // is 'editorial' the OUTPUT order depends on the input array order — if a
-  // future caller passes a differently-ordered originUrls expecting editorial
-  // honor, they'd silently get the cached output ordered by the first caller.
-  // If that ever becomes a real concern, switch this to a custom key fn that
-  // skips sort-normalization for `originUrls` when sorting.id === 'editorial'.
-  createCacheKey: createStandardCacheKey,
-  dateFields: ["latest_block_timestamp"],
-  tags: ["transfers"],
-});
+const listAllBazaarOrigins = async (
+  ...args: Parameters<typeof listBazaarOriginsUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("transfers");
+  return listBazaarOriginsUncached(...args);
+};
 
 export const listBazaarOriginSummaries = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
