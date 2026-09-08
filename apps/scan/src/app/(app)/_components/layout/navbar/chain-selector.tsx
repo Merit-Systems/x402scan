@@ -30,17 +30,21 @@ export const ChainSelector = () => {
   const pathname = usePathname();
   const replaceSearchParams = useReplaceSearchParams();
 
+  const supportsChainFilter =
+    URL_BACKED_CHAIN_ROUTES.has(pathname) ||
+    /^\/facilitator\/[^/]+$/.test(pathname);
+
+  if (!supportsChainFilter) return null;
+
   const handleSelectChain = (selectedChain: Chain | undefined) => {
-    if (URL_BACKED_CHAIN_ROUTES.has(pathname)) {
-      replaceSearchParams((params) => {
-        if (selectedChain) {
-          params.set("chain", selectedChain);
-        } else {
-          params.delete("chain");
-        }
-        params.delete("p");
-      });
-    }
+    replaceSearchParams((params) => {
+      if (selectedChain) {
+        params.set("chain", selectedChain);
+      } else {
+        params.delete("chain");
+      }
+      params.delete("p");
+    });
   };
 
   return (
