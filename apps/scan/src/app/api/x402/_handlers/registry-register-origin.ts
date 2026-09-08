@@ -1,7 +1,6 @@
-import { revalidatePath } from "next/cache";
-
 import { jsonResponse } from "@/app/api/x402/_lib/utils";
 import { registerResourcesFromDiscovery } from "@/lib/discovery/register-origin";
+import { revalidateResourceData } from "@/services/db/resources/revalidate";
 import { fetchDiscoveryDocument } from "@/services/discovery";
 
 import { contactEmailFields } from "./registry-register";
@@ -39,10 +38,10 @@ export async function handleRegistryRegisterOrigin(
 
   try {
     if (result.originId) {
-      revalidatePath(`/server/${result.originId}`);
+      revalidateResourceData(result.originId);
     }
   } catch (e) {
-    console.error("revalidatePath failed:", e);
+    console.error("Resource cache revalidation failed:", e);
   }
 
   if (result.registered === 0) {
