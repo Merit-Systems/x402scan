@@ -2,10 +2,11 @@
 
 import { Loader2, SearchX, Search } from "lucide-react";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandDialog,
@@ -15,18 +16,14 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
+import { Shortcut } from "@/components/ui/shortcut";
 
 import { api } from "@/trpc/client";
 
-import { Origin } from "./_components/origins";
-import { Resource } from "./_components/resource";
-import { SearchContext } from "./context";
+import { Origin } from "./origins";
+import { Resource } from "./resource";
 
-interface SearchProviderProps {
-  children: React.ReactNode;
-}
-
-export const SearchProvider = ({ children }: SearchProviderProps) => {
+export const GlobalSearch = () => {
   const router = useRouter();
 
   const [search, setSearch] = useState("");
@@ -67,13 +64,24 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
     },
     [router]
   );
-  const contextValue = useMemo(
-    () => ({ search, setSearch, isOpen, setIsOpen }),
-    [search, isOpen]
-  );
 
   return (
-    <SearchContext.Provider value={contextValue}>
+    <>
+      <Button
+        size="default"
+        variant="outline"
+        aria-label="Search x402scan"
+        className="w-8 lg:w-48 lg:justify-between"
+        onClick={() => {
+          setIsOpen(true);
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <Search className="size-4" />
+          <span className="hidden lg:block">Search...</span>
+        </div>
+        <Shortcut className="hidden lg:block">⌘K</Shortcut>
+      </Button>
       <CommandDialog
         open={isOpen}
         onOpenChange={setIsOpen}
@@ -146,7 +154,6 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
           </CommandList>
         </Command>
       </CommandDialog>
-      {children}
-    </SearchContext.Provider>
+    </>
   );
 };
