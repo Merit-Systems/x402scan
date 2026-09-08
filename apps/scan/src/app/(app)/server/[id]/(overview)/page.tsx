@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { api, HydrateClient } from "@/trpc/server";
 import { ActivityTimeframe } from "@/types/timeframes";
 
+import { getServerOrigin } from "../_lib/get-origin";
 import { ServerOverview } from "./_components/overview";
 import {
   LoadingOriginResources,
@@ -20,23 +21,21 @@ export default async function OriginPage({
   params,
 }: PageProps<"/server/[id]">) {
   const { id } = await params;
-  const origin = await api.public.origins.get(id);
+  const origin = await getServerOrigin(id);
 
   if (!origin) {
     notFound();
   }
 
-  await Promise.all([
-    api.public.stats.overallByOrigin.prefetch({
-      originId: id,
-      timeframe: ActivityTimeframe.ThirtyDays,
-    }),
-    api.public.stats.bucketedByOrigin.prefetch({
-      originId: id,
-      numBuckets: 48,
-      timeframe: ActivityTimeframe.ThirtyDays,
-    }),
-  ]);
+  void api.public.stats.overallByOrigin.prefetch({
+    originId: id,
+    timeframe: ActivityTimeframe.ThirtyDays,
+  });
+  void api.public.stats.bucketedByOrigin.prefetch({
+    originId: id,
+    numBuckets: 48,
+    timeframe: ActivityTimeframe.ThirtyDays,
+  });
 
   return (
     <HydrateClient>
