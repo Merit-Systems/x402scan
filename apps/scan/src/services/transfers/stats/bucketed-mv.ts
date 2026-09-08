@@ -1,8 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
 
@@ -104,10 +105,11 @@ const getBucketedStatisticsMVUncached = async (
   return queryRaw(sql, bucketedResultSchema);
 };
 
-export const getBucketedStatisticsMV = createCachedArrayQuery({
-  queryFn: getBucketedStatisticsMVUncached,
-  cacheKeyPrefix: "bucketed-statistics-mv",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-  tags: ["statistics"],
-});
+export const getBucketedStatisticsMV = async (
+  ...args: Parameters<typeof getBucketedStatisticsMVUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("statistics");
+  return getBucketedStatisticsMVUncached(...args);
+};

@@ -1,8 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { facilitators, MIN_FACILITATOR_TRANSACTIONS } from "@/lib/facilitators";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
@@ -152,10 +153,11 @@ const getBucketedFacilitatorsStatisticsUncached = async (
   return rawResult;
 };
 
-export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({
-  queryFn: getBucketedFacilitatorsStatisticsUncached,
-  cacheKeyPrefix: "bucketed-facilitators-statistics",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-  tags: ["facilitators-statistics"],
-});
+export const getBucketedFacilitatorsStatistics = async (
+  ...args: Parameters<typeof getBucketedFacilitatorsStatisticsUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("facilitators-statistics");
+  return getBucketedFacilitatorsStatisticsUncached(...args);
+};

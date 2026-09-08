@@ -1,8 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { chainSchema, timeframeSchema } from "@/lib/schemas";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
@@ -24,15 +25,20 @@ type RecipientTransactionSparklinesInput = z.infer<
   typeof recipientTransactionSparklinesInputSchema
 >;
 
-const listRecipientTransactionSparklineRows = createCachedArrayQuery({
-  queryFn: async (input: RecipientTransactionSparklinesInput) => {
-    if (input.recipients.length === 0) return [];
+const listRecipientTransactionSparklineRows = async (
+  input: RecipientTransactionSparklinesInput
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("statistics", "recipients");
 
-    const tableName = `recipient_stats_bucketed_${getMaterializedViewSuffix(input.timeframe)}`;
-    const chainFilter = input.chain
-      ? Prisma.sql`AND chain = ${input.chain}`
-      : Prisma.empty;
-    const sql = Prisma.sql`
+  if (input.recipients.length === 0) return [];
+
+  const tableName = `recipient_stats_bucketed_${getMaterializedViewSuffix(input.timeframe)}`;
+  const chainFilter = input.chain
+    ? Prisma.sql`AND chain = ${input.chain}`
+    : Prisma.empty;
+  const sql = Prisma.sql`
       SELECT
         recipient,
         bucket,
@@ -44,13 +50,8 @@ const listRecipientTransactionSparklineRows = createCachedArrayQuery({
       ORDER BY recipient, bucket ASC
     `;
 
-    return queryRaw(sql, z.array(recipientTransactionSparklineRowSchema));
-  },
-  cacheKeyPrefix: "recipient-transaction-sparklines",
-  createCacheKey: createStandardCacheKey,
-  dateFields: ["bucket"],
-  tags: ["statistics", "recipients"],
-});
+  return queryRaw(sql, z.array(recipientTransactionSparklineRowSchema));
+};
 
 export async function getOriginTransactionSparklines(input: {
   chain?: RecipientTransactionSparklinesInput["chain"];

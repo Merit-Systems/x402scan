@@ -1,8 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedQuery, createStandardCacheKey } from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { chainSchema } from "@/lib/schemas";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
@@ -66,10 +67,11 @@ const getWalletStatsUncached = async (input: WalletStatsInput) => {
   }
 };
 
-export const getWalletStats = createCachedQuery({
-  queryFn: getWalletStatsUncached,
-  cacheKeyPrefix: "wallet-stats",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: [],
-  tags: ["wallets"],
-});
+export const getWalletStats = async (
+  ...args: Parameters<typeof getWalletStatsUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("wallets");
+  return getWalletStatsUncached(...args);
+};

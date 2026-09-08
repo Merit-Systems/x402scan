@@ -1,8 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/scan-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
 import { Chain } from "@/types/chain";
@@ -111,11 +112,11 @@ const getBucketedNetworksStatisticsUncached = async (
   return rawResult;
 };
 
-export const getBucketedNetworksStatistics = createCachedArrayQuery({
-  queryFn: getBucketedNetworksStatisticsUncached,
-  cacheKeyPrefix: "bucketed-networks-statistics",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-
-  tags: ["networks-statistics"],
-});
+export const getBucketedNetworksStatistics = async (
+  ...args: Parameters<typeof getBucketedNetworksStatisticsUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("networks-statistics");
+  return getBucketedNetworksStatisticsUncached(...args);
+};

@@ -1,11 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
@@ -164,10 +162,11 @@ const listTopBuyersMVUncached = async (
   }
 };
 
-export const listTopBuyersMV = createCachedPaginatedQuery({
-  queryFn: listTopBuyersMVUncached,
-  cacheKeyPrefix: "buyers-list-mv",
-  createCacheKey: createStandardCacheKey,
-  dateFields: ["latest_block_timestamp"],
-  tags: ["buyers"],
-});
+export const listTopBuyersMV = async (
+  ...args: Parameters<typeof listTopBuyersMVUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("buyers");
+  return listTopBuyersMVUncached(...args);
+};
