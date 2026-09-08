@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { SessionProvider } from "next-auth/react";
 import { notFound } from "next/navigation";
 
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
 export default async function ComposerLayout({
   children,
 }: LayoutProps<"/composer">) {
+  // Wallet providers and query hydration contain request-time state.
+  await connection();
   const isEnabled =
     env.NEXT_PUBLIC_ENABLE_COMPOSER === "true" ||
     (await auth())?.user.role === "admin";
