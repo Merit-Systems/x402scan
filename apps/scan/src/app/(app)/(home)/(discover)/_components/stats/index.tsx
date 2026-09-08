@@ -32,7 +32,7 @@ export function OverallStatsContent({
 
   return (
     <ErrorBoundary
-      key={`${chain ?? "all"}:${timeframe}`}
+      key={`${chain ?? "all"}:${String(timeframe)}`}
       fallback={<p>There was an error loading the activity data</p>}
     >
       <Suspense fallback={<LoadingOverallStatsContent />}>
