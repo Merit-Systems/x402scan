@@ -1,31 +1,23 @@
 "use client";
-
 import { StatsCardGrid } from "@/components/stats-card-grid";
 import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
 import { UsageSection } from "@/components/usage-section";
 
 import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 import { formatChartTimestamp, formatNumber } from "@/lib/utils";
-import { api } from "@/trpc/client";
-import { ActivityTimeframe } from "@/types/timeframes";
 
 import type { ChartData } from "@/components/ui/chart";
 
-interface ServerStatCardsProps {
-  originId: string;
-}
+import type { getBucketedStatisticsMV } from "@/services/transfers/stats/bucketed-mv";
+import type { getOverallStatisticsMV } from "@/services/transfers/stats/overall-mv";
 
-export function ServerStatCards({ originId }: ServerStatCardsProps) {
-  const input = {
-    originId,
-    timeframe: ActivityTimeframe.ThirtyDays,
-  };
-  const [overall] = api.public.stats.overallByOrigin.useSuspenseQuery(input);
-  const [timeSeries] = api.public.stats.bucketedByOrigin.useSuspenseQuery({
-    ...input,
-    numBuckets: 48,
-  });
-
+export const ServerStatCards = ({
+  overall,
+  timeSeries,
+}: {
+  overall: Awaited<ReturnType<typeof getOverallStatisticsMV>>;
+  timeSeries: Awaited<ReturnType<typeof getBucketedStatisticsMV>>;
+}) => {
   const chartData: ChartData<{
     transactions: number;
     volume: number;
@@ -98,7 +90,7 @@ export function ServerStatCards({ originId }: ServerStatCardsProps) {
       </StatsCardGrid>
     </UsageSection>
   );
-}
+};
 
 export function LoadingServerStatCards() {
   return (

@@ -1,33 +1,21 @@
 "use client";
-
 import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
 
 import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 import { formatChartTimestamp } from "@/lib/utils";
-import { api } from "@/trpc/client";
 
 import type { ChartData } from "@/components/ui/chart";
 
-import type { Chain } from "@/types/chain";
-import type { ActivityTimeframe } from "@/types/timeframes";
+import type { getBucketedStatisticsMV } from "@/services/transfers/stats/bucketed-mv";
+import type { getOverallStatisticsMV } from "@/services/transfers/stats/overall-mv";
 
-interface OverallChartsProps {
-  chain?: Chain;
-  timeframe: ActivityTimeframe;
-}
-
-export const OverallCharts = ({ chain, timeframe }: OverallChartsProps) => {
-  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
-    chain,
-    timeframe,
-  });
-
-  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
-    numBuckets: 48,
-    timeframe,
-    chain,
-  });
-
+export const OverallCharts = ({
+  overallStats,
+  bucketedStats,
+}: {
+  overallStats: Awaited<ReturnType<typeof getOverallStatisticsMV>>;
+  bucketedStats: Awaited<ReturnType<typeof getBucketedStatisticsMV>>;
+}) => {
   const chartData: ChartData<{
     transactions: number;
     totalAmount: number;
