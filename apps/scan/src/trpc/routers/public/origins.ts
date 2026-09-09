@@ -55,7 +55,7 @@ export const originsRouter = createTRPCRouter({
       return searchOrigins(input);
     }),
   updateEmail: publicProcedure
-    .input(z.object({ originId: z.string().uuid(), email: z.string().email() }))
+    .input(z.object({ originId: z.uuid(), email: z.email() }))
     .mutation(async ({ input }) => {
       checkRateLimit(input.originId);
       const origin = await scanDb.resourceOrigin.findUnique({

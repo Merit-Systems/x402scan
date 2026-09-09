@@ -30,7 +30,7 @@ function toParameterized(sql: Prisma.Sql): [string, unknown[]] {
 
 export const queryRaw = async <T>(
   sql: Prisma.Sql,
-  resultSchema: z.ZodSchema<T>
+  resultSchema: z.ZodType<T>
 ) => {
   const [query, params] = toParameterized(sql);
   const tag = query.trim().slice(0, 50);

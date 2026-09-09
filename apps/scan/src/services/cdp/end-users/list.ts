@@ -3,15 +3,13 @@ import "server-only";
 import z from "zod";
 import { cdpFetch } from "../lib/fetch";
 
-const authenticationMethodSchema = z
-  .object({
-    type: z.string(),
-    email: z.string().email().optional(),
-    phoneNumber: z.string().optional(),
-    sub: z.string().optional(),
-    kid: z.string().optional(),
-  })
-  .passthrough();
+const authenticationMethodSchema = z.looseObject({
+  type: z.string(),
+  email: z.email().optional(),
+  phoneNumber: z.string().optional(),
+  sub: z.string().optional(),
+  kid: z.string().optional(),
+});
 
 const endUserSchema = z.object({
   userId: z.string(),

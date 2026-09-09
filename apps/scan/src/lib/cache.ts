@@ -73,15 +73,8 @@ const roundDateToInterval = (date?: Date): string | undefined => {
 /**
  * Serialize data using SuperJSON (handles BigInt, Date, Map, Set, etc.)
  */
-const serialize = <T>(data: T): string => {
+const serialize = (data: Parameters<typeof superjson.stringify>[0]): string => {
   return superjson.stringify(data);
-};
-
-/**
- * Deserialize data using SuperJSON
- */
-const deserialize = <T>(str: string): T => {
-  return superjson.parse<T>(str);
 };
 
 /**
@@ -154,7 +147,7 @@ async function withRedisCache<T>(
       const cached = await redis.get(fullCacheKey);
       if (cached) {
         console.log(`[Cache] HIT: ${fullCacheKey}`);
-        return deserialize<T>(cached);
+        return superjson.parse<T>(cached);
       }
     } catch {
       // Redis read failed — fall through to execute
@@ -198,7 +191,7 @@ async function withRedisCache<T>(
         console.log(
           `[Cache] WAIT→HIT after ${(i + 1) * POLL_INTERVAL_MS}ms: ${fullCacheKey}`
         );
-        return deserialize<T>(cached);
+        return superjson.parse<T>(cached);
       }
 
       // Detect orphaned lock: if the lock disappeared but no result was
@@ -435,11 +428,15 @@ const normalizeCacheKeyValue = (
 // Object.entries on a generic param object yields `any` values; this is the
 // one place caller-owned params enter the cache-key domain, so the entries are
 // asserted into it here rather than at every use site.
+// oxlint-disable-next-line typescript/no-unnecessary-type-parameters
 const cacheKeyEntries = <T extends object>(
   params: T
 ): [string, CacheKeyParamValue | undefined][] =>
   Object.entries(params) as [string, CacheKeyParamValue | undefined][];
 
+// The generic preserves compatibility with structurally typed query inputs
+// that intentionally do not declare a string index signature.
+// oxlint-disable-next-line typescript/no-unnecessary-type-parameters
 export const createStandardCacheKey = <T extends object>(params: T): string => {
   const normalized: Record<string, CacheKeyParamValue> = {};
 
