@@ -6,7 +6,6 @@
 
 import {
   CheckCircleIcon,
-  ChevronRightIcon,
   CircleAlertIcon,
   CircleIcon,
   ClockIcon,
@@ -100,14 +99,14 @@ function ToolHeader({
   return (
     <CollapsibleTrigger
       className={cn(
-        "flex w-full items-center gap-2 py-0.5 text-left text-muted-foreground transition-colors hover:text-foreground",
+        "flex w-fit max-w-full items-center gap-1.5 rounded-sm py-0.5 text-left text-muted-foreground transition-colors hover:text-foreground data-[panel-open]:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className
       )}
       data-slot="chat-tool-trigger"
       {...props}
     >
       {icon ?? <WrenchIcon className="size-4 shrink-0" />}
-      <span className="min-w-0 flex-1 truncate type-label">{title}</span>
+      <span className="min-w-0 truncate type-label">{title}</span>
       {meta ? (
         <span
           className="flex shrink-0 items-center gap-1"
@@ -124,11 +123,12 @@ function ToolHeader({
           )}
           data-status={status}
         >
-          {statusIcon === undefined ? presentation.icon : statusIcon}
-          {statusLabel === undefined ? presentation.label : statusLabel}
+          <span aria-hidden>
+            {statusIcon === undefined ? presentation.icon : statusIcon}
+          </span>
+          <span className="sr-only">{statusLabel ?? presentation.label}</span>
         </span>
       ) : null}
-      <ChevronRightIcon className="size-3.5 shrink-0 transition-transform group-data-[state=open]:rotate-90" />
     </CollapsibleTrigger>
   );
 }
@@ -193,7 +193,13 @@ function ToolOutput({
           errorText && "bg-destructive/10 text-destructive"
         )}
       >
-        {errorText ?? (content as ReactNode)}
+        {errorText || isValidElement(output) ? (
+          (errorText ?? (content as ReactNode))
+        ) : (
+          <pre className="type-code whitespace-pre-wrap">
+            <code>{content as ReactNode}</code>
+          </pre>
+        )}
       </div>
     </div>
   );
