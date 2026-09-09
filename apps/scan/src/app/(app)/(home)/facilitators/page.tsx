@@ -124,11 +124,11 @@ async function Table({
   );
 }
 
-async function ChartData({
-  input,
-}: {
+interface ChartDataProps {
   input: Parameters<typeof getBucketedFacilitatorsStatistics>[0];
-}) {
+}
+
+async function ChartData({ input }: ChartDataProps) {
   return (
     <FacilitatorsChart
       bucketedFacilitatorData={await getBucketedFacilitatorsStatistics(input)}
@@ -136,11 +136,11 @@ async function ChartData({
   );
 }
 
-async function TableData({
-  input,
-}: {
+interface TableDataProps {
   input: Parameters<typeof listTopFacilitators>[0];
-}) {
+}
+
+async function TableData({ input }: TableDataProps) {
   return (
     <FacilitatorsTable
       facilitatorsData={await listTopFacilitators(input, {

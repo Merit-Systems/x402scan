@@ -12,13 +12,12 @@ import type { NetworksSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
 import type { listTopNetworks } from "@/services/transfers/networks/list";
 
-export const NetworksTable = ({
-  sorting,
-  networks,
-}: {
+interface NetworksTableProps {
   sorting: TableSorting<NetworksSortId>;
   networks: Awaited<ReturnType<typeof listTopNetworks>>;
-}) => {
+}
+
+export const NetworksTable = ({ sorting, networks }: NetworksTableProps) => {
   const tableSorting = useUrlTableSorting({
     sorting,
     sortIds: NETWORKS_SORT_IDS,
@@ -36,11 +35,13 @@ export const NetworksTable = ({
   );
 };
 
+interface LoadingNetworksTableProps {
+  sorting?: TableSorting<NetworksSortId>;
+}
+
 export const LoadingNetworksTable = ({
   sorting,
-}: {
-  sorting?: TableSorting<NetworksSortId>;
-}) => {
+}: LoadingNetworksTableProps) => {
   return (
     <DataTableLoading
       columns={columns}
