@@ -1,14 +1,23 @@
 "use client";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { serviceColumns as columns } from "./service-columns";
+import {
+  ResponsiveCollection,
+  ResponsiveCollectionLoading,
+} from "@/components/responsive-collection";
 import {
   LoadingServiceSummary,
   ServiceSummary,
 } from "@/components/service-summary";
+import { Button } from "@/components/ui/button";
+
+import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
+import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
+
 import {
   LoadingServiceMetric,
   ServiceBuyersMetric,
@@ -17,28 +26,23 @@ import {
   ServiceTransactionsMetric,
   ServiceVolumeMetric,
 } from "@/app/(app)/_components/service-collection";
-import {
-  ResponsiveCollection,
-  ResponsiveCollectionLoading,
-} from "@/components/responsive-collection";
-import { Button } from "@/components/ui/button";
-import { api } from "@/trpc/client";
-import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
-import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
+import { formatDiscoverPage, SERVICES_PAGE_SIZE } from "@/lib/discover/filters";
 import { SELLERS_SORT_IDS } from "@/lib/table-sort-options";
-import {
-  formatDiscoverPage,
-  SERVICES_PAGE_SIZE,
-  type ServiceView,
-} from "@/lib/discover/filters";
+import { api } from "@/trpc/client";
 
-import type { ServiceItem } from "./service-columns";
-import type { DataListItem } from "@/components/ui/data-list";
+import { serviceColumns as columns } from "./service-columns";
+
 import type { Route } from "next";
+
+import type { DataListItem } from "@/components/ui/data-list";
+
+import type { ServiceView } from "@/lib/discover/filters";
 import type { SellerSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
+
+import type { ServiceItem } from "./service-columns";
 
 const PAGE_SIZE = SERVICES_PAGE_SIZE;
 

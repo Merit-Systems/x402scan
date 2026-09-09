@@ -1,7 +1,7 @@
-import { SearchProvider } from "./_contexts/search/provider";
-import { ChainProvider } from "./_contexts/chain/provider";
-import { Header } from "./_components/layout/header";
 import { Footer } from "./_components/layout/footer";
+import { Header } from "./_components/layout/header";
+import { ChainProvider } from "./_contexts/chain/provider";
+import { SearchProvider } from "./_contexts/search/provider";
 
 export default function AppLayout({ children }: LayoutProps<"/">) {
   return (

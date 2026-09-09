@@ -1,7 +1,9 @@
-import Link from "next/link";
 import { ArrowRight, BookOpen, Rocket, Workflow } from "lucide-react";
 
+import Link from "next/link";
+
 import type { LucideIcon } from "lucide-react";
+
 import type { Route } from "next";
 
 export function DiscoverySubpageCards() {

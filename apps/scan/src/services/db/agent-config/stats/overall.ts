@@ -1,22 +1,21 @@
+import { differenceInMilliseconds, getUnixTime } from "date-fns";
 import z from "zod";
 
 import { Prisma } from "@x402scan/scan-db";
+
+import { agentsRelease } from "@/lib/agents";
 import {
   createCachedQuery,
   createCachedArrayQuery,
   createStandardCacheKey,
 } from "@/lib/cache";
-
-import { differenceInMilliseconds, getUnixTime } from "date-fns";
-
-import { queryRaw } from "../../query";
-
+import { timeframeSchema, timePeriodSchema } from "@/lib/schemas";
 import {
   getTimeRangeFromTimeframe,
   getBucketedTimeRangeFromTimeframe,
 } from "@/lib/time-range";
-import { timeframeSchema, timePeriodSchema } from "@/lib/schemas";
-import { agentsRelease } from "@/lib/agents";
+
+import { queryRaw } from "../../query";
 
 export const overallActivityInputSchema = z.object({
   timeframe: timeframeSchema,

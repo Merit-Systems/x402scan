@@ -1,24 +1,24 @@
 import { useIsInitialized } from "@coinbase/cdp-hooks";
 
+import { useSPLTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-svm-token-balance";
+
+import { useSvmX402FetchWithConfirmation } from "@/app/(app)/composer/_hooks/x402/svm-with-confirmation";
+import { useSolanaWallet } from "@/app/_contexts/solana/hook";
+import { convertTokenAmount } from "@/lib/token";
+import { Chain } from "@/types/chain";
+
 import { ConnectWalletState } from "../1-connect";
 import { LoadingState } from "../2-loading-balance";
 import { AddFundsState } from "../3-add-funds";
 import { FetchState } from "../4-fetch";
 import { PriceConfirmationDialog } from "../price-confirmation-dialog";
 
-import { useSvmX402FetchWithConfirmation } from "@/app/(app)/composer/_hooks/x402/svm-with-confirmation";
-import { useSPLTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-svm-token-balance";
-
-import { useSolanaWallet } from "@/app/_contexts/solana/hook";
-
-import type { SupportedChain } from "@/types/chain";
-import { Chain } from "@/types/chain";
-
-import { convertTokenAmount } from "@/lib/token";
+import type { UseMutationOptions } from "@tanstack/react-query";
 
 import type { UiWalletAccount } from "@wallet-standard/react";
-import type { UseMutationOptions } from "@tanstack/react-query";
+
 import type { X402FetchResponse } from "@/app/(app)/composer/_hooks/x402/types";
+import type { SupportedChain } from "@/types/chain";
 
 interface Props {
   allRequiredFieldsFilled: boolean;

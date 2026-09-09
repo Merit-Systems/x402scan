@@ -5,15 +5,16 @@ import {
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
+import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 
-import type { EmptyStateProps } from "./empty-state";
 import { EmptyState } from "./empty-state";
+import { ErrorState } from "./error";
 import { LoadingMessage, Message } from "./message";
 
-import type { ChatStatus } from "ai";
 import type { UIMessage, UseChatHelpers } from "@ai-sdk/react";
-import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
-import { ErrorState } from "./error";
+import type { ChatStatus } from "ai";
+
+import type { EmptyStateProps } from "./empty-state";
 
 interface MessagesProps {
   messages: UIMessage[];

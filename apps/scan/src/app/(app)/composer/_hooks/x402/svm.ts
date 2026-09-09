@@ -1,16 +1,18 @@
 import { useWalletAccountTransactionSigner } from "@solana/react";
 
-import { useX402Fetch } from "./use-fetch";
-
+import { env } from "@/env";
 import {
   wrapFetchWithPayment,
   registerSvmX402Client,
 } from "@/lib/x402/wrap-fetch";
-import { env } from "@/env";
+
+import { useX402Fetch } from "./use-fetch";
 
 import type { UseMutationOptions } from "@tanstack/react-query";
-import type { FetchWithPaymentWrapper, X402FetchResponse } from "./types";
+
 import type { UiWalletAccount } from "@wallet-standard/react";
+
+import type { FetchWithPaymentWrapper, X402FetchResponse } from "./types";
 
 interface UseSvmX402FetchParams {
   targetUrl: string;

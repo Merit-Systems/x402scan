@@ -2,14 +2,14 @@ import { Suspense } from "react";
 
 import { ErrorBoundary } from "react-error-boundary";
 
-import { OverallCharts, LoadingOverallCharts } from "./charts";
-
 import { StatsCardGrid } from "@/components/stats-card-grid";
+
 import { api } from "@/trpc/server";
 
-import type { ActivityTimeframe } from "@/types/timeframes";
+import { OverallCharts, LoadingOverallCharts } from "./charts";
 
 import type { Chain } from "@/types/chain";
+import type { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
   chain?: Chain;

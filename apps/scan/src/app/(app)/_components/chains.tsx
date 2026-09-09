@@ -1,8 +1,7 @@
 import Image from "next/image";
 
-import { CHAIN_ICONS, CHAIN_LABELS } from "@/types/chain";
-
 import { cn } from "@/lib/utils";
+import { CHAIN_ICONS, CHAIN_LABELS } from "@/types/chain";
 
 import type { Chain as ChainType } from "@/types/chain";
 

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
 import {
   formatPricingLabel,
   getBazaarMethod,
@@ -7,16 +9,15 @@ import {
   getResourceAuthMode,
   toBazaarMethod,
 } from "@/app/(app)/_components/resources/utils";
-import { Skeleton } from "@/components/ui/skeleton";
 import { getResourceMetadataDescription } from "@/lib/resource-auth";
 import { serializeAccepts } from "@/lib/token";
 import { cleanExternalText, cn } from "@/lib/utils";
 import { getDescription } from "@/lib/x402";
 import { api } from "@/trpc/server";
 
-import type { RouterOutputs } from "@/trpc/client";
-
 import { CopyRoute } from "./copy-route";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type Resource =
   RouterOutputs["public"]["origins"]["list"]["withResources"][number]["resources"][number];

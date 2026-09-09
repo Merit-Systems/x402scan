@@ -1,17 +1,19 @@
 import { useWalletAccountTransactionSigner } from "@solana/react";
 
-import { useX402FetchWithPriceConfirmation } from "./use-fetch-with-price-confirmation";
+import { env } from "@/env";
 import { fetchWithProxy } from "@/lib/x402/proxy-fetch";
-
 import {
   wrapFetchWithPayment,
   registerSvmX402Client,
 } from "@/lib/x402/wrap-fetch";
-import { env } from "@/env";
+
+import { useX402FetchWithPriceConfirmation } from "./use-fetch-with-price-confirmation";
 
 import type { UseMutationOptions } from "@tanstack/react-query";
-import type { FetchWithPaymentWrapper, X402FetchResponse } from "./types";
+
 import type { UiWalletAccount } from "@wallet-standard/react";
+
+import type { FetchWithPaymentWrapper, X402FetchResponse } from "./types";
 
 interface UseSvmX402FetchWithConfirmationParams {
   targetUrl: string;

@@ -21,9 +21,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-import { ChatItem, LoadingChatItem } from "./item";
-
 import { api } from "@/trpc/client";
+
+import { ChatItem, LoadingChatItem } from "./item";
 
 export const NavChats = () => {
   const router = useRouter();

@@ -1,9 +1,11 @@
 "use client";
 
 import { Check, Copy } from "lucide-react";
+
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 const SETUP_PROMPT = `My API doesn't have a discovery document yet. Create an OpenAPI spec (openapi.json) that describes my endpoints, then serve it so x402scan.com can discover them.

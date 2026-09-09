@@ -1,11 +1,14 @@
-import type { registryRegisterOriginBodySchema } from "@/app/api/x402/_lib/schemas";
-import { jsonResponse } from "@/app/api/x402/_lib/utils";
-import { fetchDiscoveryDocument } from "@/services/discovery";
-import { registerResourcesFromDiscovery } from "@/lib/discovery/register-origin";
-import { contactEmailFields } from "./registry-register";
 import { revalidatePath } from "next/cache";
 
+import { jsonResponse } from "@/app/api/x402/_lib/utils";
+import { registerResourcesFromDiscovery } from "@/lib/discovery/register-origin";
+import { fetchDiscoveryDocument } from "@/services/discovery";
+
+import { contactEmailFields } from "./registry-register";
+
 import type { z } from "zod";
+
+import type { registryRegisterOriginBodySchema } from "@/app/api/x402/_lib/schemas";
 
 export async function handleRegistryRegisterOrigin(
   body: z.infer<typeof registryRegisterOriginBodySchema>

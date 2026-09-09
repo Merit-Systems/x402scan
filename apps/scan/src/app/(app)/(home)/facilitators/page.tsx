@@ -3,6 +3,15 @@ import { Suspense } from "react";
 import { PageHeading } from "@/components/page-heading";
 import { TimeframeSelect } from "@/components/timeframe-select";
 
+import { getChainForPage } from "@/app/(app)/_lib/chain/page";
+import {
+  DEFAULT_FACILITATORS_SORTING,
+  FACILITATORS_SORT_IDS,
+} from "@/lib/table-sort-options";
+import { parseTableSorting } from "@/lib/table-state";
+import { parseUsageTimeframe } from "@/lib/timeframe";
+import { api, HydrateClient } from "@/trpc/server";
+
 import {
   FacilitatorsChart,
   LoadingFacilitatorsChart,
@@ -11,17 +20,6 @@ import {
   FacilitatorsTable,
   LoadingFacilitatorsTable,
 } from "./_components/facilitators";
-
-import { api, HydrateClient } from "@/trpc/server";
-
-import { getChainForPage } from "@/app/(app)/_lib/chain/page";
-
-import { parseTableSorting } from "@/lib/table-state";
-import {
-  DEFAULT_FACILITATORS_SORTING,
-  FACILITATORS_SORT_IDS,
-} from "@/lib/table-sort-options";
-import { parseUsageTimeframe } from "@/lib/timeframe";
 
 import type { Metadata } from "next";
 

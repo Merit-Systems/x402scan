@@ -1,14 +1,15 @@
 import z from "zod";
+
 import { scanDb, Prisma } from "@x402scan/scan-db";
-import {
-  toPaginatedResponse,
-  type PaginatedQueryParams,
-} from "@/lib/pagination";
+
 import {
   createCachedPaginatedQuery,
   createCachedArrayQuery,
   createStandardCacheKey,
 } from "@/lib/cache";
+import { toPaginatedResponse } from "@/lib/pagination";
+
+import type { PaginatedQueryParams } from "@/lib/pagination";
 
 const walletSpendingResultSchema = z.array(
   z.object({

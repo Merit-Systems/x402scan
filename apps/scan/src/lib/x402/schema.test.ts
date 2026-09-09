@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { extractFieldsFromSchema } from "./schema";
+
+import { normalizedAcceptSchema } from "@/lib/x402";
 import { Methods } from "@/types/x402";
-import {
-  normalizedAcceptSchema,
-  type BazaarSchemaInput,
-  type InputSchema,
-} from "@/lib/x402";
+
+import { extractFieldsFromSchema } from "./schema";
+
+import type { BazaarSchemaInput, InputSchema } from "@/lib/x402";
 
 function makeInputSchema(
   overrides: BazaarSchemaInput & { method: string }

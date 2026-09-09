@@ -1,7 +1,28 @@
 import z from "zod";
 
-import { adminProcedure, createTRPCRouter } from "../../trpc";
-
+import {
+  createExcludedResource,
+  createExcludedResourceSchema,
+  getAllExcludedResources,
+  deleteExcludedResourceByResourceId,
+  searchResourcesForExcludes,
+} from "@/services/db/resources/excludes";
+import {
+  createResourceRequestMetadata,
+  createResourceRequestMetadataSchema,
+  updateResourceRequestMetadata,
+  updateResourceRequestMetadataSchema,
+  getAllResourceRequestMetadata,
+  deleteResourceRequestMetadata,
+  searchResourcesForMetadata,
+} from "@/services/db/resources/request-metadata";
+import {
+  getBucketedResourceCreations,
+  getBucketedToolCalls,
+  getBucketedToolCallsByTags,
+  getBucketedToolCallsByResources,
+  resourceBucketedQuerySchema,
+} from "@/services/db/resources/stats";
 import {
   createTag,
   createTagSchema,
@@ -14,30 +35,9 @@ import {
   removeSubTagsFromTag,
   unassignAllSubTags,
 } from "@/services/db/resources/tag";
-import {
-  createResourceRequestMetadata,
-  createResourceRequestMetadataSchema,
-  updateResourceRequestMetadata,
-  updateResourceRequestMetadataSchema,
-  getAllResourceRequestMetadata,
-  deleteResourceRequestMetadata,
-  searchResourcesForMetadata,
-} from "@/services/db/resources/request-metadata";
-import {
-  createExcludedResource,
-  createExcludedResourceSchema,
-  getAllExcludedResources,
-  deleteExcludedResourceByResourceId,
-  searchResourcesForExcludes,
-} from "@/services/db/resources/excludes";
-import {
-  getBucketedResourceCreations,
-  getBucketedToolCalls,
-  getBucketedToolCallsByTags,
-  getBucketedToolCallsByResources,
-  resourceBucketedQuerySchema,
-} from "@/services/db/resources/stats";
 import { searchResourcesCombined } from "@/services/resource-search/combined-search";
+
+import { adminProcedure, createTRPCRouter } from "../../trpc";
 
 const refinementModeSchema = z.enum(["none", "llm", "reranker", "both"]);
 const queryModeSchema = z.enum(["keywords", "sql", "sql-parallel"]);

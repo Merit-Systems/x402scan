@@ -1,6 +1,8 @@
 import { z } from "zod";
-import { createTRPCRouter, adminProcedure } from "../../trpc";
+
 import { listPartners, searchPartners } from "@/services/db/partners";
+
+import { createTRPCRouter, adminProcedure } from "../../trpc";
 
 export const adminPartnersRouter = createTRPCRouter({
   list: adminProcedure.query(async () => {

@@ -1,8 +1,9 @@
+import z from "zod";
+
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
+import { auth } from "@/auth";
 
 import { CreateAgentForm } from "../../_components/new-agent/form";
-import { auth } from "@/auth";
-import z from "zod";
 
 const initialResourceIdsSchema = z
   .union([z.uuid(), z.array(z.uuid())])

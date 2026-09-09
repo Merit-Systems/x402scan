@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useMemo } from "react";
+
 import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
-import { createToolSpendingColumns } from "./columns";
-import { api, type RouterOutputs } from "@/trpc/client";
-import { WalletBreakdownModal } from "../wallet-spending/breakdown-modal";
 import { useToolSpendingSorting } from "@/app/(app)/admin/_contexts/sorting/tool-spending/hook";
+import { api } from "@/trpc/client";
+
+import { WalletBreakdownModal } from "../wallet-spending/breakdown-modal";
+import { createToolSpendingColumns } from "./columns";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type ToolSpending =
   RouterOutputs["admin"]["spending"]["byTool"]["items"][number];

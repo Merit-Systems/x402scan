@@ -9,12 +9,14 @@ import {
   OriginSummaryTrailing,
 } from "@/components/ui/origin-summary";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { cleanExternalText, cn, truncateAtDelimiter } from "@/lib/utils";
 
 import type {
   OriginSummaryNameProps,
   OriginSummaryProps,
 } from "@/components/ui/origin-summary";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type ServiceSummaryItem = Pick<

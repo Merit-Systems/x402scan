@@ -1,8 +1,10 @@
+import { UsageSection } from "@/components/usage-section";
+
+import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
+
+import { LoadingDiscoverServices } from "./_components/discover-origins";
 import { DiscoverHeading } from "./_components/heading";
 import { LoadingOverallStatsContent } from "./_components/stats";
-import { LoadingDiscoverServices } from "./_components/discover-origins";
-import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
-import { UsageSection } from "@/components/usage-section";
 
 export default function LoadingDiscover() {
   return (

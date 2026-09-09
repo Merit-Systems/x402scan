@@ -1,8 +1,9 @@
 "use client";
 
 import { api } from "@/trpc/client";
-import { AgentCard } from "../lib/agent-card";
 import { ActivityTimeframe } from "@/types/timeframes";
+
+import { AgentCard } from "../lib/agent-card";
 
 interface Props {
   userId: string;

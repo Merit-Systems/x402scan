@@ -1,10 +1,11 @@
-import type { registryOriginQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { paginatedResponse } from "@/app/api/x402/_lib/utils";
-import { listResourcesWithPagination } from "@/services/db/resources/resource";
 import { serializeAccepts } from "@/lib/token";
 import { getOriginFromUrl } from "@/lib/url";
+import { listResourcesWithPagination } from "@/services/db/resources/resource";
 
 import type { z } from "zod";
+
+import type { registryOriginQuerySchema } from "@/app/api/x402/_lib/schemas";
 
 export async function handleRegistryOrigin(
   query: z.infer<typeof registryOriginQuerySchema>

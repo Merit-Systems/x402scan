@@ -1,4 +1,5 @@
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
+
 import { LoadingFeedTable } from "./_components/table";
 
 export default function LoadingFeedPage() {

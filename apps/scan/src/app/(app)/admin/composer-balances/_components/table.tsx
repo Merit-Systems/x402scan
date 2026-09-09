@@ -3,10 +3,10 @@
 import { Download, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 
-import { api } from "@/trpc/client";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 import { formatCurrency } from "@/lib/utils";
+import { api } from "@/trpc/client";
 import { CHAIN_LABELS } from "@/types/chain";
 
 import { columns } from "./columns";

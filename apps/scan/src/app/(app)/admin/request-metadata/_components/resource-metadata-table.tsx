@@ -1,13 +1,19 @@
 "use client";
 
+import { Search } from "lucide-react";
+
 import { useMemo, useState } from "react";
-import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
-import { createColumns } from "./columns";
-import { api, type RouterOutputs } from "@/trpc/client";
-import { EditMetadataModal } from "./edit-metadata-modal";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
+import { api } from "@/trpc/client";
+
+import { createColumns } from "./columns";
+import { EditMetadataModal } from "./edit-metadata-modal";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type Resource =
   RouterOutputs["admin"]["resources"]["requestMetadata"]["searchResources"][number];

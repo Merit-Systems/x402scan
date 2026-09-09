@@ -1,9 +1,11 @@
-import { ToolOutput } from "@/components/ai-elements/tool";
-import type { OutputComponent } from "../../types";
-
 import z from "zod";
-import { api } from "@/trpc/client";
+
+import { ToolOutput } from "@/components/ai-elements/tool";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { api } from "@/trpc/client";
+
+import type { OutputComponent } from "../../types";
 
 const createSoraVideoOutputSchema = z.object({
   id: z.string(),

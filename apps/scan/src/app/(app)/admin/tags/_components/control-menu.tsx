@@ -1,7 +1,13 @@
 "use client";
 
+import { MoreVertical } from "lucide-react";
+
 import { useState } from "react";
+
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,10 +15,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { MoreVertical } from "lucide-react";
-import { api, type RouterOutputs } from "@/trpc/client";
-import { toast } from "sonner";
+
+import { api } from "@/trpc/client";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type Resource =
   RouterOutputs["public"]["resources"]["list"]["paginated"]["items"][number];

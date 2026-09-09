@@ -9,11 +9,12 @@ import {
   OriginSummaryTrailing,
 } from "@/components/ui/origin-summary";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { cleanExternalText, truncateAtDelimiter } from "@/lib/utils";
 
-import type { RouterOutputs } from "@/trpc/client";
-
 import { InstallCommand, LoadingInstallCommand } from "./invoke";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type Origin = NonNullable<RouterOutputs["public"]["origins"]["get"]>;
 

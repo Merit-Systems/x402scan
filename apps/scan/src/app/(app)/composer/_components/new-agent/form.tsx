@@ -1,23 +1,25 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { api } from "@/trpc/client";
-
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { steps } from "./steps";
-import { Stepper } from "./stepper";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+
 import { agentConfigurationSchema } from "@/services/db/agent-config/mutate/schema";
+import { api } from "@/trpc/client";
+
+import { Stepper } from "./stepper";
+import { steps } from "./steps";
+
 import type z from "zod";
 
 interface Props {

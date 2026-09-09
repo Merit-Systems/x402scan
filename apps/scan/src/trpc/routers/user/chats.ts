@@ -1,12 +1,11 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
-
 import {
   deleteChat,
   listChats,
   listChatsSchema,
 } from "@/services/db/composer/chat";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
 
 export const userChatsRouter = createTRPCRouter({
   list: protectedProcedure

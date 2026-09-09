@@ -1,3 +1,5 @@
+import { getToolName } from "ai";
+
 import {
   Tool,
   ToolHeader,
@@ -6,15 +8,13 @@ import {
   ToolOutput,
 } from "@/components/ai-elements/tool";
 
-import { resourceComponents } from "./resources";
-import { ToolInvoke } from "./invoke";
-
 import { api } from "@/trpc/client";
 
-import { getToolName } from "ai";
+import { ToolInvoke } from "./invoke";
+import { resourceComponents } from "./resources";
 
-import type { DynamicToolUIPart, ToolUIPart, UIMessage } from "ai";
 import type { UseChatHelpers } from "@ai-sdk/react";
+import type { DynamicToolUIPart, ToolUIPart, UIMessage } from "ai";
 
 interface Props {
   part: ToolUIPart | DynamicToolUIPart;

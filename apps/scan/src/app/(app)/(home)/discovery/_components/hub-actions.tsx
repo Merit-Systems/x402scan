@@ -1,10 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { Check, Copy } from "lucide-react";
+
+import Link from "next/link";
 import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
+
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+
 import { AGENT_PROMPT } from "../_constants/prompts";
 
 export function DiscoveryHubActions() {

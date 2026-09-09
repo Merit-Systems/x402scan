@@ -3,10 +3,11 @@
 import { StatsCardGrid } from "@/components/stats-card-grid";
 import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
 import { UsageSection } from "@/components/usage-section";
+
 import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 import { formatChartTimestamp, formatNumber } from "@/lib/utils";
-import { ActivityTimeframe } from "@/types/timeframes";
 import { api } from "@/trpc/client";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 import type { ChartData } from "@/components/ui/chart";
 

@@ -1,6 +1,7 @@
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
 import { logger } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+
 import { env } from "@/trigger/env";
 
 interface CdpFetchRequest {

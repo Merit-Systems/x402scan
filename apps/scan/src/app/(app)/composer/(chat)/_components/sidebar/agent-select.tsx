@@ -1,11 +1,13 @@
 "use client";
 
-import * as React from "react";
-
-import Link from "next/link";
-import Image from "next/image";
-
 import { BotMessageSquare, ChevronsUpDown, Plus } from "lucide-react";
+
+import * as React from "react";
+import { useState } from "react";
+
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import {
   DropdownMenu,
@@ -22,14 +24,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-
-import { usePathname } from "next/navigation";
-
-import { api } from "@/trpc/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
+import { api } from "@/trpc/client";
 
 export const AgentSelect = () => {
   const { isMobile, setOpenMobile, openMobile } = useSidebar();

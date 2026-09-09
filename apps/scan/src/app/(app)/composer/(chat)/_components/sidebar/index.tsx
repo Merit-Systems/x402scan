@@ -7,17 +7,16 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-import { NavMain } from "./main";
-import { NavChats, UnauthedNavChats } from "./chats";
+import { auth } from "@/auth";
+import { api, HydrateClient } from "@/trpc/server";
+
 import {
   AgentSelect,
   LoadingAgentSelect,
   UnauthedAgentSelect,
 } from "./agent-select";
-
-import { auth } from "@/auth";
-
-import { api, HydrateClient } from "@/trpc/server";
+import { NavChats, UnauthedNavChats } from "./chats";
+import { NavMain } from "./main";
 
 export async function Sidebar({
   ...props

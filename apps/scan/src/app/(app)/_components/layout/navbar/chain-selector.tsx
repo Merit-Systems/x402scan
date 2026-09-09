@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { Globe } from "lucide-react";
 
-import { useChain } from "../../../_contexts/chain/hook";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,8 +13,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
+
 import { CHAIN_ICONS, CHAIN_LABELS, SUPPORTED_CHAINS } from "@/types/chain";
+
+import { useChain } from "../../../_contexts/chain/hook";
 
 import type { Chain } from "@/types/chain";
 

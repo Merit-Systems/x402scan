@@ -1,5 +1,6 @@
 import { PageHeading } from "@/components/page-heading";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { LoadingNetworksChart } from "./_components/chart";
 import { LoadingNetworksTable } from "./_components/networks";
 

@@ -1,12 +1,14 @@
-import { listResourcesUncached } from "@/services/db/resources/resource";
+import { NextResponse } from "next/server";
 
-import { parseX402Response, extractX402Data } from "@/lib/x402";
 import { checkCronSecret } from "@/lib/cron";
-import { NextResponse, type NextRequest } from "next/server";
+import { parseX402Response, extractX402Data } from "@/lib/x402";
+import { listResourcesUncached } from "@/services/db/resources/resource";
 import {
   deleteResourceResponse,
   upsertResourceResponse,
 } from "@/services/db/resources/response";
+
+import type { NextRequest } from "next/server";
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);

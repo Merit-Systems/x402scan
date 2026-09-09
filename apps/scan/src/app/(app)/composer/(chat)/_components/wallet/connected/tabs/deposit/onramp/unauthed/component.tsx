@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-
 import { Loader2, Wallet } from "lucide-react";
+
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 

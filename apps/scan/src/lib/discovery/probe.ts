@@ -3,13 +3,11 @@ import {
   getWarningsForL3,
   validatePaymentRequiredDetailed,
 } from "@agentcash/discovery";
-import type {
-  AuditWarning,
-  CheckEndpointResult,
-  EndpointMethodAdvisory,
-} from "@agentcash/discovery";
 import https from "node:https";
 import { z } from "zod";
+
+import { jsonValueSchema } from "@/lib/json";
+
 import {
   buildMinimalSampleFromInputSchema,
   buildMinimalQueryParamsFromInputSchema,
@@ -17,7 +15,12 @@ import {
   isX402PaymentOption,
   PROBE_TIMEOUT_MS,
 } from "./utils";
-import { jsonValueSchema } from "@/lib/json";
+
+import type {
+  AuditWarning,
+  CheckEndpointResult,
+  EndpointMethodAdvisory,
+} from "@agentcash/discovery";
 
 import type { JsonObject, JsonValue } from "@/lib/json";
 

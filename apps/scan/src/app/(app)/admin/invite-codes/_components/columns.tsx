@@ -9,25 +9,28 @@ import {
   Wallet,
 } from "lucide-react";
 
+import { formatUnits } from "viem";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
+
+import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
 import { formatCompactAgo, formatCurrency } from "@/lib/utils";
-import { formatUnits } from "viem";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type ColumnType = RouterOutputs["admin"]["inviteCodes"]["list"][number];

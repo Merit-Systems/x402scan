@@ -1,11 +1,12 @@
-import { Chain } from "@/app/(app)/_components/chains";
-import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
 import {
   Empty,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+
+import { Chain } from "@/app/(app)/_components/chains";
+import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
 import { CHAIN_LABELS } from "@/types/chain";
 
 export const ConnectInjectedWalletEmpty = () => {

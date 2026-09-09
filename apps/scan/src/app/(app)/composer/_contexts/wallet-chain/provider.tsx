@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { WalletChainContext } from "./context";
 
 import { Chain } from "@/types/chain";
 
+import { WalletChainContext } from "./context";
+
 import type { ConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
+
 import type { SupportedChain } from "@/types/chain";
 
 interface Props {

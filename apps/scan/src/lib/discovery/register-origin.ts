@@ -1,23 +1,25 @@
-import { isOpenApiDeclaredFree } from "./catalog-auth";
-import { probeX402Endpoint } from "./probe";
-import { getCachedProbeResult } from "./probe-cache";
-import { getRegistrationErrorMessage } from "./utils";
+import { notifyNewServer } from "@/lib/discord-notifications";
 import { registerResource, registerFreeResource } from "@/lib/resources";
-import { deprecateStaleResources } from "@/services/db/resources/resource";
+import { getOriginFromUrl, normalizeResourceUrl } from "@/lib/url";
 import {
   getOriginResourceCount,
   upsertOrigin,
 } from "@/services/db/resources/origin";
-import { notifyNewServer } from "@/lib/discord-notifications";
-import { getOriginFromUrl, normalizeResourceUrl } from "@/lib/url";
+import { deprecateStaleResources } from "@/services/db/resources/resource";
 import { scrapeOriginData } from "@/services/scraper";
 
-import type { FreeAuthMode } from "@/lib/resource-auth";
+import { isOpenApiDeclaredFree } from "./catalog-auth";
+import { probeX402Endpoint } from "./probe";
+import { getCachedProbeResult } from "./probe-cache";
+import { getRegistrationErrorMessage } from "./utils";
+
 import type {
   AuditWarning,
   AuthMode,
   EndpointMethodAdvisory,
 } from "@agentcash/discovery";
+
+import type { FreeAuthMode } from "@/lib/resource-auth";
 
 const BULK_REGISTER_CONCURRENCY = 6;
 

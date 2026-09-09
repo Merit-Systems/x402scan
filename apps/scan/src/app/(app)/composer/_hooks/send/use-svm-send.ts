@@ -2,18 +2,18 @@ import { useCallback, useMemo, useState } from "react";
 
 import { toast } from "sonner";
 
+import { solanaAddressSchema } from "@/lib/schemas";
+import { usdc } from "@/lib/tokens/usdc";
+import { Chain } from "@/types/chain";
+
 import { useSPLTokenBalance } from "../balance/token/use-svm-token-balance";
 
 import { useSvmX402Fetch } from "../x402/svm";
 
-import { solanaAddressSchema } from "@/lib/schemas";
-import { usdc } from "@/lib/tokens/usdc";
-
-import { Chain } from "@/types/chain";
-
-import type { Token } from "@/types/token";
-import type { SolanaAddress } from "@/types/address";
 import type { UiWalletAccount } from "@wallet-standard/react";
+
+import type { SolanaAddress } from "@/types/address";
+import type { Token } from "@/types/token";
 
 interface Props {
   account: UiWalletAccount;

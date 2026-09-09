@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 
-import type { DropEvent, DropzoneOptions, FileRejection } from "react-dropzone";
 import type { ReactNode } from "react";
+
+import type { DropEvent, DropzoneOptions, FileRejection } from "react-dropzone";
 
 interface DropzoneContextType {
   src?: File[];

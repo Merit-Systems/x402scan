@@ -1,4 +1,5 @@
 import { partnersDb, Tables } from "@x402scan/partners-db";
+
 import type { PartnerData } from "@x402scan/partners-db";
 
 export const searchPartners = async (

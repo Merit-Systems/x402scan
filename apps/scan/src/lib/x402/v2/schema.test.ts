@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { parseX402Response, isV2Response } from "../index";
 
 import type { JsonValue } from "@/lib/json";

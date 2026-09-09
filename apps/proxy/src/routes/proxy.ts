@@ -1,5 +1,4 @@
 import type { Hono } from "hono";
-
 import type { Context } from "hono";
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([

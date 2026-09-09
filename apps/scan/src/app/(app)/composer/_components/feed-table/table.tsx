@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
+
 import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 
-import { columns } from "./columns";
 import { api } from "@/trpc/client";
-import { useState } from "react";
+
+import { columns } from "./columns";
 
 interface Props {
   limit?: number;

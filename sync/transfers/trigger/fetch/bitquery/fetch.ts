@@ -1,6 +1,8 @@
 import { logger } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+
 import { env } from "@/trigger/env";
+
 import type {
   SyncConfig,
   Facilitator,

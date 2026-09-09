@@ -2,13 +2,14 @@
 
 import { CircleAlert, CircleCheck, ChevronDown, X } from "lucide-react";
 
-import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+
+import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
 
 export interface RegistrationResult {
   registered: number;

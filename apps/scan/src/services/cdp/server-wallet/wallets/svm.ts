@@ -1,4 +1,10 @@
 import {
+  findAssociatedTokenPda,
+  TOKEN_PROGRAM_ADDRESS,
+  getTransferCheckedInstruction,
+  getCreateAssociatedTokenIdempotentInstructionAsync,
+} from "@solana-program/token";
+import {
   address,
   getBase64EncodedWireTransaction,
   getTransactionCodec,
@@ -11,29 +17,24 @@ import {
   setTransactionMessageLifetimeUsingBlockhash,
   address as solanaAddress,
 } from "@solana/kit";
-import {
-  findAssociatedTokenPda,
-  TOKEN_PROGRAM_ADDRESS,
-  getTransferCheckedInstruction,
-  getCreateAssociatedTokenIdempotentInstructionAsync,
-} from "@solana-program/token";
+import { getCompiledTransactionMessageDecoder } from "@solana/transaction-messages";
 import {
   assertIsTransactionWithinSizeLimit,
   compileTransaction,
   getTransactionLifetimeConstraintFromCompiledTransactionMessage,
 } from "@solana/transactions";
-import { getCompiledTransactionMessageDecoder } from "@solana/transaction-messages";
 
-import { cdpClient } from "../client";
-
-import { getSolanaTokenBalance } from "@/services/solana/balance";
-import { solanaRpc } from "@/services/rpc/solana";
 import { solanaAddressSchema } from "@/lib/schemas";
+import { solanaRpc } from "@/services/rpc/solana";
+import { getSolanaTokenBalance } from "@/services/solana/balance";
 
 import { cdpResultFromPromise } from "../../result";
+import { cdpClient } from "../client";
+
+import type { TransactionModifyingSigner } from "@solana/kit";
 
 import type { Chain } from "@/types/chain";
-import type { TransactionModifyingSigner } from "@solana/kit";
+
 import type { NetworkServerWallet } from "./types";
 
 export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (

@@ -1,20 +1,20 @@
+import { MoreHorizontal, Trash } from "lucide-react";
+
 import React, { memo } from "react";
 
 import Link from "next/link";
 
-import { MoreHorizontal, Trash } from "lucide-react";
-
-import {
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import {
+  SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import type { RouterOutputs } from "@/trpc/client";

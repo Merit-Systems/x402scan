@@ -1,5 +1,5 @@
-import { Network } from "../types";
 import { USDC_BASE_TOKEN } from "../constants";
+import { Network } from "../types";
 
 import type {
   Facilitator,

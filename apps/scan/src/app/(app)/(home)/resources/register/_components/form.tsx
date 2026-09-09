@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-
-import { usePostHog } from "posthog-js/react";
 import {
   Check,
   ChevronDown,
@@ -13,6 +10,13 @@ import {
   TriangleAlert,
   X,
 } from "lucide-react";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import Link from "next/link";
+import { usePostHog } from "posthog-js/react";
+import { toast } from "sonner";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,8 +31,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
   InputGroup,
   InputGroupAddon,
@@ -41,22 +45,21 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { useDiscovery } from "@/app/(app)/(home)/resources/register/_components/use-discovery";
+
 import { DiscoveryActions } from "@/app/(app)/(home)/resources/register/_components/discovery-actions";
 import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
 import { RegistrationResult } from "@/app/(app)/(home)/resources/register/_components/registration-result";
-import { useDiscovery } from "@/app/(app)/(home)/resources/register/_components/use-discovery";
 import { Favicon } from "@/app/(app)/_components/favicon";
 import {
   isOpenApiDeclaredFree,
   isRegistrableEndpoint,
 } from "@/lib/discovery/catalog-auth";
-import { normalizeUrl } from "@/lib/url";
 import { resourceKey } from "@/lib/resource-key";
+import { normalizeUrl } from "@/lib/url";
 import { api } from "@/trpc/client";
+
 import type { DiscoveredResource } from "@/types/discovery";
-import Link from "next/link";
-import { toast } from "sonner";
-import { z } from "zod";
 
 const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can verify ownership of my origin, let users contact me, and customize my merchant pages on Poncho.
 

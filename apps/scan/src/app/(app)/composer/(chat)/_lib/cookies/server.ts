@@ -1,11 +1,9 @@
 import { cookies } from "next/headers";
 
+import { selectedResourcesSchema } from "../../../_types/chat-config";
 import { COOKIE_KEYS } from "./keys";
 
-import {
-  selectedResourcesSchema,
-  type ChatConfig,
-} from "../../../_types/chat-config";
+import type { ChatConfig } from "../../../_types/chat-config";
 
 function parseResources(value: string | undefined): ChatConfig["resources"] {
   if (!value) return [];

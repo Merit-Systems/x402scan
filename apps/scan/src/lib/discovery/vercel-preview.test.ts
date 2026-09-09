@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
+
 import { isVercelHost, isVercelPreviewDeployment } from "./vercel-preview";
 
 describe("isVercelHost", () => {

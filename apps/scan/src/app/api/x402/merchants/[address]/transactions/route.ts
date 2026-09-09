@@ -1,7 +1,7 @@
-import { router, withCors, OPTIONS } from "@/lib/router";
+import { handleMerchantTransactions } from "@/app/api/x402/_handlers/merchant-transactions";
 import { merchantTransactionsQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { extractPathSegment } from "@/app/api/x402/_lib/utils";
-import { handleMerchantTransactions } from "@/app/api/x402/_handlers/merchant-transactions";
+import { router, withCors, OPTIONS } from "@/lib/router";
 
 export { OPTIONS };
 

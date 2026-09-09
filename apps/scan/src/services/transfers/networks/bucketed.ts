@@ -1,11 +1,13 @@
 import z from "zod";
+
 import { Prisma } from "@x402scan/scan-db";
 
-import { baseBucketedQuerySchema } from "../schemas";
 import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
 import { Chain } from "@/types/chain";
-import { getMaterializedViewSuffix } from "@/lib/time-range";
+
+import { baseBucketedQuerySchema } from "../schemas";
 
 export const bucketedNetworksStatisticsInputSchema = baseBucketedQuerySchema;
 

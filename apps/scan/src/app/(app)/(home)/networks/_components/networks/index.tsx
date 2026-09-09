@@ -1,12 +1,13 @@
 "use client";
 
-import { api } from "@/trpc/client";
-
 import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 
-import { columns } from "./columns";
 import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
+
 import { NETWORKS_SORT_IDS } from "@/lib/table-sort-options";
+import { api } from "@/trpc/client";
+
+import { columns } from "./columns";
 
 import type { NetworksSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";

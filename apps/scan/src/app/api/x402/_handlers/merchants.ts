@@ -1,8 +1,9 @@
-import type { merchantsListQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { paginatedResponse, asChain } from "@/app/api/x402/_lib/utils";
 import { listTopSellersMV } from "@/services/transfers/sellers/list-mv";
 
 import type { z } from "zod";
+
+import type { merchantsListQuerySchema } from "@/app/api/x402/_lib/schemas";
 
 const SORT_MAP = {
   volume: "total_amount",

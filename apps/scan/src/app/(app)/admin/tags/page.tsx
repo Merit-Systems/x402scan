@@ -1,13 +1,15 @@
+import { forbidden } from "next/navigation";
+
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
-import { ResourceTable } from "./_components/resource-table";
-import { ResourceCharts } from "./_components/resource-charts";
 import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
 import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
-import { ResourcesSortingProvider } from "@/app/(app)/admin/_contexts/sorting/resource-tags/provider";
 import { defaultResourcesSorting } from "@/app/(app)/admin/_contexts/sorting/resource-tags/default";
-import { ActivityTimeframe } from "@/types/timeframes";
+import { ResourcesSortingProvider } from "@/app/(app)/admin/_contexts/sorting/resource-tags/provider";
 import { auth } from "@/auth";
-import { forbidden } from "next/navigation";
+import { ActivityTimeframe } from "@/types/timeframes";
+
+import { ResourceCharts } from "./_components/resource-charts";
+import { ResourceTable } from "./_components/resource-table";
 
 export default async function ResourcesPage() {
   const session = await auth();

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
 import { Search } from "lucide-react";
-import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
+
+import { useState, useMemo, useCallback } from "react";
+
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -11,9 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createColumns } from "./columns";
-import { api } from "@/trpc/client";
+
 import { useDebounce } from "@/hooks/use-debounce";
+
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
+import { api } from "@/trpc/client";
+
+import { createColumns } from "./columns";
 
 const PAGE_SIZE = 25;
 

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { TagFilter } from "./tag-filter";
+
 import { ResourceCreationsChart } from "./resource-creations-chart";
 import { ResourceToolCallsChart } from "./resource-tool-calls-chart";
 import { ResourceToolCallsSummary } from "./resource-tool-calls-summary";
+import { TagFilter } from "./tag-filter";
 
 export const ResourceCharts = () => {
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);

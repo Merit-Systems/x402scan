@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
+
 import { outputSchemaV1 } from "@/lib/x402/v1";
+
 import { convertOpenApiSchemaToV1 } from "./openapi-to-v1";
 
 function requireDefined<T>(value: T | undefined): T {

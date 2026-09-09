@@ -2,8 +2,6 @@
 
 import { useSession } from "next-auth/react";
 
-import { Skeleton } from "@/components/ui/skeleton";
-
 import {
   PromptInput,
   PromptInputFooter,
@@ -11,14 +9,16 @@ import {
   PromptInputTextarea,
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
-
-import type { PromptInputProps } from "@/components/ai-elements/prompt-input";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { ModelSelect } from "./model-select";
 import { ResourcesSelect } from "./resources-select";
 import { WalletButton } from "./wallet";
 
 import type { ChatStatus } from "ai";
+
+import type { PromptInputProps } from "@/components/ai-elements/prompt-input";
+
 import type { SelectedResource } from "../../../../_types/chat-config";
 import type { LanguageModel } from "../../../_lib/language-models/types";
 

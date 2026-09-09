@@ -1,7 +1,9 @@
+// oxfmt-ignore
 import "dotenv/config";
-import { Hono } from "hono";
 import { serve } from "@hono/node-server";
+import { Hono } from "hono";
 import { cors } from "hono/cors";
+
 import { env } from "./env.js";
 import { registerProxyRouter } from "./routes/proxy.js";
 

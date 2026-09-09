@@ -1,12 +1,12 @@
 import { discoverOriginSchema } from "@agentcash/discovery";
 
 import { endpointDescription } from "@/lib/discovery/endpoint-description";
-import { getOriginFromUrl } from "@/lib/url";
-import { isLocalUrl, isTunnelUrl } from "@/lib/url-helpers";
 import {
   isVercelPreviewDeployment,
   VERCEL_PREVIEW_ERROR_MESSAGE,
 } from "@/lib/discovery/vercel-preview";
+import { getOriginFromUrl } from "@/lib/url";
+import { isLocalUrl, isTunnelUrl } from "@/lib/url-helpers";
 
 import type {
   DiscoveredResource,

@@ -1,3 +1,5 @@
+import { logger, schedules } from "@trigger.dev/sdk/v3";
+
 import {
   advanceTransferSyncState,
   createManyTransferEvents,
@@ -7,12 +9,13 @@ import {
   getTransferSyncState,
   markTransferSyncStateStarted,
   recordTransferSyncStateError,
-  type TransferSyncStateKey,
 } from "@/db/services";
-import { logger, schedules } from "@trigger.dev/sdk/v3";
-import { Network, PaginationStrategy, QueryProvider } from "./types";
+
 import { fetchTransfers } from "./fetch/fetch";
 import { collapseTransferChains } from "./lib/collapse";
+import { Network, PaginationStrategy, QueryProvider } from "./types";
+
+import type { TransferSyncStateKey } from "@/db/services";
 
 import type { Facilitator, FacilitatorConfig, SyncConfig } from "./types";
 

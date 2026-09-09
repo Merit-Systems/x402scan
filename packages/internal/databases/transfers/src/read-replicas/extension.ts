@@ -1,13 +1,13 @@
 /* oxlint-disable -- vendored Prisma read-replica extension code */
 
 import { Prisma } from "../../generated/prisma/client";
-import type { PrismaClient } from "../../generated/prisma/client";
-
 import {
   type ConfigureReplicaCallback,
   ReplicaManager,
   type ReplicaManagerOptions,
 } from "./replica-manager";
+
+import type { PrismaClient } from "../../generated/prisma/client";
 
 type ReplicasOptions =
   | {

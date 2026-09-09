@@ -1,13 +1,16 @@
 "use client";
 
 import { BookIcon, ChevronDownIcon } from "lucide-react";
-import type { ComponentProps } from "react";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+
 import { cn } from "@/lib/utils";
+
+import type { ComponentProps } from "react";
 
 const Sources = ({ className, ...props }: ComponentProps<"div">) => (
   <Collapsible className={cn("mb-4", className)} {...props} />

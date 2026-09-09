@@ -1,13 +1,12 @@
 import { useCallback } from "react";
 
+import { toast } from "sonner";
 import { useConnect } from "wagmi";
 import { base } from "wagmi/chains";
 
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 import { ConnectInjectedWalletButton } from "./button";
-
-import { cn } from "@/lib/utils";
 
 import type { Connector } from "wagmi";
 

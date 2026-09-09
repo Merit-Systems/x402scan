@@ -1,6 +1,6 @@
+import { supportedChainSchema } from "./schemas";
 import { usdc } from "./tokens/usdc";
 import { formatCurrency } from "./utils";
-import { supportedChainSchema } from "./schemas";
 
 export const convertTokenAmount = (amount: bigint, decimals = 6) => {
   // Convert to string, then use string manipulation to preserve precision

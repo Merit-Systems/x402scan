@@ -1,10 +1,9 @@
 import { notFound } from "next/navigation";
 
-import { Chat } from "../_components/chat";
-
+import { auth } from "@/auth";
 import { api } from "@/trpc/server";
 
-import { auth } from "@/auth";
+import { Chat } from "../_components/chat";
 
 export default async function ChatPage({
   params,

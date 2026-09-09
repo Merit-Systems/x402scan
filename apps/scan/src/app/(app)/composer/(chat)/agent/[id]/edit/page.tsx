@@ -1,10 +1,11 @@
+import { notFound, unauthorized } from "next/navigation";
+
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { auth } from "@/auth";
 import { api } from "@/trpc/server";
 
-import { notFound, unauthorized } from "next/navigation";
-import { EditAgentForm } from "./_components/edit-form";
 import { DeleteAgentButton } from "./_components/delete";
+import { EditAgentForm } from "./_components/edit-form";
 
 export default async function EditAgentPage({
   params,

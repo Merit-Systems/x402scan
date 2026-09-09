@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
+
 import { format } from "date-fns";
+
 import {
   Card,
   CardContent,
@@ -10,10 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BarChart, LoadingBarChart } from "@/components/ui/chart";
-import type { ChartData } from "@/components/ui/chart";
-import { api } from "@/trpc/client";
+
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { api } from "@/trpc/client";
 import { ActivityTimeframe } from "@/types/timeframes";
+
+import type { ChartData } from "@/components/ui/chart";
 
 type ResourceKey = `${string}-tool_calls`;
 

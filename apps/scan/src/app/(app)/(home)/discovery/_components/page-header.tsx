@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-
 import { Typeset, TypesetLead } from "@/components/ui/typeset";
+
+import type { ReactNode } from "react";
 
 export function DiscoveryPageHeader({
   title,

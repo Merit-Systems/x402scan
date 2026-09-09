@@ -1,13 +1,12 @@
+import { Calendar, MessagesSquare, Users, Wrench } from "lucide-react";
+
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { cn, formatCompactAgo } from "@/lib/utils";
+
+import type { LucideIcon } from "lucide-react";
+
 import type { RouterOutputs } from "@/trpc/client";
-import {
-  Calendar,
-  MessagesSquare,
-  Users,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
 
 type Config = NonNullable<RouterOutputs["public"]["agents"]["get"]>;
 

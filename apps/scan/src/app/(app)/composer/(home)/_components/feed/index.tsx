@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
-
 import {
   FeedTableContent,
   LoadingFeedTableContent,

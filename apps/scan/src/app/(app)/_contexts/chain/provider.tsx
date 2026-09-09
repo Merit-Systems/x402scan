@@ -1,15 +1,18 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { ChainContext } from "./context";
 
-import type { Chain } from "@/types/chain";
 import { useSearchParams } from "next/navigation";
+
 import { parseChain } from "@/app/(app)/_lib/chain/parse";
+
+import { ChainContext } from "./context";
 import {
   getDataChainCookieClient,
   setDataChainCookieClient,
 } from "./cookies/client";
+
+import type { Chain } from "@/types/chain";
 
 interface Props {
   children: React.ReactNode;

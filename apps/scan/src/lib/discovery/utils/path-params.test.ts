@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { hasPathParameters } from "./path-params";
 
 describe("hasPathParameters", () => {

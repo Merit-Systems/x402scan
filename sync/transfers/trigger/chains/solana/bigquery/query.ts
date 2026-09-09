@@ -1,3 +1,10 @@
+import { getAccount } from "@solana/spl-token";
+import { Connection, PublicKey } from "@solana/web3.js";
+import Bottleneck from "bottleneck";
+
+import { env } from "@/trigger/env";
+import { USDC_MULTIPLIER, USDC_SOLANA } from "@/trigger/lib/constants";
+
 import type {
   SyncConfig,
   Facilitator,
@@ -5,11 +12,6 @@ import type {
   BigQueryTransferRow,
   FacilitatorConfig,
 } from "@/trigger/types";
-import { USDC_MULTIPLIER, USDC_SOLANA } from "@/trigger/lib/constants";
-import { getAccount } from "@solana/spl-token";
-import { Connection, PublicKey } from "@solana/web3.js";
-import Bottleneck from "bottleneck";
-import { env } from "@/trigger/env";
 
 export function buildQuery(
   config: SyncConfig,

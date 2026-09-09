@@ -1,18 +1,18 @@
 import { useWalletClient } from "wagmi";
 
-import { useX402Fetch } from "./use-fetch";
-
 import {
   x402Client,
   wrapFetchWithPayment,
   registerExactEvmScheme,
   toEvmSigner,
 } from "@/lib/x402/wrap-fetch";
-
 import { CHAIN_ID } from "@/types/chain";
 
-import type { FetchWithPaymentWrapper, UseEvmX402FetchParams } from "./types";
+import { useX402Fetch } from "./use-fetch";
+
 import type { Chain } from "@/types/chain";
+
+import type { FetchWithPaymentWrapper, UseEvmX402FetchParams } from "./types";
 
 export const useEvmPaymentWrapper = (chain: Chain) => {
   const { data: walletClient } = useWalletClient({

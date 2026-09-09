@@ -9,7 +9,9 @@ import { SolanaWalletContext } from "./context";
 import { solanaWalletCookies } from "./cookies";
 
 import type { ReactNode } from "react";
+
 import type { UiWallet, UiWalletAccount } from "@wallet-standard/react";
+
 import type { ConnectedSolanaWallet } from "./context";
 import type { SolanaWalletCookie } from "./cookies";
 

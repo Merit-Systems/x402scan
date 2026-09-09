@@ -1,16 +1,16 @@
-import { useState } from "react";
-
 import { Mail } from "lucide-react";
+
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-import { ConnectEVMInjectedWalletForm } from "./injected/form/evm";
-import { ConnectSVMInjectedWalletForm } from "./injected/form/svm";
+import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
+import { Chain } from "@/types/chain";
 
 import { ConnectEmbeddedWalletEmail } from "./embedded/email";
 import { ConnectEmbeddedWalletOAuth } from "./embedded/oauth";
-import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
-import { Chain } from "@/types/chain";
+import { ConnectEVMInjectedWalletForm } from "./injected/form/evm";
+import { ConnectSVMInjectedWalletForm } from "./injected/form/svm";
 
 export const ConnectWalletForm = () => {
   const { chain } = useWalletChain();

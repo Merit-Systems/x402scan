@@ -1,8 +1,8 @@
 import { Body } from "@/app/(app)/_components/deferred/page-utils";
 
+import { LoadingActivity } from "./_components/activity";
 import { LoadingHeaderCard } from "./_components/header";
 import { LoadingTools } from "./_components/tools";
-import { LoadingActivity } from "./_components/activity";
 
 export default function LoadingAgentPage() {
   return (

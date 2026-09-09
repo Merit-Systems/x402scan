@@ -1,13 +1,10 @@
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import z from "zod";
 
-import { initTRPC, TRPCError } from "@trpc/server";
-
 import { auth } from "@/auth";
-
-import { paginatedQuerySchema } from "@/lib/pagination";
-
 import { env } from "@/env";
+import { paginatedQuerySchema } from "@/lib/pagination";
 
 import type { Session } from "next-auth";
 

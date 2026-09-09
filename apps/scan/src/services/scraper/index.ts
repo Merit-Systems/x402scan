@@ -1,8 +1,10 @@
 import { scrapeFavicon } from "@agentcash/discovery";
-import type { OgObject } from "open-graph-scraper/types";
+
 import { fetchHtml } from "./html";
 import { parseMetadataFromHtml } from "./metadata";
 import { parseOgFromHtml } from "./og";
+
+import type { OgObject } from "open-graph-scraper/types";
 
 /**
  * Parses OG and metadata from an HTML string

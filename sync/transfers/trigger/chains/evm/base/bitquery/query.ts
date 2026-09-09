@@ -1,5 +1,7 @@
-import { TRANSFER_TOPIC } from "@/trigger/lib/constants";
 import { logger } from "@trigger.dev/sdk/v3";
+
+import { TRANSFER_TOPIC } from "@/trigger/lib/constants";
+
 import type {
   EvmBitQueryEventRow,
   EvmBitqueryEventsResponse,

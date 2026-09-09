@@ -5,11 +5,12 @@ import {
   LoadingUsageBarChart,
   UsageBarChart,
 } from "@/components/usage-bar-chart";
-import type { UsageChartValues } from "@/components/usage-bar-chart";
-import type { ChartData } from "@/components/ui/chart";
-import { facilitators } from "@/lib/facilitators";
 
+import { facilitators } from "@/lib/facilitators";
 import { api } from "@/trpc/client";
+
+import type { ChartData } from "@/components/ui/chart";
+import type { UsageChartValues } from "@/components/usage-bar-chart";
 
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";

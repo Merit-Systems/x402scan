@@ -1,21 +1,20 @@
-import { after, NextResponse, type NextRequest } from "next/server";
-
 import { isToolUIPart } from "ai";
-
+import { after, NextResponse } from "next/server";
 import z from "zod";
 
-import { createToolCall } from "@/services/db/composer/tool-call";
-import { listResourcesForTools } from "@/services/db/resources/resource";
-import { getChat, updateChat } from "@/services/db/composer/chat";
-
 import { auth } from "@/auth";
-
 import { jsonValueSchema } from "@/lib/json";
 import { messageSchema } from "@/lib/message-schema";
+import { supportedChainSchema } from "@/lib/schemas";
 import { coerceAcceptForV1Schema, normalizedAcceptSchema } from "@/lib/x402";
 import { fetchWithProxy } from "@/lib/x402/proxy-fetch";
-import { supportedChainSchema } from "@/lib/schemas";
+import { getChat, updateChat } from "@/services/db/composer/chat";
+import { createToolCall } from "@/services/db/composer/tool-call";
+import { listResourcesForTools } from "@/services/db/resources/resource";
+
 import { parseStoredJson } from "../_lib/parse-stored-json";
+
+import type { NextRequest } from "next/server";
 
 const bodySchema = z.object({
   resourceId: z.string(),

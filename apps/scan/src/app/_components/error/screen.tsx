@@ -1,6 +1,6 @@
-import { ForbiddenCard, NotFoundCard } from "./card";
-
 import { cn } from "@/lib/utils";
+
+import { ForbiddenCard, NotFoundCard } from "./card";
 
 import type { ErrorComponentProps } from "./types";
 

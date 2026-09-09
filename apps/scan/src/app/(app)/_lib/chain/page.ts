@@ -1,6 +1,6 @@
-import { parseChain } from "./parse";
-
 import { getDataChainCookieServer } from "@/app/(app)/_contexts/chain/cookies/server";
+
+import { parseChain } from "./parse";
 
 import type { Chain } from "@/types/chain";
 

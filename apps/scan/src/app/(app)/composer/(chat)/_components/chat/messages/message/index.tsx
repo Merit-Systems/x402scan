@@ -2,22 +2,21 @@
 
 import { isToolUIPart } from "ai";
 
-import { Skeleton } from "@/components/ui/skeleton";
-
 import {
   Message as BaseMessage,
   MessageContent,
 } from "@/components/ai-elements/message";
-
-import { SourcesParts } from "./parts/sources";
-import { ToolPart } from "./parts/tool";
-import { ReasoningPart } from "./parts/reasoning";
-import { TextPart } from "./parts/text";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { cn } from "@/lib/utils";
 
-import type { UIMessage, ChatStatus } from "ai";
+import { ReasoningPart } from "./parts/reasoning";
+import { SourcesParts } from "./parts/sources";
+import { TextPart } from "./parts/text";
+import { ToolPart } from "./parts/tool";
+
 import type { UseChatHelpers } from "@ai-sdk/react";
+import type { UIMessage, ChatStatus } from "ai";
 
 interface Props {
   message: UIMessage;

@@ -1,14 +1,14 @@
-import { z } from "zod";
+import { NextResponse } from "next/server";
 import { v4 } from "uuid";
+import { z } from "zod";
 
 import { scanDb } from "@x402scan/scan-db";
 
-import { NextResponse, type NextRequest } from "next/server";
-
-import { labelingPass } from "@/services/labeling/initial-label";
-import { iterateResourcesBatched } from "@/services/labeling/helpers";
-
 import { checkCronSecret } from "@/lib/cron";
+import { iterateResourcesBatched } from "@/services/labeling/helpers";
+import { labelingPass } from "@/services/labeling/initial-label";
+
+import type { NextRequest } from "next/server";
 
 import type { Prisma } from "@x402scan/scan-db";
 

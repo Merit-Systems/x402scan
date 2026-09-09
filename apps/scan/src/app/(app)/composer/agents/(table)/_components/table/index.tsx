@@ -4,12 +4,10 @@ import {
   AgentsTable as AgentsTableComponent,
   LoadingAgentsTable,
 } from "@/app/(app)/composer/agents/(table)/_components/table/table";
-
 import { api, HydrateClient } from "@/trpc/server";
 
 import type { AgentSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
-
 import type { RouterInputs } from "@/trpc/client";
 
 interface Props {

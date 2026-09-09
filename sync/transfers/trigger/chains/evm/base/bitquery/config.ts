@@ -1,8 +1,10 @@
-import { FACILITATORS_BY_CHAIN } from "@/trigger/lib/facilitators";
 import { ONE_MINUTE_IN_SECONDS } from "@/trigger/lib/constants";
-import type { SyncConfig } from "@/trigger/types";
+import { FACILITATORS_BY_CHAIN } from "@/trigger/lib/facilitators";
 import { Network, PaginationStrategy, QueryProvider } from "@/trigger/types";
+
 import { buildQuery, transformResponse } from "./query";
+
+import type { SyncConfig } from "@/trigger/types";
 
 const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 const DEFAULT_CUTOVER_AT = "2026-06-09T18:00:00.000Z"; // switch from CDP to Bitquery

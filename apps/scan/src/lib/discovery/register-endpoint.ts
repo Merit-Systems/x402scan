@@ -1,7 +1,8 @@
-import { probeX402Endpoint } from "./probe";
 import { registerResource } from "@/lib/resources";
-import { discoverSiblingResources } from "./discover-siblings";
 import { isTunnelUrl } from "@/lib/url-helpers";
+
+import { discoverSiblingResources } from "./discover-siblings";
+import { probeX402Endpoint } from "./probe";
 
 /**
  * Single orchestrator for registering a single x402 resource.

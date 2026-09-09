@@ -1,11 +1,13 @@
 import { randomUUID } from "crypto";
 import { z } from "zod";
+
+import { jsonObjectSchema } from "@/lib/json";
+import { getRedisClient } from "@/lib/redis";
+
 import type {
   AuditWarning,
   EndpointMethodAdvisory,
 } from "@agentcash/discovery";
-import { jsonObjectSchema } from "@/lib/json";
-import { getRedisClient } from "@/lib/redis";
 
 /**
  * Server-side probe session cache.

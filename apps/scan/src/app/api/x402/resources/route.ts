@@ -1,6 +1,6 @@
-import { router, withCors, OPTIONS } from "@/lib/router";
-import { resourcesListQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { handleResources } from "@/app/api/x402/_handlers/resources";
+import { resourcesListQuerySchema } from "@/app/api/x402/_lib/schemas";
+import { router, withCors, OPTIONS } from "@/lib/router";
 
 export { OPTIONS };
 

@@ -3,10 +3,12 @@
 import { Globe, Hash, DollarSign, Wallet, Clock } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
 import { ToolSpendingSortingContext } from "@/app/(app)/admin/_contexts/sorting/tool-spending/context";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type ToolSpending =

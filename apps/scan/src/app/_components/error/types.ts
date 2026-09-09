@@ -1,5 +1,6 @@
-import type { NextErrorProps } from "@/types/next-error";
 import type { LucideIcon } from "lucide-react";
+
+import type { NextErrorProps } from "@/types/next-error";
 
 export interface ErrorComponentProps {
   errorProps?: NextErrorProps;

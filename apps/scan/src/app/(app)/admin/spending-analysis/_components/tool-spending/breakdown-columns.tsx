@@ -2,9 +2,11 @@ import { Globe, Hash, DollarSign } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 
-import type { DataTableColumnDef } from "@/components/ui/data-table";
-import type { RouterOutputs } from "@/trpc/client";
 import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
+
+import type { DataTableColumnDef } from "@/components/ui/data-table";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type ToolBreakdown =
   RouterOutputs["admin"]["spending"]["toolBreakdown"][number];
