@@ -2,10 +2,12 @@
 
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+
 import { cn } from "@/lib/utils";
 
-import type { ChartData, ChartTooltipRow, ChartValues } from "./types";
 import type { ReactNode } from "react";
+
+import type { ChartData, ChartTooltipRow, ChartValues } from "./types";
 
 interface ChartTooltipContentProps<T extends ChartValues> {
   data: ChartData<T>;

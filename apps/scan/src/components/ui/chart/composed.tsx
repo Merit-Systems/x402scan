@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+
 import { Area, Bar, Line } from "recharts";
 
 import { BaseChart } from "./chart";

@@ -1,12 +1,16 @@
 "use client";
 
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import { cn } from "@/lib/utils";
+
 import { AreaChart, LoadingAreaChart } from "./chart/area";
 import { BarChart, LoadingBarChart } from "./chart/bar";
 import { ComposedChart, LoadingComposedChart } from "./chart/composed";
 import { LineChart, LoadingLineChart } from "./chart/line";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+
+import type { ReactNode } from "react";
 
 import type {
   BaseChartProps,
@@ -15,7 +19,6 @@ import type {
   ChartItems,
   ChartValues,
 } from "./chart/types";
-import type { ReactNode } from "react";
 
 type StatsCardProps<T extends ChartValues> = Pick<
   BaseChartProps<T>,

@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type {
   AreaProps as RechartsAreaProps,
   BarProps as RechartsBarProps,
@@ -5,8 +7,6 @@ import type {
   LineProps as RechartsLineProps,
 } from "recharts";
 import type { AxisDomain } from "recharts/types/util/types";
-
-import type { ReactNode } from "react";
 
 type ChartValues = object;
 
