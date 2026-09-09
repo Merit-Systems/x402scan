@@ -1,10 +1,14 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 
 import { OriginAvatar } from "@/components/ui/origin-avatar";
+
 import { cn } from "@/lib/utils";
 
-import type { OriginAvatarProps } from "@/components/ui/origin-avatar";
 import type { ComponentProps, ReactNode } from "react";
+
+import type { VariantProps } from "class-variance-authority";
+
+import type { OriginAvatarProps } from "@/components/ui/origin-avatar";
 
 const originSummaryVariants = cva(
   "grid w-full min-w-0 max-w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3",

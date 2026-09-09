@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { GlobeIcon } from "lucide-react";
+
+import { useMemo, useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
