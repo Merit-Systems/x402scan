@@ -24,7 +24,7 @@ export function QuickstartPromptCard() {
       onClick={() => setExpanded(!expanded)}
     >
       <div className="flex items-center justify-between gap-4 p-4">
-        <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+        <div className="type-supporting-body flex items-center gap-2.5 text-muted-foreground">
           <Terminal className="size-4 shrink-0" />
           <span>Paste into Claude Code, Cursor, or Codex.</span>
           <ChevronRight
@@ -52,7 +52,7 @@ export function QuickstartPromptCard() {
       </div>
 
       {expanded && (
-        <div className="border-t bg-muted/50 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+        <div className="type-supporting-body border-t bg-muted/50 px-4 py-3 text-muted-foreground">
           {AGENT_PROMPT}
         </div>
       )}

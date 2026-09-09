@@ -1,6 +1,6 @@
 import { DocumentationPage } from "@/components/documentation-page";
 
-export default function DiscoveryLayout({
+export default function AgenticCommerceLayout({
   children,
 }: {
   children: React.ReactNode;

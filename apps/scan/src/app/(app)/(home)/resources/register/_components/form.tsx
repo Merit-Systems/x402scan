@@ -28,6 +28,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Field, FieldLabel } from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import {
   Tooltip,
   TooltipContent,
@@ -347,12 +353,14 @@ export const RegisterResourceForm = () => {
     <div className="space-y-6">
       {/* Input */}
       <div className="space-y-3">
-        <div className="space-y-1.5">
-          <div className="flex h-12 items-center rounded-md border bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-            <span className="pl-3 text-base text-muted-foreground select-none">
-              https://
-            </span>
-            <input
+        <Field>
+          <FieldLabel className="sr-only" htmlFor="server-url">
+            Server URL
+          </FieldLabel>
+          <InputGroup size="xl">
+            <InputGroupAddon>https://</InputGroupAddon>
+            <InputGroupInput
+              id="server-url"
               type="text"
               placeholder="api.example.com"
               value={url.replace(/^https?:\/\//, "")}
@@ -362,16 +370,15 @@ export const RegisterResourceForm = () => {
                 const raw = value.replace(/^https?:\/\//, "");
                 handleUrlChange(`https://${raw}`);
               }}
-              className="h-full flex-1 bg-transparent px-1 text-base outline-none placeholder:text-muted-foreground/50"
             />
-          </div>
+          </InputGroup>
           {httpWarning && (
-            <p className="flex items-center gap-1.5 text-xs text-yellow-600 dark:text-yellow-500">
+            <p className="flex items-center gap-1.5 type-caption text-warning">
               <TriangleAlert className="size-3 shrink-0" />
               x402 requires HTTPS. We&apos;ve upgraded your URL automatically.
             </p>
           )}
-        </div>
+        </Field>
 
         {/* Primary action */}
         {hasDiscoveryResources ? (
@@ -466,13 +473,13 @@ export const RegisterResourceForm = () => {
           return (
             <div className="space-y-4">
               {showInvalidDomain && (
-                <p className="text-sm text-red-600">
+                <p className="type-supporting-body text-destructive">
                   Enter a valid domain (e.g. example.com).
                 </p>
               )}
 
               {!showInvalidDomain && isValidUrl && isDiscoveryLoading && (
-                <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
+                <div className="type-supporting-body flex items-center gap-2 py-2 text-muted-foreground">
                   <Loader2 className="size-4 animate-spin" />
                   Checking for discoverable endpoints...
                 </div>
@@ -501,8 +508,8 @@ export const RegisterResourceForm = () => {
                 !isDiscoveryLoading &&
                 !hasDiscoveryResources &&
                 isOriginOnly && (
-                  <div className="space-y-1 text-sm">
-                    <p className="text-red-600">
+                  <div className="type-supporting-body space-y-1">
+                    <p className="text-destructive">
                       {discoveryError?.includes("TypeError")
                         ? "Couldn't reach this URL."
                         : (discoveryError ??
@@ -519,8 +526,8 @@ export const RegisterResourceForm = () => {
                 !isDiscoveryLoading &&
                 !hasDiscoveryResources &&
                 !isOriginOnly && (
-                  <div className="space-y-1 text-sm">
-                    <p className="text-red-600">
+                  <div className="type-supporting-body space-y-1">
+                    <p className="text-destructive">
                       {discoveryError?.includes("TypeError")
                         ? "Couldn't reach this URL."
                         : (discoveryError ??
@@ -554,15 +561,19 @@ export const RegisterResourceForm = () => {
           <Collapsible defaultOpen>
             <CollapsibleTrigger
               render={
-                <button className="flex items-center gap-1 text-xs text-red-600 transition-colors hover:text-red-700 dark:text-red-500" />
+                <Button
+                  variant="quiet"
+                  size="none"
+                  className="text-destructive"
+                />
               }
             >
               <ChevronDown className="size-3" />
               {failedResources.length} endpoint
               {failedResources.length === 1 ? "" : "s"} with errors
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-2 pt-2">
-              <p className="text-xs text-muted-foreground">
+            <CollapsibleContent className="space-y-2">
+              <p className="type-caption text-muted-foreground">
                 <strong>
                   {failedResources.length} endpoint
                   {failedResources.length === 1 ? "" : "s"} won&apos;t be
@@ -584,7 +595,7 @@ export const RegisterResourceForm = () => {
                 ))}
               </div>
               <DiscoveryFixHint
-                className="font-medium"
+                className="type-label"
                 failedResources={failedResources.map((r) => ({
                   url: r.url,
                   error: getPrimaryProbeError(r),
@@ -609,7 +620,7 @@ export const RegisterResourceForm = () => {
           <Collapsible>
             <CollapsibleTrigger
               render={
-                <button className="flex items-center gap-1 text-xs text-yellow-600 transition-colors hover:text-yellow-700 dark:text-yellow-500" />
+                <Button variant="quiet" size="none" className="text-warning" />
               }
             >
               <ChevronDown className="size-3" />
@@ -617,8 +628,8 @@ export const RegisterResourceForm = () => {
               {resourcesWithWarnings.length === 1 ? "" : "s"} with warnings (Not
               blocking)
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-2 pt-2">
-              <p className="text-xs text-muted-foreground">
+            <CollapsibleContent className="space-y-2">
+              <p className="type-caption text-muted-foreground">
                 These endpoints will still be registered, but have issues that
                 may affect agent compatibility.
               </p>
@@ -626,16 +637,13 @@ export const RegisterResourceForm = () => {
                 {resourcesWithWarnings.map((r, idx) => (
                   <div
                     key={`${r.url}-${idx}`}
-                    className="space-y-1 rounded border bg-muted/50 p-2 text-xs"
+                    className="space-y-1 rounded border bg-muted/50 p-2 type-caption"
                   >
-                    <div className="truncate font-mono text-muted-foreground">
+                    <div className="type-compact-code truncate text-muted-foreground">
                       {toPathLabel(r.url)}
                     </div>
                     {r.warnings?.map((w, wi) => (
-                      <div
-                        key={wi}
-                        className="text-yellow-600 dark:text-yellow-500"
-                      >
+                      <div key={wi} className="text-warning">
                         {w.message}
                       </div>
                     ))}
@@ -643,7 +651,7 @@ export const RegisterResourceForm = () => {
                 ))}
               </div>
               <DiscoveryFixHint
-                className="font-medium"
+                className="type-label"
                 warnings={resourcesWithWarnings.flatMap((r) =>
                   (r.warnings ?? []).map((w) => ({
                     url: r.url,
@@ -664,19 +672,19 @@ export const RegisterResourceForm = () => {
         <Collapsible>
           <CollapsibleTrigger
             render={
-              <button className="flex items-center gap-1 text-xs text-yellow-600 transition-colors hover:text-yellow-700 dark:text-yellow-500" />
+              <Button variant="quiet" size="none" className="text-warning" />
             }
           >
             <ChevronDown className="size-3" />
             {skippedResources.length} unprotected endpoint
             {skippedResources.length === 1 ? "" : "s"} skipped
           </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2 pt-2">
-            <p className="text-xs text-muted-foreground">
+          <CollapsibleContent className="space-y-2">
+            <p className="type-caption text-muted-foreground">
               These endpoints have no x402 paywall and won&apos;t be registered.
               If they should be paid, add x402 payment middleware. If they are
               intentionally free, declare{" "}
-              <code className="rounded bg-muted px-1 font-mono text-[11px]">
+              <code className="type-compact-code rounded bg-muted px-1">
                 &quot;security&quot;: []
               </code>{" "}
               on them in your OpenAPI spec and they will be registered and shown
@@ -686,7 +694,7 @@ export const RegisterResourceForm = () => {
               {skippedResources.map((r, idx) => (
                 <div
                   key={idx}
-                  className="rounded bg-muted/50 px-2 py-1 font-mono text-xs text-muted-foreground"
+                  className="type-compact-code rounded bg-muted/50 px-2 py-1 text-muted-foreground"
                 >
                   {toPathLabel(r.url)}
                 </div>
@@ -719,10 +727,14 @@ export const RegisterResourceForm = () => {
         />
       ) : null}
 
-      {bulkError && <p className="text-sm text-red-600">{bulkError}</p>}
+      {bulkError && (
+        <p className="type-supporting-body text-destructive">{bulkError}</p>
+      )}
 
       {registerMutation.error && (
-        <p className="text-sm text-red-600">{registerMutation.error.message}</p>
+        <p className="type-supporting-body text-destructive">
+          {registerMutation.error.message}
+        </p>
       )}
     </div>
   );
@@ -911,8 +923,7 @@ function PostRegistrationDialog({
                   </Button>
                   <Button
                     type="button"
-                    variant="ghost"
-                    className="text-muted-foreground"
+                    variant="quiet"
                     onClick={() => {
                       dismissMethodRef.current = "skip";
                       setOpen(false);
@@ -931,7 +942,7 @@ function PostRegistrationDialog({
             </ChecklistStep>
 
             <div className="-mx-6 -mb-6 border-t px-6 py-4">
-              <p className="text-center text-xs text-muted-foreground">
+              <p className="text-center type-caption text-muted-foreground">
                 Share your merchant page:{" "}
                 <Link
                   href={`https://tryponcho.com/m/${hostname}`}
@@ -940,9 +951,12 @@ function PostRegistrationDialog({
                 >
                   tryponcho.com/m/{hostname}
                 </Link>
-                <button
+                <Button
                   type="button"
-                  className="ml-1 inline-flex align-middle text-muted-foreground transition-colors hover:text-foreground"
+                  variant="quiet"
+                  size="none"
+                  aria-label="Copy merchant page link"
+                  className="ml-1 align-middle"
                   onClick={() => {
                     void navigator.clipboard.writeText(
                       `https://tryponcho.com/m/${hostname}`
@@ -957,7 +971,7 @@ function PostRegistrationDialog({
                   }}
                 >
                   <Copy className="size-3" />
-                </button>
+                </Button>
               </p>
             </div>
           </div>
@@ -991,7 +1005,7 @@ function ChecklistStep({
       }`}
     >
       <div
-        className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-medium transition-colors ${
+        className={`flex size-6 shrink-0 items-center justify-center rounded-full type-caption transition-colors ${
           completed
             ? "bg-muted text-muted-foreground"
             : current
@@ -1002,7 +1016,7 @@ function ChecklistStep({
         {completed ? <Check className="size-3.5" /> : number}
       </div>
       <div className="flex-1 space-y-1.5">
-        {label && <p className="text-sm leading-6 font-medium">{label}</p>}
+        {label && <p className="type-label">{label}</p>}
         {children}
       </div>
     </div>
@@ -1029,15 +1043,17 @@ function FailedResourceRow({
   })();
 
   return (
-    <div className="space-y-1 rounded bg-muted/50 p-3 text-xs">
+    <div className="space-y-1 rounded bg-muted/50 p-3 type-caption">
       <div className="flex items-start gap-2">
         <span className="shrink-0 text-muted-foreground">URL:</span>
-        <span className="font-mono break-all">{pathname}</span>
+        <span className="type-compact-code break-all">{pathname}</span>
       </div>
       <div className="flex items-start gap-2">
         <span className="shrink-0 text-muted-foreground">Error:</span>
-        <span className="wrap-break-word text-red-600">
-          {statusCode && <span className="mr-1 font-mono">[{statusCode}]</span>}
+        <span className="wrap-break-word text-destructive">
+          {statusCode && (
+            <span className="type-compact-code mr-1">[{statusCode}]</span>
+          )}
           {error}
         </span>
       </div>
@@ -1047,7 +1063,7 @@ function FailedResourceRow({
           <p className="mb-1 text-muted-foreground">Validation details:</p>
           <ul className="list-inside list-disc space-y-1">
             {issues.map((issue, i) => (
-              <li key={i} className="font-mono text-[10px] text-red-600">
+              <li key={i} className="type-supporting-body text-destructive">
                 {issue.code}: {issue.message}
               </li>
             ))}
@@ -1230,30 +1246,30 @@ function ProbeResult({
           </TooltipProvider>
         )}
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">
+          <p className="truncate type-label">
             {preview?.title ?? urlOrigin ?? "Discovered API"}
           </p>
           {preview?.description && (
-            <p className="line-clamp-1 text-xs text-muted-foreground">
+            <p className="line-clamp-1 type-caption text-muted-foreground">
               {preview.description}
             </p>
           )}
         </div>
       </div>
       {!preview?.favicon && (
-        <p className="flex items-center gap-1.5 text-xs text-yellow-600 dark:text-yellow-500">
+        <p className="flex items-center gap-1.5 type-caption text-warning">
           <TriangleAlert className="size-3 shrink-0" />
-          Serve a <code className="font-mono">/favicon.ico</code> at your API
-          root to display an icon.
+          Serve a <code className="type-compact-code">/favicon.ico</code> at
+          your API root to display an icon.
         </p>
       )}
       {!contactEmail && (
-        <div className="space-y-1.5 text-xs text-yellow-600 dark:text-yellow-500">
+        <div className="space-y-1.5 type-caption text-warning">
           <p className="flex items-start gap-1.5">
             <TriangleAlert className="mt-0.5 size-3 shrink-0" />
             <span>
               Add{" "}
-              <code className="rounded bg-muted px-1 font-mono text-[11px]">
+              <code className="type-compact-code rounded bg-muted px-1">
                 info.contact.email
               </code>{" "}
               to your openapi.json to verify ownership and let users contact
@@ -1276,40 +1292,41 @@ function ProbeResult({
         </div>
       )}
       {isBatchTestLoading ? (
-        <div className="flex items-center gap-2 py-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 py-1 type-caption text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />
           Verifying {resources.length} endpoints...
         </div>
       ) : (
-        <button
-          type="button"
+        <Button
+          variant="plain"
+          size="none"
           onClick={() => setExpanded(!expanded)}
           className="w-full text-left"
         >
-          <ul className="space-y-0.5 text-xs text-muted-foreground">
+          <ul className="w-full space-y-0.5 type-caption text-muted-foreground">
             {previewResources.map((resource) => {
               const k = rk(resource);
               return (
                 <li
                   key={k}
-                  className="flex items-center gap-1.5 truncate font-mono"
+                  className="type-compact-code flex items-center gap-1.5 truncate"
                 >
                   {nonPaidKeys.has(k) ? (
                     <Minus className="size-3 shrink-0 text-muted-foreground/40" />
                   ) : invalidKeys.has(k) ? (
-                    <X className="size-3 shrink-0 text-red-500" />
+                    <X className="size-3 shrink-0 text-destructive" />
                   ) : siwxKeys.has(k) ? (
                     <Check className="size-3 shrink-0 text-primary" />
                   ) : publicKeys.has(k) ? (
-                    <Check className="size-3 shrink-0 text-sky-600" />
+                    <Check className="size-3 shrink-0 text-information" />
                   ) : apiKeyKeys.has(k) ? (
                     <Check className="size-3 shrink-0 text-muted-foreground" />
                   ) : warningKeys.has(k) ? (
-                    <TriangleAlert className="size-3 shrink-0 text-yellow-500" />
+                    <TriangleAlert className="size-3 shrink-0 text-warning" />
                   ) : testedKeys.has(k) ? (
-                    <Check className="size-3 shrink-0 text-green-600" />
+                    <Check className="size-3 shrink-0 text-success" />
                   ) : failedKeys.has(k) ? (
-                    <X className="size-3 shrink-0 text-red-500" />
+                    <X className="size-3 shrink-0 text-destructive" />
                   ) : null}
                   <span
                     className={
@@ -1319,7 +1336,7 @@ function ProbeResult({
                     }
                   >
                     {showMethodBadges && resource.method && (
-                      <span className="mr-1 text-[10px] font-semibold text-muted-foreground/70">
+                      <span className="type-emphasis mr-1 text-muted-foreground/70">
                         {resource.method}
                       </span>
                     )}
@@ -1339,7 +1356,7 @@ function ProbeResult({
               </li>
             )}
           </ul>
-        </button>
+        </Button>
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import { withPostHogConfig } from "@posthog/nextjs-config";
+import createMDX from "@next/mdx";
 
 import type { NextConfig } from "next";
 
@@ -11,6 +12,7 @@ const agentDiscoveryLinkHeader = [
 ].join(", ");
 
 const nextConfig: NextConfig = {
+  pageExtensions: ["tsx", "mdx", "ts"],
   typedRoutes: true,
   async headers() {
     return Promise.resolve([
@@ -57,7 +59,13 @@ const nextConfig: NextConfig = {
   devIndicators: false,
 };
 
-export default withPostHogConfig(nextConfig, {
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: ["remark-gfm"],
+  },
+});
+
+export default withPostHogConfig(withMDX(nextConfig), {
   personalApiKey: process.env.POSTHOG_API_KEY!,
   projectId: process.env.POSTHOG_PROJECT_ID!,
   // API host for source-map upload — NOT NEXT_PUBLIC_POSTHOG_HOST, which is
