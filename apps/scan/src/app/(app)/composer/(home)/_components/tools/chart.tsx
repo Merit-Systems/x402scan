@@ -1,12 +1,9 @@
 "use client";
 
-import {
-  BaseAreaChart,
-  LoadingAreaChart,
-} from "@/components/ui/charts/chart/area";
+import { AreaChart, LoadingAreaChart } from "@/components/ui/chart";
 import { api } from "@/trpc/client";
 
-import type { ChartData } from "@/components/ui/charts/chart/types";
+import type { ChartData } from "@/components/ui/chart";
 import { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
@@ -40,7 +37,7 @@ export const KnownSellerChart = ({ addresses }: Props) => {
   }));
 
   return (
-    <BaseAreaChart
+    <AreaChart
       data={chartData}
       areas={[
         {

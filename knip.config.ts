@@ -25,7 +25,6 @@ const config: KnipConfig = {
       ],
       ignore: [
         "src/scripts/**",
-        "src/components/ui/charts/chart/**",
         "src/app/(app)/(home)/_components/v2-announcement-banner.tsx",
       ],
     },
