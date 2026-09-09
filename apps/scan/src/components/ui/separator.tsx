@@ -1,9 +1,12 @@
 "use client";
 
 import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
-import { cva, type VariantProps } from "class-variance-authority";
+
+import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+
+import type { VariantProps } from "class-variance-authority";
 
 const separatorVariants = cva(
   "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",

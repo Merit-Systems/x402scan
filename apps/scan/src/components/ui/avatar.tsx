@@ -1,10 +1,14 @@
 "use client";
 
-import * as React from "react";
 import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar";
-import { cva, type VariantProps } from "class-variance-authority";
+
+import * as React from "react";
+
+import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+
+import type { VariantProps } from "class-variance-authority";
 
 const avatarVariants = cva(
   "group/avatar relative flex shrink-0 select-none after:absolute after:inset-0 after:border after:border-border after:mix-blend-darken dark:after:mix-blend-lighten",

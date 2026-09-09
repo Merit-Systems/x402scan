@@ -1,9 +1,12 @@
 "use client";
 
 import { Check, Copy, LoaderCircle } from "lucide-react";
+
 import { useEffect, useRef, useState } from "react";
 
-import { Button, type ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+
+import type { ButtonProps } from "@/components/ui/button";
 
 type CopyButtonProps = Omit<
   ButtonProps,

@@ -1,7 +1,10 @@
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
+
+import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+
+import type { VariantProps } from "class-variance-authority";
 
 const cardVariants = cva(
   "group/card type-supporting-body flex flex-col overflow-hidden rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)] data-[size=sm]:[--card-spacing:--spacing(3)] *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",

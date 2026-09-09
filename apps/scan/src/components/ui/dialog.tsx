@@ -1,12 +1,17 @@
 "use client";
 
-import * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
-import { cva, type VariantProps } from "class-variance-authority";
 import { XIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import * as React from "react";
+
+import { cva } from "class-variance-authority";
+
 import { Button } from "@/components/ui/button";
+
+import { cn } from "@/lib/utils";
+
+import type { VariantProps } from "class-variance-authority";
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
