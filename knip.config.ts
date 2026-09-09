@@ -79,7 +79,7 @@ const config: KnipConfig = {
   ],
   // Registry-owned components intentionally expose the complete Foundation API.
   ignoreIssues: {
-    "apps/scan/src/components/ui/{accordion,alert-dialog,avatar,badge,button,card,collapsible,command,copy-button,dialog,dropdown-menu,field,input-group,input,label,select,separator,sheet,skeleton,sonner,table,tabs,textarea,tooltip}.tsx":
+    "apps/scan/src/components/ui/{accordion,alert-dialog,avatar,badge,button,card,collapsible,command,copy-button,dialog,dropdown-menu,field,input-group,input,label,select,separator,sheet,sidebar,skeleton,sonner,table,tabs,textarea,tooltip}.tsx":
       ["exports", "types"],
   },
 };
