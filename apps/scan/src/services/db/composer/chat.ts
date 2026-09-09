@@ -5,7 +5,7 @@ import { scanDb } from "@x402scan/scan-db";
 import type { Prisma } from "@x402scan/scan-db";
 
 export const createChat = async (data: Prisma.ChatCreateInput) => {
-  return await scanDb.chat.create({
+  return scanDb.chat.create({
     data: data,
     include: {
       messages: true,
@@ -19,7 +19,7 @@ export const createChat = async (data: Prisma.ChatCreateInput) => {
 };
 
 export const getChat = async (id: string, userId?: string) => {
-  return await scanDb.chat.findFirst({
+  return scanDb.chat.findFirst({
     where: { id, OR: [{ userId }, { visibility: "public" }] },
     include: {
       messages: {
@@ -35,7 +35,7 @@ export const getChat = async (id: string, userId?: string) => {
 };
 
 export const getChatStreamId = async (id: string, userId?: string) => {
-  return await scanDb.chat.findFirst({
+  return scanDb.chat.findFirst({
     where: { id, OR: [{ userId }, { visibility: "public" }] },
     select: { activeStreamId: true },
   });
@@ -49,7 +49,7 @@ export const listChats = async (
   userId: string,
   { agentId }: z.infer<typeof listChatsSchema>
 ) => {
-  return await scanDb.chat.findMany({
+  return scanDb.chat.findMany({
     where: {
       userId,
       userAgentConfiguration: agentId
@@ -72,14 +72,14 @@ export const updateChat = async (
   chatId: string,
   updateChatData: Prisma.ChatUpdateInput
 ) => {
-  return await scanDb.chat.update({
+  return scanDb.chat.update({
     where: { id: chatId, userId },
     data: updateChatData,
   });
 };
 
 export const deleteChat = async (id: string, userId: string) => {
-  return await scanDb.chat.delete({
+  return scanDb.chat.delete({
     where: { id, userId },
   });
 };

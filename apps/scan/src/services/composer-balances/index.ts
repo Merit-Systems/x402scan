@@ -195,7 +195,7 @@ export const getComposerBalancesReport =
           loginAddresses: owner?.loginAddresses ?? [],
         };
       })
-      .sort((a, b) => b.usdc - a.usdc);
+      .toSorted((a, b) => b.usdc - a.usdc);
 
     const systemWallets: SystemWalletRow[] = funded
       .filter((w) => w.source === "server" && !UUID_RE.test(w.walletName))
@@ -205,7 +205,7 @@ export const getComposerBalancesReport =
         chain: w.chain,
         usdc: w.usdc,
       }))
-      .sort((a, b) => b.usdc - a.usdc);
+      .toSorted((a, b) => b.usdc - a.usdc);
 
     const serverRows = rows.filter((r) => r.source === "server");
     const embeddedRows = rows.filter((r) => r.source === "embedded");

@@ -10,7 +10,7 @@ export const userToolsRouter = createTRPCRouter({
     getTask: protectedProcedure
       .input(fetchFreepikMysticTaskInputSchema)
       .query(async ({ input }) => {
-        return await fetchFreepikMysticTask(input);
+        return fetchFreepikMysticTask(input);
       }),
   },
 
@@ -19,7 +19,7 @@ export const userToolsRouter = createTRPCRouter({
       getVideo: protectedProcedure
         .input(getSoraVideoInputSchema)
         .query(async ({ input }) => {
-          return await getSoraVideo(input);
+          return getSoraVideo(input);
         }),
     },
   },

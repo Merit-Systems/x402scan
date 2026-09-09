@@ -8,6 +8,6 @@ export const transfersRouter = createTRPCRouter({
   list: paginatedProcedure
     .input(listFacilitatorTransfersInputSchema)
     .query(async ({ input, ctx: { pagination } }) => {
-      return await listFacilitatorTransfers(input, pagination);
+      return listFacilitatorTransfers(input, pagination);
     }),
 });

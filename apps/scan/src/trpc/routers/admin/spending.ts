@@ -50,10 +50,7 @@ export const adminSpendingRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      return await getSpendingByWallet(
-        { sorting: input.sorting },
-        input.pagination
-      );
+      return getSpendingByWallet({ sorting: input.sorting }, input.pagination);
     }),
 
   toolBreakdown: adminProcedure
@@ -74,7 +71,7 @@ export const adminSpendingRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      return await getToolBreakdownByWallet(input.walletId, input.sorting);
+      return getToolBreakdownByWallet(input.walletId, input.sorting);
     }),
 
   byTool: adminProcedure
@@ -99,10 +96,7 @@ export const adminSpendingRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      return await getSpendingByTool(
-        { sorting: input.sorting },
-        input.pagination
-      );
+      return getSpendingByTool({ sorting: input.sorting }, input.pagination);
     }),
 
   walletBreakdown: adminProcedure
@@ -124,19 +118,19 @@ export const adminSpendingRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      return await getWalletBreakdownByTool(input.resourceId, input.sorting);
+      return getWalletBreakdownByTool(input.resourceId, input.sorting);
     }),
 
   getWalletAddress: adminProcedure
     .input(z.object({ walletName: z.string() }))
     .query(async ({ input }) => {
-      return await getWalletAddressFromName(input.walletName);
+      return getWalletAddressFromName(input.walletName);
     }),
 
   toolCallsOverTime: adminProcedure
     .input(toolCallsOverTimeQuerySchema)
     .query(async ({ input }) => {
-      return await getToolCallsOverTime(input);
+      return getToolCallsOverTime(input);
     }),
 
   getServerAccountsCsv: adminProcedure.query(async () => {

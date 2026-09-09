@@ -15,12 +15,12 @@ export const publicToolsRouter = createTRPCRouter({
   search: publicProcedure
     .input(searchResourcesSchema)
     .query(async ({ input }) => {
-      return await searchX402Tools(input);
+      return searchX402Tools(input);
     }),
 
   top: paginatedProcedure
     .input(listTopToolsSchema)
     .query(async ({ input, ctx: { pagination } }) => {
-      return await listTopTools(input, pagination);
+      return listTopTools(input, pagination);
     }),
 });

@@ -60,7 +60,9 @@ function directProbe402(
         });
       }
     );
-    req.on("error", () => resolve(null));
+    req.on("error", () => {
+      resolve(null);
+    });
     req.on("timeout", () => {
       req.destroy();
       resolve(null);

@@ -13,24 +13,24 @@ import {
 
 export const userAgentConfigurationsRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
-    return await listUserAgentConfigurations(ctx.session.user.id);
+    return listUserAgentConfigurations(ctx.session.user.id);
   }),
 
   create: protectedProcedure
     .input(createAgentConfigurationSchema)
     .mutation(async ({ input, ctx }) => {
-      return await createAgentConfiguration(ctx.session.user.id, input);
+      return createAgentConfiguration(ctx.session.user.id, input);
     }),
 
   update: protectedProcedure
     .input(updateAgentConfigurationSchema)
     .mutation(async ({ input, ctx }) => {
-      return await updateAgentConfiguration(ctx.session.user.id, input);
+      return updateAgentConfiguration(ctx.session.user.id, input);
     }),
 
   delete: protectedProcedure
     .input(z.uuid())
     .mutation(async ({ input, ctx }) => {
-      return await deleteAgentConfiguration(input, ctx.session.user.id);
+      return deleteAgentConfiguration(input, ctx.session.user.id);
     }),
 });

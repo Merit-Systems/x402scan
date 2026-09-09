@@ -33,7 +33,7 @@ export function buildOriginTransactionSparklines(
   );
   const buckets = [
     ...new Set(relevantRows.map((row) => row.bucket.getTime())),
-  ].sort((a, b) => a - b);
+  ].toSorted((a, b) => a - b);
   const indexByBucket = new Map(
     buckets.map((bucket, index) => [bucket, index])
   );
