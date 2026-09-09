@@ -1,8 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
 import { firstTransfer } from "@/services/facilitator/constants";
 
@@ -98,10 +99,11 @@ const getBucketedToolCallsByTagsUncached = async (
   return bucketedToolCallsByTagsResultSchema.parse(rawResult);
 };
 
-export const getBucketedToolCallsByTags = createCachedArrayQuery({
-  queryFn: getBucketedToolCallsByTagsUncached,
-  cacheKeyPrefix: "bucketed-tool-calls-by-tags",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-  tags: ["resource-statistics", "resources", "tool-calls", "tags"],
-});
+export const getBucketedToolCallsByTags = async (
+  ...args: Parameters<typeof getBucketedToolCallsByTagsUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("resource-statistics", "resources", "tool-calls", "tags");
+  return getBucketedToolCallsByTagsUncached(...args);
+};
