@@ -1,20 +1,15 @@
 "use client";
 
-import {
-  createContext,
-  forwardRef,
-  useContext,
-  useId,
-  useMemo,
-  type ComponentProps,
-  type ComponentRef,
-  type ReactNode,
-} from "react";
+import { createContext, forwardRef, useContext, useId, useMemo } from "react";
+
 import { LayoutGroup, motion, useReducedMotion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { cn } from "@/lib/utils";
+
+import type { ComponentProps, ComponentRef, ReactNode } from "react";
 
 type MotionIndicator = "both" | "box" | "line";
 
