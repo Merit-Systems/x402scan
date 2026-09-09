@@ -1,6 +1,9 @@
 import { createTRPCRouter, publicProcedure } from "../../trpc";
 
-import { listBazaarOrigins } from "@/services/db/bazaar/origins";
+import {
+  listBazaarOrigins,
+  listBazaarOriginSummaries,
+} from "@/services/db/bazaar/origins";
 import {
   listBazaarOriginsInputSchema,
   listFeaturedBazaarOriginsInputSchema,
@@ -22,6 +25,19 @@ const listFeaturedBazaarOriginsQuerySchema =
 
 export const sellersRouter = createTRPCRouter({
   bazaar: {
+    featuredSummaries: publicProcedure
+      .input(listFeaturedBazaarOriginsQuerySchema)
+      .query(async ({ input }) => {
+        const { pagination, ...query } = input;
+        const originUrls = await getDiscoverOrigins();
+        return listBazaarOriginSummaries({ ...query, originUrls }, pagination);
+      }),
+    summaries: publicProcedure
+      .input(listBazaarOriginsQuerySchema)
+      .query(async ({ input }) => {
+        const { pagination, ...query } = input;
+        return listBazaarOriginSummaries(query, pagination);
+      }),
     list: publicProcedure
       .input(listBazaarOriginsQuerySchema)
       .query(async ({ input }) => {

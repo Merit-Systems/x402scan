@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 
 import { DataTableColumnHeader } from "@/components/ui/data-table";
@@ -28,10 +27,7 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
     ),
     enableSorting: false,
     cell: ({ row }) => (
-      <Link
-        href={`/facilitator/${row.original.facilitator_id}`}
-        className="flex items-center gap-1"
-      >
+      <div className="flex items-center gap-1">
         <Image
           src={row.original.facilitator.image}
           alt={row.original.facilitator.name}
@@ -44,7 +40,7 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
           className="size-2 rounded-full"
           style={{ backgroundColor: row.original.facilitator.color }}
         />
-      </Link>
+      </div>
     ),
     size: 250,
     meta: {
