@@ -19,11 +19,11 @@ const parseAllFromHtml = async (html: string) => {
 /**
  * Checks if OG data has meaningful content
  */
-const hasOgData = (og: OgObject | null): boolean => {
+export const hasOgData = (
+  og: Pick<OgObject, "ogTitle" | "ogDescription" | "ogImage"> | null
+): boolean => {
   if (!og) return false;
-  return ["ogTitle", "ogDescription", "ogImage"].some(
-    (key) => og[key as keyof OgObject]
-  );
+  return [og.ogTitle, og.ogDescription, og.ogImage].some(Boolean);
 };
 
 /**

@@ -65,7 +65,7 @@ export function transformResponse(
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
   return data.map((item) => ({
-    address: item.Transfer.Currency?.SmartContract || DEFAULT_CONTRACT_ADDRESS,
+    address: item.Transfer.Currency.SmartContract || DEFAULT_CONTRACT_ADDRESS,
     transaction_from: item.Transaction.From,
     sender: item.Transfer.Sender,
     recipient: item.Transfer.Receiver,

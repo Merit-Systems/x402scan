@@ -1,7 +1,6 @@
 import { usdc } from "./tokens/usdc";
 import { formatCurrency } from "./utils";
-
-import type { SupportedChain } from "@/types/chain";
+import { supportedChainSchema } from "./schemas";
 
 export const convertTokenAmount = (amount: bigint, decimals = 6) => {
   // Convert to string, then use string manipulation to preserve precision
@@ -28,10 +27,13 @@ export const serializeAccepts = <
 >(
   accepts: T[]
 ) =>
-  accepts.map((a) => ({
-    ...a,
-    maxAmountRequired: convertTokenAmount(
-      a.maxAmountRequired,
-      usdc(a.network as SupportedChain).decimals
-    ),
-  }));
+  accepts.map((a) => {
+    const chain = supportedChainSchema.parse(a.network);
+    return {
+      ...a,
+      maxAmountRequired: convertTokenAmount(
+        a.maxAmountRequired,
+        usdc(chain).decimals
+      ),
+    };
+  });

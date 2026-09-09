@@ -145,11 +145,7 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Cell>
-        {row.original.latest_block_timestamp
-          ? formatCompactAgo(row.original.latest_block_timestamp)
-          : "–"}
-      </Cell>
+      <Cell>{formatCompactAgo(row.original.latest_block_timestamp)}</Cell>
     ),
     size: 150,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },

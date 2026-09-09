@@ -15,4 +15,4 @@ export const ERC20_ABI = [
     outputs: [{ name: "balance", type: "uint256" }],
     type: "function",
   },
-];
+] as const;

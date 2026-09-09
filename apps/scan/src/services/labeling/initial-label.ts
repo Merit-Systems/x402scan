@@ -96,10 +96,6 @@ export const labelingPass = async (
     },
   });
 
-  if (!result.object) {
-    throw new Error("No tag found");
-  }
-
   const tag = result.object.tag;
   const tagData = await scanDb.tag.findFirst({ where: { name: tag } });
   if (!tagData) {

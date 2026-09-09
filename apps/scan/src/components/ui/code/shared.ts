@@ -1,11 +1,10 @@
-import { Fragment } from "react";
+import { Fragment, isValidElement } from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
 
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 
 import { codeToHast } from "./shiki.bundle";
 
-import type { JSX } from "react";
 import type { BundledLanguage, Highlighter } from "./shiki.bundle.ts";
 
 export async function highlight(
@@ -29,9 +28,13 @@ export async function highlight(
         },
       });
 
-  return toJsxRuntime(out, {
+  const rendered: unknown = toJsxRuntime(out, {
     Fragment,
     jsx,
     jsxs,
-  }) as JSX.Element;
+  });
+  if (!isValidElement(rendered)) {
+    throw new Error("Expected highlighted code to render as a React element");
+  }
+  return rendered;
 }

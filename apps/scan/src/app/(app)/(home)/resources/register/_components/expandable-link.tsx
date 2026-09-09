@@ -17,7 +17,11 @@ export function ExpandableLink({
   useEffect(() => {
     if (!open) return undefined;
     function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
+      if (
+        ref.current &&
+        event.target instanceof Node &&
+        !ref.current.contains(event.target)
+      ) {
         setOpen(false);
       }
     }

@@ -20,7 +20,7 @@ import type {
   FacilitatorConfig,
   SyncConfig,
 } from "../trigger/types";
-import { PaginationStrategy, QueryProvider } from "../trigger/types";
+import { QueryProvider } from "../trigger/types";
 
 async function main() {
   const [signature, facilitatorAddress] = process.argv.slice(2);
@@ -63,8 +63,7 @@ async function main() {
   const config = {
     chain: "solana",
     provider: QueryProvider.BITQUERY_CHANNELS,
-    paginationStrategy: PaginationStrategy.OFFSET,
-  } as SyncConfig;
+  } satisfies Pick<SyncConfig, "chain" | "provider">;
 
   const events = extractPayouts(
     tx,

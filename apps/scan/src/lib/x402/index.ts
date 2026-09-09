@@ -298,8 +298,9 @@ export function isV2Response(
  * encoding.
  */
 export function getDescription(
-  response: ParsedX402Response
+  response: ParsedX402Response | undefined
 ): string | undefined {
+  if (!response) return undefined;
   const raw = isV2Response(response)
     ? response.resource?.description
     : response.accepts?.find((a) => a.description)?.description;

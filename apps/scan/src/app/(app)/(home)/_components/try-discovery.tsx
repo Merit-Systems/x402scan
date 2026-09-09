@@ -41,7 +41,7 @@ export function TryDiscovery() {
   const origin = isValidUrl ? new URL(normalizedUrl).origin : null;
 
   const discovery = api.public.resources.checkDiscovery.useQuery(
-    { origin: origin!, bustCache: false },
+    { origin: origin ?? "", bustCache: false },
     {
       enabled: origin !== null && debouncedUrl === url,
       retry: false,
@@ -115,11 +115,11 @@ export function TryDiscovery() {
 
       {isValidUrl &&
       discovery.isSuccess &&
-      (!discovery.data?.found || resources.length === 0) ? (
+      (!discovery.data.found || resources.length === 0) ? (
         <p className="type-supporting-body text-muted-foreground">
-          {discovery.data?.found
+          {discovery.data.found
             ? "No discoverable endpoints found at this origin."
-            : (discovery.data?.error ??
+            : (discovery.data.error ??
               "No discoverable endpoints found at this origin.")}
         </p>
       ) : null}

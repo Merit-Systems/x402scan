@@ -66,7 +66,9 @@ async function limitConcurrency(
   async function runNext(): Promise<void> {
     while (index < tasks.length) {
       const taskIndex = index++;
-      await withRetry(tasks[taskIndex]!, MAX_RETRIES, `Task ${taskIndex + 1}`);
+      const task = tasks[taskIndex];
+      if (!task) continue;
+      await withRetry(task, MAX_RETRIES, `Task ${taskIndex + 1}`);
     }
   }
 
@@ -178,6 +180,10 @@ type WarmablePage = "home" | "networks" | "facilitators";
 
 const ALL_PAGES: WarmablePage[] = ["home", "networks", "facilitators"];
 
+function isWarmablePage(value: string): value is WarmablePage {
+  return ALL_PAGES.some((page) => page === value);
+}
+
 export async function GET(request: NextRequest) {
   const cronCheck = checkCronSecret(request);
   if (cronCheck) {
@@ -204,11 +210,7 @@ export async function GET(request: NextRequest) {
 
     // Filter pages if requested
     const pagesToWarm: WarmablePage[] = pagesParam
-      ? (pagesParam
-          .split(",")
-          .filter((p) =>
-            ALL_PAGES.includes(p as WarmablePage)
-          ) as WarmablePage[])
+      ? pagesParam.split(",").filter(isWarmablePage)
       : ALL_PAGES;
 
     // Parse chain filter if provided

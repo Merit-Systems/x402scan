@@ -1,4 +1,5 @@
 import bs58 from "bs58";
+import { z } from "zod";
 import { Connection, PublicKey } from "@solana/web3.js";
 import type {
   ParsedInnerInstruction,
@@ -70,14 +71,16 @@ export async function transformResponse(
   const sendersBySignature = new Map<string, Set<string>>();
   for (const transfer of transfers) {
     const signature = transfer.transaction.signature;
-    if (!timestampBySignature.has(signature)) {
+    let senders = sendersBySignature.get(signature);
+    if (!senders) {
       timestampBySignature.set(
         signature,
         new Date(transfer.block.timestamp.time)
       );
-      sendersBySignature.set(signature, new Set());
+      senders = new Set();
+      sendersBySignature.set(signature, senders);
     }
-    sendersBySignature.get(signature)!.add(transfer.sender.address);
+    senders.add(transfer.sender.address);
   }
 
   // Cheap prefilter: a channel payout's token authority is the channel PDA,
@@ -104,7 +107,8 @@ export async function transformResponse(
     });
     parsed.forEach((tx, index) => {
       if (!tx || tx.meta?.err) return;
-      const signature = chunk[index]!;
+      const signature = chunk[index];
+      if (!signature) return;
       const blockTimestamp =
         timestampBySignature.get(signature) ??
         new Date((tx.blockTime ?? 0) * 1000);
@@ -149,7 +153,8 @@ async function findChannelSenders(
       // Missing accounts stay candidates: a fully distributed channel PDA can
       // already be reclaimed by the time we look it up.
       if (info === null || info.owner.equals(channelsProgram)) {
-        channelSenders.add(chunk[index]!.address);
+        const candidate = chunk[index];
+        if (candidate) channelSenders.add(candidate.address);
       }
     });
   }
@@ -180,7 +185,7 @@ export function extractPayouts(
   context: {
     signature: string;
     blockTimestamp: Date;
-    config: SyncConfig;
+    config: Pick<SyncConfig, "chain" | "provider">;
     facilitator: Facilitator;
     facilitatorConfig: FacilitatorConfig;
   }
@@ -218,12 +223,16 @@ export function extractPayouts(
     if (bs58.decode(instruction.data)[0] !== DISTRIBUTE_DISCRIMINATOR) continue;
     if (instruction.accounts.length < DISTRIBUTE_MIN_ACCOUNTS) continue;
 
-    const payer = instruction.accounts[DISTRIBUTE_PAYER_INDEX]!.toBase58();
-    const escrow = instruction.accounts[DISTRIBUTE_ESCROW_INDEX]!.toBase58();
+    const payerAccount = instruction.accounts[DISTRIBUTE_PAYER_INDEX];
+    const escrowAccount = instruction.accounts[DISTRIBUTE_ESCROW_INDEX];
+    if (!payerAccount || !escrowAccount) continue;
+    const payer = payerAccount.toBase58();
+    const escrow = escrowAccount.toBase58();
     const nonPayoutDestinations = new Set(
-      DISTRIBUTE_NON_PAYOUT_DESTINATIONS.map((i) =>
-        instruction.accounts[i]!.toBase58()
-      )
+      DISTRIBUTE_NON_PAYOUT_DESTINATIONS.flatMap((i) => {
+        const account = instruction.accounts[i];
+        return account ? [account.toBase58()] : [];
+      })
     );
 
     const inner =
@@ -266,11 +275,28 @@ interface ParsedTokenInstruction {
   };
 }
 
+const parsedTokenInstructionSchema: z.ZodType<ParsedTokenInstruction> = z.lazy(
+  () =>
+    z.object({
+      type: z.string().optional(),
+      info: z
+        .object({
+          source: z.string().optional(),
+          destination: z.string().optional(),
+          amount: z.string().optional(),
+          tokenAmount: z.object({ amount: z.string().optional() }).optional(),
+          instructions: z.array(parsedTokenInstructionSchema).optional(),
+        })
+        .optional(),
+    })
+);
+
 function parseTokenTransfers(
   instruction: ParsedInstruction | PartiallyDecodedInstruction
 ): { source: string; destination: string; amount: string }[] {
   if (!("parsed" in instruction)) return [];
-  return flattenTokenTransfers(instruction.parsed as ParsedTokenInstruction);
+  const parsed = parsedTokenInstructionSchema.safeParse(instruction.parsed);
+  return parsed.success ? flattenTokenTransfers(parsed.data) : [];
 }
 
 // The sealed distribute path emits SPL Token `batch` instructions that nest

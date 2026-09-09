@@ -55,7 +55,7 @@ function buildFilterEvaluationPrompt(
   const resourceContext = {
     title: resource.origin.title ?? resource.origin.origin,
     description:
-      resource.accepts?.find((accept) => accept.description)?.description ??
+      resource.accepts.find((accept) => accept.description)?.description ??
       "No description",
     origin: resource.origin.origin,
     tags: resource.tags.map((t) => t.name).join(", ") || "No tags",
@@ -96,16 +96,6 @@ export async function generateFilterQuestions(
       temperature: 0.3,
     });
 
-    if (!result.object) {
-      console.warn(
-        "[Filter Generation] No object generated, returning empty filters"
-      );
-      return {
-        questions: [],
-        explanation: "Failed to generate filter questions",
-      };
-    }
-
     const questions = result.object.questions.map((q, i) => ({
       question: q,
       index: i,
@@ -138,11 +128,6 @@ async function evaluateResourceAgainstFilter(
       schema: filterEvaluationSchema,
       temperature: 0.1,
     });
-
-    if (!result.object) {
-      console.warn("[Filter Evaluation] No object generated, returning false");
-      return false;
-    }
 
     return result.object.answer;
   } catch (error) {

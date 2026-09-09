@@ -5,8 +5,8 @@ import type { FieldDef, OutputSchemaV1 } from "@/lib/x402";
 function fieldDefToZodType(fieldDef: FieldDef): z.ZodType {
   let zodType: z.ZodType;
 
-  if (fieldDef.enum) {
-    zodType = z.enum(fieldDef.enum as [string, ...string[]]);
+  if (fieldDef.enum && fieldDef.enum.length > 0) {
+    zodType = z.enum(fieldDef.enum);
   } else {
     switch (fieldDef.type) {
       case "number":
@@ -53,7 +53,7 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodType {
 export const inputSchemaToZodSchema = (
   inputSchema: OutputSchemaV1["input"]
 ) => {
-  const method = (inputSchema.method ?? "GET").toUpperCase();
+  const method = inputSchema.method.toUpperCase();
   const fields: Record<string, z.ZodType> = {};
 
   // For GET/HEAD/OPTIONS: use query params

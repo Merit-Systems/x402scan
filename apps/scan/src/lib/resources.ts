@@ -23,22 +23,27 @@ import { formatTokenAmount } from "./token";
 import { SUPPORTED_CHAINS } from "@/types/chain";
 import { fetchDiscoveryDocument } from "@/services/discovery";
 import { verifyAcceptsOwnership } from "@/services/verification/accepts-verification";
+import { normalizeKnownAcceptNetworks } from "@/services/db/resources/resource-schema";
 import { outputSchemaV1 } from "@/lib/x402/v1";
 import {
   normalizeChainId,
   parseX402Response,
   getOutputSchema,
   type OutputSchema,
-  type ParsedX402Response,
 } from "@/lib/x402";
 
 import { scanDb } from "@x402scan/scan-db";
-import type { AcceptsNetwork } from "@x402scan/scan-db";
 
 import { convertOpenApiSchemaToV1 } from "@/lib/openapi-to-v1";
 import { deduplicateWarnings } from "@/lib/discovery/utils";
 import { notifyNewServer } from "@/lib/discord-notifications";
 import { after } from "next/server";
+
+const codedErrorSchema = z.object({ code: z.string() });
+
+function hasErrorCode(error: Error, code: string): boolean {
+  return codedErrorSchema.safeParse(error).data?.code === code;
+}
 
 /**
  * The HTTP methods the v1 output-schema format accepts. Discovery advisories
@@ -332,9 +337,7 @@ export async function registerFreeResource(
     // P2002: unique constraint race — another concurrent call already registered
     // the same URL (e.g. POST and DELETE on the same path). Treat as success.
     const isUniqueViolation =
-      error instanceof Error &&
-      "code" in error &&
-      (error as { code: string }).code === "P2002";
+      error instanceof Error && hasErrorCode(error, "P2002");
     if (isUniqueViolation) {
       const existing = await scanDb.resources.findUnique({
         where: {
@@ -471,17 +474,18 @@ export const registerResource = async (
     );
   }
 
-  const allMappedAccepts = x402Options.map((opt) => ({
-    scheme: opt.scheme ?? "exact",
-    network: normalizeChainId(opt.network) as AcceptsNetwork,
-    maxAmountRequired:
-      ("amount" in opt ? opt.amount : opt.maxAmountRequired) ?? "0",
-    payTo: opt.payTo ?? "",
-    asset: opt.asset,
-    maxTimeoutSeconds: opt.maxTimeoutSeconds ?? 60,
-    outputSchema: outputSchemaForDb,
-    extra: undefined,
-  }));
+  const allMappedAccepts = normalizeKnownAcceptNetworks(x402Options).map(
+    (opt) => ({
+      scheme: opt.scheme ?? "exact",
+      network: opt.network,
+      maxAmountRequired: "amount" in opt ? opt.amount : opt.maxAmountRequired,
+      payTo: opt.payTo ?? "",
+      asset: opt.asset,
+      maxTimeoutSeconds: opt.maxTimeoutSeconds ?? 60,
+      outputSchema: outputSchemaForDb,
+      extra: undefined,
+    })
+  );
 
   const mappedAccepts = allMappedAccepts.filter((accept) =>
     (SUPPORTED_CHAINS as readonly string[]).includes(accept.network)
@@ -600,10 +604,7 @@ export const registerResource = async (
     } catch (err) {
       // P2002: another concurrent call already upserted this origin — safe to ignore.
       // Log anything else so metadata failures aren't silent.
-      const isP2002 =
-        err instanceof Error &&
-        "code" in err &&
-        (err as { code: string }).code === "P2002";
+      const isP2002 = err instanceof Error && hasErrorCode(err, "P2002");
       if (!isP2002) {
         console.error("[registerResource] Origin metadata upsert failed:", err);
       }
@@ -612,7 +613,7 @@ export const registerResource = async (
 
   await upsertResourceResponse(
     resource.resource.id,
-    (advisory.paymentRequiredBody ?? {}) as ParsedX402Response
+    parsedPaymentRequiredBody.data
   );
 
   if (existingOriginResourceCount === 0) {

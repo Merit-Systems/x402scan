@@ -7,7 +7,7 @@ import { deprecateStaleResources } from "@/services/db/resources/resource";
 import { getOriginResourceCount } from "@/services/db/resources/origin";
 
 vi.mock("./probe", () => ({
-  probeX402Endpoint: vi.fn((url: string) =>
+  probeX402Endpoint: vi.fn<(url: string) => Promise<unknown>>((url) =>
     Promise.resolve({
       success: true,
       advisory: {
@@ -22,7 +22,7 @@ vi.mock("./probe", () => ({
 }));
 
 vi.mock("./probe-cache", () => ({
-  getCachedProbeResult: vi.fn(() => Promise.resolve(null)),
+  getCachedProbeResult: vi.fn<() => Promise<null>>(() => Promise.resolve(null)),
 }));
 
 vi.mock("./utils", () => ({
@@ -30,7 +30,7 @@ vi.mock("./utils", () => ({
 }));
 
 vi.mock("@/lib/resources", () => ({
-  registerResource: vi.fn((url: string) =>
+  registerResource: vi.fn<(url: string) => Promise<unknown>>((url) =>
     Promise.resolve({
       success: true,
       resource: { id: "res-1", origin: { id: "origin-1" }, url },
@@ -40,7 +40,7 @@ vi.mock("@/lib/resources", () => ({
       },
     })
   ),
-  registerFreeResource: vi.fn((url: string) =>
+  registerFreeResource: vi.fn<(url: string) => Promise<unknown>>((url) =>
     Promise.resolve({
       success: true,
       resource: { id: "res-free", origin: { id: "origin-1" }, url },
@@ -49,21 +49,25 @@ vi.mock("@/lib/resources", () => ({
 }));
 
 vi.mock("@/services/db/resources/resource", () => ({
-  deprecateStaleResources: vi.fn(() => Promise.resolve(0)),
+  deprecateStaleResources: vi.fn<() => Promise<number>>(() =>
+    Promise.resolve(0)
+  ),
 }));
 
 vi.mock("@/services/db/resources/origin", () => ({
-  getOriginResourceCount: vi.fn(() => Promise.resolve(5)),
-  upsertOrigin: vi.fn(() => Promise.resolve(undefined)),
+  getOriginResourceCount: vi.fn<() => Promise<number>>(() =>
+    Promise.resolve(5)
+  ),
+  upsertOrigin: vi.fn<() => Promise<void>>(() => Promise.resolve()),
 }));
 
 vi.mock("@/lib/discord-notifications", () => ({
-  notifyNewServer: vi.fn(),
+  notifyNewServer: vi.fn<() => void>(),
 }));
 
 vi.mock("@/services/scraper", () => ({
-  scrapeOriginData: vi.fn(() =>
-    Promise.resolve({ og: null, metadata: null, favicon: null })
+  scrapeOriginData: vi.fn<(origin: string) => Promise<unknown>>((origin) =>
+    Promise.resolve({ og: null, metadata: null, origin, favicon: null })
   ),
 }));
 

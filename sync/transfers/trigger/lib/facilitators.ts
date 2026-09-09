@@ -13,6 +13,11 @@ const chainMap = {
   [FacilitatorsNetwork.POLYGON]: Network.POLYGON,
   [FacilitatorsNetwork.SOLANA]: Network.SOLANA,
 } satisfies Record<FacilitatorsNetwork, Network>;
+const facilitatorNetworks = new Set<string>(Object.values(FacilitatorsNetwork));
+
+function isFacilitatorsNetwork(value: string): value is FacilitatorsNetwork {
+  return facilitatorNetworks.has(value);
+}
 
 function convertAddressConfig(
   facilitatorAddress: FacilitatorAddress
@@ -33,14 +38,13 @@ function convertFacilitator(raw: RawFacilitator<never>): Facilitator | null {
   const addresses: Partial<Record<Network, FacilitatorConfig[]>> = {};
 
   for (const [chain, facilitatorAddresses] of Object.entries(raw.addresses)) {
-    const mappedChain = chainMap[chain as FacilitatorsNetwork];
-    if (mappedChain) {
-      const configs = facilitatorAddresses.flatMap((addr) =>
-        convertAddressConfig(addr)
-      );
-      if (configs.some((config) => config.enabled)) {
-        addresses[mappedChain] = configs;
-      }
+    if (!isFacilitatorsNetwork(chain)) continue;
+    const mappedChain = chainMap[chain];
+    const configs = facilitatorAddresses.flatMap((addr) =>
+      convertAddressConfig(addr)
+    );
+    if (configs.some((config) => config.enabled)) {
+      addresses[mappedChain] = configs;
     }
   }
 

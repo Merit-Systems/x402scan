@@ -1,20 +1,21 @@
 import { env } from "@/env";
+import { z } from "zod";
 import type { SearchResult, RerankedSearchResult } from "./types";
 
-interface JinaRerankerResponse {
-  model: string;
-  usage: {
-    total_tokens: number;
-    prompt_tokens: number;
-  };
-  results: {
-    index: number;
-    document?: {
-      text: string;
-    };
-    relevance_score: number;
-  }[];
-}
+const jinaRerankerResponseSchema = z.object({
+  model: z.string(),
+  usage: z.object({
+    total_tokens: z.number(),
+    prompt_tokens: z.number(),
+  }),
+  results: z.array(
+    z.object({
+      index: z.number(),
+      document: z.object({ text: z.string() }).optional(),
+      relevance_score: z.number(),
+    })
+  ),
+});
 
 /**
  * Builds a text representation of a resource for reranking
@@ -22,7 +23,7 @@ interface JinaRerankerResponse {
 function buildResourceText(resource: SearchResult): string {
   const parts = [
     resource.origin.title ?? resource.origin.origin,
-    resource.accepts?.find((accept) => accept.description)?.description ?? "",
+    resource.accepts.find((accept) => accept.description)?.description ?? "",
     resource.origin.description ?? "",
     resource.tags.map((t) => t.name).join(", "),
   ].filter(Boolean);
@@ -85,7 +86,7 @@ export async function rerankSearchResults(
     throw new Error(`Jina reranker API error: ${response.status} ${errorText}`);
   }
 
-  const data = (await response.json()) as JinaRerankerResponse;
+  const data = jinaRerankerResponseSchema.parse(await response.json());
   const duration = Date.now() - startTime;
 
   console.log(

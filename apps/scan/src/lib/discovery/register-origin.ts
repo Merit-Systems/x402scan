@@ -38,15 +38,13 @@ async function mapSettledWithConcurrency<T, R>(
   const results: (PromiseSettledResult<R> | undefined)[] = Array.from({
     length: items.length,
   });
-  let nextIndex = 0;
+  const entries = items.entries();
 
   async function worker() {
-    while (true) {
-      const current = nextIndex;
-      nextIndex += 1;
-
-      if (current >= items.length) return;
-      const item = items[current] as T;
+    for (;;) {
+      const next = entries.next();
+      if (next.done) return;
+      const [current, item] = next.value;
 
       try {
         const value = await mapper(item, current);
@@ -296,7 +294,6 @@ export async function registerResourcesFromDiscovery(
   const succeededOrigins = new Set(
     mainResults.flatMap((r, i) =>
       r.status === "fulfilled" &&
-      r.value &&
       "success" in r.value &&
       r.value.success &&
       mainResources[i]
@@ -361,20 +358,18 @@ export async function registerResourcesFromDiscovery(
 
     if (!result) continue;
 
-    if (result.status === "fulfilled" && result.value) {
+    if (result.status === "fulfilled") {
       const value = result.value;
-      if ("success" in value && value.success) {
-        if ("free" in value && value.free) {
+      if (value.success) {
+        if (!("registrationDetails" in value)) {
           freeResults.push({
             url: resourceUrl,
             method: resourceMethod,
             authMode: value.authMode,
           });
           // Extract originId from free registration result
-          if (!originId && "resource" in value && value.resource?.origin?.id) {
-            originId = value.resource.origin.id;
-          }
-        } else if ("resource" in value) {
+          originId ??= value.resource.origin.id;
+        } else {
           successfulResults.push({
             url: resourceUrl,
             method: resourceMethod,
@@ -383,14 +378,8 @@ export async function registerResourcesFromDiscovery(
             description:
               value.registrationDetails.originMetadata.description ?? null,
           });
-          if (!originId && "resource" in value && value.resource?.origin?.id) {
-            originId = value.resource.origin.id;
-          }
-          if (
-            "warnings" in value &&
-            Array.isArray(value.warnings) &&
-            value.warnings.length > 0
-          ) {
+          originId ??= value.resource.origin.id;
+          if (value.warnings.length > 0) {
             warningResults.push({
               url: resourceUrl,
               warnings: value.warnings.map(
@@ -403,25 +392,20 @@ export async function registerResourcesFromDiscovery(
             });
           }
         }
-      } else if (
-        "success" in value &&
-        !value.success &&
-        "skipped" in value &&
-        value.skipped === true
-      ) {
+      } else if ("skipped" in value && value.skipped === true) {
         skippedResults.push({
           url: resourceUrl,
           error: value.error,
           status: "status" in value ? value.status : undefined,
         });
-      } else if ("success" in value && !value.success) {
+      } else {
         failedResults.push({
           url: resourceUrl,
           error: value.error,
           status: "status" in value ? value.status : undefined,
         });
       }
-    } else if (result.status === "rejected") {
+    } else {
       failedResults.push({
         url: resourceUrl,
         error:
