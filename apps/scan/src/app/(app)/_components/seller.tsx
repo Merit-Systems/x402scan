@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "@/components/ui/address";
 
@@ -39,13 +37,11 @@ export const Seller: React.FC<Props> = ({
 
   if (!origins || origins.length === 0) {
     return (
-      <Link href={`/recipient/${address}`}>
-        <Address
-          address={address}
-          className={cn("text-xs font-medium", addressClassName)}
-          disableCopy={disableCopy}
-        />
-      </Link>
+      <Address
+        address={address}
+        className={cn("text-xs font-medium", addressClassName)}
+        disableCopy={disableCopy}
+      />
     );
   }
 

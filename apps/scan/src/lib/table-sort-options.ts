@@ -12,17 +12,6 @@ export const DEFAULT_AGENTS_SORTING = {
   desc: true,
 } satisfies { id: AgentSortId; desc: boolean };
 
-export const BUYER_SELLERS_SORT_IDS = [
-  "tx_count",
-  "total_amount",
-  "latest_block_timestamp",
-] as const;
-type BuyerSellerSortId = (typeof BUYER_SELLERS_SORT_IDS)[number];
-export const DEFAULT_BUYER_SELLERS_SORTING = {
-  id: "tx_count",
-  desc: true,
-} satisfies { id: BuyerSellerSortId; desc: boolean };
-
 export const FACILITATORS_SORT_IDS = [
   "tx_count",
   "total_amount",
@@ -76,7 +65,7 @@ export const DEFAULT_TOOLS_SORTING = {
 } satisfies { id: ToolSortId; desc: boolean };
 
 export const TRANSFERS_SORT_IDS = ["block_timestamp", "amount"] as const;
-export type TransfersSortId = (typeof TRANSFERS_SORT_IDS)[number];
+type TransfersSortId = (typeof TRANSFERS_SORT_IDS)[number];
 export const DEFAULT_TRANSFERS_SORTING = {
   id: "block_timestamp",
   desc: true,

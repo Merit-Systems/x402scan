@@ -373,39 +373,3 @@ export const getOriginPayToAddresses = async (
 
   return [...new Set(addresses)].sort((a, b) => a.localeCompare(b));
 };
-
-export const getOriginMetadata = async (id: string) => {
-  return await scanDb.resourceOrigin.findUnique({
-    where: { id },
-    select: {
-      resources: {
-        where: displayableResourceWhere,
-        select: {
-          tags: {
-            select: {
-              tag: true,
-            },
-          },
-          accepts: {
-            where: getDisplayableAcceptsWhere({}),
-            select: {
-              payTo: true,
-            },
-          },
-          _count: {
-            select: {
-              agentConfigurationResources: true,
-            },
-          },
-        },
-      },
-      _count: {
-        select: {
-          resources: {
-            where: displayableResourceWhere,
-          },
-        },
-      },
-    },
-  });
-};

@@ -117,7 +117,7 @@ export function formatPricingLabel(opts: {
   return UNKNOWN_PAID_LABEL;
 }
 
-export { getResourceAuthMode, isFreeResource } from "@/lib/resource-auth";
+export { getResourceAuthMode } from "@/lib/resource-auth";
 
 const methodsSchema = z.enum(Methods);
 const extendedMethodsSchema = z.enum(["OPTIONS", "HEAD"]);

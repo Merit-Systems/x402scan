@@ -14,7 +14,7 @@ import type { DataTableColumnDef } from "@/components/ui/data-table";
 
 type ColumnType = RouterOutputs["public"]["transfers"]["list"]["items"][number];
 
-export const columns: DataTableColumnDef<ColumnType>[] = [
+const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "recipient",
     header: ({ column }) => (
