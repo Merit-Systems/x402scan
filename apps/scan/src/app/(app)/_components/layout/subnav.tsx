@@ -28,7 +28,7 @@ export function Subnav<T extends string>({ tabs }: SubnavProps<T>) {
     <div className="border-b bg-background">
       <nav
         aria-label="Section navigation"
-        className="no-scrollbar w-full overflow-x-auto px-2"
+        className="mx-auto no-scrollbar max-w-6xl overflow-x-auto px-2"
       >
         <ul className="flex min-w-max items-center gap-1 py-1.5">
           {tabs.map((tab) => {
