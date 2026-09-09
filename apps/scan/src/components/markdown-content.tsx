@@ -11,8 +11,10 @@ interface MarkdownContentProps {
 
 export function MarkdownContent({ content, className }: MarkdownContentProps) {
   return (
-    <Typeset className={cn("mx-auto max-w-4xl px-4 py-8 md:px-6", className)}>
-      <Streamdown>{content}</Streamdown>
-    </Typeset>
+    <div className={cn("mx-auto max-w-4xl px-4 py-8 md:px-6", className)}>
+      <Typeset>
+        <Streamdown>{content}</Streamdown>
+      </Typeset>
+    </div>
   );
 }

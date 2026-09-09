@@ -1,4 +1,4 @@
-import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { AgentsTable } from "@/app/(app)/composer/agents/(table)/_components/table";
 import { ActivityTimeframe } from "@/types/timeframes";
 import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";

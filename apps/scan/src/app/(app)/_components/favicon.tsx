@@ -74,7 +74,7 @@ export const Favicons: React.FC<FaviconsProps> = ({
       {numToShow && favicons.length > numToShow && (
         <div
           className={cn(
-            "border bg-card rounded-full overflow-hidden flex items-center justify-center text-[10px]",
+            "type-micro border bg-card rounded-full overflow-hidden flex items-center justify-center",
             iconContainerClassName,
             {
               "-mt-2": orientation === "vertical",

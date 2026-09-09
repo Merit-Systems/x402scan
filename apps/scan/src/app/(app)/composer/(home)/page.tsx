@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { Body } from "@/app/(app)/_components/layout/page-utils";
+import { Body } from "@/app/(app)/_components/deferred/page-utils";
 import { Agents, LoadingAgents } from "./_components/agents";
 import { ComposerHomeHeading } from "./_components/heading";
 import { Tools } from "./_components/tools";

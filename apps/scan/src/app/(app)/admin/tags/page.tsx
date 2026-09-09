@@ -1,4 +1,4 @@
-import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { ResourceTable } from "./_components/resource-table";
 import { ResourceCharts } from "./_components/resource-charts";
 import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
