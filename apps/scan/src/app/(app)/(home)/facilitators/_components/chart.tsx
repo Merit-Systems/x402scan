@@ -13,13 +13,15 @@ import type { UsageChartValues } from "@/components/usage-bar-chart";
 
 import type { getBucketedFacilitatorsStatistics } from "@/services/transfers/facilitators/bucketed";
 
-export const FacilitatorsChart = ({
-  bucketedFacilitatorData,
-}: {
+interface FacilitatorsChartProps {
   bucketedFacilitatorData: Awaited<
     ReturnType<typeof getBucketedFacilitatorsStatistics>
   >;
-}) => {
+}
+
+export const FacilitatorsChart = ({
+  bucketedFacilitatorData,
+}: FacilitatorsChartProps) => {
   const chartData: ChartData<UsageChartValues>[] = bucketedFacilitatorData.map(
     (item) => ({
       timestamp: item.bucket_start.toISOString(),

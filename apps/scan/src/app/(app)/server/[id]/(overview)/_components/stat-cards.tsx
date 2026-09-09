@@ -11,13 +11,15 @@ import type { ChartData } from "@/components/ui/chart";
 import type { getBucketedStatisticsMV } from "@/services/transfers/stats/bucketed-mv";
 import type { getOverallStatisticsMV } from "@/services/transfers/stats/overall-mv";
 
+interface ServerStatCardsProps {
+  overall: Awaited<ReturnType<typeof getOverallStatisticsMV>>;
+  timeSeries: Awaited<ReturnType<typeof getBucketedStatisticsMV>>;
+}
+
 export const ServerStatCards = ({
   overall,
   timeSeries,
-}: {
-  overall: Awaited<ReturnType<typeof getOverallStatisticsMV>>;
-  timeSeries: Awaited<ReturnType<typeof getBucketedStatisticsMV>>;
-}) => {
+}: ServerStatCardsProps) => {
   const chartData: ChartData<{
     transactions: number;
     volume: number;

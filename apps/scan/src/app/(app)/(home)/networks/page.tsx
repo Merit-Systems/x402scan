@@ -113,11 +113,11 @@ async function Table({
   );
 }
 
-async function ChartData({
-  input,
-}: {
+interface ChartDataProps {
   input: Parameters<typeof getBucketedNetworksStatistics>[0];
-}) {
+}
+
+async function ChartData({ input }: ChartDataProps) {
   return (
     <NetworksChart
       bucketedNetworkData={await getBucketedNetworksStatistics(input)}
@@ -125,13 +125,12 @@ async function ChartData({
   );
 }
 
-async function TableData({
-  input,
-  sorting,
-}: {
+interface TableDataProps {
   input: Parameters<typeof listTopNetworks>[0];
   sorting: Parameters<typeof NetworksTable>[0]["sorting"];
-}) {
+}
+
+async function TableData({ input, sorting }: TableDataProps) {
   return (
     <NetworksTable networks={await listTopNetworks(input)} sorting={sorting} />
   );

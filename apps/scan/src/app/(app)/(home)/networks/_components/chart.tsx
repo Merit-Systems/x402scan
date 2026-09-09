@@ -13,13 +13,13 @@ import type { UsageChartValues } from "@/components/usage-bar-chart";
 
 import type { getBucketedNetworksStatistics } from "@/services/transfers/networks/bucketed";
 
-export const NetworksChart = ({
-  bucketedNetworkData,
-}: {
+interface NetworksChartProps {
   bucketedNetworkData: Awaited<
     ReturnType<typeof getBucketedNetworksStatistics>
   >;
-}) => {
+}
+
+export const NetworksChart = ({ bucketedNetworkData }: NetworksChartProps) => {
   const chartData: ChartData<UsageChartValues>[] = bucketedNetworkData.map(
     (item) => {
       // Buckets only include networks with data, so start every known
