@@ -82,7 +82,14 @@ export default defineConfig({
         {
           item: "data-table",
           reason:
-            "Backport https://github.com/Merit-Systems/foundation/pull/157 for Next row links; remove after the canonical registry deployment.",
+            "Backport https://github.com/Merit-Systems/foundation/pull/157 for direct Next row links; remove after the canonical registry deployment.",
+          owner: "jasonhedman",
+          expires: "2026-09-22",
+        },
+        {
+          item: "responsive-collection",
+          reason:
+            "Backport https://github.com/Merit-Systems/foundation/pull/157 to preserve row-link destination inference; remove after the canonical registry deployment.",
           owner: "jasonhedman",
           expires: "2026-09-22",
         },
