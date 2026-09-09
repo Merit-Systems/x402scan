@@ -8,10 +8,7 @@ import {
   facilitatorIdMap,
   MIN_FACILITATOR_TRANSACTIONS,
 } from "@/lib/facilitators";
-import {
-  toPaginatedResponse,
-  type paginatedQuerySchema,
-} from "@/lib/pagination";
+import { toPaginatedResponse } from "@/lib/pagination";
 import { chainSchema } from "@/lib/schemas";
 import {
   DEFAULT_FACILITATORS_SORTING,
@@ -22,6 +19,7 @@ import { queryRaw } from "@/services/transfers/client";
 
 import { baseListQuerySchema } from "../schemas";
 
+import type { paginatedQuerySchema } from "@/lib/pagination";
 import type { FacilitatorsSortId } from "@/lib/table-sort-options";
 
 export const listTopFacilitatorsInputSchema = baseListQuerySchema({
