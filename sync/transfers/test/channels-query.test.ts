@@ -420,6 +420,61 @@ describe('extractPayouts', () => {
     });
   });
 
+  it('indexes the payout when the treasury account is also the recipient', () => {
+    // Observed live from pay.sh on mainnet: the client passes the merchant's
+    // ATA as treasury_token_account, so the same address is both accounts[6]
+    // and the recipient tail. The payout leg must still be indexed; the payee
+    // implicit remainder and payer refund must not.
+    const tx = buildTx(
+      [
+        { discriminator: SETTLE_AND_SEAL, accounts: [] },
+        {
+          discriminator: DISTRIBUTE,
+          accounts: distributeAccounts({
+            payer,
+            escrow,
+            payerAta,
+            payeeAta,
+            treasuryAta: recipientAta,
+            recipients: [recipientAta],
+          }),
+        },
+      ],
+      [
+        {
+          source: escrow,
+          destination: recipientAta,
+          amount: '36968',
+          atInstructionIndex: 1,
+        },
+        // payee implicit remainder (facilitator's own account) — skipped
+        {
+          source: escrow,
+          destination: payeeAta,
+          amount: '12345',
+          atInstructionIndex: 1,
+        },
+        // payer refund — skipped
+        {
+          source: escrow,
+          destination: payerAta,
+          amount: '213032',
+          atInstructionIndex: 1,
+        },
+      ],
+      new Map([[recipientAta, recipientOwner]])
+    );
+
+    const events = extractPayouts(tx, CHANNELS_PROGRAM, context);
+    expect(events).toHaveLength(1);
+    expect(events[0]).toMatchObject({
+      amount: 36968,
+      recipient: recipientOwner.toBase58(),
+      scheme: 'upto',
+      sender: payer.toBase58(),
+    });
+  });
+
   it('falls back to the destination address when no owner metadata exists', () => {
     const tx = buildTx(
       [{ discriminator: DISTRIBUTE, accounts }],
