@@ -1,4 +1,4 @@
-import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
 import { CreateInviteCodeButton } from "./_components/create-modal";
 import { WalletInfo } from "./_components/wallet-info";
 import { InviteCodesTable } from "./_components/table";

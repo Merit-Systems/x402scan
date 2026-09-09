@@ -1,5 +1,5 @@
-import { Body, Heading } from "@/app/_components/layout/page-utils";
-import { AgentsTable } from "@/app/(app)/_components/agents/table";
+import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
+import { AgentsTable } from "@/app/(app)/composer/agents/(table)/_components/table";
 import { ActivityTimeframe } from "@/types/timeframes";
 import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";

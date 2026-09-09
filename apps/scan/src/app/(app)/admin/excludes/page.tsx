@@ -1,4 +1,4 @@
-import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
 import { ResourceExcludesTable } from "./_components/resource-excludes-table";
 import { auth } from "@/auth";
 import { forbidden } from "next/navigation";

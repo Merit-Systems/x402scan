@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { CopyCode } from "@/components/ui/copy-code";
 
-import { useWalletChain } from "@/app/(app)/_contexts/wallet-chain/hook";
+import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
 
 import { api } from "@/trpc/client";
 

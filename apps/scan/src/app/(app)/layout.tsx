@@ -1,14 +1,12 @@
 import { SearchProvider } from "./_contexts/search/provider";
 import { ChainProvider } from "./_contexts/chain/provider";
 import { Header } from "./_components/layout/header";
-import { OnrampSessionDialog } from "./_components/wallet/onramp-session-dialog";
-import { Footer } from "../_components/layout/footer";
+import { Footer } from "./_components/layout/footer";
 
 export default function AppLayout({ children }: LayoutProps<"/">) {
   return (
     <ChainProvider>
       <SearchProvider>
-        <OnrampSessionDialog />
         <Header />
         <div className="flex flex-1 flex-col bg-background">{children}</div>
         <Footer />
