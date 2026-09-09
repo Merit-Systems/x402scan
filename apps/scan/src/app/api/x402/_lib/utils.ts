@@ -130,7 +130,7 @@ export function asChain(
 export function extractPathSegment(request: Request, index: number): string {
   const segment = new URL(request.url).pathname.split("/")[index];
   if (segment === undefined) {
-    throw new Error(`Missing path segment at index ${index}`);
+    throw new Error(`Missing path segment at index ${String(index)}`);
   }
   return segment;
 }

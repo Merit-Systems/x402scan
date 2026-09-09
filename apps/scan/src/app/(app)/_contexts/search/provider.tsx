@@ -22,8 +22,6 @@ import { Resource } from "./_components/resource";
 
 import { api } from "@/trpc/client";
 
-import type { Route } from "next";
-
 export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
@@ -58,8 +56,8 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
     api.public.resources.search.useQuery(input, options);
 
   const handleSelect = useCallback(
-    <T extends string>(route: Route<T>) => {
-      router.push(route);
+    (originId: string) => {
+      router.push(`/server/${originId}`);
       setIsOpen(false);
       setSearch("");
     },
@@ -109,7 +107,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
                     key={origin.id}
                     value={origin.origin}
                     onSelect={() => {
-                      handleSelect(`/server/${origin.id}`);
+                      handleSelect(origin.id);
                     }}
                   >
                     <Origin
@@ -133,7 +131,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
                     key={resource.id}
                     value={resource.resource}
                     onSelect={() => {
-                      handleSelect(`/server/${resource.origin.id}`);
+                      handleSelect(resource.origin.id);
                     }}
                   >
                     <Resource resource={resource} />

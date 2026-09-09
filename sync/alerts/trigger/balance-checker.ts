@@ -4,6 +4,7 @@ import { USDC_ADDRESS, ERC20_ABI, CURRENCY_CONFIG } from "./constants";
 import type { BalanceCheckResult } from "./types";
 import { Currency } from "./types";
 import { z } from "zod";
+import { env } from "@/trigger/env";
 
 export async function checkUSDCBalance(
   address: Address,
@@ -11,7 +12,7 @@ export async function checkUSDCBalance(
 ): Promise<BalanceCheckResult> {
   const client = createPublicClient({
     chain: base,
-    transport: http(process.env.BASE_RPC_URL),
+    transport: http(env.BASE_RPC_URL),
   });
 
   const balance = await client.readContract({
@@ -44,7 +45,7 @@ export async function checkETHBalance(
 ): Promise<BalanceCheckResult> {
   const client = createPublicClient({
     chain: base,
-    transport: http(process.env.BASE_RPC_URL),
+    transport: http(env.BASE_RPC_URL),
   });
 
   const balance = await client.getBalance({

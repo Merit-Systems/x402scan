@@ -1,5 +1,6 @@
 import { withPostHogConfig } from "@posthog/nextjs-config";
 import createMDX from "@next/mdx";
+import { env } from "./src/env";
 
 import type { NextConfig } from "next";
 
@@ -66,8 +67,8 @@ const withMDX = createMDX({
 });
 
 export default withPostHogConfig(withMDX(nextConfig), {
-  personalApiKey: process.env.POSTHOG_API_KEY ?? "",
-  projectId: process.env.POSTHOG_PROJECT_ID ?? "",
+  personalApiKey: env.POSTHOG_API_KEY ?? "",
+  projectId: env.POSTHOG_PROJECT_ID ?? "",
   // API host for source-map upload — NOT NEXT_PUBLIC_POSTHOG_HOST, which is
   // the ingestion host (us.i.posthog.com) used by the runtime SDK.
   host: "https://us.posthog.com",
@@ -75,7 +76,6 @@ export default withPostHogConfig(withMDX(nextConfig), {
     // Uploading ~7k source maps takes minutes, and POSTHOG_PROJECT_ID /
     // POSTHOG_API_KEY are only set in the Production environment — preview
     // builds fail at config load without this guard.
-    enabled:
-      process.env.VERCEL === "1" && process.env.VERCEL_ENV === "production",
+    enabled: env.VERCEL === "1" && env.VERCEL_ENV === "production",
   },
 });

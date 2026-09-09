@@ -62,7 +62,7 @@ export async function searchResourcesCombined(
         generateFilterQuestions(naturalLanguageQuery),
       ]);
       console.log(
-        `[Search] Step 1 - Parallel DB search (${queryMode}) + filter generation: ${Date.now() - step1Start}ms (${dbResults.results.length} results, ${filterQuestions.length} questions)`
+        `[Search] Step 1 - Parallel DB search (${queryMode}) + filter generation: ${String(Date.now() - step1Start)}ms (${String(dbResults.results.length)} results, ${String(filterQuestions.length)} questions)`
       );
     } catch (error) {
       console.error(
@@ -75,13 +75,13 @@ export async function searchResourcesCombined(
       filterExplanation =
         "Filter generation failed, continuing without filters";
       console.log(
-        `[Search] Step 1 - DB search (${queryMode}) only (fallback): ${Date.now() - step1Start}ms (${dbResults.results.length} results)`
+        `[Search] Step 1 - DB search (${queryMode}) only (fallback): ${String(Date.now() - step1Start)}ms (${String(dbResults.results.length)} results)`
       );
     }
   } else {
     dbResults = await searchFunction(naturalLanguageQuery);
     console.log(
-      `[Search] Step 1 - DB search (${queryMode}) only: ${Date.now() - step1Start}ms (${dbResults.results.length} results)`
+      `[Search] Step 1 - DB search (${queryMode}) only: ${String(Date.now() - step1Start)}ms (${String(dbResults.results.length)} results)`
     );
   }
 
@@ -103,7 +103,7 @@ export async function searchResourcesCombined(
     try {
       const results = await applyLLMFilters(searchResults, filterQuestions);
       console.log(
-        `[Search] Step 2 - LLM filter: ${Date.now() - step2Start}ms (${results.length} results)`
+        `[Search] Step 2 - LLM filter: ${String(Date.now() - step2Start)}ms (${String(results.length)} results)`
       );
 
       finalResults = results.map((r) => ({
@@ -132,7 +132,7 @@ export async function searchResourcesCombined(
         naturalLanguageQuery
       );
       console.log(
-        `[Search] Step 2 - Reranker: ${Date.now() - step2Start}ms (${results.length} results)`
+        `[Search] Step 2 - Reranker: ${String(Date.now() - step2Start)}ms (${String(results.length)} results)`
       );
 
       finalResults = results.map((r) => ({
@@ -162,7 +162,7 @@ export async function searchResourcesCombined(
         rerankSearchResults(searchResults, naturalLanguageQuery),
       ]);
       console.log(
-        `[Search] Step 2 - Parallel LLM + Reranker: ${Date.now() - step2Start}ms`
+        `[Search] Step 2 - Parallel LLM + Reranker: ${String(Date.now() - step2Start)}ms`
       );
 
       // Use reranker order, but include LLM filter data
@@ -190,7 +190,7 @@ export async function searchResourcesCombined(
   }
 
   const totalDuration = Date.now() - startTime;
-  console.log(`[Search] Total duration: ${totalDuration}ms`);
+  console.log(`[Search] Total duration: ${String(totalDuration)}ms`);
 
   return {
     results: finalResults,

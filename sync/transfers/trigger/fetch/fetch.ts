@@ -114,7 +114,7 @@ async function fetchWithWindow(
 
     totalFetched += results.length;
     logger.log(
-      `[${config.chain}] Fetched ${results.length} results in this time window`
+      `[${config.chain}] Fetched ${String(results.length)} results in this time window`
     );
 
     if (onBatchFetched && results.length > 0) {
@@ -127,7 +127,7 @@ async function fetchWithWindow(
 
     if (results.length >= config.limit) {
       logger.warn(
-        `[${config.chain}] Window hit limit of ${config.limit}. Some data might be missing.`
+        `[${config.chain}] Window hit limit of ${String(config.limit)}. Some data might be missing.`
       );
     }
 
@@ -171,7 +171,9 @@ async function fetchWithOffset(
     let hasMore = true;
 
     while (hasMore) {
-      logger.log(`[${config.chain}] Fetching CDP with offset: ${offset}`);
+      logger.log(
+        `[${config.chain}] Fetching CDP with offset: ${String(offset)}`
+      );
 
       const results = await fetchCDP(
         config,

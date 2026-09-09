@@ -22,7 +22,7 @@ export function buildQuery(
     {
       EVM(network: ${config.chain}, dataset: combined) {
         Transfers(
-          limit: {count: ${config.limit}}
+          limit: {count: ${String(config.limit)}}
           where: {
             Transaction: {
               From: {in: ${JSON.stringify(facilitatorConfig.address)}}

@@ -28,7 +28,7 @@ function Progress({
           "bg-primary flex-1 transition-all size-full",
           indicatorClassName
         )}
-        style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
+        style={{ transform: `translateX(-${String(100 - (value ?? 0))}%)` }}
       />
     </ProgressPrimitive.Root>
   );

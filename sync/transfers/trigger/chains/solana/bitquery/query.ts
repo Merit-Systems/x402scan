@@ -18,7 +18,7 @@ export function buildQuery(
     {
       solana(network: ${config.chain}) {
         sent: transfers(
-          options: {desc: "block.height", limit: ${config.limit}, offset: ${offset}}
+          options: {desc: "block.height", limit: ${String(config.limit)}, offset: ${String(offset)}}
           time: {
             since: "${since.toISOString()}"
             till: "${now.toISOString()}"

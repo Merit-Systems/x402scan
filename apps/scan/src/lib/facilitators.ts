@@ -34,7 +34,7 @@ function parseFacilitatorAddress(address: string): MixedAddress | null {
 export const facilitators: Facilitator[] = allFacilitators.map((f) => ({
   id: f.id,
   ...f.metadata,
-  image: `/${f.metadata.image.split("/").pop()}`,
+  image: `/${String(f.metadata.image.split("/").pop())}`,
   addresses: Object.entries(f.addresses).reduce<
     Partial<Record<Chain, MixedAddress[]>>
   >((acc, [network, configs]) => {

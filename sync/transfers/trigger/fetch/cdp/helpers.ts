@@ -1,6 +1,7 @@
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
 import { logger } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { env } from "@/trigger/env";
 
 interface CdpFetchRequest {
   requestMethod: "GET" | "POST" | "PUT" | "DELETE";
@@ -18,8 +19,8 @@ async function generateCdpJwt(request: CdpFetchRequest): Promise<string> {
     requestPath,
     expiresIn = 120,
   } = request;
-  const apiKeyId = process.env.CDP_API_KEY_ID;
-  const apiKeySecret = process.env.CDP_API_KEY_SECRET;
+  const apiKeyId = env.CDP_API_KEY_ID;
+  const apiKeySecret = env.CDP_API_KEY_SECRET;
   if (!apiKeyId || !apiKeySecret) {
     throw new Error("CDP_API_KEY_ID and CDP_API_KEY_SECRET are required");
   }
@@ -58,7 +59,7 @@ export async function cdpFetch(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`CDP API error (${response.status}): ${errorText}`);
+    throw new Error(`CDP API error (${String(response.status)}): ${errorText}`);
   }
 
   return response.json();
@@ -99,7 +100,7 @@ export async function runCdpSqlQuery<TRow>(
 
       if (isRateLimit && attempt < maxRetries - 1) {
         const delay = Math.pow(2, attempt) * 500 + Math.random() * 200;
-        logger.warn(`[CDP] Rate limit hit, retrying in ${delay}ms...`);
+        logger.warn(`[CDP] Rate limit hit, retrying in ${String(delay)}ms...`);
         await new Promise((resolve) => setTimeout(resolve, delay));
         attempt++;
       } else {

@@ -26,7 +26,7 @@ export function buildQuery(
     {
       EVM(dataset: combined, network: base) {
         Events(
-          limit: { count: ${config.limit} }
+          limit: { count: ${String(config.limit)} }
           where: {
             LogHeader: {
               Address: {
