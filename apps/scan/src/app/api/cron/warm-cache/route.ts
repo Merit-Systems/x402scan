@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
+
+import { env } from "@/env";
+import { CACHE_DURATION_MINUTES } from "@/lib/cache/constants";
+import { checkCronSecret } from "@/lib/cron";
+import { facilitatorAddresses } from "@/lib/facilitators";
+import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
 import { createCaller } from "@/trpc/routers";
 import { createTRPCContext } from "@/trpc/trpc";
-import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
-import { ACTIVITY_TIMEFRAMES } from "@/types/timeframes";
-import type { ActivityTimeframe } from "@/types/timeframes";
-import { facilitatorAddresses } from "@/lib/facilitators";
-import { CACHE_DURATION_MINUTES } from "@/lib/cache/constants";
 import { Chain } from "@/types/chain";
+import { ACTIVITY_TIMEFRAMES } from "@/types/timeframes";
 
 import type { NextRequest } from "next/server";
-import { checkCronSecret } from "@/lib/cron";
-import { env } from "@/env";
+
+import type { ActivityTimeframe } from "@/types/timeframes";
 
 export const maxDuration = 300;
 

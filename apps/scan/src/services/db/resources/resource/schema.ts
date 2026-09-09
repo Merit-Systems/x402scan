@@ -1,9 +1,10 @@
 import { z } from "zod";
 
-import { mixedAddressSchema } from "@/lib/schemas";
-import { ChainIdToNetwork } from "@/lib/x402/chain-mapping";
-import { normalizeChainId } from "@/lib/x402";
 import { AcceptsNetwork } from "@x402scan/scan-db/types";
+
+import { mixedAddressSchema } from "@/lib/schemas";
+import { normalizeChainId } from "@/lib/x402";
+import { ChainIdToNetwork } from "@/lib/x402/chain-mapping";
 
 import type { OutputSchema } from "@/lib/x402";
 

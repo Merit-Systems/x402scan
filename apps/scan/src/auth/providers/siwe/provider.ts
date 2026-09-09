@@ -1,14 +1,16 @@
 import { SiweMessage } from "@signinwithethereum/siwe";
-import Credentials, {
-  type CredentialsConfig,
-} from "next-auth/providers/credentials";
+import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
+
 import { scanDb } from "@x402scan/scan-db";
+
 import {
   SIWE_PROVIDER_ID,
   SIWE_PROVIDER_NAME,
   SIWE_STATEMENT,
 } from "./constants";
+
+import type { CredentialsConfig } from "next-auth/providers/credentials";
 
 const siweCredentialsSchema = z.object({
   message: z.string().transform((val: string) => {

@@ -1,10 +1,12 @@
-import type { OutputComponent } from "../types";
-
-import z from "zod";
-import { api } from "@/trpc/client";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ToolOutput } from "@/components/ai-elements/tool";
 import Image from "next/image";
+import z from "zod";
+
+import { ToolOutput } from "@/components/ai-elements/tool";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import { api } from "@/trpc/client";
+
+import type { OutputComponent } from "../types";
 
 const freepikOutputSchema = z.object({
   data: z.object({

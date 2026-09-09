@@ -9,14 +9,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
 import { Logo } from "@/components/ui/logo";
 
-import type { RouterOutputs } from "@/trpc/client";
-import { Verify } from "./verify";
+import { useConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
+
 import { ConnectWalletForm } from "@/app/(app)/composer/_components/wallet/connect/form";
 import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain/provider";
-import { useConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
+
+import { Verify } from "./verify";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 interface Props {
   agentConfig?: NonNullable<RouterOutputs["public"]["agents"]["get"]>;

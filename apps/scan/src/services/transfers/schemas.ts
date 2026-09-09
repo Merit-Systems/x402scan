@@ -5,8 +5,8 @@ import {
   mixedAddressSchema,
   timePeriodSchema,
 } from "@/lib/schemas";
-import { ActivityTimeframe } from "@/types/timeframes";
 import { timeframeSchema } from "@/lib/schemas";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 const addressArray = z
   .array(mixedAddressSchema)

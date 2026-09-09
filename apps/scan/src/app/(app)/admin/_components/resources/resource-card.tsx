@@ -1,30 +1,33 @@
 "use client";
 
-import { z } from "zod";
 import { AlertTriangle, Copy, Check, Shield } from "lucide-react";
 
-import { Card, CardHeader } from "@/components/ui/card";
+import { toast } from "sonner";
+import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Header } from "./header/index";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+
 import {
   formatPricingLabel,
   getMaxUsdcAmount,
   getResourceAuthMode,
 } from "@/app/(app)/_components/resources/utils";
-
 import { cn } from "@/lib/utils";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import { toast } from "sonner";
 
-import type { BazaarMethod } from "@/types/x402";
-import type { ParsedX402Response } from "@/lib/x402";
+import { Header } from "./header/index";
+
 import type { Resources, Tag } from "@x402scan/scan-db";
+
+import type { ParsedX402Response } from "@/lib/x402";
+import type { BazaarMethod } from "@/types/x402";
 
 interface SerializedAccept {
   maxAmountRequired: number;

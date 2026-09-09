@@ -2,17 +2,18 @@ import { useCallback, useMemo, useState } from "react";
 
 import { toast } from "sonner";
 
+import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
+import { ethereumAddressSchema } from "@/lib/schemas";
 import { usdc } from "@/lib/tokens/usdc";
 
 import { useEvmTokenBalance } from "../balance/token/use-evm-token-balance";
 
-import { ethereumAddressSchema } from "@/lib/schemas";
-
-import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
 import { useEvmX402Fetch } from "../x402/evm";
 
-import type { Token } from "@/types/token";
 import type { Connection } from "wagmi";
+
+import type { Token } from "@/types/token";
+
 import type { X402FetchResponse } from "../x402/types";
 
 interface Props {

@@ -1,8 +1,10 @@
-import { logger } from "@trigger.dev/sdk/v3";
 import { BigQuery } from "@google-cloud/bigquery";
+import { logger } from "@trigger.dev/sdk/v3";
 import { JWT } from "google-auth-library";
 import { z } from "zod";
+
 import { env } from "@/trigger/env";
+
 import type {
   SyncConfig,
   Facilitator,

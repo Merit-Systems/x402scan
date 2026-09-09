@@ -1,14 +1,23 @@
 "use client";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { serviceColumns as columns } from "./service-columns";
+import {
+  ResponsiveCollection,
+  ResponsiveCollectionLoading,
+} from "@/components/responsive-collection";
 import {
   LoadingServiceSummary,
   ServiceSummary,
 } from "@/components/service-summary";
+import { Button } from "@/components/ui/button";
+
+import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
+import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
+
 import {
   LoadingServiceMetric,
   ServiceBuyersMetric,
@@ -17,30 +26,33 @@ import {
   ServiceTransactionsMetric,
   ServiceVolumeMetric,
 } from "@/app/(app)/_components/service-collection";
-import {
-  ResponsiveCollection,
-  ResponsiveCollectionLoading,
-} from "@/components/responsive-collection";
-import { Button } from "@/components/ui/button";
-import { api } from "@/trpc/client";
-import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
-import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
+import { formatDiscoverPage, SERVICES_PAGE_SIZE } from "@/lib/discover/filters";
 import { SELLERS_SORT_IDS } from "@/lib/table-sort-options";
-import {
-  formatDiscoverPage,
-  SERVICES_PAGE_SIZE,
-  type ServiceView,
-} from "@/lib/discover/filters";
+import { api } from "@/trpc/client";
 
-import type { ServiceItem } from "./service-columns";
-import type { DataListItem } from "@/components/ui/data-list";
+import { serviceColumns as columns } from "./service-columns";
+
 import type { Route } from "next";
+
+import type { DataListItem } from "@/components/ui/data-list";
+
+import type { ServiceView } from "@/lib/discover/filters";
 import type { SellerSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
+import type { ServiceItem } from "./service-columns";
+
 const PAGE_SIZE = SERVICES_PAGE_SIZE;
+
+interface DiscoverServicesProps {
+  chain?: Chain;
+  sorting: TableSorting<SellerSortId>;
+  timeframe: ActivityTimeframe;
+  view: ServiceView;
+  page: number;
+}
 
 export const DiscoverServices = ({
   chain,
@@ -48,13 +60,7 @@ export const DiscoverServices = ({
   timeframe,
   view,
   page,
-}: {
-  chain?: Chain;
-  sorting: TableSorting<SellerSortId>;
-  timeframe: ActivityTimeframe;
-  view: ServiceView;
-  page: number;
-}) => {
+}: DiscoverServicesProps) => {
   return view === "featured" ? (
     <FeaturedServices
       chain={chain}
@@ -72,17 +78,19 @@ export const DiscoverServices = ({
   );
 };
 
+interface FeaturedServicesProps {
+  chain?: Chain;
+  page: number;
+  sorting: TableSorting<SellerSortId>;
+  timeframe: ActivityTimeframe;
+}
+
 const FeaturedServices = ({
   chain,
   page,
   sorting,
   timeframe,
-}: {
-  chain?: Chain;
-  page: number;
-  sorting: TableSorting<SellerSortId>;
-  timeframe: ActivityTimeframe;
-}) => {
+}: FeaturedServicesProps) => {
   const [topSellers] = api.public.sellers.bazaar.featured.useSuspenseQuery({
     chain,
     pagination: {
@@ -98,17 +106,14 @@ const FeaturedServices = ({
   );
 };
 
-const AllServices = ({
-  chain,
-  page,
-  sorting,
-  timeframe,
-}: {
+interface AllServicesProps {
   chain?: Chain;
   page: number;
   sorting: TableSorting<SellerSortId>;
   timeframe: ActivityTimeframe;
-}) => {
+}
+
+const AllServices = ({ chain, page, sorting, timeframe }: AllServicesProps) => {
   const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
     chain,
     pagination: {
@@ -124,13 +129,15 @@ const AllServices = ({
   );
 };
 
+interface LoadingDiscoverServicesProps {
+  rowCount?: number;
+  sorting: TableSorting<SellerSortId>;
+}
+
 export const LoadingDiscoverServices = ({
   rowCount = PAGE_SIZE,
   sorting,
-}: {
-  rowCount?: number;
-  sorting: TableSorting<SellerSortId>;
-}) => {
+}: LoadingDiscoverServicesProps) => {
   return (
     <ResponsiveCollectionLoading
       rowCount={rowCount}
@@ -144,11 +151,7 @@ export const LoadingDiscoverServices = ({
   );
 };
 
-function ServicesCollection({
-  page,
-  result,
-  sorting,
-}: {
+interface ServicesCollectionProps {
   page: number;
   result: {
     items: ServiceItem[];
@@ -156,7 +159,13 @@ function ServicesCollection({
     total_pages: number;
   };
   sorting: TableSorting<SellerSortId>;
-}) {
+}
+
+function ServicesCollection({
+  page,
+  result,
+  sorting,
+}: ServicesCollectionProps) {
   const router = useRouter();
   const replaceSearchParams = useReplaceSearchParams();
   const tableSorting = useUrlTableSorting({
@@ -213,19 +222,21 @@ function ServicesCollection({
   );
 }
 
+interface MobilePaginationProps {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
 function MobilePagination({
   page,
   pageSize,
   total,
   totalPages,
   onPageChange,
-}: {
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}) {
+}: MobilePaginationProps) {
   if (totalPages < 2) {
     return null;
   }

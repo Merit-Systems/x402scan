@@ -6,8 +6,8 @@ import {
   Wrench,
 } from "lucide-react";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 import {
   Card,
@@ -15,19 +15,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Favicons, LoadingFavicons } from "@/app/(app)/_components/favicon";
-
-import type { RouterOutputs } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { Favicons, LoadingFavicons } from "@/app/(app)/_components/favicon";
 import { cn } from "@/lib/utils";
 
 import type { LucideIcon } from "lucide-react";
-interface Props {
+
+import type { RouterOutputs } from "@/trpc/client";
+
+interface AgentCardProps {
   agentConfiguration: RouterOutputs["public"]["agents"]["list"]["items"][number];
   href?: `/composer/agent/${string}` | `/composer/agent/${string}/chat`;
 }
 
-export const AgentCard = ({ agentConfiguration, href }: Props) => {
+export const AgentCard = ({ agentConfiguration, href }: AgentCardProps) => {
   const route = href ?? `/composer/agent/${agentConfiguration.id}`;
   return (
     <Link href={route}>
@@ -91,20 +93,19 @@ interface Stat {
   Icon: LucideIcon;
 }
 
-type StatsCardProps = {
+type StatCardProps = {
   children: React.ReactNode;
 } & Stat;
 
-const StatCard = ({ children, ...stat }: StatsCardProps) => {
+const StatCard = ({ children, ...stat }: StatCardProps) => {
   return <BaseStatCard {...stat}>{children}</BaseStatCard>;
 };
 
-const BaseStatCard = ({
-  title,
-  children,
-}: Stat & {
+type BaseStatCardProps = Stat & {
   children: React.ReactNode;
-}) => {
+};
+
+const BaseStatCard = ({ title, children }: BaseStatCardProps) => {
   return (
     <div className="flex flex-1 flex-row items-center justify-between px-2 py-1">
       <span className="type-micro">{title}</span>

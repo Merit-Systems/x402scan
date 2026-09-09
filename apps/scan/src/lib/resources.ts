@@ -1,43 +1,42 @@
+import { after } from "next/server";
 import { z } from "zod";
 
-import { scrapeOriginData } from "@/services/scraper";
-import { upsertResource } from "@/services/db/resources/resource";
+import { scanDb } from "@x402scan/scan-db";
+
+import { notifyNewServer } from "@/lib/discord-notifications";
+import { isX402PaymentOption } from "@/lib/discovery/utils";
+import { deduplicateWarnings } from "@/lib/discovery/utils";
+import { jsonObjectSchema } from "@/lib/json";
+import { convertOpenApiSchemaToV1 } from "@/lib/openapi-to-v1";
+import { getOriginFromUrl, normalizeResourceUrl } from "@/lib/url";
+import {
+  normalizeChainId,
+  parseX402Response,
+  getOutputSchema,
+} from "@/lib/x402";
+import { outputSchemaV1 } from "@/lib/x402/v1";
 import {
   ensureOriginExists,
   getOriginResourceCount,
   upsertOrigin,
 } from "@/services/db/resources/origin";
+import { upsertResource } from "@/services/db/resources/resource";
+import { normalizeKnownAcceptNetworks } from "@/services/db/resources/resource/schema";
+import { upsertResourceResponse } from "@/services/db/resources/response";
+import { fetchDiscoveryDocument } from "@/services/discovery";
+import { scrapeOriginData } from "@/services/scraper";
+import { verifyAcceptsOwnership } from "@/services/verification/accepts-verification";
+import { SUPPORTED_CHAINS } from "@/types/chain";
+
+import { formatTokenAmount } from "./token";
 
 import type {
   EndpointMethodAdvisory,
   AuditWarning,
 } from "@agentcash/discovery";
-import { isX402PaymentOption } from "@/lib/discovery/utils";
 
-import { getOriginFromUrl, normalizeResourceUrl } from "@/lib/url";
-import { jsonObjectSchema } from "@/lib/json";
 import type { FreeAuthMode } from "@/lib/resource-auth";
-
-import { upsertResourceResponse } from "@/services/db/resources/response";
-import { formatTokenAmount } from "./token";
-import { SUPPORTED_CHAINS } from "@/types/chain";
-import { fetchDiscoveryDocument } from "@/services/discovery";
-import { verifyAcceptsOwnership } from "@/services/verification/accepts-verification";
-import { normalizeKnownAcceptNetworks } from "@/services/db/resources/resource/schema";
-import { outputSchemaV1 } from "@/lib/x402/v1";
-import {
-  normalizeChainId,
-  parseX402Response,
-  getOutputSchema,
-  type OutputSchema,
-} from "@/lib/x402";
-
-import { scanDb } from "@x402scan/scan-db";
-
-import { convertOpenApiSchemaToV1 } from "@/lib/openapi-to-v1";
-import { deduplicateWarnings } from "@/lib/discovery/utils";
-import { notifyNewServer } from "@/lib/discord-notifications";
-import { after } from "next/server";
+import type { OutputSchema } from "@/lib/x402";
 
 const codedErrorSchema = z.object({ code: z.string() });
 

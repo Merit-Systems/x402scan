@@ -1,9 +1,11 @@
 "use client";
 
 import { Check, Copy } from "lucide-react";
+
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 const SETUP_PROMPT = `My API doesn't have a discovery document yet. Create an OpenAPI spec (openapi.json) that describes my endpoints, then serve it so x402scan.com can discover them.
@@ -89,16 +91,7 @@ To fix these:
 Fix each issue. Only ask me if you need input you can't determine yourself.`;
 }
 
-export function DiscoveryActions({
-  iconOnly,
-  label,
-  failedResources,
-  warnings,
-  noDiscovery,
-  missingSchemaResources,
-  missingContactEmail,
-  customPrompt,
-}: {
+interface DiscoveryActionsProps {
   iconOnly?: boolean;
   label?: string;
   failedResources?: { url: string; error: string; status?: number }[];
@@ -110,7 +103,18 @@ export function DiscoveryActions({
   missingContactEmail?: boolean;
   /** Override the generated prompt with a custom one. */
   customPrompt?: string;
-}) {
+}
+
+export function DiscoveryActions({
+  iconOnly,
+  label,
+  failedResources,
+  warnings,
+  noDiscovery,
+  missingSchemaResources,
+  missingContactEmail,
+  customPrompt,
+}: DiscoveryActionsProps) {
   const prompt =
     customPrompt ??
     (noDiscovery

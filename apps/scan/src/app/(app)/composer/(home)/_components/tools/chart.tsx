@@ -1,16 +1,17 @@
 "use client";
 
 import { AreaChart, LoadingAreaChart } from "@/components/ui/chart";
-import { api } from "@/trpc/client";
 
-import type { ChartData } from "@/components/ui/chart";
+import { api } from "@/trpc/client";
 import { ActivityTimeframe } from "@/types/timeframes";
 
-interface Props {
+import type { ChartData } from "@/components/ui/chart";
+
+interface KnownSellerChartProps {
   addresses: string[];
 }
 
-export const KnownSellerChart = ({ addresses }: Props) => {
+export const KnownSellerChart = ({ addresses }: KnownSellerChartProps) => {
   const { data: bucketedStats, isLoading } = api.public.stats.bucketed.useQuery(
     {
       recipients: {

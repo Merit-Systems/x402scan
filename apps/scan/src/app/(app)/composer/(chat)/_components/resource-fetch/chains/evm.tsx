@@ -1,20 +1,21 @@
 import { useWalletClient } from "wagmi";
 
+import { useEvmTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-evm-token-balance";
+
+import { useEvmX402FetchWithConfirmation } from "@/app/(app)/composer/_hooks/x402/evm-with-confirmation";
+import { convertTokenAmount } from "@/lib/token";
+import { usdc } from "@/lib/tokens/usdc";
+
 import { ConnectWalletState } from "../1-connect";
 import { LoadingState } from "../2-loading-balance";
 import { AddFundsState } from "../3-add-funds";
 import { FetchState } from "../4-fetch";
 import { PriceConfirmationDialog } from "../price-confirmation-dialog";
 
-import { useEvmTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-evm-token-balance";
-import { useEvmX402FetchWithConfirmation } from "@/app/(app)/composer/_hooks/x402/evm-with-confirmation";
-
-import { convertTokenAmount } from "@/lib/token";
-import { usdc } from "@/lib/tokens/usdc";
-
-import type { SupportedChain } from "@/types/chain";
 import type { UseMutationOptions } from "@tanstack/react-query";
+
 import type { X402FetchResponse } from "@/app/(app)/composer/_hooks/x402/types";
+import type { SupportedChain } from "@/types/chain";
 
 interface Props {
   chain: SupportedChain;

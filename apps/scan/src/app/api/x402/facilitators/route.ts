@@ -1,6 +1,6 @@
-import { router, withCors, OPTIONS } from "@/lib/router";
-import { facilitatorsListQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { handleFacilitators } from "@/app/api/x402/_handlers/facilitators";
+import { facilitatorsListQuerySchema } from "@/app/api/x402/_lib/schemas";
+import { router, withCors, OPTIONS } from "@/lib/router";
 
 export { OPTIONS };
 

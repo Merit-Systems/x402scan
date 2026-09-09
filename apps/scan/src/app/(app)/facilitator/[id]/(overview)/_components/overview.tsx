@@ -4,16 +4,19 @@ import { buttonVariants } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/image-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import type { Facilitator } from "@/lib/facilitators";
 import type { ReactNode } from "react";
+
+import type { Facilitator } from "@/lib/facilitators";
+
+interface FacilitatorOverviewProps {
+  controls?: ReactNode;
+  facilitator: Facilitator;
+}
 
 export function FacilitatorOverview({
   controls,
   facilitator,
-}: {
-  controls?: ReactNode;
-  facilitator: Facilitator;
-}) {
+}: FacilitatorOverviewProps) {
   return (
     <div className="flex min-w-0 items-center justify-between gap-4">
       <div className="min-w-0 space-y-2">
@@ -43,11 +46,13 @@ export function FacilitatorOverview({
   );
 }
 
+interface LoadingFacilitatorOverviewProps {
+  controls?: ReactNode;
+}
+
 export function LoadingFacilitatorOverview({
   controls,
-}: {
-  controls?: ReactNode;
-}) {
+}: LoadingFacilitatorOverviewProps) {
   return (
     <div className="flex min-w-0 items-center justify-between gap-4">
       <div className="min-w-0 space-y-2">

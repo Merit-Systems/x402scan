@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { registerFreeResource, registerResource } from "@/lib/resources";
+import { getOriginResourceCount } from "@/services/db/resources/origin";
+import { deprecateStaleResources } from "@/services/db/resources/resource";
+
 import { probeX402Endpoint } from "./probe";
 import { registerResourcesFromDiscovery } from "./register-origin";
-import { registerFreeResource, registerResource } from "@/lib/resources";
-import { deprecateStaleResources } from "@/services/db/resources/resource";
-import { getOriginResourceCount } from "@/services/db/resources/origin";
 
 vi.mock("./probe", () => ({
   probeX402Endpoint: vi.fn<(url: string) => Promise<unknown>>((url) =>

@@ -1,12 +1,12 @@
-import { ChatContent } from "./content";
-import { ConnectDialog } from "./auth";
-import { Onboarding } from "./onboarding";
-
-import { serverCookieUtils } from "../../_lib/cookies/server";
-
 import { auth } from "@/auth";
 
+import { serverCookieUtils } from "../../_lib/cookies/server";
+import { ConnectDialog } from "./auth";
+import { ChatContent } from "./content";
+import { Onboarding } from "./onboarding";
+
 import type { Message } from "@x402scan/scan-db/types";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 interface Props {

@@ -1,11 +1,10 @@
 "use client";
 
-import { api } from "@/trpc/client";
+import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
 
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
-
-import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
 import { formatChartTimestamp } from "@/lib/utils";
+import { api } from "@/trpc/client";
 
 import type { ChartData } from "@/components/ui/chart";
 

@@ -1,7 +1,7 @@
 import { facilitator } from "@coinbase/x402";
 
-import { Network } from "../types";
 import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from "../constants";
+import { Network } from "../types";
 
 import type { Facilitator, FacilitatorConfig } from "../types";
 

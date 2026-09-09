@@ -1,11 +1,13 @@
-import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
-import type { SearchResult } from "./types";
+import { generateText, Output } from "ai";
+
 import {
   sqlGenerationSchema,
   buildSearchPrompt,
   executeResourceSearch,
 } from "./database-search";
+
+import type { SearchResult } from "./types";
 
 async function generateAndExecuteSingleQuery(
   naturalLanguageQuery: string,

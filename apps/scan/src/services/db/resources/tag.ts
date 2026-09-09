@@ -1,5 +1,7 @@
-import { scanDb } from "@x402scan/scan-db";
 import { z } from "zod";
+
+import { scanDb } from "@x402scan/scan-db";
+
 import { MAIN_TAGS } from "@/services/labeling/main-tags";
 
 export const createTagSchema = z.object({

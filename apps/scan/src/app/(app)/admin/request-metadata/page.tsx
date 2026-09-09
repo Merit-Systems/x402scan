@@ -1,7 +1,9 @@
-import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
-import { ResourceMetadataTable } from "./_components/resource-metadata-table";
-import { auth } from "@/auth";
 import { forbidden } from "next/navigation";
+
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
+import { auth } from "@/auth";
+
+import { ResourceMetadataTable } from "./_components/resource-metadata-table";
 
 export default async function RequestMetadataPage() {
   const session = await auth();

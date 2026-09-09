@@ -1,9 +1,11 @@
 import { ONE_MINUTE_IN_SECONDS } from "@/trigger/lib/constants";
-import type { SyncConfig } from "@/trigger/types";
-import { PaginationStrategy, QueryProvider } from "@/trigger/types";
-import { buildQuery, transformResponse } from "./query";
 import { FACILITATORS_BY_CHAIN } from "@/trigger/lib/facilitators";
+import { PaginationStrategy, QueryProvider } from "@/trigger/types";
 import { Network } from "@/trigger/types";
+
+import { buildQuery, transformResponse } from "./query";
+
+import type { SyncConfig } from "@/trigger/types";
 
 export const baseCdpConfig: SyncConfig = {
   cron: "*/5 * * * *",

@@ -1,13 +1,13 @@
+import { cn } from "@/lib/utils";
+import { Chain } from "@/types/chain";
+
 import { FetchEvm } from "./chains/evm";
 import { FetchSvm } from "./chains/svm";
 
-import { cn } from "@/lib/utils";
-
-import { Chain } from "@/types/chain";
-
-import type { SupportedChain } from "@/types/chain";
 import type { UseMutationOptions } from "@tanstack/react-query";
+
 import type { X402FetchResponse } from "@/app/(app)/composer/_hooks/x402/types";
+import type { SupportedChain } from "@/types/chain";
 
 interface Props {
   chains: SupportedChain[];

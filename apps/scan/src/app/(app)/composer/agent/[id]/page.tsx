@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation";
 
 import { Body } from "@/app/(app)/_components/deferred/page-utils";
+import { api } from "@/trpc/server";
 
+import { Activity } from "./_components/activity";
 import { HeaderCard } from "./_components/header";
 import { Tools } from "./_components/tools";
-import { Activity } from "./_components/activity";
-
-import { api } from "@/trpc/server";
 
 import type { Metadata } from "next";
 

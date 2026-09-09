@@ -1,7 +1,9 @@
-import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
-import { EndUsersTable } from "./_components/table";
-import { auth } from "@/auth";
 import { forbidden } from "next/navigation";
+
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
+import { auth } from "@/auth";
+
+import { EndUsersTable } from "./_components/table";
 
 export default async function EndUsersPage() {
   const session = await auth();

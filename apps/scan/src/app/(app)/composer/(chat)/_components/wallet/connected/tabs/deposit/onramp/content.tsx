@@ -1,17 +1,15 @@
 "use client";
 
-import { useCallback, useState } from "react";
-
 import { Check, Loader2 } from "lucide-react";
 
+import { useCallback, useState } from "react";
+
 import { Button } from "@/components/ui/button";
+
 import { TokenInput } from "@/app/(app)/composer/(chat)/_components/token/token-input";
-
 import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
-
-import { api } from "@/trpc/client";
-
 import { usdc } from "@/lib/tokens/usdc";
+import { api } from "@/trpc/client";
 
 export const OnrampContent = () => {
   const { chain } = useWalletChain();

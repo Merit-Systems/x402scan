@@ -1,13 +1,15 @@
+import { ChevronDownIcon } from "lucide-react";
+
+import z from "zod";
+
+import { ToolOutput } from "@/components/ai-elements/tool";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { OutputComponent } from "../types";
 
-import z from "zod";
-import { ChevronDownIcon } from "lucide-react";
-import { ToolOutput } from "@/components/ai-elements/tool";
+import type { OutputComponent } from "../types";
 
 const firecrawlOutputSchema = z.object({
   success: z.literal(true),

@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Button } from "@/components/ui/button";
-
 import {
   Drawer,
   DrawerContent,
@@ -15,12 +14,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Favicons } from "@/app/(app)/_components/favicon";
-
-import { ResourceList } from "@/app/(app)/composer/_components/resource-list";
 
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
+import { Favicons } from "@/app/(app)/_components/favicon";
+import { ResourceList } from "@/app/(app)/composer/_components/resource-list";
 import { cn } from "@/lib/utils";
 
 import type { SelectedResource } from "../../../../_types/chat-config";

@@ -1,20 +1,23 @@
 "use client";
 
 import { User, Calendar, Wallet } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Copyable } from "@/components/ui/copyable";
+
 import { format } from "date-fns";
 
+import { Copyable } from "@/components/ui/copyable";
+import { Skeleton } from "@/components/ui/skeleton";
+
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type EndUser = RouterOutputs["admin"]["endUsers"]["list"][number];
 
-const AuthMethodBadge = ({
-  method,
-}: {
+interface AuthMethodBadgeProps {
   method: EndUser["authenticationMethods"][number];
-}) => {
+}
+
+const AuthMethodBadge = ({ method }: AuthMethodBadgeProps) => {
   if (method.type === "email") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 type-caption text-primary">

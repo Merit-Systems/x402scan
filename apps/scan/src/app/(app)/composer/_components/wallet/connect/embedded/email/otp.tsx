@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-
 import { Loader2 } from "lucide-react";
 
-import { useVerifyEmailOTP } from "@coinbase/cdp-hooks";
-
 import { useMutation } from "@tanstack/react-query";
+import React, { useState } from "react";
 
+import { useVerifyEmailOTP } from "@coinbase/cdp-hooks";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";

@@ -1,6 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { formatAddress } from "@/lib/utils";
 import { CheckCircle } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+
+import { formatAddress } from "@/lib/utils";
 
 interface Props {
   amount: number;

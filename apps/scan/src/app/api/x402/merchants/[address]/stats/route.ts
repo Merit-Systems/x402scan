@@ -1,7 +1,7 @@
-import { router, withCors, OPTIONS } from "@/lib/router";
+import { handleMerchantStats } from "@/app/api/x402/_handlers/merchant-stats";
 import { merchantStatsQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { extractPathSegment } from "@/app/api/x402/_lib/utils";
-import { handleMerchantStats } from "@/app/api/x402/_handlers/merchant-stats";
+import { router, withCors, OPTIONS } from "@/lib/router";
 
 export { OPTIONS };
 

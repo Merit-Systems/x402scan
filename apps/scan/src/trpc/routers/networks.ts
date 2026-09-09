@@ -1,12 +1,13 @@
 import {
-  listTopNetworks,
-  listTopNetworksInputSchema,
-} from "@/services/transfers/networks/list";
-import { createTRPCRouter, publicProcedure } from "../trpc";
-import {
   bucketedNetworksStatisticsInputSchema,
   getBucketedNetworksStatistics,
 } from "@/services/transfers/networks/bucketed";
+import {
+  listTopNetworks,
+  listTopNetworksInputSchema,
+} from "@/services/transfers/networks/list";
+
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const networksRouter = createTRPCRouter({
   list: publicProcedure

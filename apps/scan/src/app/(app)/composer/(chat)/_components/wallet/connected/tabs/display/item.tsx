@@ -1,10 +1,9 @@
-export const ItemContainer = ({
-  label,
-  value,
-}: {
+interface ItemContainerProps {
   label: string;
   value: React.ReactNode;
-}) => {
+}
+
+export const ItemContainer = ({ label, value }: ItemContainerProps) => {
   return (
     <div className="flex flex-col gap-1">
       <p className="type-mono type-scale-supporting type-emphasis">{label}</p>
@@ -13,13 +12,15 @@ export const ItemContainer = ({
   );
 };
 
+interface AuthenticationMethodProps {
+  label: string;
+  value: string;
+}
+
 export const AuthenticationMethod = ({
   label,
   value,
-}: {
-  label: string;
-  value: string;
-}) => {
+}: AuthenticationMethodProps) => {
   return (
     <ItemContainer
       label={label}

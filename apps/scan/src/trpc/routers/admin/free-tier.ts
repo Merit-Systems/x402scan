@@ -1,8 +1,9 @@
 import { TRPCError } from "@trpc/server";
 
-import { Chain } from "@/types/chain";
-import { createTRPCRouter, adminProcedure } from "../../trpc";
 import { freeTierWallets } from "@/services/cdp/server-wallet/free-tier";
+import { Chain } from "@/types/chain";
+
+import { createTRPCRouter, adminProcedure } from "../../trpc";
 
 export const adminFreeTierRouter = createTRPCRouter({
   address: adminProcedure.query(async () => {

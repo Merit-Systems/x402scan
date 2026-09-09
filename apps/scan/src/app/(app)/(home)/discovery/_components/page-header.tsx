@@ -1,6 +1,12 @@
+import { Typeset, TypesetLead } from "@/components/ui/typeset";
+
 import type { ReactNode } from "react";
 
-import { Typeset, TypesetLead } from "@/components/ui/typeset";
+interface DiscoveryPageHeaderProps {
+  title: string;
+  description: string;
+  children?: ReactNode;
+}
 
 export function DiscoveryPageHeader({
   title,
@@ -20,10 +26,4 @@ export function DiscoveryPageHeader({
       )}
     </header>
   );
-}
-
-interface DiscoveryPageHeaderProps {
-  title: string;
-  description: string;
-  children?: ReactNode;
 }

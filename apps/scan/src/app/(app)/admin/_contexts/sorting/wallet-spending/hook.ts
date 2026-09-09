@@ -1,6 +1,5 @@
-import { WalletSpendingSortingContext } from "./context";
-
 import { useSorting } from "../base/hook";
+import { WalletSpendingSortingContext } from "./context";
 
 export const useWalletSpendingSorting = () => {
   const context = useSorting(WalletSpendingSortingContext);

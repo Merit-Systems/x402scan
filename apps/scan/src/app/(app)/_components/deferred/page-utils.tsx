@@ -1,15 +1,16 @@
+import { ChevronRight } from "lucide-react";
+
 import React from "react";
+import { isValidElement } from "react";
 
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 
 import { cn } from "@/lib/utils";
 
-import { isValidElement } from "react";
-
 import type { ReactElement, ReactNode } from "react";
+
 import type { Route } from "next";
 
 interface HeadingProps {
@@ -57,13 +58,12 @@ export const Heading: React.FC<HeadingProps> = ({
   );
 };
 
-const HeadingContainer = ({
-  children,
-  className,
-}: {
+interface HeadingContainerProps {
   children: ReactNode;
   className?: string;
-}) => {
+}
+
+const HeadingContainer = ({ children, className }: HeadingContainerProps) => {
   return (
     <>
       <div
@@ -97,22 +97,12 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
   );
 };
 
-interface SectionProps<T extends string> {
-  title: string | ReactElement;
-  description?: string;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
-  className?: string;
-  href?: Route<T>;
-}
-
-const SectionHeader = ({
-  title,
-  href,
-}: {
+interface SectionHeaderProps {
   title: string | ReactElement;
   href?: string;
-}) => {
+}
+
+const SectionHeader = ({ title, href }: SectionHeaderProps) => {
   return (
     <div
       className={cn("flex items-center gap-1", href && "group cursor-pointer")}
@@ -130,6 +120,15 @@ const SectionHeader = ({
     </div>
   );
 };
+
+interface SectionProps<T extends string> {
+  title: string | ReactElement;
+  description?: string;
+  children: React.ReactNode;
+  actions?: React.ReactNode;
+  className?: string;
+  href?: Route<T>;
+}
 
 export const Section = <T extends string>({
   children,

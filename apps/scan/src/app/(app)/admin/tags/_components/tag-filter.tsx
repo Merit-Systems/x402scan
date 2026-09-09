@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Check, Filter, X } from "lucide-react";
+
+import { useEffect, useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -16,9 +14,15 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { api } from "@/trpc/client";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { api } from "@/trpc/client";
+
 import type { Tag } from "@x402scan/scan-db";
 
 interface TagFilterProps {

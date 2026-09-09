@@ -1,8 +1,9 @@
 import { SquareUserRound, Wallet, Wrench } from "lucide-react";
-import { ConnectStep } from "./connect";
 
-import { ToolsStep } from "./tools";
+import { ConnectStep } from "./connect";
 import { DisplayStep } from "./display";
+import { ToolsStep } from "./tools";
+
 import type { CreateAgentStep, NewAgentForm } from "./types";
 
 interface StepProps {

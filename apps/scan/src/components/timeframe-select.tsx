@@ -11,7 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
+
 import {
   DEFAULT_USAGE_TIMEFRAME,
   USAGE_TIMEFRAME_OPTIONS,
@@ -19,11 +21,11 @@ import {
 
 import type { ActivityTimeframe } from "@/types/timeframes";
 
-export function TimeframeSelect({
-  timeframe,
-}: {
+interface TimeframeSelectProps {
   timeframe: ActivityTimeframe;
-}) {
+}
+
+export function TimeframeSelect({ timeframe }: TimeframeSelectProps) {
   const replaceSearchParams = useReplaceSearchParams();
 
   const setTimeframe = (nextTimeframe: ActivityTimeframe) => {

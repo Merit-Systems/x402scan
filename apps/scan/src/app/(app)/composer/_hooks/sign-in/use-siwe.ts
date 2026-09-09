@@ -1,9 +1,11 @@
 "use client";
 
-import { useAccount, useSignMessage } from "wagmi";
 import { useMutation } from "@tanstack/react-query";
-import { signInWithEthereum } from "@/auth/providers/siwe/sign-in";
+
 import { toast } from "sonner";
+import { useAccount, useSignMessage } from "wagmi";
+
+import { signInWithEthereum } from "@/auth/providers/siwe/sign-in";
 
 interface Props {
   redirectParams?: Record<string, string>;

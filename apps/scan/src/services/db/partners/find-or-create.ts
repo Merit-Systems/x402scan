@@ -1,6 +1,8 @@
 import { partnersDb, Tables } from "@x402scan/partners-db";
-import type { PartnerData } from "@x402scan/partners-db";
+
 import { createPartner } from "./create";
+
+import type { PartnerData } from "@x402scan/partners-db";
 
 /**
  * Finds a partner by name, or creates a new one if not found.

@@ -1,5 +1,5 @@
-import { FACILITATORS_BY_CHAIN } from "@/trigger/lib/facilitators";
 import { createEvmChainConfig } from "@/trigger/fetch/bitquery/query";
+import { FACILITATORS_BY_CHAIN } from "@/trigger/lib/facilitators";
 import { Network } from "@/trigger/types";
 
 export const baseChainConfig = createEvmChainConfig({

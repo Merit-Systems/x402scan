@@ -1,6 +1,6 @@
-import type { OutputComponent } from "../types";
-
 import z from "zod";
+
+import type { OutputComponent } from "../types";
 
 const aiBeatsOrigin = "https://www.aibeats.fun";
 

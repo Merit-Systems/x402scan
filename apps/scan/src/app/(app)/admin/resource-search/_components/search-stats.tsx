@@ -1,14 +1,18 @@
 "use client";
 
-import { memo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Database, Code2, Loader2, Filter, ChevronRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
+
+import { memo, useState } from "react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
 import { cn } from "@/lib/utils";
+
 import type { FilterQuestion } from "@/services/resource-search/types";
 
-interface SearchStatsProps {
+interface SearchStatsComponentProps {
   totalResults: number;
   sqlCondition?: string;
   keywords?: string[];
@@ -28,7 +32,7 @@ const SearchStatsComponent = ({
   filterExplanation,
   className,
   isLoading = false,
-}: SearchStatsProps) => {
+}: SearchStatsComponentProps) => {
   const [isSqlExpanded, setIsSqlExpanded] = useState(false);
 
   return (

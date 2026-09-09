@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { resourceKey } from "./resource-key";
 
 describe("resourceKey", () => {

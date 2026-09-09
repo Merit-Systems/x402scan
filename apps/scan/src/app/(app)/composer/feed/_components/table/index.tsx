@@ -1,9 +1,10 @@
-import { api, HydrateClient } from "@/trpc/server";
+import { Suspense } from "react";
+
 import {
   FeedTableContent,
   LoadingFeedTableContent,
 } from "@/app/(app)/composer/_components/feed-table/table";
-import { Suspense } from "react";
+import { api, HydrateClient } from "@/trpc/server";
 
 interface Props {
   limit?: number;

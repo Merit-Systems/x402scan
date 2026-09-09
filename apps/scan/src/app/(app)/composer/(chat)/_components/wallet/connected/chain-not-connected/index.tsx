@@ -1,10 +1,9 @@
-import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
-
-import { SVMNotConnected } from "./svm";
-import { EVMNotConnected } from "./evm";
-
-import { Chain as ChainType, CHAIN_LABELS } from "@/types/chain";
 import { Chain } from "@/app/(app)/_components/chains";
+import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
+import { Chain as ChainType, CHAIN_LABELS } from "@/types/chain";
+
+import { EVMNotConnected } from "./evm";
+import { SVMNotConnected } from "./svm";
 
 export const ChainNotConnected = () => {
   const { chain } = useWalletChain();

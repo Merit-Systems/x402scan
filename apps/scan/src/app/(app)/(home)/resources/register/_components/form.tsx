@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-
-import { usePostHog } from "posthog-js/react";
 import {
   Check,
   ChevronDown,
@@ -13,6 +10,13 @@ import {
   TriangleAlert,
   X,
 } from "lucide-react";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import Link from "next/link";
+import { usePostHog } from "posthog-js/react";
+import { toast } from "sonner";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,8 +31,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
   InputGroup,
   InputGroupAddon,
@@ -41,22 +45,21 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { useDiscovery } from "@/app/(app)/(home)/resources/register/_components/use-discovery";
+
 import { DiscoveryActions } from "@/app/(app)/(home)/resources/register/_components/discovery-actions";
 import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
 import { RegistrationResult } from "@/app/(app)/(home)/resources/register/_components/registration-result";
-import { useDiscovery } from "@/app/(app)/(home)/resources/register/_components/use-discovery";
 import { Favicon } from "@/app/(app)/_components/favicon";
 import {
   isOpenApiDeclaredFree,
   isRegistrableEndpoint,
 } from "@/lib/discovery/catalog-auth";
-import { normalizeUrl } from "@/lib/url";
 import { resourceKey } from "@/lib/resource-key";
+import { normalizeUrl } from "@/lib/url";
 import { api } from "@/trpc/client";
+
 import type { DiscoveredResource } from "@/types/discovery";
-import Link from "next/link";
-import { toast } from "sonner";
-import { z } from "zod";
 
 const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can verify ownership of my origin, let users contact me, and customize my merchant pages on Poncho.
 
@@ -724,15 +727,17 @@ const CALENDAR_URL =
 
 const STEP_NAMES = ["review_api_page", "test_endpoints", "schedule_call"];
 
+interface PostRegistrationDialogProps {
+  originId: string;
+  origin: string;
+  contactEmail?: string;
+}
+
 function PostRegistrationDialog({
   originId,
   origin,
   contactEmail,
-}: {
-  originId: string;
-  origin: string;
-  contactEmail?: string;
-}) {
+}: PostRegistrationDialogProps) {
   const [open, setOpen] = useState(true);
   const [clickedSteps, setClickedSteps] = useState<Set<number>>(new Set());
   const [email, setEmail] = useState(contactEmail ?? "");
@@ -968,19 +973,21 @@ function PostRegistrationDialog({
   );
 }
 
+interface ChecklistStepProps {
+  number: number;
+  label?: string;
+  completed: boolean;
+  current: boolean;
+  children: React.ReactNode;
+}
+
 function ChecklistStep({
   number,
   label,
   completed,
   current,
   children,
-}: {
-  number: number;
-  label?: string;
-  completed: boolean;
-  current: boolean;
-  children: React.ReactNode;
-}) {
+}: ChecklistStepProps) {
   return (
     <div
       className={`flex ${label ? "items-start" : "items-center"} -mx-3 gap-3 rounded-lg px-3 py-2.5 transition-colors ${
@@ -1010,17 +1017,19 @@ function ChecklistStep({
   );
 }
 
+interface FailedResourceRowProps {
+  url: string;
+  error: string;
+  statusCode?: number;
+  issues?: { code: string; message: string }[];
+}
+
 function FailedResourceRow({
   url,
   error,
   statusCode,
   issues,
-}: {
-  url: string;
-  error: string;
-  statusCode?: number;
-  issues?: { code: string; message: string }[];
-}) {
+}: FailedResourceRowProps) {
   const pathname = (() => {
     try {
       return decodeURIComponent(new URL(url).pathname);
@@ -1076,18 +1085,7 @@ const EMPTY_INVALID_RESOURCES_MAP: Record<
   { invalid: boolean; reason?: string }
 > = {};
 
-function ProbeResult({
-  preview,
-  urlOrigin,
-  resources,
-  testedResources = EMPTY_TESTED_RESOURCES,
-  failedResources = EMPTY_FAILED_RESOURCES,
-  isBatchTestLoading = false,
-  authModeMap = EMPTY_AUTH_MODE_MAP,
-  invalidResourcesMap = EMPTY_INVALID_RESOURCES_MAP,
-  contactEmail,
-  discoverySource,
-}: {
+interface ProbeResultProps {
   preview: {
     favicon: string | null;
     title?: string | null;
@@ -1106,7 +1104,20 @@ function ProbeResult({
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
   contactEmail?: string | null;
   discoverySource?: string;
-}) {
+}
+
+function ProbeResult({
+  preview,
+  urlOrigin,
+  resources,
+  testedResources = EMPTY_TESTED_RESOURCES,
+  failedResources = EMPTY_FAILED_RESOURCES,
+  isBatchTestLoading = false,
+  authModeMap = EMPTY_AUTH_MODE_MAP,
+  invalidResourcesMap = EMPTY_INVALID_RESOURCES_MAP,
+  contactEmail,
+  discoverySource,
+}: ProbeResultProps) {
   const testedKeys = useMemo(
     () => new Set(testedResources.map(rk)),
     [testedResources]

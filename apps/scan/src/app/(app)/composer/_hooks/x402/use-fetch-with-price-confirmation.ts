@@ -1,8 +1,10 @@
-import { useState, useCallback, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useState, useCallback, useRef } from "react";
+
 import { z } from "zod";
 
 import type { UseMutationOptions } from "@tanstack/react-query";
+
 import type { X402FetchResponse, FetchWithPaymentWrapper } from "./types";
 
 interface UseX402FetchWithPriceConfirmationParams {

@@ -2,6 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 
+import Link from "next/link";
 import { toast } from "sonner";
 
 import {
@@ -12,12 +13,9 @@ import {
   AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-
 import { Logo } from "@/components/ui/logo";
 
 import { api } from "@/trpc/client";
-
-import Link from "next/link";
 
 export const Onboarding = () => {
   const utils = api.useUtils();

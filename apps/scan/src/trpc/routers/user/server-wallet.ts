@@ -1,21 +1,20 @@
 import { TRPCError } from "@trpc/server";
-
-import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
-
-import { getUserWallets } from "@/services/cdp/server-wallet/user";
-import { mixedAddressSchema, supportedChainSchema } from "@/lib/schemas";
 import z from "zod";
-import { getTokenBalanceSchema } from "@/services/cdp/server-wallet/wallets/schemas";
-import { tokenSchema } from "@/types/token";
+
+import { env } from "@/env";
+import { mixedAddressSchema, supportedChainSchema } from "@/lib/schemas";
 import { usdc } from "@/lib/tokens/usdc";
-import { Chain, SUPPORTED_CHAINS } from "@/types/chain";
 import {
   x402Client,
   wrapFetchWithPayment,
   registerExactEvmScheme,
   registerSvmX402Client,
 } from "@/lib/x402/wrap-fetch";
-import { env } from "@/env";
+import { getUserWallets } from "@/services/cdp/server-wallet/user";
+import { getTokenBalanceSchema } from "@/services/cdp/server-wallet/wallets/schemas";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
+import { Chain, SUPPORTED_CHAINS } from "@/types/chain";
+import { tokenSchema } from "@/types/token";
 
 const serverWalletChainFields = {
   chain: supportedChainSchema,

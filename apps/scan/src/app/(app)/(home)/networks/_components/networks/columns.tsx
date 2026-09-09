@@ -5,10 +5,11 @@ import Image from "next/image";
 import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { cn, formatCompactAgo } from "@/lib/utils";
 import { formatTokenAmount } from "@/lib/token";
+import { cn, formatCompactAgo } from "@/lib/utils";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type ColumnType = RouterOutputs["networks"]["list"][number];
@@ -141,13 +142,12 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   },
 ];
 
-const Cell = ({
-  children,
-  className,
-}: {
+interface CellProps {
   children: React.ReactNode;
   className?: string;
-}) => {
+}
+
+const Cell = ({ children, className }: CellProps) => {
   return (
     <div className={cn("text-center type-caption", className)}>{children}</div>
   );

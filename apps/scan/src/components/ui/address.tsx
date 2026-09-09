@@ -1,10 +1,9 @@
 "use client";
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+import { addressTextClassName, cn, formatAddress } from "@/lib/utils";
 
 import { Copyable } from "./copyable";
-
-import { addressTextClassName, cn, formatAddress } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 interface Props {
   address: string;

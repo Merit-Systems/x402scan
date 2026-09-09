@@ -1,20 +1,22 @@
-import bs58 from "bs58";
 import { Keypair, PublicKey } from "@solana/web3.js";
-import type { ParsedInnerInstruction } from "@solana/web3.js";
+import bs58 from "bs58";
 import { describe, expect, it } from "vitest";
 
 import { extractPayouts } from "../trigger/chains/solana/bitquery-channels/query";
-import type { PayoutTransaction } from "../trigger/chains/solana/bitquery-channels/query";
 import {
   PAYMENT_CHANNELS_PROGRAM_ID,
   USDC_SOLANA,
 } from "../trigger/lib/constants";
+import { QueryProvider } from "../trigger/types";
+
+import type { ParsedInnerInstruction } from "@solana/web3.js";
+
+import type { PayoutTransaction } from "../trigger/chains/solana/bitquery-channels/query";
 import type {
   Facilitator,
   FacilitatorConfig,
   SyncConfig,
 } from "../trigger/types";
-import { QueryProvider } from "../trigger/types";
 
 const CHANNELS_PROGRAM = new PublicKey(PAYMENT_CHANNELS_PROGRAM_ID);
 const TOKEN_PROGRAM = new PublicKey(

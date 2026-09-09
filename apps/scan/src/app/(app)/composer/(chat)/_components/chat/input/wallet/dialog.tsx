@@ -1,6 +1,8 @@
+import { ArrowUp, Key } from "lucide-react";
+
 import { useState } from "react";
 
-import { ArrowUp, Key } from "lucide-react";
+import z from "zod";
 
 import {
   Dialog,
@@ -10,18 +12,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Logo } from "@/components/ui/logo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Logo } from "@/components/ui/logo";
-
-import { Send } from "./content/send";
-import { WalletExport } from "./content/export";
-
-import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain/provider";
 import { WalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/component";
+import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain/provider";
+
+import { WalletExport } from "./content/export";
+import { Send } from "./content/send";
 
 import type { SupportedChain } from "@/types/chain";
-import z from "zod";
 
 const walletTabSchema = z.enum(["send", "export"]);
 

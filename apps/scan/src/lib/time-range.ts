@@ -1,8 +1,9 @@
 import { subHours } from "date-fns";
-
 import { z } from "zod";
-import type { timeframeSchema, timePeriodSchema } from "./schemas";
+
 import { ActivityTimeframe } from "@/types/timeframes";
+
+import type { timeframeSchema, timePeriodSchema } from "./schemas";
 
 interface TimeframeParts {
   period: number;

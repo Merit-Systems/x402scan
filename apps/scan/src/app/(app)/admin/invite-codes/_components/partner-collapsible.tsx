@@ -1,11 +1,13 @@
 "use client";
 
+import { Plus } from "lucide-react";
+
 import { useState, useEffect } from "react";
 
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -13,8 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+
 import { api } from "@/trpc/client";
+
 import type { PartnerData as DbPartnerData } from "@x402scan/partners-db";
 
 export interface PartnerData {

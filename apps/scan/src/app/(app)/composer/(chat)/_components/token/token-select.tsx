@@ -1,15 +1,12 @@
 "use client";
 
+import { Check, ChevronDown } from "lucide-react";
+
 import { useState } from "react";
 
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -18,11 +15,16 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 import { CHAIN_ICONS } from "@/types/chain";
-import { Check, ChevronDown } from "lucide-react";
 
 import type { ButtonProps } from "@/components/ui/button";
+
 import type { Token } from "@/types/token";
 
 type Props = {

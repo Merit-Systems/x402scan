@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { env } from "@/env";
 import { searchResourcesCombined } from "@/services/resource-search/combined-search";
+
+import type { NextRequest } from "next/server";
 
 const searchSchema = z.object({
   q: z.string().min(1),

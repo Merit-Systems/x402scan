@@ -2,16 +2,13 @@
 
 import { Bot, Plus, X } from "lucide-react";
 
-import Image from "next/image";
-
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import Image from "next/image";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Dropzone } from "@/components/ui/dropzone";
 import {
   Field,
   FieldContent,
@@ -24,16 +21,14 @@ import {
   FieldSet,
   FieldTitle,
 } from "@/components/ui/field";
-import { Dropzone } from "@/components/ui/dropzone";
+import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 
 import { ResourceList } from "@/app/(app)/composer/_components/resource-list";
-
-import { api } from "@/trpc/client";
-
-import { agentConfigurationSchema } from "@/services/db/agent-config/mutate/schema";
-
 import { cn } from "@/lib/utils";
+import { agentConfigurationSchema } from "@/services/db/agent-config/mutate/schema";
+import { api } from "@/trpc/client";
 
 import type z from "zod";
 

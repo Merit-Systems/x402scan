@@ -1,15 +1,20 @@
 "use client";
 
 import { useState, useMemo } from "react";
+
 import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
-import { createColumns } from "./columns";
-import { api, type RouterOutputs } from "@/trpc/client";
-import { EditTagModal } from "./edit-tag-modal";
-import { ResourceExecutorModal } from "../../_components/resource-executor-modal";
-import { ControlMenu } from "./control-menu";
-import { TagFilter } from "./tag-filter";
 import { useResourcesSorting } from "@/app/(app)/admin/_contexts/sorting/resource-tags/hook";
+import { api } from "@/trpc/client";
+
+import { ResourceExecutorModal } from "../../_components/resource-executor-modal";
+import { createColumns } from "./columns";
+import { ControlMenu } from "./control-menu";
+import { EditTagModal } from "./edit-tag-modal";
+import { TagFilter } from "./tag-filter";
+
 import type { RowSelectionState } from "@tanstack/react-table";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type Resource =
   RouterOutputs["public"]["resources"]["list"]["paginated"]["items"][number];

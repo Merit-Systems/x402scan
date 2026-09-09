@@ -1,4 +1,6 @@
-import { type LanguageModel, LanguageModelCapability } from "../types";
+import { LanguageModelCapability } from "../types";
+
+import type { LanguageModel } from "../types";
 
 const llamaModelData: Omit<LanguageModel, "provider">[] = [
   {

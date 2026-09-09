@@ -3,8 +3,9 @@ import {
   transfersHttpReplicas,
 } from "@x402scan/transfers-db";
 
-import type { Prisma } from "@x402scan/transfers-db";
 import type z from "zod";
+
+import type { Prisma } from "@x402scan/transfers-db";
 
 const REPLICA_TIMEOUT_MS = 5_000;
 const PRIMARY_TIMEOUT_MS = 15_000;

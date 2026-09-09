@@ -1,8 +1,8 @@
 import { setCookie, getCookie } from "cookies-next/client";
 
-import { COOKIE_KEYS } from "./keys";
-
 import { parseChain } from "@/app/(app)/_lib/chain/parse";
+
+import { COOKIE_KEYS } from "./keys";
 
 import type { Chain } from "@/types/chain";
 

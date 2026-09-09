@@ -1,9 +1,12 @@
-import Link from "next/link";
 import { Send, Mail, CalendarDays } from "lucide-react";
+
+import Link from "next/link";
+
 import { buttonVariants } from "@/components/ui/button";
-import { RegisterResourceForm } from "./_components/form";
+
 import { DiscoveryActions } from "./_components/discovery-actions";
 import { ExpandableLink } from "./_components/expandable-link";
+import { RegisterResourceForm } from "./_components/form";
 
 import type { Metadata } from "next";
 

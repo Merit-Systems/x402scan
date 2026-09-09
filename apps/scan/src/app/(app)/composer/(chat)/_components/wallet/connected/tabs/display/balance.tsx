@@ -1,13 +1,16 @@
 import { skipToken } from "@tanstack/react-query";
 
-import { Chain } from "@/types/chain";
-import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
-import { ItemContainer } from "./item";
-import { api } from "@/trpc/client";
-import { useEvmTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-evm-token-balance";
-import { usdc } from "@/lib/tokens/usdc";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { useEvmTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-evm-token-balance";
+
+import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
 import { solanaAddressSchema } from "@/lib/schemas";
+import { usdc } from "@/lib/tokens/usdc";
+import { api } from "@/trpc/client";
+import { Chain } from "@/types/chain";
+
+import { ItemContainer } from "./item";
 
 interface Props {
   address: string;
@@ -45,13 +48,12 @@ const EvmBalance: React.FC<EvmBalanceProps> = ({ chain }) => {
   return <BalanceItem balance={balance} isLoading={isLoading} />;
 };
 
-const BalanceItem = ({
-  balance,
-  isLoading,
-}: {
+interface BalanceItemProps {
   balance: number | undefined;
   isLoading: boolean;
-}) => {
+}
+
+const BalanceItem = ({ balance, isLoading }: BalanceItemProps) => {
   return (
     <ItemContainer
       label="Balance"

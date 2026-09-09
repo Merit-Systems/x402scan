@@ -1,5 +1,6 @@
-import { scanDb } from "@x402scan/scan-db";
 import { z } from "zod";
+
+import { scanDb } from "@x402scan/scan-db";
 
 export const createExcludedResourceSchema = z.object({
   resourceId: z.uuid(),

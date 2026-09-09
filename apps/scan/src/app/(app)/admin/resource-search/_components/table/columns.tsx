@@ -1,11 +1,15 @@
-import type { DataTableColumnDef } from "@/components/ui/data-table";
+import { Globe, Filter } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/image-avatar";
-import { Globe, Filter } from "lucide-react";
-import type { FilteredSearchResult } from "@/services/resource-search/types";
-import { cleanExternalText } from "@/lib/utils";
+
 import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
 import { ResourceSearchSortingContext } from "@/app/(app)/admin/_contexts/sorting/resource-search/context";
+import { cleanExternalText } from "@/lib/utils";
+
+import type { DataTableColumnDef } from "@/components/ui/data-table";
+
+import type { FilteredSearchResult } from "@/services/resource-search/types";
 
 export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
   {

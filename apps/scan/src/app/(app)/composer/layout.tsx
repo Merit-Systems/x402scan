@@ -1,8 +1,10 @@
+import { notFound } from "next/navigation";
+
+import { auth } from "@/auth";
 import { env } from "@/env";
+
 import { Subnav } from "../_components/layout/subnav";
 import { OnrampSessionDialog } from "./_components/wallet/onramp-session-dialog";
-import { auth } from "@/auth";
-import { notFound } from "next/navigation";
 
 import type { Metadata } from "next";
 

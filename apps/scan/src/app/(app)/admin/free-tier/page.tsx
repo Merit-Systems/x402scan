@@ -1,11 +1,13 @@
+import { forbidden } from "next/navigation";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { auth } from "@/auth";
-import { forbidden } from "next/navigation";
-import { freeTierWallets } from "@/services/cdp/server-wallet/free-tier";
-import { formatCurrency } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CHAIN_LABELS, SUPPORTED_CHAINS } from "@/types/chain";
 import { usdc } from "@/lib/tokens/usdc";
+import { formatCurrency } from "@/lib/utils";
+import { freeTierWallets } from "@/services/cdp/server-wallet/free-tier";
+import { CHAIN_LABELS, SUPPORTED_CHAINS } from "@/types/chain";
 
 import type { SupportedChain } from "@/types/chain";
 
@@ -31,7 +33,13 @@ export default async function FreeTierWalletPage() {
   );
 }
 
-const ChainWalletInformation = async ({ chain }: { chain: SupportedChain }) => {
+interface ChainWalletInformationProps {
+  chain: SupportedChain;
+}
+
+const ChainWalletInformation = async ({
+  chain,
+}: ChainWalletInformationProps) => {
   const wallet = freeTierWallets[chain];
 
   return (

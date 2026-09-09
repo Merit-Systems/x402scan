@@ -1,7 +1,7 @@
 import React from "react";
 
-import { Methods } from "@/types/x402";
 import { cn } from "@/lib/utils";
+import { Methods } from "@/types/x402";
 
 import type { BazaarMethod } from "@/types/x402";
 

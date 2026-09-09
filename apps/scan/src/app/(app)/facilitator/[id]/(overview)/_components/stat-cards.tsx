@@ -2,23 +2,27 @@
 
 import { StatsCardGrid } from "@/components/stats-card-grid";
 import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
+
 import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 import { formatChartTimestamp, formatNumber } from "@/lib/utils";
 import { api } from "@/trpc/client";
 
 import type { ChartData } from "@/components/ui/chart";
+
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
+
+interface FacilitatorStatCardsProps {
+  chain?: Chain;
+  facilitatorId: string;
+  timeframe: ActivityTimeframe;
+}
 
 export function FacilitatorStatCards({
   chain,
   facilitatorId,
   timeframe,
-}: {
-  chain?: Chain;
-  facilitatorId: string;
-  timeframe: ActivityTimeframe;
-}) {
+}: FacilitatorStatCardsProps) {
   const input = {
     chain,
     facilitatorIds: [facilitatorId],

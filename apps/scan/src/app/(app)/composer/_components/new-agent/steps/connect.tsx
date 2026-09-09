@@ -6,15 +6,15 @@ import { Button } from "@/components/ui/button";
 
 import { useSiwe } from "@/app/(app)/composer/_hooks/sign-in/use-siwe";
 import { useSiws } from "@/app/(app)/composer/_hooks/sign-in/use-siws";
-
-import { useSolanaWallet } from "@/app/_contexts/solana/hook";
-
-import type { UiWalletAccount } from "@wallet-standard/react";
-import type { ConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
+import { useConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
 
 import { ConnectWalletForm } from "@/app/(app)/composer/_components/wallet/connect/form";
 import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain/provider";
-import { useConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
+import { useSolanaWallet } from "@/app/_contexts/solana/hook";
+
+import type { UiWalletAccount } from "@wallet-standard/react";
+
+import type { ConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
 
 export const ConnectStep = () => {
   const connectedWallets = useConnectedWallets();
@@ -63,7 +63,11 @@ const VerifySvm = () => {
   return <VerifySvmContent account={connectedWallet.account} />;
 };
 
-const VerifySvmContent = ({ account }: { account: UiWalletAccount }) => {
+interface VerifySvmContentProps {
+  account: UiWalletAccount;
+}
+
+const VerifySvmContent = ({ account }: VerifySvmContentProps) => {
   const { signIn, isPending } = useSiws({ account });
   return <VerifyContent signIn={signIn} isPending={isPending} />;
 };

@@ -1,9 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useSyncExternalStore } from "react";
+
 import Image from "next/image";
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+
+import { Button } from "@/components/ui/button";
 
 const STORAGE_KEY = "x402scan-hide-agentcash-announcement";
 const DISMISSED_EVENT = "x402scan-agentcash-announcement-dismissed";

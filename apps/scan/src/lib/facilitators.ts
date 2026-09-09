@@ -1,10 +1,11 @@
 import { allFacilitators, Network as FacilitatorsNetwork } from "facilitators";
 
-import { mixedAddressSchema } from "./schemas";
-
 import { Chain } from "@/types/chain";
 
+import { mixedAddressSchema } from "./schemas";
+
 import type { FacilitatorMetadata } from "facilitators";
+
 import type { MixedAddress } from "@/types/address";
 
 // NOTE(shafu): Minimum number of transactions required for a facilitator to be displayed

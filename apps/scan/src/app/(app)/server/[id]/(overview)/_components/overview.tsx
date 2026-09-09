@@ -9,15 +9,20 @@ import {
   OriginSummaryTrailing,
 } from "@/components/ui/origin-summary";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cleanExternalText, truncateAtDelimiter } from "@/lib/utils";
 
-import type { RouterOutputs } from "@/trpc/client";
+import { cleanExternalText, truncateAtDelimiter } from "@/lib/utils";
 
 import { InstallCommand, LoadingInstallCommand } from "./invoke";
 
+import type { RouterOutputs } from "@/trpc/client";
+
 type Origin = NonNullable<RouterOutputs["public"]["origins"]["get"]>;
 
-export function ServerOverview({ origin }: { origin: Origin }) {
+interface ServerOverviewProps {
+  origin: Origin;
+}
+
+export function ServerOverview({ origin }: ServerOverviewProps) {
   const rawTitle = origin.title
     ? cleanExternalText(origin.title)
     : new URL(origin.origin).hostname;

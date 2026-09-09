@@ -1,3 +1,5 @@
+import { MessageSquare, Pencil } from "lucide-react";
+
 import React, { Suspense } from "react";
 
 import Link from "next/link";
@@ -8,7 +10,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/auth";
 
 import type { RouterOutputs } from "@/trpc/client";
-import { MessageSquare, Pencil } from "lucide-react";
 
 interface Props {
   agentConfiguration: NonNullable<RouterOutputs["public"]["agents"]["get"]>;
@@ -55,6 +56,10 @@ export const LoadingHeaderButtons = () => {
   );
 };
 
-const ButtonsContainer = ({ children }: { children: React.ReactNode }) => {
+interface ButtonsContainerProps {
+  children: React.ReactNode;
+}
+
+const ButtonsContainer = ({ children }: ButtonsContainerProps) => {
   return <div className="flex flex-row gap-2">{children}</div>;
 };

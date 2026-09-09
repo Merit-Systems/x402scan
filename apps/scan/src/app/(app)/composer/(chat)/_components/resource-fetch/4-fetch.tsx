@@ -3,7 +3,6 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { Chains } from "@/app/(app)/_components/chains";
-
 import { formatTokenAmount } from "@/lib/token";
 
 import type { Chain } from "@/types/chain";

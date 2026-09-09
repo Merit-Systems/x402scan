@@ -12,6 +12,8 @@
     "start": "next start",
     "types:generate": "SKIP_ENV_VALIDATION=1 next typegen",
     "types:check": "tsc --noEmit",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
     "test": "vitest run",
     "ui:check": "merit ui check --root ../..",
     "ui:integrity": "merit ui integrity check --root ../.."
@@ -32,7 +34,7 @@
     "@lmnr-ai/lmnr": "^0.7.4",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
-    "@merit-systems/brand": "0.12.6",
+    "@merit-systems/brand": "0.12.7",
     "@next/mdx": "catalog:next",
     "@openrouter/ai-sdk-provider": "^2.10.0",
     "@opentelemetry/api-logs": "^0.211.0",
@@ -119,6 +121,7 @@
     "zod3": "npm:zod@^3.24.2"
   },
   "devDependencies": {
+    "@merit-systems/oxlint-config": "catalog:foundation",
     "@merit-systems/typescript-config": "catalog:foundation",
     "@tailwindcss/postcss": "catalog:tailwind",
     "@tanstack/react-query-devtools": "catalog:react-query",
@@ -127,6 +130,8 @@
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@vitest/ui": "^3.2.4",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "portless": "catalog:",
     "remark-gfm": "^4.0.1",
     "shadcn": "^4.18.0",

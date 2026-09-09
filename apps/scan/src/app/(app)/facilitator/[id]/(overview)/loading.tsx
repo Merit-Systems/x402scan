@@ -1,7 +1,8 @@
+import { Skeleton } from "@/components/ui/skeleton";
+
 import { LoadingFacilitatorOrigins } from "./_components/origins";
 import { LoadingFacilitatorOverview } from "./_components/overview";
 import { LoadingFacilitatorStatCards } from "./_components/stat-cards";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function LoadingFacilitatorPage() {
   return (

@@ -1,15 +1,19 @@
 "use client";
 
 import { useMemo } from "react";
+
 import z from "zod";
 
-import { api } from "@/trpc/client";
 import { useRegisterFromOrigin } from "@/hooks/use-register-from-origin";
+
 import {
   isOpenApiDeclaredFree,
   isRegistrableEndpoint,
 } from "@/lib/discovery/catalog-auth";
 import { resourceKey } from "@/lib/resource-key";
+import { api } from "@/trpc/client";
+
+import { useBatchTest } from "./use-batch-test";
 
 import type { FailedResource, TestedResource } from "@/types/batch-test";
 import type {
@@ -17,7 +21,6 @@ import type {
   DiscoveredResource,
   DiscoverySource,
 } from "@/types/discovery";
-import { useBatchTest } from "./use-batch-test";
 
 interface OriginPreview {
   title: string | null;

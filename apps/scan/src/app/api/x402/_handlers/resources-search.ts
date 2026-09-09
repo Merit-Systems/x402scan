@@ -1,10 +1,11 @@
-import type { resourcesSearchQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { jsonResponse } from "@/app/api/x402/_lib/utils";
-import { searchResources } from "@/services/db/resources/resource";
-import { serializeAccepts } from "@/lib/token";
 import { supportedChainSchema } from "@/lib/schemas";
+import { serializeAccepts } from "@/lib/token";
+import { searchResources } from "@/services/db/resources/resource";
 
 import type { z } from "zod";
+
+import type { resourcesSearchQuerySchema } from "@/app/api/x402/_lib/schemas";
 
 const SEARCH_MAX_FETCH = 1000;
 export async function handleResourcesSearch(

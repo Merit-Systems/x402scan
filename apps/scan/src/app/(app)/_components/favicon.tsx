@@ -1,12 +1,13 @@
 import { Globe } from "lucide-react";
 
+import { Avatar } from "@/components/ui/image-avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+
 import { cn } from "@/lib/utils";
 
 import type { LucideIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar } from "@/components/ui/image-avatar";
 
-interface Props {
+interface FaviconProps {
   url: string | null;
   className?: string;
   Fallback?: LucideIcon;
@@ -16,7 +17,7 @@ export const Favicon = ({
   url,
   className = "size-6",
   Fallback = Globe,
-}: Props) => {
+}: FaviconProps) => {
   return (
     <Avatar
       src={url}
@@ -90,17 +91,19 @@ export const Favicons: React.FC<FaviconsProps> = ({
   );
 };
 
+interface LoadingFaviconsProps {
+  count: number;
+  orientation?: "horizontal" | "vertical";
+  containerClassName?: string;
+  iconContainerClassName?: string;
+}
+
 export const LoadingFavicons = ({
   count,
   orientation = "horizontal",
   containerClassName,
   iconContainerClassName,
-}: {
-  count: number;
-  orientation?: "horizontal" | "vertical";
-  containerClassName?: string;
-  iconContainerClassName?: string;
-}) => {
+}: LoadingFaviconsProps) => {
   return (
     <div
       className={cn(

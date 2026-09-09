@@ -6,14 +6,13 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { Favicon } from "@/app/(app)/_components/favicon";
+import { formatTokenAmount } from "@/lib/token";
 import { cleanExternalText } from "@/lib/utils";
 
-import { formatTokenAmount } from "@/lib/token";
-
 import type { RouterOutputs } from "@/trpc/client";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   resource: NonNullable<

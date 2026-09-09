@@ -1,6 +1,8 @@
+import { forbidden } from "next/navigation";
+
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { auth } from "@/auth";
-import { forbidden } from "next/navigation";
+
 import { SearchContainer } from "./_components/search-container";
 
 export default async function ResourceSearchPage() {

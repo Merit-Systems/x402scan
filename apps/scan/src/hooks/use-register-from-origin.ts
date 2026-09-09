@@ -1,7 +1,8 @@
 "use client";
 
-import { api } from "@/trpc/client";
 import { toast } from "sonner";
+
+import { api } from "@/trpc/client";
 
 interface RegisterFromOriginSuccessData {
   registered: number;

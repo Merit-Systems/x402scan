@@ -1,5 +1,9 @@
 import { AlertCircle } from "lucide-react";
 
+import Link from "next/link";
+import { Streamdown } from "streamdown";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,11 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 import type { ErrorComponentProps } from "./types";
-import Link from "next/link";
-import { Streamdown } from "streamdown";
 
 export const ErrorCard: React.FC<ErrorComponentProps> = ({
   title = "An Error Has Occurred!",

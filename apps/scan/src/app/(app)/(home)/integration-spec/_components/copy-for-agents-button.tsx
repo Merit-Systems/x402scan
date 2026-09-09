@@ -1,11 +1,18 @@
 "use client";
 
 import { Check, Copy } from "lucide-react";
+
 import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
+
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
-export function CopyForAgentsButton({ text }: { text: string }) {
+interface CopyForAgentsButtonProps {
+  text: string;
+}
+
+export function CopyForAgentsButton({ text }: CopyForAgentsButtonProps) {
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
     toast.success("Copied agent integration checklist");
   });

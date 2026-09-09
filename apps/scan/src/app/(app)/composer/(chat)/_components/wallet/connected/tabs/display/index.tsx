@@ -2,24 +2,23 @@
 
 import { Loader2 } from "lucide-react";
 
+import { useMutation } from "@tanstack/react-query";
+
 import {
   useCurrentUser,
   useIsInitialized,
   useSignOut,
 } from "@coinbase/cdp-hooks";
 import { signOut, useSession } from "next-auth/react";
-
 import { useConnections } from "wagmi";
-
-import { useMutation } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { CopyCode } from "@/components/ui/copy-code";
 
-import { AuthenticationMethod, ItemContainer } from "./item";
-import { Balance } from "./balance";
-
 import { useSolanaWallet } from "@/app/_contexts/solana/hook";
+
+import { Balance } from "./balance";
+import { AuthenticationMethod, ItemContainer } from "./item";
 
 import type { User } from "@coinbase/cdp-hooks";
 

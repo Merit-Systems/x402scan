@@ -1,5 +1,7 @@
 import { Suspense } from "react";
+
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
+
 import { LoadingAgentCard } from "../lib/agent-card";
 import { AgentsContent } from "./content";
 
@@ -32,7 +34,11 @@ const LoadingAgentsContent = () => {
   );
 };
 
-const AgentsContainer = ({ children }: { children: React.ReactNode }) => {
+interface AgentsContainerProps {
+  children: React.ReactNode;
+}
+
+const AgentsContainer = ({ children }: AgentsContainerProps) => {
   return (
     <Section
       title="Top Agents"

@@ -1,10 +1,11 @@
 import z from "zod";
-import { Methods } from "@/types/x402";
 
 import { jsonObjectSchema } from "@/lib/json";
+import { Methods } from "@/types/x402";
 
-import type { FieldDefinition } from "@/types/x402";
 import type { JsonObject, JsonValue } from "@/lib/json";
+import type { FieldDefinition } from "@/types/x402";
+
 import type { InputSchema } from ".";
 
 /**

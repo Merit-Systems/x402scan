@@ -1,17 +1,18 @@
 import { Suspense } from "react";
 
 import { Body } from "@/app/(app)/_components/deferred/page-utils";
-import { Agents, LoadingAgents } from "./_components/agents";
-import { ComposerHomeHeading } from "./_components/heading";
-import { Tools } from "./_components/tools";
-import { OverallStats } from "./_components/stats";
-import { Feed } from "./_components/feed";
-import { YourAgents } from "./_components/your-agents";
+import { auth } from "@/auth";
+import { DEFAULT_TOOLS_SORTING, TOOL_SORT_IDS } from "@/lib/table-sort-options";
+import { parseTableSorting } from "@/lib/table-state";
 import { api, HydrateClient } from "@/trpc/server";
 import { ActivityTimeframe } from "@/types/timeframes";
-import { auth } from "@/auth";
-import { parseTableSorting } from "@/lib/table-state";
-import { DEFAULT_TOOLS_SORTING, TOOL_SORT_IDS } from "@/lib/table-sort-options";
+
+import { Agents, LoadingAgents } from "./_components/agents";
+import { Feed } from "./_components/feed";
+import { ComposerHomeHeading } from "./_components/heading";
+import { OverallStats } from "./_components/stats";
+import { Tools } from "./_components/tools";
+import { YourAgents } from "./_components/your-agents";
 
 export default async function ComposerPage({
   searchParams,

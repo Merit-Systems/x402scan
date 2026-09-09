@@ -1,4 +1,3 @@
-import type { merchantTransactionsQuerySchema } from "@/app/api/x402/_lib/schemas";
 import {
   parseAddress,
   paginatedResponse,
@@ -7,6 +6,8 @@ import {
 import { listFacilitatorTransfers } from "@/services/transfers/transfers/list";
 
 import type { z } from "zod";
+
+import type { merchantTransactionsQuerySchema } from "@/app/api/x402/_lib/schemas";
 
 export async function handleMerchantTransactions(
   address: string,

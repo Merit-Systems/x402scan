@@ -1,8 +1,10 @@
 import { ONE_MINUTE_IN_SECONDS } from "@/trigger/lib/constants";
-import type { SyncConfig } from "../../../types";
-import { PaginationStrategy, QueryProvider, Network } from "../../../types";
 import { FACILITATORS_BY_CHAIN } from "@/trigger/lib/facilitators";
+
+import { PaginationStrategy, QueryProvider, Network } from "../../../types";
 import { buildQuery, transformResponse } from "./query";
+
+import type { SyncConfig } from "../../../types";
 
 export const solanaChainConfig: SyncConfig = {
   cron: "*/30 * * * *",

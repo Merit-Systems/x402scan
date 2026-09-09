@@ -1,3 +1,8 @@
+import { logger } from "@trigger.dev/sdk/v3";
+import { z } from "zod";
+
+import { runCdpSqlQuery } from "./helpers";
+
 import type {
   SyncConfig,
   Facilitator,
@@ -5,9 +10,6 @@ import type {
   FacilitatorConfig,
   CdpTransferRow,
 } from "@/trigger/types";
-import { runCdpSqlQuery } from "./helpers";
-import { logger } from "@trigger.dev/sdk/v3";
-import { z } from "zod";
 
 const cdpTransferRowSchema: z.ZodType<CdpTransferRow> = z.object({
   contract_address: z.string(),

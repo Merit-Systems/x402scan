@@ -1,7 +1,7 @@
-import { router, withCors, OPTIONS } from "@/lib/router";
+import { handleOriginResources } from "@/app/api/x402/_handlers/origin-resources";
 import { originResourcesQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { extractPathSegment } from "@/app/api/x402/_lib/utils";
-import { handleOriginResources } from "@/app/api/x402/_handlers/origin-resources";
+import { router, withCors, OPTIONS } from "@/lib/router";
 
 export { OPTIONS };
 

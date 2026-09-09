@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { z } from "zod";
+
 import { parseX402Response, getOutputSchema, isV2Response } from "../index";
 
 // Helper for v1 tests: parse and narrow to the V1 branch of the union.

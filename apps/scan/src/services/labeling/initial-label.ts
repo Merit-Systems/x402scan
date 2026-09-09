@@ -1,15 +1,19 @@
+import { openai } from "@ai-sdk/openai";
+import { getTracer } from "@lmnr-ai/lmnr";
+import { generateText, Output } from "ai";
+import { z } from "zod";
+
 import { scanDb } from "@x402scan/scan-db";
+
 import {
   listTags,
   createTag,
   assignTagToResource,
 } from "@/services/db/resources/tag";
-import type { listResourcesWithPagination } from "@/services/db/resources/resource";
-import { generateText, Output } from "ai";
-import { openai } from "@ai-sdk/openai";
-import { z } from "zod";
-import { getTracer } from "@lmnr-ai/lmnr";
+
 import { MAIN_TAGS } from "./main-tags";
+
+import type { listResourcesWithPagination } from "@/services/db/resources/resource";
 
 const randomColor = () => {
   return "#" + Math.floor(Math.random() * 16777215).toString(16);

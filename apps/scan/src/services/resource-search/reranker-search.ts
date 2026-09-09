@@ -1,5 +1,7 @@
-import { env } from "@/env";
 import { z } from "zod";
+
+import { env } from "@/env";
+
 import type { SearchResult, RerankedSearchResult } from "./types";
 
 const jinaRerankerResponseSchema = z.object({

@@ -1,9 +1,11 @@
 import { createHash } from "crypto";
 import { parse, stringify } from "superjson";
 import { z } from "zod";
-import type { PaginatedQueryParams } from "../pagination";
+
 import { getRedisClient } from "../redis";
 import { CACHE_DURATION_MINUTES } from "./constants";
+
+import type { PaginatedQueryParams } from "../pagination";
 
 /**
  * Maximum Redis key length in bytes. Keys exceeding this are hashed to prevent

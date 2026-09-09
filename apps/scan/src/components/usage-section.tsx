@@ -2,12 +2,14 @@ import { cn } from "@/lib/utils";
 
 import type { ComponentProps, ReactNode } from "react";
 
+type UsageSectionProps = ComponentProps<"section"> & { controls?: ReactNode };
+
 function UsageSection({
   children,
   className,
   controls,
   ...props
-}: ComponentProps<"section"> & { controls?: ReactNode }) {
+}: UsageSectionProps) {
   return (
     <section className={cn("space-y-4", className)} {...props}>
       <div className="flex flex-row justify-between gap-4">

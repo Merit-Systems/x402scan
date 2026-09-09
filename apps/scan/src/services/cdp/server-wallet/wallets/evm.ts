@@ -1,17 +1,16 @@
 import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
-import { readContract } from "viem/actions";
 import { toAccount } from "viem/accounts";
+import { readContract } from "viem/actions";
 
-import { cdpClient } from "../client";
-
+import { ethereumAddressSchema } from "@/lib/schemas";
+import { convertTokenAmount } from "@/lib/token";
 import { baseRpc } from "@/services/rpc/base";
 
 import { cdpResultFromPromise } from "../../result";
-
-import { convertTokenAmount } from "@/lib/token";
-import { ethereumAddressSchema } from "@/lib/schemas";
+import { cdpClient } from "../client";
 
 import type { EvmChain } from "@/types/chain";
+
 import type { NetworkServerWallet } from "./types";
 
 export const evmServerWallet =
