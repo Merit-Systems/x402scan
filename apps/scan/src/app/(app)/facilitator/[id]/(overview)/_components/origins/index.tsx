@@ -9,7 +9,6 @@ import {
   LoadingServiceSummary,
   ServiceSummary,
 } from "@/components/service-summary";
-import { renderTableRowLink } from "@/components/table-row-link";
 
 import {
   LoadingServiceMetric,
