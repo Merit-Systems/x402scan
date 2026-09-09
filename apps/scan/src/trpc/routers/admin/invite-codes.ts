@@ -8,7 +8,6 @@ import { inviteCodeByIdSchema } from "@/services/db/invite-codes/schemas";
 import {
   createInviteCode,
   listInviteCodes,
-  getInviteCodeById,
   disableInviteCode,
   reactivateInviteCode,
   listInviteCodesSchema,
@@ -29,12 +28,6 @@ export const adminInviteCodesRouter = createTRPCRouter({
   list: adminProcedure.input(listInviteCodesSchema).query(async ({ input }) => {
     return listInviteCodes(input);
   }),
-
-  getById: adminProcedure
-    .input(inviteCodeByIdSchema)
-    .query(async ({ input }) => {
-      return getInviteCodeById(input);
-    }),
 
   create: adminProcedure
     .input(createInviteCodeSchema)

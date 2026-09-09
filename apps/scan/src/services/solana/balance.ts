@@ -56,14 +56,3 @@ function isAccountNotFoundError(cause: unknown): boolean {
   if (!(cause instanceof Error)) return false;
   return accountNotFoundContextSchema.safeParse(cause).success;
 }
-
-export const getSolanaNativeBalance = async (
-  ownerAddress: z.output<typeof solanaAddressSchema>
-) => {
-  try {
-    const balance = await solanaRpc.getBalance(address(ownerAddress)).send();
-    return Number(balance.value);
-  } catch {
-    return 0;
-  }
-};
