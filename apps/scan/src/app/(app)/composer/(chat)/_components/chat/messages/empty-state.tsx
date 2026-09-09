@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 
 import { ConversationEmptyState } from "@/components/ai-elements/conversation";
-import { Logo } from "@/components/logo";
+import { Logo } from "@/components/ui/logo";
 
 export interface EmptyStateProps {
   title?: string;

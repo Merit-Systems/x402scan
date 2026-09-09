@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -47,7 +48,7 @@ import type { SearchResultEndpoint } from "@/lib/discover/search";
 type BazaarItem =
   RouterOutputs["public"]["sellers"]["bazaar"]["list"]["items"][number];
 
-type FeaturedServiceItem = BazaarItem & {
+export type FeaturedServiceItem = BazaarItem & {
   searchEndpoint?: SearchResultEndpoint;
 };
 
@@ -66,7 +67,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
           }}
         />
       ),
-      cell: ({ row }) => <ServerCell item={row.original} />,
+      cell: ({ row }) => <FeaturedServiceSummary item={row.original} />,
       size: 280,
       loading: () => (
         <div className="flex items-start gap-2.5">
@@ -107,7 +108,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
       ),
       // Volume is the primary economic signal — bigger, bolder, foreground color.
       cell: ({ row }) => (
-        <div className="text-center font-mono text-sm font-semibold tabular-nums">
+        <div className="type-numeric type-supporting-body type-emphasis text-center">
           {formatTokenAmount(BigInt(row.original.total_amount))}
         </div>
       ),
@@ -128,7 +129,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         />
       ),
       cell: ({ row }) => (
-        <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
+        <div className="type-numeric text-center type-caption text-muted-foreground">
           {row.original.tx_count.toLocaleString(undefined, {
             notation: "compact",
             maximumFractionDigits: 2,
@@ -153,7 +154,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         />
       ),
       cell: ({ row }) => (
-        <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
+        <div className="type-numeric text-center type-caption text-muted-foreground">
           {row.original.unique_buyers.toLocaleString(undefined, {
             notation: "compact",
             maximumFractionDigits: 2,
@@ -178,7 +179,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         />
       ),
       cell: ({ row }) => (
-        <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
+        <div className="type-numeric text-center type-caption text-muted-foreground">
           {row.original.latest_block_timestamp
             ? formatCompactAgo(row.original.latest_block_timestamp)
             : "–"}
@@ -252,7 +253,9 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
  * underneath in mono. Falls back to hostname-as-title when no curated title
  * exists.
  */
-const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
+export const FeaturedServiceSummary: React.FC<{
+  item: FeaturedServiceItem;
+}> = ({ item }) => {
   const origin = item.origins[0];
   if (!origin) return null;
 
@@ -272,22 +275,22 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
       <Favicon url={origin.favicon} className="mt-0.5 size-6 shrink-0" />
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-center gap-1.5">
-          <span className="truncate text-sm font-medium transition-colors group-hover:text-primary">
+          <span className="truncate type-label transition-colors group-hover:text-primary">
             {title}
           </span>
           {isExternal ? (
             <ArrowUpRight className="size-3 shrink-0 text-muted-foreground" />
           ) : null}
           {otherOrigins.length > 0 ? (
-            <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+            <span className="shrink-0 type-caption text-muted-foreground">
               +{otherOrigins.length}
             </span>
           ) : null}
         </div>
-        <div className="mt-0.5 truncate text-xs text-muted-foreground">
+        <div className="mt-0.5 truncate type-caption text-muted-foreground">
           {description ?? "No description available."}
         </div>
-        <div className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground/70">
+        <div className="type-compact-code mt-0.5 truncate text-muted-foreground/70">
           {hostname}
         </div>
       </div>
@@ -319,7 +322,7 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
  * Tooltip explains what \"Try it\" actually does, since the affordance is
  * non-obvious.
  */
-const TryItButton: React.FC<{ origin: string }> = ({ origin }) => {
+export const TryItButton: React.FC<{ origin: string }> = ({ origin }) => {
   const [copied, setCopied] = useState(false);
   const prompt = `Use the agentcash \`discover\` command to tell me what I can do with ${origin}. If you do not have agentcash tools or skills installed, go directly to agentcash.dev/skill.md and set it up.`;
 
@@ -327,8 +330,10 @@ const TryItButton: React.FC<{ origin: string }> = ({ origin }) => {
     <Tooltip>
       <TooltipTrigger
         render={
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               void navigator.clipboard.writeText(prompt).then(() => {
@@ -336,7 +341,7 @@ const TryItButton: React.FC<{ origin: string }> = ({ origin }) => {
                 setTimeout(() => setCopied(false), 2000);
               });
             }}
-            className="mx-auto flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground"
+            className="mx-auto"
           />
         }
       >
@@ -348,7 +353,7 @@ const TryItButton: React.FC<{ origin: string }> = ({ origin }) => {
         {copied ? "Copied" : "Try it"}
       </TooltipTrigger>
       <TooltipContent side="left" className="max-w-xs">
-        <p className="text-xs">
+        <p>
           {copied ? (
             "Prompt copied to clipboard."
           ) : (
