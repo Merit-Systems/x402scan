@@ -11,7 +11,14 @@ import {
 } from "@/lib/table-sort-options";
 import { parseTableSorting } from "@/lib/table-state";
 import { parseUsageTimeframe } from "@/lib/timeframe";
-import { api, HydrateClient } from "@/trpc/server";
+import {
+  getBucketedFacilitatorsStatistics,
+  bucketedStatisticsInputSchema,
+} from "@/services/transfers/facilitators/bucketed";
+import {
+  listTopFacilitators,
+  listTopFacilitatorsInputSchema,
+} from "@/services/transfers/facilitators/list";
 
 import {
   FacilitatorsChart,
@@ -81,20 +88,19 @@ async function Chart({
   searchParams,
 }: Pick<PageProps<"/facilitators">, "searchParams">) {
   const { chain, timeframe } = await readFilters(searchParams);
-  void api.public.facilitators.bucketedStatistics.prefetch({
-    numBuckets: 48,
-    timeframe,
-    chain,
-  });
   return (
-    <HydrateClient>
-      <Suspense
-        key={`${chain ?? "all"}:${String(timeframe)}`}
-        fallback={<LoadingFacilitatorsChart />}
-      >
-        <FacilitatorsChart chain={chain} timeframe={timeframe} />
-      </Suspense>
-    </HydrateClient>
+    <Suspense
+      key={`${chain ?? "all"}:${String(timeframe)}`}
+      fallback={<LoadingFacilitatorsChart />}
+    >
+      <ChartData
+        input={bucketedStatisticsInputSchema.parse({
+          chain,
+          timeframe,
+          numBuckets: 48,
+        })}
+      />
+    </Suspense>
   );
 }
 
@@ -102,25 +108,47 @@ async function Table({
   searchParams,
 }: Pick<PageProps<"/facilitators">, "searchParams">) {
   const { chain, timeframe, sorting } = await readFilters(searchParams);
-  void api.public.facilitators.list.prefetch({
-    pagination: { page_size: 10 },
-    sorting,
-    timeframe,
-    chain,
-  });
   return (
-    <HydrateClient>
-      <Suspense
-        key={`${chain ?? "all"}:${String(timeframe)}:${sorting.id}:${String(sorting.desc)}`}
-        fallback={<LoadingFacilitatorsTable pageSize={10} sorting={sorting} />}
-      >
-        <FacilitatorsTable
-          pageSize={10}
-          chain={chain}
-          timeframe={timeframe}
-          sorting={sorting}
-        />
-      </Suspense>
-    </HydrateClient>
+    <Suspense
+      key={`${chain ?? "all"}:${String(timeframe)}:${sorting.id}:${String(sorting.desc)}`}
+      fallback={<LoadingFacilitatorsTable pageSize={10} sorting={sorting} />}
+    >
+      <TableData
+        input={listTopFacilitatorsInputSchema.parse({
+          chain,
+          timeframe,
+          sorting,
+        })}
+      />
+    </Suspense>
+  );
+}
+
+interface ChartDataProps {
+  input: Parameters<typeof getBucketedFacilitatorsStatistics>[0];
+}
+
+async function ChartData({ input }: ChartDataProps) {
+  return (
+    <FacilitatorsChart
+      bucketedFacilitatorData={await getBucketedFacilitatorsStatistics(input)}
+    />
+  );
+}
+
+interface TableDataProps {
+  input: Parameters<typeof listTopFacilitators>[0];
+}
+
+async function TableData({ input }: TableDataProps) {
+  return (
+    <FacilitatorsTable
+      facilitatorsData={await listTopFacilitators(input, {
+        page: 0,
+        page_size: 10,
+      })}
+      sorting={input.sorting}
+      pageSize={10}
+    />
   );
 }

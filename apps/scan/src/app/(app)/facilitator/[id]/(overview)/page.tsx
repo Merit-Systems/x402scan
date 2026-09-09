@@ -6,9 +6,19 @@ import { TimeframeSelect } from "@/components/timeframe-select";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { parseChain } from "@/app/(app)/_lib/chain/parse";
+import { getDiscoverOrigins } from "@/lib/discover/origins";
 import { facilitatorIdMap } from "@/lib/facilitators";
 import { parseUsageTimeframe } from "@/lib/timeframe";
-import { api, HydrateClient } from "@/trpc/server";
+import { listBazaarOriginSummaries } from "@/services/db/bazaar/origins";
+import { listBazaarOriginsInputSchema } from "@/services/db/bazaar/schema";
+import {
+  getBucketedStatisticsMV,
+  bucketedStatisticsMVInputSchema,
+} from "@/services/transfers/stats/bucketed-mv";
+import {
+  getOverallStatisticsMV,
+  overallStatisticsMVInputSchema,
+} from "@/services/transfers/stats/overall-mv";
 
 import {
   FacilitatorServersErrorBoundary,
@@ -84,55 +94,25 @@ async function Overview(props: PageProps<"/facilitator/[id]">) {
 
 async function Statistics(props: PageProps<"/facilitator/[id]">) {
   const { id, chain, timeframe } = await readFilters(props);
-  void api.public.stats.overall.prefetch({
-    chain,
-    facilitatorIds: [id],
-    timeframe,
-  });
-  void api.public.stats.bucketed.prefetch({
-    chain,
-    facilitatorIds: [id],
-    numBuckets: 48,
-    timeframe,
-  });
   return (
-    <HydrateClient>
-      <Suspense
-        key={`${chain ?? "all"}:${String(timeframe)}`}
-        fallback={<LoadingFacilitatorStatCards />}
-      >
-        <FacilitatorStatCards
-          chain={chain}
-          facilitatorId={id}
-          timeframe={timeframe}
-        />
-      </Suspense>
-    </HydrateClient>
+    <Suspense
+      key={`${chain ?? "all"}:${String(timeframe)}`}
+      fallback={<LoadingFacilitatorStatCards />}
+    >
+      <StatisticsData chain={chain} facilitatorId={id} timeframe={timeframe} />
+    </Suspense>
   );
 }
 
 async function Servers(props: PageProps<"/facilitator/[id]">) {
   const { id, chain, timeframe } = await readFilters(props);
-  void api.public.sellers.bazaar.featuredSummaries.prefetch({
-    chain,
-    facilitatorIds: [id],
-    pagination: { page: 0, page_size: 10 },
-    sorting: FACILITATOR_SERVERS_SORTING,
-    timeframe,
-  });
   return (
-    <HydrateClient>
-      <Suspense
-        key={`${chain ?? "all"}:${String(timeframe)}`}
-        fallback={<LoadingFacilitatorOrigins />}
-      >
-        <FacilitatorOrigins
-          chain={chain}
-          facilitatorId={id}
-          timeframe={timeframe}
-        />
-      </Suspense>
-    </HydrateClient>
+    <Suspense
+      key={`${chain ?? "all"}:${String(timeframe)}`}
+      fallback={<LoadingFacilitatorOrigins />}
+    >
+      <ServersData chain={chain} facilitatorId={id} timeframe={timeframe} />
+    </Suspense>
   );
 }
 
@@ -152,3 +132,43 @@ export const generateMetadata = async ({
     },
   };
 };
+
+type StatisticsDataProps = Pick<
+  Awaited<ReturnType<typeof readFilters>>,
+  "chain" | "timeframe"
+> & {
+  facilitatorId: string;
+};
+
+async function StatisticsData({
+  chain,
+  facilitatorId,
+  timeframe,
+}: StatisticsDataProps) {
+  const input = { chain, facilitatorIds: [facilitatorId], timeframe };
+  const [overall, timeSeries] = await Promise.all([
+    getOverallStatisticsMV(overallStatisticsMVInputSchema.parse(input)),
+    getBucketedStatisticsMV(
+      bucketedStatisticsMVInputSchema.parse({ ...input, numBuckets: 48 })
+    ),
+  ]);
+  return <FacilitatorStatCards overall={overall} timeSeries={timeSeries} />;
+}
+async function ServersData({
+  chain,
+  facilitatorId,
+  timeframe,
+}: Parameters<typeof StatisticsData>[0]) {
+  const originUrls = await getDiscoverOrigins();
+  const origins = await listBazaarOriginSummaries(
+    listBazaarOriginsInputSchema.parse({
+      chain,
+      facilitatorIds: [facilitatorId],
+      timeframe,
+      sorting: FACILITATOR_SERVERS_SORTING,
+      originUrls,
+    }),
+    { page: 0, page_size: 10 }
+  );
+  return <FacilitatorOrigins origins={origins} />;
+}

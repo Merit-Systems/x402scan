@@ -1,23 +1,31 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { getOrigin, overall, bucketed } = vi.hoisted(() => ({
+const { getOrigin, addresses, overall, bucketed } = vi.hoisted(() => ({
   getOrigin: vi.fn<() => Promise<unknown>>(),
+  addresses: vi.fn<() => Promise<string[]>>(),
   overall: vi.fn<() => Promise<undefined>>(),
   bucketed: vi.fn<() => Promise<undefined>>(),
 }));
 
 vi.mock("../../_lib/get-origin", () => ({ getServerOrigin: getOrigin }));
-vi.mock("@/trpc/server", () => ({
-  api: {
-    public: {
-      stats: {
-        overallByOrigin: { prefetch: overall },
-        bucketedByOrigin: { prefetch: bucketed },
-      },
-    },
-  },
-  HydrateClient: vi.fn<() => null>(),
+vi.mock("@/services/db/resources/origin", () => ({
+  getOriginPayToAddresses: addresses,
 }));
+vi.mock("@/services/transfers/stats/overall-mv", async () => {
+  const { baseQuerySchema } = await import("@/services/transfers/schemas");
+  return {
+    getOverallStatisticsMV: overall,
+    overallStatisticsMVInputSchema: baseQuerySchema,
+  };
+});
+vi.mock("@/services/transfers/stats/bucketed-mv", async () => {
+  const { baseBucketedQuerySchema } =
+    await import("@/services/transfers/schemas");
+  return {
+    getBucketedStatisticsMV: bucketed,
+    bucketedStatisticsMVInputSchema: baseBucketedQuerySchema,
+  };
+});
 vi.mock("../_components/overview", () => ({
   LoadingServerOverview: vi.fn<() => null>(),
   ServerOverview: vi.fn<() => null>(),
@@ -46,24 +54,42 @@ const props = () => ({
 describe("server overview loading", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    addresses.mockResolvedValue(["0x0000000000000000000000000000000000000001"]);
   });
 
-  it("returns the overview while both analytics requests are still pending", async () => {
+  it("returns the shell immediately and starts both analytics reads concurrently", async () => {
     getOrigin.mockResolvedValue({ id, origin: "https://example.com" });
-    overall.mockReturnValue(Promise.withResolvers<undefined>().promise);
-    bucketed.mockReturnValue(Promise.withResolvers<undefined>().promise);
+    const pendingOverall = Promise.withResolvers<undefined>();
+    const pendingBucketed = Promise.withResolvers<undefined>();
+    overall.mockReturnValue(pendingOverall.promise);
+    bucketed.mockReturnValue(pendingBucketed.promise);
 
     const page = OriginPage(props());
-    expect(overall).not.toHaveBeenCalled();
-    await Statistics(props());
-
     expect(page).toBeDefined();
-    expect(overall).toHaveBeenCalledWith({ originId: id, timeframe: 30 });
-    expect(bucketed).toHaveBeenCalledWith({
-      originId: id,
-      timeframe: 30,
-      numBuckets: 48,
+    expect(overall).not.toHaveBeenCalled();
+    const statistics = Statistics(props());
+    await vi.waitFor(() => {
+      expect(overall).toHaveBeenCalledWith(
+        expect.objectContaining({
+          recipients: {
+            include: ["0x0000000000000000000000000000000000000001"],
+          },
+          timeframe: 30,
+        })
+      );
+      expect(bucketed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          recipients: {
+            include: ["0x0000000000000000000000000000000000000001"],
+          },
+          timeframe: 30,
+          numBuckets: 48,
+        })
+      );
     });
+    pendingOverall.resolve(undefined);
+    pendingBucketed.resolve(undefined);
+    await expect(statistics).resolves.toBeDefined();
   });
 
   it("returns not found without starting analytics for an unknown origin", async () => {

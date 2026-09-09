@@ -1,5 +1,4 @@
 "use client";
-
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 import Link from "next/link";
@@ -28,7 +27,6 @@ import {
 } from "@/app/(app)/_components/service-collection";
 import { formatDiscoverPage, SERVICES_PAGE_SIZE } from "@/lib/discover/filters";
 import { SELLERS_SORT_IDS } from "@/lib/table-sort-options";
-import { api } from "@/trpc/client";
 
 import { serviceColumns as columns } from "./service-columns";
 
@@ -36,98 +34,13 @@ import type { Route } from "next";
 
 import type { DataListItem } from "@/components/ui/data-list";
 
-import type { ServiceView } from "@/lib/discover/filters";
 import type { SellerSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
-import type { Chain } from "@/types/chain";
-import type { ActivityTimeframe } from "@/types/timeframes";
+import type { listBazaarOrigins } from "@/services/db/bazaar/origins";
 
 import type { ServiceItem } from "./service-columns";
 
 const PAGE_SIZE = SERVICES_PAGE_SIZE;
-
-interface DiscoverServicesProps {
-  chain?: Chain;
-  sorting: TableSorting<SellerSortId>;
-  timeframe: ActivityTimeframe;
-  view: ServiceView;
-  page: number;
-}
-
-export const DiscoverServices = ({
-  chain,
-  sorting,
-  timeframe,
-  view,
-  page,
-}: DiscoverServicesProps) => {
-  return view === "featured" ? (
-    <FeaturedServices
-      chain={chain}
-      page={page}
-      sorting={sorting}
-      timeframe={timeframe}
-    />
-  ) : (
-    <AllServices
-      chain={chain}
-      page={page}
-      sorting={sorting}
-      timeframe={timeframe}
-    />
-  );
-};
-
-interface FeaturedServicesProps {
-  chain?: Chain;
-  page: number;
-  sorting: TableSorting<SellerSortId>;
-  timeframe: ActivityTimeframe;
-}
-
-const FeaturedServices = ({
-  chain,
-  page,
-  sorting,
-  timeframe,
-}: FeaturedServicesProps) => {
-  const [topSellers] = api.public.sellers.bazaar.featured.useSuspenseQuery({
-    chain,
-    pagination: {
-      page,
-      page_size: PAGE_SIZE,
-    },
-    timeframe,
-    sorting,
-  });
-
-  return (
-    <ServicesCollection page={page} result={topSellers} sorting={sorting} />
-  );
-};
-
-interface AllServicesProps {
-  chain?: Chain;
-  page: number;
-  sorting: TableSorting<SellerSortId>;
-  timeframe: ActivityTimeframe;
-}
-
-const AllServices = ({ chain, page, sorting, timeframe }: AllServicesProps) => {
-  const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
-    chain,
-    pagination: {
-      page,
-      page_size: PAGE_SIZE,
-    },
-    timeframe,
-    sorting,
-  });
-
-  return (
-    <ServicesCollection page={page} result={topSellers} sorting={sorting} />
-  );
-};
 
 interface LoadingDiscoverServicesProps {
   rowCount?: number;
@@ -151,21 +64,17 @@ export const LoadingDiscoverServices = ({
   );
 };
 
-interface ServicesCollectionProps {
+interface DiscoverServicesProps {
   page: number;
-  result: {
-    items: ServiceItem[];
-    total_count: number;
-    total_pages: number;
-  };
+  result: Awaited<ReturnType<typeof listBazaarOrigins>>;
   sorting: TableSorting<SellerSortId>;
 }
 
-function ServicesCollection({
+export function DiscoverServices({
   page,
   result,
   sorting,
-}: ServicesCollectionProps) {
+}: DiscoverServicesProps) {
   const router = useRouter();
   const replaceSearchParams = useReplaceSearchParams();
   const tableSorting = useUrlTableSorting({
