@@ -198,7 +198,7 @@ export async function GET(request: NextRequest) {
 
     // Normal reads populate missing entries and trigger native background
     // revalidation for stale entries; no request context belongs in cache keys.
-    const ctx = await createTRPCContext(new Headers());
+    const ctx = createTRPCContext();
     const api = createCaller(ctx);
 
     // Optional query params
