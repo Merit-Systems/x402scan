@@ -1,8 +1,8 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 
 import { PageHeading } from "@/components/page-heading";
 import { TimeframeSelect } from "@/components/timeframe-select";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { parseChain } from "@/app/(app)/_lib/chain/parse";
 import {

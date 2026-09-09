@@ -39,7 +39,11 @@ const navigationItems = [
   },
 ] satisfies readonly NavigationItem[];
 
-export function PrimaryNavigation({ className }: { className?: string }) {
+interface PrimaryNavigationProps {
+  className?: string;
+}
+
+export function PrimaryNavigation({ className }: PrimaryNavigationProps) {
   return (
     <Suspense fallback={<NavigationLinks className={className} />}>
       <ActiveNavigation className={className} />
@@ -47,17 +51,20 @@ export function PrimaryNavigation({ className }: { className?: string }) {
   );
 }
 
-function ActiveNavigation({ className }: { className?: string }) {
+interface ActiveNavigationProps {
+  className?: string;
+}
+
+function ActiveNavigation({ className }: ActiveNavigationProps) {
   return <NavigationLinks className={className} pathname={usePathname()} />;
 }
 
-function NavigationLinks({
-  className,
-  pathname,
-}: {
+interface NavigationLinksProps {
   className?: string;
   pathname?: string;
-}) {
+}
+
+function NavigationLinks({ className, pathname }: NavigationLinksProps) {
   return (
     <nav aria-label="Primary navigation" className={className}>
       <ul className="flex min-w-max items-center gap-1">

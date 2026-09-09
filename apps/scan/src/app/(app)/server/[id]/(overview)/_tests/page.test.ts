@@ -34,8 +34,8 @@ vi.mock("../_components/usage-error-boundary", () => ({
   UsageErrorBoundary: vi.fn<() => null>(),
 }));
 
-import OriginPage from "../page";
 import { Statistics } from "../_components/sections";
+import OriginPage from "../page";
 
 const id = "b8a06bde-b6e8-4a10-b4e0-cc6a25fb9efb";
 const props = () => ({

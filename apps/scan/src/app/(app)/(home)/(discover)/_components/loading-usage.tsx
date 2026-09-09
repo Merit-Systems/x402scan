@@ -1,8 +1,10 @@
-import { LoadingOverallStatsContent } from "./stats";
-import { LoadingDiscoverServices } from "./discover-origins";
-import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
-import { UsageSection } from "@/components/usage-section";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UsageSection } from "@/components/usage-section";
+
+import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
+
+import { LoadingDiscoverServices } from "./discover-origins";
+import { LoadingOverallStatsContent } from "./stats";
 
 export function LoadingDiscoverUsage() {
   return (

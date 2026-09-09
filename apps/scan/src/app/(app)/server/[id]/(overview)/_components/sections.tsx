@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
-import { ActivityTimeframe } from "@/types/timeframes";
+
 import { api, HydrateClient } from "@/trpc/server";
+import { ActivityTimeframe } from "@/types/timeframes";
+
 import { getServerOrigin } from "../../_lib/get-origin";
 import { ServerOverview } from "./overview";
-import { ServerStatCards } from "./stat-cards";
 import { OriginResources } from "./resources";
+import { ServerStatCards } from "./stat-cards";
 
 export async function Overview({
   params,
