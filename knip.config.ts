@@ -3,14 +3,12 @@ import type { KnipConfig } from "knip";
 const config: KnipConfig = {
   workspaces: {
     ".": {
-      oxlint: { config: [".oxlintrc.jsonc"] },
-      entry: [
-        "foundation.config.ts",
-        "oxfmt.config.ts",
-        "oxlint.config.ts",
-        "taze.config.ts",
+      entry: ["foundation.config.ts", "oxfmt.config.ts", "taze.config.ts"],
+      // Knip cannot resolve the preset extended through .oxlintrc.jsonc.
+      ignoreDependencies: [
+        "@merit-systems/oxlint-config",
+        "@merit-systems/typescript-config",
       ],
-      ignoreDependencies: ["@merit-systems/typescript-config"],
     },
     "apps/scan": {
       entry: [
