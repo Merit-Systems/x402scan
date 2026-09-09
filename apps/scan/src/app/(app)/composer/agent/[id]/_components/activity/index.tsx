@@ -34,7 +34,11 @@ export const LoadingActivity = () => {
   );
 };
 
-const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
+interface ActivityContainerProps {
+  children: React.ReactNode;
+}
+
+const ActivityContainer = ({ children }: ActivityContainerProps) => {
   return (
     <Section title="Usage">
       <Card className="overflow-hidden">{children}</Card>

@@ -11,7 +11,11 @@ import { ActivityTimeframe } from "@/types/timeframes";
 
 import type { ChartData } from "@/components/ui/chart";
 
-export function ServerStatCards({ originId }: { originId: string }) {
+interface ServerStatCardsProps {
+  originId: string;
+}
+
+export function ServerStatCards({ originId }: ServerStatCardsProps) {
   const input = {
     originId,
     timeframe: ActivityTimeframe.ThirtyDays,

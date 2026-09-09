@@ -15,10 +15,6 @@ import type { UiWallet, UiWalletAccount } from "@wallet-standard/react";
 import type { ConnectedSolanaWallet } from "./context";
 import type { SolanaWalletCookie } from "./cookies";
 
-interface Props {
-  children: ReactNode;
-}
-
 export function getAutomaticConnection<
   TAccount extends { address: string },
   TWallet extends {
@@ -82,7 +78,11 @@ export function getAutomaticConnection<
   return null;
 }
 
-export function SolanaWalletProvider({ children }: Props) {
+interface SolanaWalletProviderProps {
+  children: ReactNode;
+}
+
+export function SolanaWalletProvider({ children }: SolanaWalletProviderProps) {
   const { ready, wallet: cdpWallet } = useCdpSolanaStandardWallet();
 
   const wallets = useWallets();

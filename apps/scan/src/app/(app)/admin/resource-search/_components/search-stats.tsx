@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 import type { FilterQuestion } from "@/services/resource-search/types";
 
-interface SearchStatsProps {
+interface SearchStatsComponentProps {
   totalResults: number;
   sqlCondition?: string;
   keywords?: string[];
@@ -32,7 +32,7 @@ const SearchStatsComponent = ({
   filterExplanation,
   className,
   isLoading = false,
-}: SearchStatsProps) => {
+}: SearchStatsComponentProps) => {
   const [isSqlExpanded, setIsSqlExpanded] = useState(false);
 
   return (

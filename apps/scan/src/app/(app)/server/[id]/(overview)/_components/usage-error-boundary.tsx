@@ -6,7 +6,11 @@ import { UsageSection } from "@/components/usage-section";
 
 import type { ReactNode } from "react";
 
-export function UsageErrorBoundary({ children }: { children: ReactNode }) {
+interface UsageErrorBoundaryProps {
+  children: ReactNode;
+}
+
+export function UsageErrorBoundary({ children }: UsageErrorBoundaryProps) {
   return (
     <ErrorBoundary
       fallback={

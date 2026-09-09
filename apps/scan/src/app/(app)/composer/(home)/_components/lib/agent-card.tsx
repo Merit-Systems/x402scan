@@ -23,12 +23,13 @@ import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 
 import type { RouterOutputs } from "@/trpc/client";
-interface Props {
+
+interface AgentCardProps {
   agentConfiguration: RouterOutputs["public"]["agents"]["list"]["items"][number];
   href?: `/composer/agent/${string}` | `/composer/agent/${string}/chat`;
 }
 
-export const AgentCard = ({ agentConfiguration, href }: Props) => {
+export const AgentCard = ({ agentConfiguration, href }: AgentCardProps) => {
   const route = href ?? `/composer/agent/${agentConfiguration.id}`;
   return (
     <Link href={route}>
@@ -92,20 +93,19 @@ interface Stat {
   Icon: LucideIcon;
 }
 
-type StatsCardProps = {
+type StatCardProps = {
   children: React.ReactNode;
 } & Stat;
 
-const StatCard = ({ children, ...stat }: StatsCardProps) => {
+const StatCard = ({ children, ...stat }: StatCardProps) => {
   return <BaseStatCard {...stat}>{children}</BaseStatCard>;
 };
 
-const BaseStatCard = ({
-  title,
-  children,
-}: Stat & {
+type BaseStatCardProps = Stat & {
   children: React.ReactNode;
-}) => {
+};
+
+const BaseStatCard = ({ title, children }: BaseStatCardProps) => {
   return (
     <div className="flex flex-1 flex-row items-center justify-between px-2 py-1">
       <span className="type-micro">{title}</span>

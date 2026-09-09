@@ -35,15 +35,17 @@ import type { FacilitatorServer } from "./columns";
 
 const PAGE_SIZE = 10;
 
+interface FacilitatorOriginsProps {
+  chain?: Chain;
+  facilitatorId: string;
+  timeframe: ActivityTimeframe;
+}
+
 export function FacilitatorOrigins({
   chain,
   facilitatorId,
   timeframe,
-}: {
-  chain?: Chain;
-  facilitatorId: string;
-  timeframe: ActivityTimeframe;
-}) {
+}: FacilitatorOriginsProps) {
   const router = useRouter();
   const [origins] =
     api.public.sellers.bazaar.featuredSummaries.useSuspenseQuery({

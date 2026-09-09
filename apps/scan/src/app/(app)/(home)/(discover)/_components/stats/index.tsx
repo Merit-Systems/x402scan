@@ -11,12 +11,15 @@ import { OverallCharts, LoadingOverallCharts } from "./charts";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
-interface Props {
+interface OverallStatsContentProps {
   chain?: Chain;
   timeframe: ActivityTimeframe;
 }
 
-export function OverallStatsContent({ chain, timeframe }: Props) {
+export function OverallStatsContent({
+  chain,
+  timeframe,
+}: OverallStatsContentProps) {
   void api.public.stats.overall.prefetch({
     timeframe,
     chain,

@@ -183,11 +183,11 @@ export const OnrampSessionDialog: React.FC = () => {
   );
 };
 
-const SessionGraphic = ({
-  session,
-}: {
+interface SessionGraphicProps {
   session: OnrampSession | undefined;
-}) => {
+}
+
+const SessionGraphic = ({ session }: SessionGraphicProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sourceRef = useRef<HTMLDivElement>(null);
   const destinationRef = useRef<HTMLDivElement>(null);
@@ -246,7 +246,11 @@ const SessionGraphic = ({
   );
 };
 
-const StepState = ({ stepState }: { stepState: OnrampSession["status"] }) => {
+interface StepStateProps {
+  stepState: OnrampSession["status"];
+}
+
+const StepState = ({ stepState }: StepStateProps) => {
   const classNames = {
     container: "rounded-full size-8 md:size-10 p-2 z-10",
     icon: "size-full",

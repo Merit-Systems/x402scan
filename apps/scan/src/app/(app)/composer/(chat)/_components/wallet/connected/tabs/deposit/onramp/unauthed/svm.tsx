@@ -17,7 +17,11 @@ export const NoSVMSessionContent = () => {
   return <SVMSignInContent account={connectedWallet.account} />;
 };
 
-const SVMSignInContent = ({ account }: { account: UiWalletAccount }) => {
+interface SVMSignInContentProps {
+  account: UiWalletAccount;
+}
+
+const SVMSignInContent = ({ account }: SVMSignInContentProps) => {
   const { signIn, isPending } = useSiws({
     account,
     redirectParams: {

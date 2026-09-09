@@ -741,15 +741,17 @@ const MERCHANT_EMAIL_URL = `mailto:${MERCHANT_EMAIL}?subject=${encodeURIComponen
 
 const STEP_NAMES = ["review_api_page", "test_endpoints", "email_team"];
 
+interface PostRegistrationDialogProps {
+  originId: string;
+  origin: string;
+  contactEmail?: string;
+}
+
 function PostRegistrationDialog({
   originId,
   origin,
   contactEmail,
-}: {
-  originId: string;
-  origin: string;
-  contactEmail?: string;
-}) {
+}: PostRegistrationDialogProps) {
   const [open, setOpen] = useState(true);
   const [clickedSteps, setClickedSteps] = useState<Set<number>>(new Set());
   const [email, setEmail] = useState(contactEmail ?? "");
@@ -985,19 +987,21 @@ function PostRegistrationDialog({
   );
 }
 
+interface ChecklistStepProps {
+  number: number;
+  label?: string;
+  completed: boolean;
+  current: boolean;
+  children: React.ReactNode;
+}
+
 function ChecklistStep({
   number,
   label,
   completed,
   current,
   children,
-}: {
-  number: number;
-  label?: string;
-  completed: boolean;
-  current: boolean;
-  children: React.ReactNode;
-}) {
+}: ChecklistStepProps) {
   return (
     <div
       className={`flex ${label ? "items-start" : "items-center"} -mx-3 gap-3 rounded-lg px-3 py-2.5 transition-colors ${
@@ -1027,17 +1031,19 @@ function ChecklistStep({
   );
 }
 
+interface FailedResourceRowProps {
+  url: string;
+  error: string;
+  statusCode?: number;
+  issues?: { code: string; message: string }[];
+}
+
 function FailedResourceRow({
   url,
   error,
   statusCode,
   issues,
-}: {
-  url: string;
-  error: string;
-  statusCode?: number;
-  issues?: { code: string; message: string }[];
-}) {
+}: FailedResourceRowProps) {
   const pathname = (() => {
     try {
       return decodeURIComponent(new URL(url).pathname);
@@ -1093,18 +1099,7 @@ const EMPTY_INVALID_RESOURCES_MAP: Record<
   { invalid: boolean; reason?: string }
 > = {};
 
-function ProbeResult({
-  preview,
-  urlOrigin,
-  resources,
-  testedResources = EMPTY_TESTED_RESOURCES,
-  failedResources = EMPTY_FAILED_RESOURCES,
-  isBatchTestLoading = false,
-  authModeMap = EMPTY_AUTH_MODE_MAP,
-  invalidResourcesMap = EMPTY_INVALID_RESOURCES_MAP,
-  contactEmail,
-  discoverySource,
-}: {
+interface ProbeResultProps {
   preview: {
     favicon: string | null;
     title?: string | null;
@@ -1123,7 +1118,20 @@ function ProbeResult({
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
   contactEmail?: string | null;
   discoverySource?: string;
-}) {
+}
+
+function ProbeResult({
+  preview,
+  urlOrigin,
+  resources,
+  testedResources = EMPTY_TESTED_RESOURCES,
+  failedResources = EMPTY_FAILED_RESOURCES,
+  isBatchTestLoading = false,
+  authModeMap = EMPTY_AUTH_MODE_MAP,
+  invalidResourcesMap = EMPTY_INVALID_RESOURCES_MAP,
+  contactEmail,
+  discoverySource,
+}: ProbeResultProps) {
   const testedKeys = useMemo(
     () => new Set(testedResources.map(rk)),
     [testedResources]

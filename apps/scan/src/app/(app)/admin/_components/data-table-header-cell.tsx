@@ -17,21 +17,21 @@ interface BaseProps {
   className?: string;
 }
 
-type Props<SortKey extends string> = {
-  sorting?: SortingProps<SortKey>;
-} & BaseProps;
-
 interface SortingProps<SortKey extends string> {
   sortContext: SortingContext<SortKey>;
   sortKey: SortKey;
 }
+
+type HeaderCellProps<SortKey extends string> = {
+  sorting?: SortingProps<SortKey>;
+} & BaseProps;
 
 export function HeaderCell<SortKey extends string>({
   Icon,
   label,
   className,
   sorting,
-}: Props<SortKey>) {
+}: HeaderCellProps<SortKey>) {
   if (sorting) {
     return (
       <SortableHeaderCell

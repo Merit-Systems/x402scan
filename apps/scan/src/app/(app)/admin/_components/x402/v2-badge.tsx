@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 
 import { BorderBeam } from "./border-beam";
 
-type Props = React.HTMLAttributes<HTMLDivElement>;
+type X402V2BadgeProps = React.HTMLAttributes<HTMLDivElement>;
 
-export function X402V2Badge({ className, ...props }: Props) {
+export function X402V2Badge({ className, ...props }: X402V2BadgeProps) {
   return (
     <Badge
       variant="default"

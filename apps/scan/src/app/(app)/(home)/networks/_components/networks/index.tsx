@@ -14,15 +14,17 @@ import type { TableSorting } from "@/lib/table-state";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
+interface NetworksTableProps {
+  chain?: Chain;
+  sorting: TableSorting<NetworksSortId>;
+  timeframe: ActivityTimeframe;
+}
+
 export const NetworksTable = ({
   chain,
   sorting,
   timeframe,
-}: {
-  chain?: Chain;
-  sorting: TableSorting<NetworksSortId>;
-  timeframe: ActivityTimeframe;
-}) => {
+}: NetworksTableProps) => {
   const tableSorting = useUrlTableSorting({
     sorting,
     sortIds: NETWORKS_SORT_IDS,
@@ -46,11 +48,13 @@ export const NetworksTable = ({
   );
 };
 
+interface LoadingNetworksTableProps {
+  sorting?: TableSorting<NetworksSortId>;
+}
+
 export const LoadingNetworksTable = ({
   sorting,
-}: {
-  sorting?: TableSorting<NetworksSortId>;
-}) => {
+}: LoadingNetworksTableProps) => {
   return (
     <DataTableLoading
       columns={columns}

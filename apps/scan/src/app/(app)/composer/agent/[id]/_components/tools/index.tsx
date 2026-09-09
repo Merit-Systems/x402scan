@@ -28,7 +28,11 @@ export const LoadingTools = () => {
   );
 };
 
-const ToolsContainer = ({ children }: { children: React.ReactNode }) => {
+interface ToolsContainerProps {
+  children: React.ReactNode;
+}
+
+const ToolsContainer = ({ children }: ToolsContainerProps) => {
   return (
     <Section title="Tools" description="Tools available to the agent">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">{children}</div>

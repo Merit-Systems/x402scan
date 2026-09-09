@@ -141,18 +141,7 @@ ${checklist}
 Fix each issue. Only ask me if you need input you can't determine yourself.`;
 }
 
-export function DiscoveryActions({
-  iconOnly,
-  label,
-  failedResources,
-  warnings,
-  noDiscovery,
-  missingSchemaResources,
-  missingContactEmail,
-  serverHostMismatch,
-  blockedFavicon,
-  customPrompt,
-}: {
+interface DiscoveryActionsProps {
   iconOnly?: boolean;
   label?: string;
   failedResources?: { url: string; error: string; status?: number }[];
@@ -166,7 +155,20 @@ export function DiscoveryActions({
   blockedFavicon?: BlockedFavicon | null;
   /** Override the generated prompt with a custom one. */
   customPrompt?: string;
-}) {
+}
+
+export function DiscoveryActions({
+  iconOnly,
+  label,
+  failedResources,
+  warnings,
+  noDiscovery,
+  missingSchemaResources,
+  missingContactEmail,
+  serverHostMismatch,
+  blockedFavicon,
+  customPrompt,
+}: DiscoveryActionsProps) {
   const prompt =
     customPrompt ??
     (noDiscovery

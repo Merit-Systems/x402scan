@@ -13,11 +13,11 @@ import type { RouterOutputs } from "@/trpc/client";
 
 type EndUser = RouterOutputs["admin"]["endUsers"]["list"][number];
 
-const AuthMethodBadge = ({
-  method,
-}: {
+interface AuthMethodBadgeProps {
   method: EndUser["authenticationMethods"][number];
-}) => {
+}
+
+const AuthMethodBadge = ({ method }: AuthMethodBadgeProps) => {
   if (method.type === "email") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 type-caption text-primary">

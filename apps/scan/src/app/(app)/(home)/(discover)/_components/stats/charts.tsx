@@ -11,13 +11,12 @@ import type { ChartData } from "@/components/ui/chart";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
-export const OverallCharts = ({
-  chain,
-  timeframe,
-}: {
+interface OverallChartsProps {
   chain?: Chain;
   timeframe: ActivityTimeframe;
-}) => {
+}
+
+export const OverallCharts = ({ chain, timeframe }: OverallChartsProps) => {
   const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
     timeframe,

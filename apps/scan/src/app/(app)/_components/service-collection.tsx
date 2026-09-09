@@ -189,13 +189,21 @@ export function createServiceActivityColumn<T extends ServiceSummaryItem>(
   };
 }
 
-export function ServiceMetricsGrid({ children }: { children: ReactNode }) {
+interface ServiceMetricsGridProps {
+  children: ReactNode;
+}
+
+export function ServiceMetricsGrid({ children }: ServiceMetricsGridProps) {
   return (
     <div className="grid auto-cols-fr grid-flow-col gap-2">{children}</div>
   );
 }
 
-export function ServiceVolumeMetric({ item }: { item: ServiceSummaryItem }) {
+interface ServiceVolumeMetricProps {
+  item: ServiceSummaryItem;
+}
+
+export function ServiceVolumeMetric({ item }: ServiceVolumeMetricProps) {
   return (
     <ServiceMetric
       label="Volume"
@@ -204,17 +212,23 @@ export function ServiceVolumeMetric({ item }: { item: ServiceSummaryItem }) {
   );
 }
 
+interface ServiceTransactionsMetricProps {
+  item: ServiceSummaryItem;
+}
+
 export function ServiceTransactionsMetric({
   item,
-}: {
-  item: ServiceSummaryItem;
-}) {
+}: ServiceTransactionsMetricProps) {
   return (
     <ServiceMetric label="Txns" value={formatCompactNumber(item.tx_count)} />
   );
 }
 
-export function ServiceBuyersMetric({ item }: { item: ServiceSummaryItem }) {
+interface ServiceBuyersMetricProps {
+  item: ServiceSummaryItem;
+}
+
+export function ServiceBuyersMetric({ item }: ServiceBuyersMetricProps) {
   return (
     <ServiceMetric
       label="Buyers"
@@ -223,7 +237,11 @@ export function ServiceBuyersMetric({ item }: { item: ServiceSummaryItem }) {
   );
 }
 
-export function ServiceLatestMetric({ item }: { item: ServiceSummaryItem }) {
+interface ServiceLatestMetricProps {
+  item: ServiceSummaryItem;
+}
+
+export function ServiceLatestMetric({ item }: ServiceLatestMetricProps) {
   return (
     <ServiceMetric
       label="Latest"
@@ -245,11 +263,20 @@ export function LoadingServiceMetric() {
   );
 }
 
-function ServiceMetricCell({ children }: { children: React.ReactNode }) {
+interface ServiceMetricCellProps {
+  children: React.ReactNode;
+}
+
+function ServiceMetricCell({ children }: ServiceMetricCellProps) {
   return <div className="w-full text-center type-caption">{children}</div>;
 }
 
-function ServiceMetric({ label, value }: { label: string; value: string }) {
+interface ServiceMetricProps {
+  label: string;
+  value: string;
+}
+
+function ServiceMetric({ label, value }: ServiceMetricProps) {
   return (
     <dl className="min-w-0">
       <dt className="truncate type-caption text-muted-foreground">{label}</dt>
