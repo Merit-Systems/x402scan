@@ -4,11 +4,13 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import type { ReactNode } from "react";
 
+interface FacilitatorUsageErrorBoundaryProps {
+  children: ReactNode;
+}
+
 export function FacilitatorUsageErrorBoundary({
   children,
-}: {
-  children: ReactNode;
-}) {
+}: FacilitatorUsageErrorBoundaryProps) {
   return (
     <ErrorBoundary
       fallback={
@@ -22,11 +24,13 @@ export function FacilitatorUsageErrorBoundary({
   );
 }
 
+interface FacilitatorServersErrorBoundaryProps {
+  children: ReactNode;
+}
+
 export function FacilitatorServersErrorBoundary({
   children,
-}: {
-  children: ReactNode;
-}) {
+}: FacilitatorServersErrorBoundaryProps) {
   return (
     <ErrorBoundary
       fallback={

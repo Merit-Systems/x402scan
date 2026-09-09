@@ -23,7 +23,11 @@ const OPTIONS: { label: string; value: ServiceView }[] = [
   { label: "All", value: "all" },
 ];
 
-export function ServiceViewToggle({ view }: { view: ServiceView }) {
+interface ServiceViewToggleProps {
+  view: ServiceView;
+}
+
+export function ServiceViewToggle({ view }: ServiceViewToggleProps) {
   const replaceSearchParams = useReplaceSearchParams();
 
   const setView = (nextView: ServiceView) => {

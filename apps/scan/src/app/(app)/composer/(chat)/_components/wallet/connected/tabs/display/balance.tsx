@@ -48,13 +48,12 @@ const EvmBalance: React.FC<EvmBalanceProps> = ({ chain }) => {
   return <BalanceItem balance={balance} isLoading={isLoading} />;
 };
 
-const BalanceItem = ({
-  balance,
-  isLoading,
-}: {
+interface BalanceItemProps {
   balance: number | undefined;
   isLoading: boolean;
-}) => {
+}
+
+const BalanceItem = ({ balance, isLoading }: BalanceItemProps) => {
   return (
     <ItemContainer
       label="Balance"

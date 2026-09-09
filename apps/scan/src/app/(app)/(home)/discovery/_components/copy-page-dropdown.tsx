@@ -15,15 +15,17 @@ import {
 
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
+interface CopyPageDropdownProps {
+  markdown: string;
+  pageUrl: string;
+  markdownPath: string;
+}
+
 export function CopyPageDropdown({
   markdown,
   pageUrl,
   markdownPath,
-}: {
-  markdown: string;
-  pageUrl: string;
-  markdownPath: string;
-}) {
+}: CopyPageDropdownProps) {
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
     toast.success("Copied page as Markdown");
   });

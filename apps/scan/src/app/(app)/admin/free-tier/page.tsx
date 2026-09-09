@@ -33,7 +33,13 @@ export default async function FreeTierWalletPage() {
   );
 }
 
-const ChainWalletInformation = async ({ chain }: { chain: SupportedChain }) => {
+interface ChainWalletInformationProps {
+  chain: SupportedChain;
+}
+
+const ChainWalletInformation = async ({
+  chain,
+}: ChainWalletInformationProps) => {
   const wallet = freeTierWallets[chain];
 
   return (

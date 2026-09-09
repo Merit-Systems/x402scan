@@ -4,6 +4,15 @@ import { cn } from "@/lib/utils";
 
 import { DiscoveryActions } from "./discovery-actions";
 
+interface DiscoveryFixHintProps {
+  className?: string;
+  failedResources?: { url: string; error: string; status?: number }[];
+  warnings?: { url: string; error: string; status?: number }[];
+  noDiscovery?: boolean;
+  missingSchemaResources?: string[];
+  missingContactEmail?: boolean;
+}
+
 export function DiscoveryFixHint({
   className,
   failedResources,
@@ -11,14 +20,7 @@ export function DiscoveryFixHint({
   noDiscovery,
   missingSchemaResources,
   missingContactEmail,
-}: {
-  className?: string;
-  failedResources?: { url: string; error: string; status?: number }[];
-  warnings?: { url: string; error: string; status?: number }[];
-  noDiscovery?: boolean;
-  missingSchemaResources?: string[];
-  missingContactEmail?: boolean;
-}) {
+}: DiscoveryFixHintProps) {
   const label = noDiscovery
     ? "Have your agent create an OpenAPI spec for your resource"
     : "Have your agent fix the issues with a prompt";

@@ -56,6 +56,10 @@ export const LoadingHeaderButtons = () => {
   );
 };
 
-const ButtonsContainer = ({ children }: { children: React.ReactNode }) => {
+interface ButtonsContainerProps {
+  children: React.ReactNode;
+}
+
+const ButtonsContainer = ({ children }: ButtonsContainerProps) => {
   return <div className="flex flex-row gap-2">{children}</div>;
 };

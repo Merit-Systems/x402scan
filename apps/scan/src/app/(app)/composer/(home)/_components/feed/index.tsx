@@ -24,7 +24,11 @@ export const LoadingFeed = () => {
   );
 };
 
-const FeedContainer = ({ children }: { children: React.ReactNode }) => {
+interface FeedContainerProps {
+  children: React.ReactNode;
+}
+
+const FeedContainer = ({ children }: FeedContainerProps) => {
   return (
     <Section
       title="Feed"

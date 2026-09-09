@@ -24,17 +24,19 @@ type ServiceSummaryItem = Pick<
   "origins"
 >;
 
+interface ServiceSummaryProps {
+  item: ServiceSummaryItem;
+  className?: string;
+  descriptionPlacement?: OriginSummaryProps["descriptionPlacement"];
+  nameVariant?: OriginSummaryNameProps["variant"];
+}
+
 export function ServiceSummary({
   item,
   className,
   descriptionPlacement,
   nameVariant,
-}: {
-  item: ServiceSummaryItem;
-  className?: string;
-  descriptionPlacement?: OriginSummaryProps["descriptionPlacement"];
-  nameVariant?: OriginSummaryNameProps["variant"];
-}) {
+}: ServiceSummaryProps) {
   const origin = item.origins[0];
   if (!origin) return null;
 
@@ -71,7 +73,13 @@ export function ServiceSummary({
   );
 }
 
-export function LoadingServiceSummary({ className }: { className?: string }) {
+interface LoadingServiceSummaryProps {
+  className?: string;
+}
+
+export function LoadingServiceSummary({
+  className,
+}: LoadingServiceSummaryProps) {
   return (
     <div
       className={cn(

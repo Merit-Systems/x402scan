@@ -7,11 +7,11 @@ import { ActivityTimeframe } from "@/types/timeframes";
 
 import type { ChartData } from "@/components/ui/chart";
 
-interface Props {
+interface KnownSellerChartProps {
   addresses: string[];
 }
 
-export const KnownSellerChart = ({ addresses }: Props) => {
+export const KnownSellerChart = ({ addresses }: KnownSellerChartProps) => {
   const { data: bucketedStats, isLoading } = api.public.stats.bucketed.useQuery(
     {
       recipients: {

@@ -46,19 +46,21 @@ import type { ServiceItem } from "./service-columns";
 
 const PAGE_SIZE = SERVICES_PAGE_SIZE;
 
+interface DiscoverServicesProps {
+  chain?: Chain;
+  sorting: TableSorting<SellerSortId>;
+  timeframe: ActivityTimeframe;
+  view: ServiceView;
+  page: number;
+}
+
 export const DiscoverServices = ({
   chain,
   sorting,
   timeframe,
   view,
   page,
-}: {
-  chain?: Chain;
-  sorting: TableSorting<SellerSortId>;
-  timeframe: ActivityTimeframe;
-  view: ServiceView;
-  page: number;
-}) => {
+}: DiscoverServicesProps) => {
   return view === "featured" ? (
     <FeaturedServices
       chain={chain}
@@ -76,17 +78,19 @@ export const DiscoverServices = ({
   );
 };
 
+interface FeaturedServicesProps {
+  chain?: Chain;
+  page: number;
+  sorting: TableSorting<SellerSortId>;
+  timeframe: ActivityTimeframe;
+}
+
 const FeaturedServices = ({
   chain,
   page,
   sorting,
   timeframe,
-}: {
-  chain?: Chain;
-  page: number;
-  sorting: TableSorting<SellerSortId>;
-  timeframe: ActivityTimeframe;
-}) => {
+}: FeaturedServicesProps) => {
   const [topSellers] = api.public.sellers.bazaar.featured.useSuspenseQuery({
     chain,
     pagination: {
@@ -102,17 +106,14 @@ const FeaturedServices = ({
   );
 };
 
-const AllServices = ({
-  chain,
-  page,
-  sorting,
-  timeframe,
-}: {
+interface AllServicesProps {
   chain?: Chain;
   page: number;
   sorting: TableSorting<SellerSortId>;
   timeframe: ActivityTimeframe;
-}) => {
+}
+
+const AllServices = ({ chain, page, sorting, timeframe }: AllServicesProps) => {
   const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
     chain,
     pagination: {
@@ -128,13 +129,15 @@ const AllServices = ({
   );
 };
 
+interface LoadingDiscoverServicesProps {
+  rowCount?: number;
+  sorting: TableSorting<SellerSortId>;
+}
+
 export const LoadingDiscoverServices = ({
   rowCount = PAGE_SIZE,
   sorting,
-}: {
-  rowCount?: number;
-  sorting: TableSorting<SellerSortId>;
-}) => {
+}: LoadingDiscoverServicesProps) => {
   return (
     <ResponsiveCollectionLoading
       rowCount={rowCount}
@@ -148,11 +151,7 @@ export const LoadingDiscoverServices = ({
   );
 };
 
-function ServicesCollection({
-  page,
-  result,
-  sorting,
-}: {
+interface ServicesCollectionProps {
   page: number;
   result: {
     items: ServiceItem[];
@@ -160,7 +159,13 @@ function ServicesCollection({
     total_pages: number;
   };
   sorting: TableSorting<SellerSortId>;
-}) {
+}
+
+function ServicesCollection({
+  page,
+  result,
+  sorting,
+}: ServicesCollectionProps) {
   const router = useRouter();
   const replaceSearchParams = useReplaceSearchParams();
   const tableSorting = useUrlTableSorting({
@@ -217,19 +222,21 @@ function ServicesCollection({
   );
 }
 
+interface MobilePaginationProps {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
 function MobilePagination({
   page,
   pageSize,
   total,
   totalPages,
   onPageChange,
-}: {
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}) {
+}: MobilePaginationProps) {
   if (totalPages < 2) {
     return null;
   }

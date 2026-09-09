@@ -19,7 +19,7 @@ const queryModeSchema = z.enum(["keywords", "sql", "sql-parallel"]);
 type RefinementMode = z.infer<typeof refinementModeSchema>;
 type QueryMode = z.infer<typeof queryModeSchema>;
 
-interface SearchInputProps {
+interface SearchInputComponentProps {
   onSearch: (
     query: string,
     refinementMode: RefinementMode,
@@ -35,7 +35,7 @@ const SearchInputComponent = ({
   placeholder = "I'm looking for tools to search the web...",
   className,
   isLoading = false,
-}: SearchInputProps) => {
+}: SearchInputComponentProps) => {
   const [localQuery, setLocalQuery] = useState("");
   const [refinementMode, setRefinementMode] =
     useState<RefinementMode>("reranker");

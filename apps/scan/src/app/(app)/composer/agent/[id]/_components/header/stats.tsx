@@ -62,7 +62,11 @@ export const LoadingAgentStats = () => {
   );
 };
 
-const AgentStatsContainer = ({ children }: { children: React.ReactNode }) => {
+interface AgentStatsContainerProps {
+  children: React.ReactNode;
+}
+
+const AgentStatsContainer = ({ children }: AgentStatsContainerProps) => {
   return (
     <div
       className={cn(

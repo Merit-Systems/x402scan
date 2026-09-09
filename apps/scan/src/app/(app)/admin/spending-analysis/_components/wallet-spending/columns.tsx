@@ -24,13 +24,12 @@ const formatAmount = (amount: string) => {
   return (Number(numericAmount) / 1e6).toFixed(6);
 };
 
-const WalletCell = ({
-  walletName,
-  isFreeTier,
-}: {
+interface WalletCellProps {
   walletName: string;
   isFreeTier: boolean;
-}) => {
+}
+
+const WalletCell = ({ walletName, isFreeTier }: WalletCellProps) => {
   const [showAddress, setShowAddress] = useState(false);
   const { data: address, isLoading } =
     api.admin.spending.getWalletAddress.useQuery(

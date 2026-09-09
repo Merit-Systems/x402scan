@@ -11,11 +11,11 @@ const CDPHooksProviderBase = dynamic(
   }
 );
 
-interface Props {
+interface CDPHooksProviderProps {
   children: React.ReactNode;
 }
 
-export const CDPHooksProvider = ({ children }: Props) => {
+export const CDPHooksProvider = ({ children }: CDPHooksProviderProps) => {
   return (
     <CDPHooksProviderBase config={cdpConfig}>{children}</CDPHooksProviderBase>
   );

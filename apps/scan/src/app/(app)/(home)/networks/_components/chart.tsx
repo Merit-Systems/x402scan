@@ -15,13 +15,12 @@ import type { UsageChartValues } from "@/components/usage-bar-chart";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
-export const NetworksChart = ({
-  chain,
-  timeframe,
-}: {
+interface NetworksChartProps {
   chain?: Chain;
   timeframe: ActivityTimeframe;
-}) => {
+}
+
+export const NetworksChart = ({ chain, timeframe }: NetworksChartProps) => {
   const [bucketedNetworkData] =
     api.networks.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,

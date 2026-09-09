@@ -7,7 +7,11 @@ import { PostHogProvider as PHProvider } from "posthog-js/react";
 
 import { env } from "@/env";
 
-export function PostHogProvider({ children }: { children: React.ReactNode }) {
+interface PostHogProviderProps {
+  children: React.ReactNode;
+}
+
+export function PostHogProvider({ children }: PostHogProviderProps) {
   useEffect(() => {
     if (!env.NEXT_PUBLIC_POSTHOG_KEY) {
       return;

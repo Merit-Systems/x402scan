@@ -58,13 +58,12 @@ export const Heading: React.FC<HeadingProps> = ({
   );
 };
 
-const HeadingContainer = ({
-  children,
-  className,
-}: {
+interface HeadingContainerProps {
   children: ReactNode;
   className?: string;
-}) => {
+}
+
+const HeadingContainer = ({ children, className }: HeadingContainerProps) => {
   return (
     <>
       <div
@@ -98,22 +97,12 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
   );
 };
 
-interface SectionProps<T extends string> {
-  title: string | ReactElement;
-  description?: string;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
-  className?: string;
-  href?: Route<T>;
-}
-
-const SectionHeader = ({
-  title,
-  href,
-}: {
+interface SectionHeaderProps {
   title: string | ReactElement;
   href?: string;
-}) => {
+}
+
+const SectionHeader = ({ title, href }: SectionHeaderProps) => {
   return (
     <div
       className={cn("flex items-center gap-1", href && "group cursor-pointer")}
@@ -131,6 +120,15 @@ const SectionHeader = ({
     </div>
   );
 };
+
+interface SectionProps<T extends string> {
+  title: string | ReactElement;
+  description?: string;
+  children: React.ReactNode;
+  actions?: React.ReactNode;
+  className?: string;
+  href?: Route<T>;
+}
 
 export const Section = <T extends string>({
   children,

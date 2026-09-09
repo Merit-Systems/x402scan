@@ -12,7 +12,7 @@ import { createColumns } from "./columns";
 
 import type { FilteredSearchResult } from "@/services/resource-search/types";
 
-interface ResultsTableProps {
+interface ResultsTableComponentProps {
   results: FilteredSearchResult[];
   isLoading?: boolean;
 }
@@ -20,7 +20,7 @@ interface ResultsTableProps {
 const ResultsTableComponent = ({
   results,
   isLoading = false,
-}: ResultsTableProps) => {
+}: ResultsTableComponentProps) => {
   const [selectedResourceId, setSelectedResourceId] = useState<string | null>(
     null
   );

@@ -37,7 +37,11 @@ const navigationItems = [
   },
 ] satisfies readonly NavigationItem[];
 
-export function PrimaryNavigation({ className }: { className?: string }) {
+interface PrimaryNavigationProps {
+  className?: string;
+}
+
+export function PrimaryNavigation({ className }: PrimaryNavigationProps) {
   const pathname = usePathname();
 
   return (

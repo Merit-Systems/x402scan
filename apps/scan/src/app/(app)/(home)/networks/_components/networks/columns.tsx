@@ -142,13 +142,12 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   },
 ];
 
-const Cell = ({
-  children,
-  className,
-}: {
+interface CellProps {
   children: React.ReactNode;
   className?: string;
-}) => {
+}
+
+const Cell = ({ children, className }: CellProps) => {
   return (
     <div className={cn("text-center type-caption", className)}>{children}</div>
   );

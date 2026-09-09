@@ -22,7 +22,11 @@ import { Origin } from "./_components/origins";
 import { Resource } from "./_components/resource";
 import { SearchContext } from "./context";
 
-export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
+interface SearchProviderProps {
+  children: React.ReactNode;
+}
+
+export const SearchProvider = ({ children }: SearchProviderProps) => {
   const router = useRouter();
 
   const [search, setSearch] = useState("");

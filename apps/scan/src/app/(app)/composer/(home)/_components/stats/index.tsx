@@ -35,7 +35,11 @@ export const LoadingOverallStats = () => {
   );
 };
 
-const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
+interface ActivityContainerProps {
+  children: React.ReactNode;
+}
+
+const ActivityContainer = ({ children }: ActivityContainerProps) => {
   return (
     <Section
       title="Overall Stats"

@@ -6,6 +6,11 @@ import { buttonVariants } from "@/components/ui/button";
 
 import type { Route } from "next";
 
+interface DiscoveryDocActionsProps {
+  secondaryHref: Route;
+  secondaryLabel: string;
+}
+
 export function DiscoveryDocActions({
   secondaryHref,
   secondaryLabel,
@@ -34,9 +39,4 @@ export function DiscoveryDocActions({
       </p>
     </>
   );
-}
-
-interface DiscoveryDocActionsProps {
-  secondaryHref: Route;
-  secondaryLabel: string;
 }

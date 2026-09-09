@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
-export function CopyForAgentsButton({ text }: { text: string }) {
+interface CopyForAgentsButtonProps {
+  text: string;
+}
+
+export function CopyForAgentsButton({ text }: CopyForAgentsButtonProps) {
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
     toast.success("Copied agent integration checklist");
   });

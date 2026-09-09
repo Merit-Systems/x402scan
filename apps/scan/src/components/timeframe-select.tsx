@@ -21,11 +21,11 @@ import {
 
 import type { ActivityTimeframe } from "@/types/timeframes";
 
-export function TimeframeSelect({
-  timeframe,
-}: {
+interface TimeframeSelectProps {
   timeframe: ActivityTimeframe;
-}) {
+}
+
+export function TimeframeSelect({ timeframe }: TimeframeSelectProps) {
   const replaceSearchParams = useReplaceSearchParams();
 
   const setTimeframe = (nextTimeframe: ActivityTimeframe) => {

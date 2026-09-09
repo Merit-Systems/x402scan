@@ -36,7 +36,11 @@ const LoadingYourAgents = () => {
   );
 };
 
-const AgentsContainer = ({ children }: { children: React.ReactNode }) => {
+interface AgentsContainerProps {
+  children: React.ReactNode;
+}
+
+const AgentsContainer = ({ children }: AgentsContainerProps) => {
   return (
     <Section title="Your Agents" description="Agents you have created or used">
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-4">

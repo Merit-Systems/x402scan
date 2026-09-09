@@ -15,13 +15,15 @@ import type { UsageChartValues } from "@/components/usage-bar-chart";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
+interface FacilitatorsChartProps {
+  chain?: Chain;
+  timeframe: ActivityTimeframe;
+}
+
 export const FacilitatorsChart = ({
   chain,
   timeframe,
-}: {
-  chain?: Chain;
-  timeframe: ActivityTimeframe;
-}) => {
+}: FacilitatorsChartProps) => {
   const [bucketedFacilitatorData] =
     api.public.facilitators.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,

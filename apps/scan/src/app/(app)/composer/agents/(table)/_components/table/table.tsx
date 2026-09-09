@@ -69,13 +69,15 @@ export const AgentsTable: React.FC<Props> = ({
   );
 };
 
+interface LoadingAgentsTableProps {
+  limit?: number;
+  sorting?: TableSorting<AgentSortId>;
+}
+
 export const LoadingAgentsTable = ({
   limit = 10,
   sorting,
-}: {
-  limit?: number;
-  sorting?: TableSorting<AgentSortId>;
-}) => {
+}: LoadingAgentsTableProps) => {
   return (
     <DataTableLoading
       columns={columns}

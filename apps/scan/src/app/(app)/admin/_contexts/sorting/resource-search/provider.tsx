@@ -4,13 +4,15 @@ import { ResourceSearchSortingContext } from "./context";
 import type { SortType } from "../base/types";
 import type { ResourceSearchSortId } from "./context";
 
+interface ResourceSearchSortingProviderProps {
+  children: React.ReactNode;
+  initialSorting: SortType<ResourceSearchSortId>;
+}
+
 export const ResourceSearchSortingProvider = ({
   children,
   initialSorting,
-}: {
-  children: React.ReactNode;
-  initialSorting: SortType<ResourceSearchSortId>;
-}) => {
+}: ResourceSearchSortingProviderProps) => {
   return (
     <SortingProvider
       context={ResourceSearchSortingContext}

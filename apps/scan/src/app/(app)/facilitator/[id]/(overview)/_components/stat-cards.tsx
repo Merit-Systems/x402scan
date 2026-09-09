@@ -12,15 +12,17 @@ import type { ChartData } from "@/components/ui/chart";
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
+interface FacilitatorStatCardsProps {
+  chain?: Chain;
+  facilitatorId: string;
+  timeframe: ActivityTimeframe;
+}
+
 export function FacilitatorStatCards({
   chain,
   facilitatorId,
   timeframe,
-}: {
-  chain?: Chain;
-  facilitatorId: string;
-  timeframe: ActivityTimeframe;
-}) {
+}: FacilitatorStatCardsProps) {
   const input = {
     chain,
     facilitatorIds: [facilitatorId],

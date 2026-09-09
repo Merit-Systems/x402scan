@@ -20,7 +20,7 @@ import { getAgentConfigurationDetails } from "@/services/db/agent-config/get";
 import { createChat, getChat, updateChat } from "@/services/db/composer/chat";
 
 import { parseStoredJson } from "./_lib/parse-stored-json";
-import { agentSystemPrompt, baseSystemPrompt } from "./system-prompt";
+import { agentSystemPrompt, baseSystemPrompt } from "./_lib/system-prompt";
 
 import type { LanguageModel, UIMessage } from "ai";
 import type { NextRequest } from "next/server";

@@ -23,14 +23,14 @@ import type { RouterOutputs } from "@/trpc/client";
 type Resource =
   RouterOutputs["public"]["resources"]["list"]["paginated"]["items"][number];
 
+const NO_RESOURCES: Resource[] = [];
+const NO_TAG_IDS: string[] = [];
+
 interface ControlMenuProps {
   selectedResources?: Resource[];
   selectedTagIds?: string[];
   onSuccess?: () => void;
 }
-
-const NO_RESOURCES: Resource[] = [];
-const NO_TAG_IDS: string[] = [];
 
 export const ControlMenu = ({
   selectedResources = NO_RESOURCES,

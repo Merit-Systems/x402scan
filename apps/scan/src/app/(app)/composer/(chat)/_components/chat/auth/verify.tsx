@@ -44,7 +44,11 @@ const VerifySvm = () => {
   return <VerifySvmContent account={connectedWallet.account} />;
 };
 
-const VerifySvmContent = ({ account }: { account: UiWalletAccount }) => {
+interface VerifySvmContentProps {
+  account: UiWalletAccount;
+}
+
+const VerifySvmContent = ({ account }: VerifySvmContentProps) => {
   const { signIn, isPending } = useSiws({ account });
   return <VerifyContent signIn={signIn} isPending={isPending} />;
 };
