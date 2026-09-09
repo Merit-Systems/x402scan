@@ -102,7 +102,7 @@ export function DiscoverServices({
           getRowHref: getServiceHref,
           getRowLabel: (item) => `Open ${getServiceName(item)}`,
           manualSorting: true,
-          renderRowLink: renderTableRowLink,
+          rowLinkComponent: Link,
           sorting: tableSorting.tableSorting,
           onSortingChange: tableSorting.onSortingChange,
           pageSize: PAGE_SIZE,
