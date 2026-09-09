@@ -1,11 +1,15 @@
 "use client";
 
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
-import { createContext, useContext } from "react";
-import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDownIcon } from "lucide-react";
 
+import { createContext, useContext } from "react";
+
+import { cva } from "class-variance-authority";
+
 import { cn } from "@/lib/utils";
+
+import type { VariantProps } from "class-variance-authority";
 
 const accordionVariants = cva("flex w-full flex-col", {
   variants: {
