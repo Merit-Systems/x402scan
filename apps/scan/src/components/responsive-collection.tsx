@@ -1,25 +1,28 @@
-import type { ReactNode } from "react";
-import type { RowData } from "@tanstack/react-table";
-
-import {
-  DataList,
-  DataListLoading,
-  type DataListLoadingProps,
-  type DataListProps,
-} from "@/components/ui/data-list";
-import {
-  DataTable,
-  DataTableLoading,
-  type DataTableLoadingProps,
-  type DataTableProps,
-} from "@/components/ui/data-table";
+import { DataList, DataListLoading } from "@/components/ui/data-list";
+import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 import { ResponsiveView } from "@/components/ui/responsive-view";
 
-interface ResponsiveCollectionProps<TData extends RowData> {
+import type { ReactNode } from "react";
+
+import type { RowData } from "@tanstack/react-table";
+
+import type {
+  DataListLoadingProps,
+  DataListProps,
+} from "@/components/ui/data-list";
+import type {
+  DataTableLoadingProps,
+  DataTableProps,
+} from "@/components/ui/data-table";
+
+interface ResponsiveCollectionProps<
+  TData extends RowData,
+  Href extends string = string,
+> {
   data: TData[];
   emptyMessage?: ReactNode;
   list: Omit<DataListProps<TData>, "data" | "emptyMessage">;
-  table: Omit<DataTableProps<TData>, "data" | "emptyMessage">;
+  table: Omit<DataTableProps<TData, Href>, "data" | "emptyMessage">;
 }
 
 interface ResponsiveCollectionLoadingProps<TData extends RowData> {
@@ -28,12 +31,10 @@ interface ResponsiveCollectionLoadingProps<TData extends RowData> {
   table: Omit<DataTableLoadingProps<TData>, "rowCount">;
 }
 
-export function ResponsiveCollection<TData extends RowData>({
-  data,
-  emptyMessage,
-  list,
-  table,
-}: ResponsiveCollectionProps<TData>) {
+export function ResponsiveCollection<
+  TData extends RowData,
+  const Href extends string = string,
+>({ data, emptyMessage, list, table }: ResponsiveCollectionProps<TData, Href>) {
   return (
     <ResponsiveView
       desktop={<DataTable {...table} data={data} emptyMessage={emptyMessage} />}
