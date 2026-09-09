@@ -965,7 +965,7 @@ export const PromptInput = ({
             <MotionInputGroup
               className={cn(
                 "overflow-hidden",
-                compact && "grid! items-center",
+                compact && "grid! h-auto items-center",
                 compact &&
                   (expanded ? "grid-cols-1" : "grid-cols-[minmax(0,1fr)_auto]")
               )}
@@ -1227,7 +1227,11 @@ export const PromptInputTextarea = ({
 
   const textarea = (
     <InputGroupTextarea
-      className={cn("field-sizing-content max-h-48 min-h-16", className)}
+      className={cn(
+        "field-sizing-content max-h-48",
+        layout?.compact ? "min-h-0 overflow-y-auto" : "min-h-16",
+        className
+      )}
       name="message"
       onCompositionEnd={handleCompositionEnd}
       onCompositionStart={handleCompositionStart}
@@ -1235,6 +1239,7 @@ export const PromptInputTextarea = ({
       onPaste={handlePaste}
       placeholder={placeholder}
       ref={textareaRef}
+      rows={layout?.compact ? 1 : undefined}
       {...props}
       {...controlledProps}
     />
@@ -1304,10 +1309,10 @@ export const PromptInputFooter = ({
       align="block-end"
       className={cn(
         "justify-between gap-1",
-        layout?.compact && "px-1.5!",
+        layout?.compact && "p-1.5!",
         layout?.compact &&
           !layout.expanded &&
-          "col-start-2 row-start-1 w-auto! justify-end pb-1.5!",
+          "col-start-2 row-start-1 w-auto! justify-end",
         className
       )}
       data-prompt-input-footer=""
@@ -1485,15 +1490,13 @@ export const PromptInputSubmit = ({
   }
 
   return (
-    <span className="size-8 shrink-0">
-      <m.span
-        className="absolute right-1.5 bottom-1.5 inline-flex"
-        layout={layout.animateLayout ? "position" : false}
-        transition={{ layout: promptInputLayoutTransition }}
-      >
-        {button}
-      </m.span>
-    </span>
+    <m.span
+      className="inline-flex shrink-0"
+      layout={layout.animateLayout ? "position" : false}
+      transition={{ layout: promptInputLayoutTransition }}
+    >
+      {button}
+    </m.span>
   );
 };
 

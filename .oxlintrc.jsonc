@@ -5,5 +5,34 @@
     "tailwindcss": {
       "entryPoint": "apps/scan/src/app/globals.css"
     }
-  }
+  },
+  "rules": {
+    "tailwindcss/no-unknown-classes": [
+      "warn",
+      {
+        "ignorePrefixes": ["type-"],
+        "allowlist": ["is-assistant", "is-user", "not-prose"]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "apps/scan/src/components/ai-elements/conversation.tsx",
+        "apps/scan/src/components/ai-elements/message.tsx",
+        "apps/scan/src/components/ai-elements/prompt-input.tsx",
+        "apps/scan/src/components/ai-elements/reasoning.tsx",
+        "apps/scan/src/components/ai-elements/tool.tsx"
+      ],
+      "rules": {
+        "merit-brand/no-visual-component-overrides": "off"
+      }
+    },
+    {
+      "files": ["apps/scan/src/components/ai-elements/prompt-input.tsx"],
+      "rules": {
+        "merit-brand/no-raw-interactive-elements": "off"
+      }
+    }
+  ]
 }
