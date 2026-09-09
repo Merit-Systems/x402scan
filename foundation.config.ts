@@ -227,6 +227,13 @@ export default defineConfig({
           expires: "2027-03-01",
         },
         {
+          item: "sidebar",
+          reason:
+            "Legacy sidebar migrates with its mobile hook and render-prop callsites in the next primitive-adoption PR (#1129).",
+          owner: "x402scan maintainers",
+          expires: "2027-03-01",
+        },
+        {
           item: "skeleton",
           reason:
             "Existing x402scan source must migrate independently with its callsites and behavior verified.",
