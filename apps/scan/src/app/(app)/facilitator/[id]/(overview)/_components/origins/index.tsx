@@ -19,7 +19,7 @@ import {
   ServiceVolumeMetric,
 } from "@/app/(app)/_components/service-collection";
 
-import { facilitatorServerColumns, type FacilitatorServer } from "./columns";
+import { facilitatorServerColumns } from "./columns";
 
 import type { Route } from "next";
 
@@ -27,13 +27,15 @@ import type { DataListItem } from "@/components/ui/data-list";
 
 import type { listBazaarOriginSummaries } from "@/services/db/bazaar/origins";
 
+import type { FacilitatorServer } from "./columns";
+
 const PAGE_SIZE = 10;
 
-export function FacilitatorOrigins({
-  origins,
-}: {
+interface FacilitatorOriginsProps {
   origins: Awaited<ReturnType<typeof listBazaarOriginSummaries>>;
-}) {
+}
+
+export function FacilitatorOrigins({ origins }: FacilitatorOriginsProps) {
   const router = useRouter();
   return (
     <ResponsiveCollection

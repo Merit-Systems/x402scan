@@ -42,13 +42,15 @@ import type { ServiceItem } from "./service-columns";
 
 const PAGE_SIZE = SERVICES_PAGE_SIZE;
 
+interface LoadingDiscoverServicesProps {
+  rowCount?: number;
+  sorting: TableSorting<SellerSortId>;
+}
+
 export const LoadingDiscoverServices = ({
   rowCount = PAGE_SIZE,
   sorting,
-}: {
-  rowCount?: number;
-  sorting: TableSorting<SellerSortId>;
-}) => {
+}: LoadingDiscoverServicesProps) => {
   return (
     <ResponsiveCollectionLoading
       rowCount={rowCount}
@@ -62,15 +64,17 @@ export const LoadingDiscoverServices = ({
   );
 };
 
+interface DiscoverServicesProps {
+  page: number;
+  result: Awaited<ReturnType<typeof listBazaarOrigins>>;
+  sorting: TableSorting<SellerSortId>;
+}
+
 export function DiscoverServices({
   page,
   result,
   sorting,
-}: {
-  page: number;
-  result: Awaited<ReturnType<typeof listBazaarOrigins>>;
-  sorting: TableSorting<SellerSortId>;
-}) {
+}: DiscoverServicesProps) {
   const router = useRouter();
   const replaceSearchParams = useReplaceSearchParams();
   const tableSorting = useUrlTableSorting({
@@ -127,19 +131,21 @@ export function DiscoverServices({
   );
 }
 
+interface MobilePaginationProps {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
 function MobilePagination({
   page,
   pageSize,
   total,
   totalPages,
   onPageChange,
-}: {
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}) {
+}: MobilePaginationProps) {
   if (totalPages < 2) {
     return null;
   }
