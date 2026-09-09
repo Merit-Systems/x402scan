@@ -15,7 +15,6 @@ import {
   listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
-  type ResourceSortId,
 } from "@/services/db/resources/resource";
 import { revalidateResourceData } from "@/services/db/resources/revalidate";
 import {
@@ -36,6 +35,8 @@ import {
 } from "../../trpc";
 
 import type { Prisma } from "@x402scan/scan-db";
+
+import type { ResourceSortId } from "@/services/db/resources/resource";
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
