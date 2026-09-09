@@ -45,7 +45,7 @@ export function FacilitatorOrigins({ origins }: FacilitatorOriginsProps) {
         columns: facilitatorServerColumns,
         getRowHref,
         getRowLabel: (item) => `Open ${getServerName(item)}`,
-        renderRowLink: renderTableRowLink,
+        rowLinkComponent: Link,
         pageSize: PAGE_SIZE,
       }}
     />
