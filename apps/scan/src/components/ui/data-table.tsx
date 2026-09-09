@@ -1,19 +1,18 @@
 "use client";
 
-import * as React from "react";
 import {
-  type Column,
-  type ColumnDef,
-  type ColumnFiltersState,
-  type ColumnVisibilityState,
-  type OnChangeFn,
-  type PaginationState,
-  type ReactTable,
-  type Row,
-  type RowData,
-  type RowSelectionState,
-  type SortingState,
-  type Updater,
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+  ChevronsUpDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "lucide-react";
+
+import * as React from "react";
+
+import {
   columnFacetingFeature,
   columnFilteringFeature,
   columnSizingFeature,
@@ -42,15 +41,6 @@ import {
   tableFeatures,
   useTable,
 } from "@tanstack/react-table";
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
-  ChevronsUpDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { interactiveTableRowClassName } from "@/components/ui/interactive-row";
@@ -63,7 +53,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { cn } from "@/lib/utils";
+
+import type {
+  Column,
+  ColumnDef,
+  ColumnFiltersState,
+  ColumnVisibilityState,
+  OnChangeFn,
+  PaginationState,
+  ReactTable,
+  Row,
+  RowData,
+  RowSelectionState,
+  SortingState,
+  Updater,
+} from "@tanstack/react-table";
 
 interface DataTableLoadingCellContext {
   columnId: string;
@@ -129,7 +135,12 @@ interface DataTablePaginationMeta {
   totalRows?: number;
 }
 
-interface DataTableProps<TData extends RowData> {
+type DataTableRowLinkProps<Href extends string = string> = Omit<
+  React.ComponentProps<"a">,
+  "href"
+> & { href: Href };
+
+interface DataTableProps<TData extends RowData, Href extends string = string> {
   columns: DataTableColumnDef<TData>[];
   data: TData[];
   className?: string;
@@ -159,8 +170,9 @@ interface DataTableProps<TData extends RowData> {
   onSortingChange?: OnChangeFn<SortingState>;
   onRowClick?: (row: TData) => void;
   onRowMouseEnter?: (row: TData) => void;
-  getRowHref?: (row: TData) => string;
+  getRowHref?: (row: TData) => Href;
   getRowLabel?: (row: TData) => string;
+  rowLinkComponent?: React.ComponentType<DataTableRowLinkProps<Href>>;
   renderPagination?: (table: DataTableInstance<TData>) => React.ReactNode;
   renderToolbar?: (table: DataTableInstance<TData>) => React.ReactNode;
 }
@@ -182,7 +194,7 @@ interface DataTableLoadingColumn {
   meta?: DataTableColumnMeta;
 }
 
-function DataTable<TData extends RowData>({
+function DataTable<TData extends RowData, const Href extends string = string>({
   columns,
   data,
   className,
@@ -208,10 +220,13 @@ function DataTable<TData extends RowData>({
   onRowMouseEnter,
   getRowHref,
   getRowLabel,
+  rowLinkComponent,
   renderPagination,
   renderToolbar,
-}: DataTableProps<TData>) {
+}: DataTableProps<TData, Href>) {
   "use no memo";
+
+  const RowLink = rowLinkComponent ?? "a";
 
   const [localPagination, setLocalPagination] = React.useState<PaginationState>(
     {
@@ -326,7 +341,7 @@ function DataTable<TData extends RowData>({
                       className={cell.column.columnDef.meta?.cellClassName}
                     >
                       {rowHref ? (
-                        <a
+                        <RowLink
                           href={rowHref}
                           aria-hidden={cellIndex === 0 ? undefined : true}
                           aria-label={cellIndex === 0 ? rowLabel : undefined}
@@ -510,7 +525,7 @@ function DataTableColumnHeader<TData extends RowData, TValue>({
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={className}>{title}</div>;
+    return <div className={cn("type-caption", className)}>{title}</div>;
   }
 
   const sorted = column.getIsSorted();
@@ -525,7 +540,7 @@ function DataTableColumnHeader<TData extends RowData, TValue>({
           column.toggleSorting(sorted === "asc");
         }}
       >
-        <span>{title}</span>
+        <span className="type-caption">{title}</span>
         {sorted === "desc" ? (
           <ArrowDownIcon data-icon="inline-end" />
         ) : sorted === "asc" ? (
@@ -695,4 +710,5 @@ export type {
   DataTableLoadingProps,
   DataTablePaginationMeta,
   DataTableProps,
+  DataTableRowLinkProps,
 };
