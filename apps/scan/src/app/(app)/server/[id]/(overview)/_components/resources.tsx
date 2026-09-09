@@ -29,7 +29,11 @@ const pricingMetadataSchema = z.looseObject({
   price: z.string().optional().catch(undefined),
 });
 
-export async function OriginResources({ originId }: { originId: string }) {
+interface OriginResourcesProps {
+  originId: string;
+}
+
+export async function OriginResources({ originId }: OriginResourcesProps) {
   const [origin] = await listOriginsWithResources(
     listOriginsWithResourcesSchema.parse({
       originIds: [originId],
@@ -56,7 +60,11 @@ export async function OriginResources({ originId }: { originId: string }) {
   );
 }
 
-function ResourceRow({ resource }: { resource: Resource }) {
+interface ResourceRowProps {
+  resource: Resource;
+}
+
+function ResourceRow({ resource }: ResourceRowProps) {
   if (!resource.success) {
     return null;
   }
@@ -91,7 +99,11 @@ function ResourceRow({ resource }: { resource: Resource }) {
   );
 }
 
-function ResourcePrice({ resource }: { resource: Resource }) {
+interface ResourcePriceProps {
+  resource: Resource;
+}
+
+function ResourcePrice({ resource }: ResourcePriceProps) {
   const accepts = serializeAccepts(resource.accepts);
 
   if (accepts.length > 0) {
@@ -136,7 +148,11 @@ function ResourcePrice({ resource }: { resource: Resource }) {
   ) : null;
 }
 
-function MethodBadge({ method }: { method: string }) {
+interface MethodBadgeProps {
+  method: string;
+}
+
+function MethodBadge({ method }: MethodBadgeProps) {
   const normalizedMethod = method.toUpperCase();
 
   return (

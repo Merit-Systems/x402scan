@@ -133,13 +133,18 @@ export const generateMetadata = async ({
   };
 };
 
+type StatisticsDataProps = Pick<
+  Awaited<ReturnType<typeof readFilters>>,
+  "chain" | "timeframe"
+> & {
+  facilitatorId: string;
+};
+
 async function StatisticsData({
   chain,
   facilitatorId,
   timeframe,
-}: Pick<Awaited<ReturnType<typeof readFilters>>, "chain" | "timeframe"> & {
-  facilitatorId: string;
-}) {
+}: StatisticsDataProps) {
   const input = { chain, facilitatorIds: [facilitatorId], timeframe };
   const [overall, timeSeries] = await Promise.all([
     getOverallStatisticsMV(overallStatisticsMVInputSchema.parse(input)),

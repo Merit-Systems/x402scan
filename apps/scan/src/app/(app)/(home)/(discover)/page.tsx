@@ -87,19 +87,21 @@ async function DiscoverUsage({
   );
 }
 
+interface ServicesDataProps {
+  chain?: Parameters<typeof listBazaarOrigins>[0]["chain"];
+  timeframe: Parameters<typeof listBazaarOrigins>[0]["timeframe"];
+  sorting: Parameters<typeof DiscoverServices>[0]["sorting"];
+  page: number;
+  view: ReturnType<typeof parseServiceView>;
+}
+
 async function ServicesData({
   chain,
   timeframe,
   sorting,
   page,
   view,
-}: {
-  chain?: Parameters<typeof listBazaarOrigins>[0]["chain"];
-  timeframe: Parameters<typeof listBazaarOrigins>[0]["timeframe"];
-  sorting: Parameters<typeof DiscoverServices>[0]["sorting"];
-  page: number;
-  view: ReturnType<typeof parseServiceView>;
-}) {
+}: ServicesDataProps) {
   const originUrls =
     view === "featured" ? await getDiscoverOrigins() : undefined;
   const result = await listBazaarOrigins(
