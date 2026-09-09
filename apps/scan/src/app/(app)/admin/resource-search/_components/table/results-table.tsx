@@ -3,10 +3,9 @@
 import { useMemo, useState, useCallback, memo } from "react";
 
 import { Badge } from "@/components/ui/badge";
+
 import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
-
 import { ResourceExecutorModal } from "@/app/(app)/admin/_components/resource-executor-modal";
-
 import { useResourceSearchSorting } from "@/app/(app)/admin/_contexts/sorting/resource-search/hook";
 
 import { createColumns } from "./columns";

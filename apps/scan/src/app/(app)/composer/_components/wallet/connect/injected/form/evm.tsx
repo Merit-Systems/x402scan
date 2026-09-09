@@ -1,8 +1,8 @@
 import { useConnect } from "wagmi";
 
 import { ConnectEVMInjectedWalletButtons } from "../buttons/evm";
-import { ConnectInjectedWalletButtonsWrapper } from "./wrapper";
 import { ConnectInjectedWalletEmpty } from "./empty";
+import { ConnectInjectedWalletButtonsWrapper } from "./wrapper";
 
 export const ConnectEVMInjectedWalletForm = () => {
   const { connectors } = useConnect();

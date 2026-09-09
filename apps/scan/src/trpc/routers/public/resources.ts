@@ -1,5 +1,32 @@
-import z from "zod";
+import { TRPCError } from "@trpc/server";
 import { revalidatePath } from "next/cache";
+import z from "zod";
+
+import { scanDb } from "@x402scan/scan-db";
+
+import { registerEndpoint } from "@/lib/discovery/register-endpoint";
+import { registerResourcesFromDiscovery } from "@/lib/discovery/register-origin";
+import { supportedChainSchema } from "@/lib/schemas";
+import { convertTokenAmount } from "@/lib/token";
+import { usdc } from "@/lib/tokens/usdc";
+import { urlMatchesDiscoveredResource } from "@/lib/url";
+import {
+  getResource,
+  listResources,
+  listResourcesWithPagination,
+  searchResources,
+  searchResourcesSchema,
+} from "@/services/db/resources/resource";
+import {
+  listResourceTags,
+  listTags,
+  listTagsSchema,
+} from "@/services/db/resources/tag";
+import { fetchDiscoveryDocument } from "@/services/discovery";
+import {
+  getResourceVerificationStatus,
+  getOriginVerificationStatus,
+} from "@/services/verification/accepts-verification";
 
 import {
   createTRPCRouter,
@@ -7,37 +34,9 @@ import {
   publicProcedure,
 } from "../../trpc";
 
-import {
-  getResource,
-  listResources,
-  listResourcesWithPagination,
-  searchResources,
-  searchResourcesSchema,
-  type ResourceSortId,
-} from "@/services/db/resources/resource";
-
-import { scanDb } from "@x402scan/scan-db";
-
-import { registerEndpoint } from "@/lib/discovery/register-endpoint";
-import { registerResourcesFromDiscovery } from "@/lib/discovery/register-origin";
-import { urlMatchesDiscoveredResource } from "@/lib/url";
-import { TRPCError } from "@trpc/server";
-import {
-  listResourceTags,
-  listTags,
-  listTagsSchema,
-} from "@/services/db/resources/tag";
-
-import { convertTokenAmount } from "@/lib/token";
-import { supportedChainSchema } from "@/lib/schemas";
-import { usdc } from "@/lib/tokens/usdc";
-import { fetchDiscoveryDocument } from "@/services/discovery";
-import {
-  getResourceVerificationStatus,
-  getOriginVerificationStatus,
-} from "@/services/verification/accepts-verification";
-
 import type { Prisma } from "@x402scan/scan-db";
+
+import type { ResourceSortId } from "@/services/db/resources/resource";
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {

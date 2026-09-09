@@ -1,5 +1,5 @@
-import { createTRPCRouter, publicProcedure } from "../../trpc";
-
+import { getDiscoverOrigins } from "@/lib/discover/origins";
+import { paginatedQuerySchema } from "@/lib/pagination";
 import {
   listBazaarOrigins,
   listBazaarOriginSummaries,
@@ -8,8 +8,8 @@ import {
   listBazaarOriginsInputSchema,
   listFeaturedBazaarOriginsInputSchema,
 } from "@/services/db/bazaar/schema";
-import { getDiscoverOrigins } from "@/lib/discover/origins";
-import { paginatedQuerySchema } from "@/lib/pagination";
+
+import { createTRPCRouter, publicProcedure } from "../../trpc";
 
 const paginationSchema = paginatedQuerySchema.default({
   page: 0,

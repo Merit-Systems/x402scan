@@ -1,16 +1,19 @@
 "use client";
 
 import { Wallet, DollarSign, Hash, Eye } from "lucide-react";
+
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
+import { Copyable } from "@/components/ui/copyable";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
 import { WalletSpendingSortingContext } from "@/app/(app)/admin/_contexts/sorting/wallet-spending/context";
-import { Copyable } from "@/components/ui/copyable";
-import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/client";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type WalletSpending =

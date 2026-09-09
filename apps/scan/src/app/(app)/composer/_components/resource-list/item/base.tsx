@@ -5,10 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { Chains, Chain } from "@/app/(app)/_components/chains";
 import { Favicon } from "@/app/(app)/_components/favicon";
-
 import { cn, formatCurrency } from "@/lib/utils";
 
 import type { RouterOutputs } from "@/trpc/client";
+
 import type { SelectedResource } from "../../../_types/chat-config";
 
 interface Props {

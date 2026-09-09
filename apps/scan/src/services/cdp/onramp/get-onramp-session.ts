@@ -1,7 +1,8 @@
-import { mixedAddressSchema } from "@/lib/schemas";
-import { cdpFetch } from "../lib/fetch";
-
 import { z } from "zod";
+
+import { mixedAddressSchema } from "@/lib/schemas";
+
+import { cdpFetch } from "../lib/fetch";
 
 const amountSchema = z.object({
   value: z.string(),

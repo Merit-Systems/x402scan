@@ -6,8 +6,8 @@ import {
   Wrench,
 } from "lucide-react";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 import {
   Card,
@@ -15,13 +15,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Favicons, LoadingFavicons } from "@/app/(app)/_components/favicon";
-
-import type { RouterOutputs } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { Favicons, LoadingFavicons } from "@/app/(app)/_components/favicon";
 import { cn } from "@/lib/utils";
 
 import type { LucideIcon } from "lucide-react";
+
+import type { RouterOutputs } from "@/trpc/client";
 interface Props {
   agentConfiguration: RouterOutputs["public"]["agents"]["list"]["items"][number];
   href?: `/composer/agent/${string}` | `/composer/agent/${string}/chat`;

@@ -1,6 +1,8 @@
-import { bitqueryUsageResponseSchema } from "./types";
-import type { BitqueryUsageResponse } from "./types";
 import { env } from "@/trigger/env";
+
+import { bitqueryUsageResponseSchema } from "./types";
+
+import type { BitqueryUsageResponse } from "./types";
 
 const USAGE_API_URL = "https://account.bitquery.io/api/usage";
 export const USAGE_THRESHOLD = 0.95;

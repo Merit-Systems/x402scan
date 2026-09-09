@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
 import { Check, Wallet, X } from "lucide-react";
 
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
-import { AnimatedBeam, Circle } from "./animated-beam";
+import { SessionStatus } from "@x402scan/scan-db/types";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,15 +23,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEvmTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-evm-token-balance";
 import { useSPLTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-svm-token-balance";
 
-import { cn, formatCurrency } from "@/lib/utils";
-
-import { SessionStatus, type OnrampSession } from "@x402scan/scan-db/types";
-
-import { api } from "@/trpc/client";
-import { usdc } from "@/lib/tokens/usdc";
-
-import { Chain } from "@/types/chain";
 import { optionalSupportedChainSchema } from "@/lib/schemas";
+import { usdc } from "@/lib/tokens/usdc";
+import { cn, formatCurrency } from "@/lib/utils";
+import { api } from "@/trpc/client";
+import { Chain } from "@/types/chain";
+
+import { AnimatedBeam, Circle } from "./animated-beam";
+
+import type { OnrampSession } from "@x402scan/scan-db/types";
 
 export const OnrampSessionDialog: React.FC = () => {
   const searchParams = useSearchParams();

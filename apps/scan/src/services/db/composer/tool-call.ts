@@ -1,15 +1,18 @@
 import z from "zod";
-import { scanDb, Prisma } from "@x402scan/scan-db";
-import { queryRaw } from "../query";
 
-import { sortingSchema } from "@/lib/schemas";
-import type { PaginatedQueryParams } from "@/lib/pagination";
-import { toPaginatedResponse } from "@/lib/pagination";
+import { scanDb, Prisma } from "@x402scan/scan-db";
+
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from "@/lib/cache";
+import { toPaginatedResponse } from "@/lib/pagination";
+import { sortingSchema } from "@/lib/schemas";
 import { DEFAULT_TOOLS_SORTING, TOOL_SORT_IDS } from "@/lib/table-sort-options";
+
+import { queryRaw } from "../query";
+
+import type { PaginatedQueryParams } from "@/lib/pagination";
 
 export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
   return scanDb.toolCall.create({

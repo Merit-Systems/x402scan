@@ -3,16 +3,15 @@ import { useState } from "react";
 import Image from "next/image";
 
 import { Input } from "@/components/ui/input";
+
 import { TokenInput } from "@/app/(app)/composer/(chat)/_components/token/token-input";
-
 import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
-
 import { usdc } from "@/lib/tokens/usdc";
-
 import { Chain, CHAIN_ICONS, CHAIN_LABELS } from "@/types/chain";
+
 import { WithdrawEVM } from "./evm";
-import { WithdrawSolana } from "./svm";
 import { WithdrawSuccess } from "./success";
+import { WithdrawSolana } from "./svm";
 
 export const Withdraw: React.FC = () => {
   const [toAddress, setToAddress] = useState("");

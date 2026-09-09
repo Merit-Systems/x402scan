@@ -1,4 +1,5 @@
 import { partnersDb } from "./client";
+
 import type { Tables } from "./tables/types";
 import type { PartnersDatabaseMap } from "./tables/types";
 

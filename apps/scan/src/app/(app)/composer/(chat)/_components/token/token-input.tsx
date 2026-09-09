@@ -1,27 +1,26 @@
 "use client";
 
+import { Wallet } from "lucide-react";
+
 import React, { useEffect, useRef } from "react";
 
 import AutoNumeric from "autonumeric";
-
-import { Wallet } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { TokenSelect } from "./token-select";
-
 import { useEvmTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-evm-token-balance";
 import { useSPLTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-svm-token-balance";
 
-import { cn } from "@/lib/utils";
 import { ethereumAddressSchema, solanaAddressSchema } from "@/lib/schemas";
-
+import { cn } from "@/lib/utils";
 import { Chain } from "@/types/chain";
 
-import type { Token } from "@/types/token";
+import { TokenSelect } from "./token-select";
+
 import type { MixedAddress } from "@/types/address";
+import type { Token } from "@/types/token";
 
 type Props = {
   onChange: (value: number) => void;

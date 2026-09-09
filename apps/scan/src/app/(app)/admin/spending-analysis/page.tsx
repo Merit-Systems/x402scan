@@ -1,16 +1,19 @@
-import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
-import { auth } from "@/auth";
 import { forbidden } from "next/navigation";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WalletSpendingTable } from "./_components/wallet-spending/table";
-import { ToolSpendingTable } from "./_components/tool-spending/table";
-import { defaultWalletSpendingSorting } from "@/app/(app)/admin/_contexts/sorting/wallet-spending/default";
-import { WalletSpendingSortingProvider } from "@/app/(app)/admin/_contexts/sorting/wallet-spending/provider";
+
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 import { defaultToolSpendingSorting } from "@/app/(app)/admin/_contexts/sorting/tool-spending/default";
 import { ToolSpendingSortingProvider } from "@/app/(app)/admin/_contexts/sorting/tool-spending/provider";
-import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
-import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
+import { defaultWalletSpendingSorting } from "@/app/(app)/admin/_contexts/sorting/wallet-spending/default";
+import { WalletSpendingSortingProvider } from "@/app/(app)/admin/_contexts/sorting/wallet-spending/provider";
+import { auth } from "@/auth";
 import { ActivityTimeframe } from "@/types/timeframes";
+
+import { ToolSpendingTable } from "./_components/tool-spending/table";
+import { WalletSpendingTable } from "./_components/wallet-spending/table";
 
 export default async function ToolSpendingAnalysisPage() {
   const session = await auth();

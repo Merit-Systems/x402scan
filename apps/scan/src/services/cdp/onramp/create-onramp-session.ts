@@ -1,8 +1,9 @@
 import { z } from "zod";
 
-import { cdpFetch } from "../lib/fetch";
 import { ethereumAddressSchema, solanaAddressSchema } from "@/lib/schemas";
 import { Chain, SUPPORTED_CHAINS } from "@/types/chain";
+
+import { cdpFetch } from "../lib/fetch";
 
 export const createOnrampUrlParamsSchema = z.object({
   redirect: z.url(),

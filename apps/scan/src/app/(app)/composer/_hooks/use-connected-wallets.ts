@@ -1,6 +1,8 @@
 import { useAccount } from "wagmi";
+
 import { useSolanaWallet } from "@/app/_contexts/solana/hook";
 import { solanaAddressSchema } from "@/lib/schemas";
+
 import type { EthereumAddress, SolanaAddress } from "@/types/address";
 
 interface NotConnectedWallets {

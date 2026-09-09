@@ -1,13 +1,16 @@
-import { twMerge } from "tailwind-merge";
-
-import { Chain } from "@/types/chain";
-import { solanaAddressSchema } from "@/lib/schemas";
-import { z } from "zod";
-import { clsx, type ClassValue } from "clsx";
+import { clsx } from "clsx";
 import { format, formatDistanceToNow, formatISO } from "date-fns";
+import { twMerge } from "tailwind-merge";
+import { z } from "zod";
+
+import { solanaAddressSchema } from "@/lib/schemas";
+import { Chain } from "@/types/chain";
+
+import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai";
+import type { ClassValue } from "clsx";
 
 import type { Message } from "@x402scan/scan-db/types";
-import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai";
+
 import type { MixedAddress } from "@/types/address";
 
 export function cn(...inputs: ClassValue[]) {

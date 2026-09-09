@@ -1,4 +1,5 @@
 import { CodeCard } from "@/components/ui/code-card";
+
 import { AGENT_PROMPT } from "../../_constants/prompts";
 
 export function QuickstartPromptCard() {

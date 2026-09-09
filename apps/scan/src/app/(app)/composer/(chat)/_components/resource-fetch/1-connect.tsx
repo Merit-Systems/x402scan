@@ -1,8 +1,8 @@
 import React from "react";
 
+import { WalletDialog } from "@/app/(app)/composer/(chat)/_components/wallet/dialog";
 import { Button } from "@/components/ui/button";
 
-import { WalletDialog } from "@/app/(app)/composer/(chat)/_components/wallet/dialog";
 import { Chain } from "@/app/(app)/_components/chains";
 
 import type { SupportedChain } from "@/types/chain";

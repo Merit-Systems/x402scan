@@ -1,28 +1,23 @@
 "use client";
 
-import { useState } from "react";
-
-import Image from "next/image";
-
 import { AlertTriangle, Download, Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
 import {
   useExportEvmAccount,
   useExportSolanaAccount,
 } from "@coinbase/cdp-hooks";
-
+import Image from "next/image";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { CopyCode } from "@/components/ui/copy-code";
 
 import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
-
-import { Chain } from "@/types/chain";
-
 import { ethereumAddressSchema } from "@/lib/schemas";
+import { Chain } from "@/types/chain";
 
 interface Props {
   address: string;

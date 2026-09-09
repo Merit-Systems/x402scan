@@ -1,10 +1,11 @@
 "use client";
 
 import { AreaChart, LoadingAreaChart } from "@/components/ui/chart";
+
 import { api } from "@/trpc/client";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 import type { ChartData } from "@/components/ui/chart";
-import { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
   addresses: string[];

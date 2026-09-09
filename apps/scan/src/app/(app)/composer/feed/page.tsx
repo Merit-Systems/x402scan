@@ -1,4 +1,5 @@
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
+
 import { FeedTable } from "./_components/table";
 
 import type { Metadata } from "next";

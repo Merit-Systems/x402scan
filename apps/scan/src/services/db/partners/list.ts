@@ -1,4 +1,5 @@
 import { partnersDb } from "@x402scan/partners-db";
+
 import type { PartnerData } from "@x402scan/partners-db";
 
 export const listPartners = async (): Promise<PartnerData[]> => {

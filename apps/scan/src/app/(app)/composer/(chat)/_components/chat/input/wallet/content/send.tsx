@@ -1,27 +1,21 @@
-import { useCallback, useState } from "react";
-
 import { CheckCircle, Loader2 } from "lucide-react";
 
-import { toast } from "sonner";
+import { useCallback, useState } from "react";
 
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { TokenInput } from "@/app/(app)/composer/(chat)/_components/token/token-input";
 import { Input } from "@/components/ui/input";
 
 import { Chain } from "@/app/(app)/_components/chains";
-
-import { api } from "@/trpc/client";
-
+import { TokenInput } from "@/app/(app)/composer/(chat)/_components/token/token-input";
 import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
-
 import { ethereumAddressSchema, solanaAddressSchema } from "@/lib/schemas";
 import { usdc } from "@/lib/tokens/usdc";
 import { formatAddress } from "@/lib/utils";
-
+import { api } from "@/trpc/client";
 import { CHAIN_LABELS } from "@/types/chain";
-
 import { Chain as ChainType } from "@/types/chain";
 
 export const Send: React.FC = () => {

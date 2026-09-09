@@ -1,6 +1,7 @@
 import { logger, schedules } from "@trigger.dev/sdk/v3";
-import { sendDiscordAlert } from "./discord";
+
 import { BALANCE_MONITORS, CURRENCY_TO_BALANCE_CHECKER } from "./config";
+import { sendDiscordAlert } from "./discord";
 
 export const balanceMonitor = schedules.task({
   id: "balance-monitor",

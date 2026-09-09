@@ -2,9 +2,11 @@
 
 import { BarChart, LoadingBarChart } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { formatChartTimestamp } from "@/lib/utils";
 
 import type { ChartData } from "@/components/ui/chart";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 interface ActivityChartValues {

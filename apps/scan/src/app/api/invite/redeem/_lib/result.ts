@@ -1,6 +1,6 @@
-import { serverErr } from "@/lib/server-result";
-
 import { NextResponse } from "next/server";
+
+import { serverErr } from "@/lib/server-result";
 
 import type {
   BaseServerError,

@@ -1,21 +1,23 @@
 "use client";
 
-import { Chains } from "./chains";
 import {
   LoadingServiceSummary,
   ServiceSummary,
 } from "@/components/service-summary";
-import {
-  DataTableColumnHeader,
-  type DataTableColumnDef,
-} from "@/components/ui/data-table";
+import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkline, SparklineLoading } from "@/components/ui/sparkline";
+
 import { formatTokenAmount } from "@/lib/token";
 import { formatCompactAgo } from "@/lib/utils";
 
-import type { RouterOutputs } from "@/trpc/client";
+import { Chains } from "./chains";
+
 import type { ReactNode } from "react";
+
+import type { DataTableColumnDef } from "@/components/ui/data-table";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type ServiceSummaryItem =
   RouterOutputs["public"]["sellers"]["bazaar"]["summaries"]["items"][number];

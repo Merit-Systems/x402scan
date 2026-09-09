@@ -1,14 +1,16 @@
+import { logger } from "@trigger.dev/sdk";
+
+import { PaginationStrategy, QueryProvider } from "../types";
+import { fetchBigQuery } from "./bigquery/fetch";
+import { fetchWithOffsetPagination, fetchBitquery } from "./bitquery/fetch";
+import { fetchCDP } from "./cdp/fetch";
+
 import type {
   SyncConfig,
   Facilitator,
   TransferEventData,
   FacilitatorConfig,
 } from "../types";
-import { PaginationStrategy, QueryProvider } from "../types";
-import { fetchWithOffsetPagination, fetchBitquery } from "./bitquery/fetch";
-import { fetchBigQuery } from "./bigquery/fetch";
-import { logger } from "@trigger.dev/sdk";
-import { fetchCDP } from "./cdp/fetch";
 
 export async function fetchTransfers(
   config: SyncConfig,

@@ -1,6 +1,9 @@
 import { SiweMessage } from "@signinwithethereum/siwe";
+import { getCsrfToken, signIn } from "next-auth/react";
+
 import { SIWE_PROVIDER_ID, SIWE_STATEMENT } from "./constants";
-import { getCsrfToken, signIn, type SignInOptions } from "next-auth/react";
+
+import type { SignInOptions } from "next-auth/react";
 
 interface SignInWithEthereumOptions {
   address: string;

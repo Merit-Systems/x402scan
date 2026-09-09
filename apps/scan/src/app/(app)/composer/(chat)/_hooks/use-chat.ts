@@ -1,25 +1,24 @@
 import { useMemo, useState } from "react";
 
+import { useChat as useAiChat } from "@ai-sdk/react";
 import {
   DefaultChatTransport,
   lastAssistantMessageIsCompleteWithToolCalls,
 } from "ai";
-import { useChat as useAiChat } from "@ai-sdk/react";
-
 import { toast } from "sonner";
 
+import { convertToUIMessages } from "@/lib/utils";
 import { api } from "@/trpc/client";
 
 import { languageModels } from "../_lib/language-models/models";
-
 import { clientCookieUtils } from "./client-cookie-utils";
 
-import { convertToUIMessages } from "@/lib/utils";
+import type { Message } from "@x402scan/scan-db/types";
 
 import type { RouterOutputs } from "@/trpc/client";
+
 import type { ChatConfig, SelectedResource } from "../../_types/chat-config";
 import type { LanguageModel } from "../_lib/language-models/types";
-import type { Message } from "@x402scan/scan-db/types";
 
 interface Props {
   id: string;

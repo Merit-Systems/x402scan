@@ -6,6 +6,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Logo } from "@/components/ui/logo";
+
 import { ConnectWalletForm } from "@/app/(app)/composer/_components/wallet/connect/form";
 import { WalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/component";
 

@@ -3,19 +3,17 @@ import { Suspense } from "react";
 import { PageHeading } from "@/components/page-heading";
 import { TimeframeSelect } from "@/components/timeframe-select";
 
-import { NetworksChart, LoadingNetworksChart } from "./_components/chart";
-import { NetworksTable, LoadingNetworksTable } from "./_components/networks";
-
-import { api, HydrateClient } from "@/trpc/server";
-
 import { getChainForPage } from "@/app/(app)/_lib/chain/page";
-
-import { parseTableSorting } from "@/lib/table-state";
 import {
   DEFAULT_NETWORKS_SORTING,
   NETWORKS_SORT_IDS,
 } from "@/lib/table-sort-options";
+import { parseTableSorting } from "@/lib/table-state";
 import { parseUsageTimeframe } from "@/lib/timeframe";
+import { api, HydrateClient } from "@/trpc/server";
+
+import { NetworksChart, LoadingNetworksChart } from "./_components/chart";
+import { NetworksTable, LoadingNetworksTable } from "./_components/networks";
 
 import type { Metadata } from "next";
 

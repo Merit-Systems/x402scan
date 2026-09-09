@@ -1,8 +1,9 @@
-import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
-import { AgentChat } from "../_components/chat";
-
 import { v4 as uuidv4 } from "uuid";
+
+import { api } from "@/trpc/server";
+
+import { AgentChat } from "../_components/chat";
 
 export default async function AgentPage({
   params,

@@ -1,19 +1,21 @@
 import z3 from "zod3";
 
-import { searchResources } from "../db/resources/resource";
+import { supportedChainSchema } from "@/lib/schemas";
+import { convertTokenAmount } from "@/lib/token";
+import { usdc } from "@/lib/tokens/usdc";
 import {
   coerceAcceptForV1Schema,
   outputSchemaV1,
   paymentRequirementsSchemaV1,
 } from "@/lib/x402";
 
-import { supportedChainSchema } from "@/lib/schemas";
+import { searchResources } from "../db/resources/resource";
+
+import type { z } from "zod";
+
+import type { SupportedChain } from "@/types/chain";
 
 import type { searchResourcesSchema } from "../db/resources/resource";
-import type { z } from "zod";
-import type { SupportedChain } from "@/types/chain";
-import { convertTokenAmount } from "@/lib/token";
-import { usdc } from "@/lib/tokens/usdc";
 
 interface X402ToolResponse {
   id: string;

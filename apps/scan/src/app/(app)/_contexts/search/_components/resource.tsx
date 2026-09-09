@@ -1,4 +1,5 @@
 import { Addresses } from "@/components/ui/address";
+
 import { Favicon } from "@/app/(app)/_components/favicon";
 
 import type {

@@ -1,4 +1,5 @@
 import type { InsertResult } from "@clickhouse/client";
+
 import type { PartnerData } from "./partners";
 
 export enum Tables {

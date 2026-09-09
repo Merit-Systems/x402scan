@@ -4,6 +4,7 @@ import {
   USDC_POLYGON,
   TRANSFER_TOPIC,
 } from "@/trigger/lib/constants";
+
 import type {
   SyncConfig,
   TransferEventData,

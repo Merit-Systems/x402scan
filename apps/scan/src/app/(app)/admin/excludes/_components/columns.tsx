@@ -1,9 +1,13 @@
-import type { DataTableColumnDef } from "@/components/ui/data-table";
+import { Ban, CheckCircle, XCircle } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Ban, CheckCircle, XCircle } from "lucide-react";
-import type { RouterOutputs } from "@/trpc/client";
+
 import { Favicon } from "@/app/(app)/_components/favicon";
+
+import type { DataTableColumnDef } from "@/components/ui/data-table";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type Resource =
   RouterOutputs["admin"]["resources"]["excludes"]["searchResources"][number];

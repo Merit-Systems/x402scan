@@ -32,7 +32,6 @@ import {
   figmentFacilitator,
   threewsFacilitator,
 } from "../facilitators";
-
 import { validateUniqueFacilitators } from "./validate";
 
 import type { Facilitator } from "../types";

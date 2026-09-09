@@ -1,15 +1,16 @@
 import z from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../../trpc";
-import {
-  getOverallStatisticsMV,
-  overallStatisticsMVInputSchema,
-} from "@/services/transfers/stats/overall-mv";
+import { getOriginPayToAddresses } from "@/services/db/resources/origin";
 import {
   getBucketedStatisticsMV,
   bucketedStatisticsMVInputSchema,
 } from "@/services/transfers/stats/bucketed-mv";
-import { getOriginPayToAddresses } from "@/services/db/resources/origin";
+import {
+  getOverallStatisticsMV,
+  overallStatisticsMVInputSchema,
+} from "@/services/transfers/stats/overall-mv";
+
+import { createTRPCRouter, publicProcedure } from "../../trpc";
 
 // Origin-scoped variants resolve the origin's payTo addresses server-side so
 // clients never ship the full address list over the wire (large origins

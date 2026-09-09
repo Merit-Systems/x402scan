@@ -1,11 +1,14 @@
 "use client";
 
 import { User, Calendar, Wallet } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Copyable } from "@/components/ui/copyable";
+
 import { format } from "date-fns";
 
+import { Copyable } from "@/components/ui/copyable";
+import { Skeleton } from "@/components/ui/skeleton";
+
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type EndUser = RouterOutputs["admin"]["endUsers"]["list"][number];

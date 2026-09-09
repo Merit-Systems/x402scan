@@ -1,5 +1,6 @@
-import { Prisma } from "@x402scan/scan-db";
 import { z } from "zod";
+
+import { Prisma } from "@x402scan/scan-db";
 
 import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
 import { mixedAddressSchema } from "@/lib/schemas";

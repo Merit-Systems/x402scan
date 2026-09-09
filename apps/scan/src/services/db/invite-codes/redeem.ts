@@ -1,19 +1,18 @@
-import z from "zod";
-
 import { formatUnits } from "viem";
+import z from "zod";
 
 import { InviteCodeStatus, RedemptionStatus, scanDb } from "@x402scan/scan-db";
 
-import { inviteWallets } from "@/services/cdp/server-wallet/invite";
-
-import { usdc } from "@/lib/tokens/usdc";
 import { mixedAddressSchema } from "@/lib/schemas";
-
+import { usdc } from "@/lib/tokens/usdc";
+import { cdpErr } from "@/services/cdp/result";
+import { inviteWallets } from "@/services/cdp/server-wallet/invite";
 import { Chain } from "@/types/chain";
-import { dbErr, dbOk, dbResultFromPromise } from "../result";
-import { upsertWalletAddressForInviteCode } from "../partners";
 
-import { cdpErr, type CdpErr } from "@/services/cdp/result";
+import { upsertWalletAddressForInviteCode } from "../partners";
+import { dbErr, dbOk, dbResultFromPromise } from "../result";
+
+import type { CdpErr } from "@/services/cdp/result";
 
 export const validateInviteCodeSchema = z.object({
   code: z.string().min(1),

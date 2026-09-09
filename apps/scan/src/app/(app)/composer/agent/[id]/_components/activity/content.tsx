@@ -1,8 +1,10 @@
 "use client";
 
 import { api } from "@/trpc/client";
-import type { RouterOutputs } from "@/trpc/client";
+
 import { ActivityCharts } from "./charts";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 interface Props {
   agentConfiguration: NonNullable<RouterOutputs["public"]["agents"]["get"]>;

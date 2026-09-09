@@ -31,8 +31,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
   InputGroup,
   InputGroupAddon,
@@ -45,10 +45,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { useDiscovery } from "@/app/(app)/(home)/resources/register/_components/use-discovery";
+
 import { DiscoveryActions } from "@/app/(app)/(home)/resources/register/_components/discovery-actions";
 import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
 import { RegistrationResult } from "@/app/(app)/(home)/resources/register/_components/registration-result";
-import { useDiscovery } from "@/app/(app)/(home)/resources/register/_components/use-discovery";
 import { Favicon } from "@/app/(app)/_components/favicon";
 import {
   isOpenApiDeclaredFree,

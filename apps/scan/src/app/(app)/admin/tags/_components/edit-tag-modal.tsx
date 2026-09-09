@@ -1,18 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { Tag, Plus, X, Trash2 } from "lucide-react";
-import { api, type RouterInputs } from "@/trpc/client";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   ContextMenu,
@@ -20,7 +12,20 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { api } from "@/trpc/client";
+
 import type { PaginatedQueryParams } from "@/lib/pagination";
+import type { RouterInputs } from "@/trpc/client";
 
 interface EditTagModalProps {
   open: boolean;

@@ -8,7 +8,7 @@ import {
 } from "@/lib/discovery/probe-cache";
 import { detectServerHostMismatch } from "@/lib/discovery/server-host-mismatch";
 import { deduplicateWarnings } from "@/lib/discovery/utils";
-import { jsonObjectSchema, type JsonObject } from "@/lib/json";
+import { jsonObjectSchema } from "@/lib/json";
 import { validateResource } from "@/lib/resources";
 import { getOriginFromUrl } from "@/lib/url";
 import { fetchDiscoveryDocument } from "@/services/discovery";
@@ -16,6 +16,7 @@ import { scrapeOriginData } from "@/services/scraper";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
+import type { JsonObject } from "@/lib/json";
 import type { FailedResource, TestedResource } from "@/types/batch-test";
 
 const testedMethodSchema = z.enum(["DELETE", "GET", "PATCH", "POST", "PUT"]);

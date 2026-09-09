@@ -2,15 +2,16 @@
 
 import { Globe, Hash, Calendar, Tag } from "lucide-react";
 
-import { Skeleton } from "@/components/ui/skeleton";
-import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
+import { ResourcesSortingContext } from "@/app/(app)/admin/_contexts/sorting/resource-tags/context";
 import { cleanExternalText, formatCompactAgo } from "@/lib/utils";
 
-import { ResourcesSortingContext } from "@/app/(app)/admin/_contexts/sorting/resource-tags/context";
-
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type ColumnType =

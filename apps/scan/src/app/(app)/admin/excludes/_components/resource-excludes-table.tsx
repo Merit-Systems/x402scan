@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
-import { createColumns } from "./columns";
-import { api, type RouterOutputs } from "@/trpc/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Search, Ban, CheckCircle, Loader2 } from "lucide-react";
+
+import { useMemo, useState } from "react";
+
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -15,9 +16,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+
 import { Favicon } from "@/app/(app)/_components/favicon";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
+import { api } from "@/trpc/client";
+
+import { createColumns } from "./columns";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 type Resource =
   RouterOutputs["admin"]["resources"]["excludes"]["searchResources"][number];

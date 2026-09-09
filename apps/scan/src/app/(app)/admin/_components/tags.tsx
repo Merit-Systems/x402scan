@@ -1,8 +1,10 @@
 import React from "react";
 
-import type { Tag } from "@x402scan/scan-db/types";
 import { Badge } from "@/components/ui/badge";
+
 import { cn } from "@/lib/utils";
+
+import type { Tag } from "@x402scan/scan-db/types";
 
 interface Props {
   tags: Tag[];

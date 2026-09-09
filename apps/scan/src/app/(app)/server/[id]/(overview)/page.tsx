@@ -1,5 +1,10 @@
 import { Suspense } from "react";
 
+import { notFound } from "next/navigation";
+
+import { api, HydrateClient } from "@/trpc/server";
+import { ActivityTimeframe } from "@/types/timeframes";
+
 import { ServerOverview } from "./_components/overview";
 import {
   LoadingOriginResources,
@@ -10,11 +15,6 @@ import {
   ServerStatCards,
 } from "./_components/stat-cards";
 import { UsageErrorBoundary } from "./_components/usage-error-boundary";
-
-import { ActivityTimeframe } from "@/types/timeframes";
-import { api, HydrateClient } from "@/trpc/server";
-
-import { notFound } from "next/navigation";
 
 export default async function OriginPage({
   params,

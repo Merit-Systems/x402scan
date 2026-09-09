@@ -1,7 +1,8 @@
-import type { ComponentProps, ReactNode } from "react";
 import { UserIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import type { ComponentProps, ReactNode } from "react";
 
 type ImageAvatarProps = Omit<ComponentProps<typeof Avatar>, "children"> & {
   src?: string | null;

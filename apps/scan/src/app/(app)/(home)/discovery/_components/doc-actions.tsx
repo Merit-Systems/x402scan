@@ -1,9 +1,10 @@
-import Link from "next/link";
 import { Plus } from "lucide-react";
 
-import type { Route } from "next";
+import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
+
+import type { Route } from "next";
 
 export function DiscoveryDocActions({
   secondaryHref,

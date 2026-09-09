@@ -10,6 +10,7 @@ import { useSiws } from "@/app/(app)/composer/_hooks/sign-in/use-siws";
 import { useSolanaWallet } from "@/app/_contexts/solana/hook";
 
 import type { UiWalletAccount } from "@wallet-standard/react";
+
 import type { ConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
 
 interface Props {

@@ -1,6 +1,9 @@
-import { Section } from "@/app/(app)/_components/deferred/page-utils";
-import { LoadingToolsTable, ToolsTable } from "./table";
 import { Suspense } from "react";
+
+import { Section } from "@/app/(app)/_components/deferred/page-utils";
+
+import { LoadingToolsTable, ToolsTable } from "./table";
+
 import type { ToolSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
 

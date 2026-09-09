@@ -1,13 +1,15 @@
-import { useAccount, useReadContract } from "wagmi";
-
 import { useQueryClient } from "@tanstack/react-query";
 
-import { CHAIN_ID } from "@/types/chain";
+import { erc20Abi } from "viem";
+import { useAccount, useReadContract } from "wagmi";
+
 import { ethereumAddressSchema } from "@/lib/schemas";
+import { CHAIN_ID } from "@/types/chain";
+
+import type { Address } from "viem";
 
 import type { Token } from "@/types/token";
-import type { Address } from "viem";
-import { erc20Abi } from "viem";
+
 import type { UseBalanceReturnType } from "../types";
 
 interface Props {

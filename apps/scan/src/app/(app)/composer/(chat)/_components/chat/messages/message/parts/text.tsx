@@ -1,12 +1,15 @@
+import { CopyIcon } from "lucide-react";
+
+import { Fragment } from "react";
+
+import { toast } from "sonner";
+
 import {
   MessageAction,
   MessageActions,
   MessageContent,
   MessageResponse,
 } from "@/components/ai-elements/message";
-import { toast } from "sonner";
-import { Fragment } from "react";
-import { CopyIcon } from "lucide-react";
 
 import type { TextUIPart } from "ai";
 

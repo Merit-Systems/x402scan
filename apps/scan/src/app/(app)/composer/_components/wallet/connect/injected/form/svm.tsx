@@ -1,9 +1,8 @@
 import { useWallets } from "@wallet-standard/react";
 
-import { ConnectInjectedWalletButtonsWrapper } from "./wrapper";
-
 import { ConnectSVMInjectedWalletButtons } from "../buttons/svm";
 import { ConnectInjectedWalletEmpty } from "./empty";
+import { ConnectInjectedWalletButtonsWrapper } from "./wrapper";
 
 export const ConnectSVMInjectedWalletForm = () => {
   const allWallets = useWallets();

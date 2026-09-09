@@ -1,13 +1,17 @@
 "use client";
 
+import { Search, Loader2 } from "lucide-react";
+
 import { useState, memo } from "react";
-import { Input } from "@/components/ui/input";
+
+import z from "zod";
+
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Search, Loader2 } from "lucide-react";
+
 import { cn } from "@/lib/utils";
-import z from "zod";
 
 const refinementModeSchema = z.enum(["none", "llm", "reranker", "both"]);
 const queryModeSchema = z.enum(["keywords", "sql", "sql-parallel"]);

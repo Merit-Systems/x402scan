@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { api, type RouterInputs } from "@/trpc/client";
+
+import { api } from "@/trpc/client";
+
+import type { RouterInputs } from "@/trpc/client";
 import type { TestedResource, FailedResource } from "@/types/batch-test";
 import type { DiscoveredResource } from "@/types/discovery";
 

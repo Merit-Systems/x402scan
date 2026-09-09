@@ -1,11 +1,15 @@
 "use client";
 
-import { ArrowDown, ArrowUp, type LucideIcon } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
-import type { SortingContext } from "@/app/(app)/admin/_contexts/sorting/base/context";
+import { Button } from "@/components/ui/button";
+
 import { useSorting } from "@/app/(app)/admin/_contexts/sorting/base/hook";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+
+import type { LucideIcon } from "lucide-react";
+
+import type { SortingContext } from "@/app/(app)/admin/_contexts/sorting/base/context";
 
 interface BaseProps {
   Icon: LucideIcon;

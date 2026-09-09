@@ -5,13 +5,14 @@ import { Wrench } from "lucide-react";
 import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { Favicon } from "@/app/(app)/_components/favicon";
 import { cleanExternalText, formatCompactAgo } from "@/lib/utils";
 
-import { Favicon } from "@/app/(app)/_components/favicon";
+import { KnownSellerChart, LoadingKnownSellerChart } from "./chart";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
-import { KnownSellerChart, LoadingKnownSellerChart } from "./chart";
 
 type ColumnType = RouterOutputs["public"]["tools"]["top"]["items"][number];
 

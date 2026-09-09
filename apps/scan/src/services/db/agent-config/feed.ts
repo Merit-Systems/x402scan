@@ -1,13 +1,17 @@
 import z from "zod";
-import { queryRaw } from "../query";
+
 import { Prisma } from "@x402scan/scan-db";
-import type { PaginatedQueryParams } from "@/lib/pagination";
-import { toPaginatedResponse } from "@/lib/pagination";
 import { scanDb } from "@x402scan/scan-db";
+
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from "@/lib/cache";
+import { toPaginatedResponse } from "@/lib/pagination";
+
+import { queryRaw } from "../query";
+
+import type { PaginatedQueryParams } from "@/lib/pagination";
 
 const agentConfigurationSchema = z
   .object({

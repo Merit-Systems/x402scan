@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
-
 import { Edit, Settings } from "lucide-react";
+
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 
 import {
   SidebarGroup,
@@ -10,8 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { usePathname, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+
 import { api } from "@/trpc/client";
 
 export const NavMain = () => {

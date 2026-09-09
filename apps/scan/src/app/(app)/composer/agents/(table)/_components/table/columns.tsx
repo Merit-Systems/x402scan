@@ -7,11 +7,12 @@ import Image from "next/image";
 import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { Favicons, LoadingFavicons } from "@/app/(app)/_components/favicon";
 import { cn } from "@/lib/utils";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
-import { Favicons, LoadingFavicons } from "@/app/(app)/_components/favicon";
 
 type ColumnType = RouterOutputs["public"]["agents"]["list"]["items"][number];
 

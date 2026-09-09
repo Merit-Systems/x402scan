@@ -1,7 +1,9 @@
 import { Suspense } from "react";
+
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
-import { YourAgentsContent } from "./content";
+
 import { LoadingAgentCard } from "../lib/agent-card";
+import { YourAgentsContent } from "./content";
 
 interface Props {
   userId: string;

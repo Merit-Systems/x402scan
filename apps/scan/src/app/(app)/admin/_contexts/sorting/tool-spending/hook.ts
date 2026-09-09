@@ -1,6 +1,5 @@
-import { ToolSpendingSortingContext } from "./context";
-
 import { useSorting } from "../base/hook";
+import { ToolSpendingSortingContext } from "./context";
 
 export const useToolSpendingSorting = () => {
   const context = useSorting(ToolSpendingSortingContext);

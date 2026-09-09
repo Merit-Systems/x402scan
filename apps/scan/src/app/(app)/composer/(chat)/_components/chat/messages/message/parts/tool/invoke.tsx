@@ -1,13 +1,16 @@
-import { ResourceFetch } from "@/app/(app)/composer/(chat)/_components/resource-fetch";
+import { parseUnits } from "viem";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { ResourceFetch } from "@/app/(app)/composer/(chat)/_components/resource-fetch";
 import { supportedChainSchema } from "@/lib/schemas";
 import { usdc } from "@/lib/tokens/usdc";
 
-import type { RouterOutputs } from "@/trpc/client";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
-import { parseUnits } from "viem";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 interface Props {
   isResourceLoading: boolean;

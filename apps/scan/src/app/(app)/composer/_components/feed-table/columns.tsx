@@ -5,11 +5,12 @@ import { Bot, MessageSquare, Wrench } from "lucide-react";
 import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { Favicon } from "@/app/(app)/_components/favicon";
 import { formatCompactAgo } from "@/lib/utils";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
-import { Favicon } from "@/app/(app)/_components/favicon";
 
 type ColumnType =
   RouterOutputs["public"]["agents"]["activity"]["feed"]["items"][number];

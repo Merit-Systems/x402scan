@@ -1,6 +1,7 @@
 "use client";
 
-import { useTimeRangeContext } from "./hook";
+import { CalendarDays } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -9,7 +10,8 @@ import {
 } from "@/components/ui/select";
 
 import { ActivityTimeframe } from "@/types/timeframes";
-import { CalendarDays } from "lucide-react";
+
+import { useTimeRangeContext } from "./hook";
 
 export const RangeSelector = () => {
   const { selectTimeframe, timeframe } = useTimeRangeContext();

@@ -1,9 +1,10 @@
 import z from "zod";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
 import { scanDb, Prisma } from "@x402scan/scan-db";
-import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
+
 import { agentsRelease } from "@/lib/agents";
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
 
 export const toolCallsOverTimeQuerySchema = z.object({
   resourceId: z.uuid(),

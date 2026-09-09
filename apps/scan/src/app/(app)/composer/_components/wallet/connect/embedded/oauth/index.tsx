@@ -1,6 +1,5 @@
-import Image from "next/image";
-
 import { useSignInWithOAuth } from "@coinbase/cdp-hooks";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 

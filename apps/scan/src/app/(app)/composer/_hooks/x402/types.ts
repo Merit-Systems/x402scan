@@ -1,9 +1,10 @@
+import type { UseMutationOptions } from "@tanstack/react-query";
+
+import type { Connection } from "wagmi";
 import type z from "zod";
 
 import type { paymentResponseHeaderSchema } from "@/lib/x402/schema";
-import type { UseMutationOptions } from "@tanstack/react-query";
 import type { Chain } from "@/types/chain";
-import type { Connection } from "wagmi";
 
 export interface X402FetchResponse {
   data: unknown;

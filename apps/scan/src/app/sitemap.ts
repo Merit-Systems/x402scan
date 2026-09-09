@@ -1,9 +1,9 @@
-import type { MetadataRoute } from "next";
-
 import { scanDb } from "@x402scan/scan-db";
 
 import { env } from "@/env";
 import { facilitators } from "@/lib/facilitators";
+
+import type { MetadataRoute } from "next";
 
 const baseUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
 const staticLastModified = new Date("2026-05-20T00:00:00.000Z");

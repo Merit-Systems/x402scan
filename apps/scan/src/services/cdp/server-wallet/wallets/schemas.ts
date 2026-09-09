@@ -1,6 +1,7 @@
+import z from "zod";
+
 import { mixedAddressSchema } from "@/lib/schemas";
 import { tokenSchema } from "@/types/token";
-import z from "zod";
 
 export const getTokenBalanceSchema = z.object({
   token: tokenSchema,

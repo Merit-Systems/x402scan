@@ -4,17 +4,17 @@ import { useState } from "react";
 
 import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 
-import { columns } from "./columns";
+import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
 
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { AGENTS_SORT_IDS } from "@/lib/table-sort-options";
 import { api } from "@/trpc/client";
 
-import type { RouterInputs } from "@/trpc/client";
-import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
-import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
-import { AGENTS_SORT_IDS } from "@/lib/table-sort-options";
+import { columns } from "./columns";
 
 import type { AgentSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
+import type { RouterInputs } from "@/trpc/client";
 
 interface Props {
   input: Omit<

@@ -2,20 +2,21 @@ import z from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { queryRaw } from "../query";
-
-import { sortingSchema, timeframeSchema } from "@/lib/schemas";
-import type { PaginatedQueryParams } from "@/lib/pagination";
-import { toPaginatedResponse } from "@/lib/pagination";
-import { getTimeRangeFromTimeframe } from "@/lib/time-range";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from "@/lib/cache";
+import { toPaginatedResponse } from "@/lib/pagination";
+import { sortingSchema, timeframeSchema } from "@/lib/schemas";
 import {
   AGENTS_SORT_IDS,
   DEFAULT_AGENTS_SORTING,
 } from "@/lib/table-sort-options";
+import { getTimeRangeFromTimeframe } from "@/lib/time-range";
+
+import { queryRaw } from "../query";
+
+import type { PaginatedQueryParams } from "@/lib/pagination";
 
 export const listTopAgentConfigurationsSchema = z.object({
   timeframe: timeframeSchema,

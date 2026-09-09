@@ -3,6 +3,7 @@
 import { BaseResourceItem } from "./base";
 
 import type { RouterOutputs } from "@/trpc/client";
+
 import type { SelectedResource } from "../../../_types/chat-config";
 
 interface Props {

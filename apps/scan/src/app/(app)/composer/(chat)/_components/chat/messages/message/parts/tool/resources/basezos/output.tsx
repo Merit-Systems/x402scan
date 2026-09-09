@@ -1,9 +1,11 @@
-import type { OutputComponent } from "../types";
-
-import z from "zod";
-import Image from "next/image";
 import { Star, ExternalLink } from "lucide-react";
+
+import Image from "next/image";
+import z from "zod";
+
 import { ToolOutput } from "@/components/ai-elements/tool";
+
+import type { OutputComponent } from "../types";
 
 const AmazonProductSchema = z.object({
   id: z.string(),

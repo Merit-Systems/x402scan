@@ -1,11 +1,12 @@
 import { z } from "zod";
 
-import { formatCurrency, USDC_ADDRESS } from "@/lib/utils";
 import { jsonValueSchema } from "@/lib/json";
+import { formatCurrency, USDC_ADDRESS } from "@/lib/utils";
 import { Methods } from "@/types/x402";
 
-import type { BazaarMethod } from "@/types/x402";
 import type { Accepts } from "@x402scan/scan-db/types";
+
+import type { BazaarMethod } from "@/types/x402";
 
 interface PricingAccept {
   maxAmountRequired: number;

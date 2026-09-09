@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
-import { join } from "path";
 import { notFound } from "next/navigation";
+import { join } from "path";
+
 import { MarkdownContent } from "./markdown-content";
 
 interface MarkdownPageProps {

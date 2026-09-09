@@ -1,14 +1,14 @@
+import { skipToken } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 
-import { skipToken } from "@tanstack/react-query";
-
+import { solanaAddressSchema } from "@/lib/schemas";
 import { api } from "@/trpc/client";
 
 import { useConnectedWallets } from "../../use-connected-wallets";
 
 import type { SolanaAddress } from "@/types/address";
+
 import type { UseBalanceReturnType } from "../types";
-import { solanaAddressSchema } from "@/lib/schemas";
 
 interface Props {
   tokenMint?: string;

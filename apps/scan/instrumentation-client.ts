@@ -1,4 +1,5 @@
 import posthog from "posthog-js";
+
 import { env } from "./src/env";
 
 const posthogKey = env.NEXT_PUBLIC_POSTHOG_KEY;

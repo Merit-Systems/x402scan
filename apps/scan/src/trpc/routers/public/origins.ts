@@ -1,5 +1,8 @@
+import { TRPCError } from "@trpc/server";
 import z from "zod";
-import { createTRPCRouter, publicProcedure } from "../../trpc";
+
+import { scanDb } from "@x402scan/scan-db";
+
 import {
   getOrigin,
   listOrigins,
@@ -9,8 +12,8 @@ import {
   searchOrigins,
   searchOriginsSchema,
 } from "@/services/db/resources/origin";
-import { scanDb } from "@x402scan/scan-db";
-import { TRPCError } from "@trpc/server";
+
+import { createTRPCRouter, publicProcedure } from "../../trpc";
 
 // Per-origin rate limit: 5 requests per 60 seconds
 const RATE_LIMIT_WINDOW_MS = 60_000;

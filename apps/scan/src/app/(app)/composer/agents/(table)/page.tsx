@@ -1,13 +1,13 @@
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
-import { AgentsTable } from "@/app/(app)/composer/agents/(table)/_components/table";
-import { ActivityTimeframe } from "@/types/timeframes";
-import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
-import { parseTableSorting } from "@/lib/table-state";
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
+import { AgentsTable } from "@/app/(app)/composer/agents/(table)/_components/table";
 import {
   AGENTS_SORT_IDS,
   DEFAULT_AGENTS_SORTING,
 } from "@/lib/table-sort-options";
+import { parseTableSorting } from "@/lib/table-state";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 import type { Metadata } from "next";
 

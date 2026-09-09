@@ -3,7 +3,6 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { useSignMessage } from "@solana/react";
-
 import { toast } from "sonner";
 
 import { signInWithSolana } from "@/auth/providers/siws/sign-in";

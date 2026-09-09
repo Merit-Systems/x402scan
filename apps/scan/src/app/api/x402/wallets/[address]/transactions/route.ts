@@ -1,7 +1,7 @@
-import { router, withCors, OPTIONS } from "@/lib/router";
+import { handleWalletTransactions } from "@/app/api/x402/_handlers/wallet-transactions";
 import { walletTransactionsQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { extractPathSegment } from "@/app/api/x402/_lib/utils";
-import { handleWalletTransactions } from "@/app/api/x402/_handlers/wallet-transactions";
+import { router, withCors, OPTIONS } from "@/lib/router";
 
 export { OPTIONS };
 

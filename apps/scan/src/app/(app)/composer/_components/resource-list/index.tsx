@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-
 import { Loader2, SearchX } from "lucide-react";
+
+import React, { useState } from "react";
 
 import {
   Command,
@@ -11,19 +11,14 @@ import {
 } from "@/components/ui/command";
 
 import { Chain } from "@/app/(app)/_components/chains";
+import { api } from "@/trpc/client";
+import { CHAIN_LABELS, SUPPORTED_CHAINS } from "@/types/chain";
 
 import { Filters } from "./filters";
-
 import { SelectedResourceItem } from "./item/selected";
 import { UnselectedResourceItem } from "./item/unselected";
 
-import { api } from "@/trpc/client";
-
-import {
-  CHAIN_LABELS,
-  SUPPORTED_CHAINS,
-  type SupportedChain,
-} from "@/types/chain";
+import type { SupportedChain } from "@/types/chain";
 
 import type { SelectedResource } from "../../_types/chat-config";
 

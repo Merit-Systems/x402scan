@@ -2,8 +2,9 @@
 
 import { AlertTriangle } from "lucide-react";
 
-import { api } from "@/trpc/client";
 import { CommandItem } from "@/components/ui/command";
+
+import { api } from "@/trpc/client";
 
 import { BaseResourceItem, LoadingBaseResourceItem } from "./base";
 

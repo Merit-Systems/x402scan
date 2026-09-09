@@ -1,4 +1,6 @@
-import { LanguageModelCapability, type LanguageModel } from "../types";
+import { LanguageModelCapability } from "../types";
+
+import type { LanguageModel } from "../types";
 
 const xaiLanguageModelData: Omit<LanguageModel, "provider">[] = [
   // Non-reasoning or general-purpose first (least reasoning emphasis)

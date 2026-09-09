@@ -1,10 +1,11 @@
+import { isAddress } from "viem";
 import z from "zod";
 
 import { Chain, SUPPORTED_CHAINS } from "@/types/chain";
 
-import { isAddress } from "viem";
-import type { SolanaAddress } from "@/types/address";
 import type { Address } from "viem";
+
+import type { SolanaAddress } from "@/types/address";
 
 export const ethereumAddressSchema = z
   .string()

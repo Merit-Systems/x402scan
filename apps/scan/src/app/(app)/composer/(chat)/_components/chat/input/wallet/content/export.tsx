@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { CopyCode } from "@/components/ui/copy-code";
 
 import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
-
 import { api } from "@/trpc/client";
 
 export const WalletExport: React.FC = () => {

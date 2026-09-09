@@ -1,15 +1,13 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 
-import { useSession } from "next-auth/react";
+import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
+import { chainToAuthProviderId } from "@/auth/providers/wallet-map";
 
 import { OnrampContent } from "./content";
 import { UnauthedOnramp } from "./unauthed";
-
-import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
-
-import { chainToAuthProviderId } from "@/auth/providers/wallet-map";
 
 export const Onramp = () => {
   const { chain } = useWalletChain();

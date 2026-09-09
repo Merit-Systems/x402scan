@@ -1,7 +1,9 @@
-import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { generateText, Output } from "ai";
 import { z } from "zod";
+
 import { scanDb, Prisma } from "@x402scan/scan-db";
+
 import type { SearchResult } from "./types";
 
 export const sqlGenerationSchema = z.object({

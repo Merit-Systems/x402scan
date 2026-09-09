@@ -4,8 +4,9 @@ import { buttonVariants } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/image-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import type { Facilitator } from "@/lib/facilitators";
 import type { ReactNode } from "react";
+
+import type { Facilitator } from "@/lib/facilitators";
 
 export function FacilitatorOverview({
   controls,

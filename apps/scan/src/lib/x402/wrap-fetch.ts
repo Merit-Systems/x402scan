@@ -1,3 +1,11 @@
+import { registerExactEvmScheme } from "@x402/evm/exact/client";
+import { x402Client, wrapFetchWithPayment } from "@x402/fetch";
+import { ExactSvmScheme } from "@x402/svm/exact/client";
+import { ExactSvmSchemeV1 } from "@x402/svm/exact/v1/client";
+
+import type { x402Client as X402Client } from "@x402/core/client";
+import type { ClientEvmSigner } from "@x402/evm";
+import type { ClientSvmSigner } from "@x402/svm";
 /**
  * x402 v2 Payment-enabled fetch wrapper
  *
@@ -5,13 +13,6 @@
  * Handles both v1 and v2 protocols automatically.
  */
 import type { Account } from "viem";
-import type { x402Client as X402Client } from "@x402/core/client";
-import type { ClientEvmSigner } from "@x402/evm";
-import type { ClientSvmSigner } from "@x402/svm";
-import { registerExactEvmScheme } from "@x402/evm/exact/client";
-import { x402Client, wrapFetchWithPayment } from "@x402/fetch";
-import { ExactSvmScheme } from "@x402/svm/exact/client";
-import { ExactSvmSchemeV1 } from "@x402/svm/exact/v1/client";
 
 export { x402Client, wrapFetchWithPayment };
 export { registerExactEvmScheme };

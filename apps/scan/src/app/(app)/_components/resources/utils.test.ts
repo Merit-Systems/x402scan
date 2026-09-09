@@ -1,4 +1,7 @@
 import { describe, it, expect } from "vitest";
+
+import { Methods } from "@/types/x402";
+
 import {
   getBazaarMethod,
   parseMinFromPriceString,
@@ -6,7 +9,6 @@ import {
   getMaxUsdcAmount,
   formatPricingLabel,
 } from "./utils";
-import { Methods } from "@/types/x402";
 
 describe("parseMinFromPriceString", () => {
   it("parses integer min from range", () => {

@@ -1,10 +1,11 @@
+import { subMonths, differenceInMilliseconds, getUnixTime } from "date-fns";
 import z from "zod";
 
-import { subMonths, differenceInMilliseconds, getUnixTime } from "date-fns";
+import { scanDb, Prisma } from "@x402scan/scan-db";
+
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
 
 import { queryRaw } from "../../query";
-import { scanDb, Prisma } from "@x402scan/scan-db";
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
 
 export const agentConfigBucketedActivityInputSchema = z.object({
   agentConfigurationId: z.string(),

@@ -1,17 +1,16 @@
-import React from "react";
-
 import { BotMessageSquare } from "lucide-react";
 
+import React from "react";
+
 import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-
 import { Avatar } from "@/components/ui/image-avatar";
-
-import { AgentStats, LoadingAgentStats } from "./stats";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { cn } from "@/lib/utils";
 
 import { HeaderButtons, LoadingHeaderButtons } from "./button";
+
+import { AgentStats, LoadingAgentStats } from "./stats";
 
 import type { RouterOutputs } from "@/trpc/client";
 

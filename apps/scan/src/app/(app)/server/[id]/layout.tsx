@@ -1,8 +1,10 @@
+import { notFound } from "next/navigation";
+
 import { env } from "@/env";
 import { cleanExternalText } from "@/lib/utils";
 import { api } from "@/trpc/server";
+
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 
 export default async function OriginLayout({
   params,

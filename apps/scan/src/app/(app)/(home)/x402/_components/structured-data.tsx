@@ -1,4 +1,5 @@
 import { JsonLd } from "@/components/json-ld";
+
 import { env } from "@/env";
 
 export const x402Description =

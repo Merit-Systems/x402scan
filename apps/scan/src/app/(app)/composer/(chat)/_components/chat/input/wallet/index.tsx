@@ -6,10 +6,10 @@ import { useSession } from "next-auth/react";
 
 import { PromptInputButton } from "@/components/ai-elements/prompt-input";
 
-import { WalletDialog } from "./dialog";
-
-import { api } from "@/trpc/client";
 import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain/provider";
+import { api } from "@/trpc/client";
+
+import { WalletDialog } from "./dialog";
 
 import type { SupportedChain } from "@/types/chain";
 

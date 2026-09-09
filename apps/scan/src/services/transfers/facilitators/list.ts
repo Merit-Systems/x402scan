@@ -1,29 +1,27 @@
 import z from "zod";
 
-import { baseListQuerySchema } from "../schemas";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { queryRaw } from "@/services/transfers/client";
-
-import { chainSchema } from "@/lib/schemas";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from "@/lib/cache";
-
-import { Prisma } from "@x402scan/transfers-db";
 import {
   facilitatorIdMap,
   MIN_FACILITATOR_TRANSACTIONS,
 } from "@/lib/facilitators";
-import {
-  toPaginatedResponse,
-  type paginatedQuerySchema,
-} from "@/lib/pagination";
-import { getMaterializedViewSuffix } from "@/lib/time-range";
+import { toPaginatedResponse } from "@/lib/pagination";
+import { chainSchema } from "@/lib/schemas";
 import {
   DEFAULT_FACILITATORS_SORTING,
   FACILITATORS_SORT_IDS,
 } from "@/lib/table-sort-options";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
+import { queryRaw } from "@/services/transfers/client";
+
+import { baseListQuerySchema } from "../schemas";
+
+import type { paginatedQuerySchema } from "@/lib/pagination";
 import type { FacilitatorsSortId } from "@/lib/table-sort-options";
 
 export const listTopFacilitatorsInputSchema = baseListQuerySchema({

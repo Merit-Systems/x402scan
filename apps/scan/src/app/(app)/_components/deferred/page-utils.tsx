@@ -1,15 +1,16 @@
+import { ChevronRight } from "lucide-react";
+
 import React from "react";
+import { isValidElement } from "react";
 
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 
 import { cn } from "@/lib/utils";
 
-import { isValidElement } from "react";
-
 import type { ReactElement, ReactNode } from "react";
+
 import type { Route } from "next";
 
 interface HeadingProps {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ChevronDown, Copy, ExternalLink, FileText } from "lucide-react";
+
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 export function CopyPageDropdown({

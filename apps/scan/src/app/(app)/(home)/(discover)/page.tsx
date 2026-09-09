@@ -2,32 +2,31 @@ import { Suspense } from "react";
 
 import { ErrorBoundary } from "react-error-boundary";
 
-import { OverallStatsContent } from "./_components/stats";
-import { DiscoverHeading } from "./_components/heading";
-import { ServiceViewToggle } from "./_components/service-view-toggle";
 import { TimeframeSelect } from "@/components/timeframe-select";
-
-import { api, HydrateClient } from "@/trpc/server";
+import { Separator } from "@/components/ui/separator";
+import { UsageSection } from "@/components/usage-section";
 
 import { getChainForPage } from "@/app/(app)/_lib/chain/page";
-
-import {
-  DiscoverServices,
-  LoadingDiscoverServices,
-} from "./_components/discover-origins";
-import { UsageSection } from "@/components/usage-section";
-import { Separator } from "@/components/ui/separator";
 import {
   parseDiscoverPage,
   parseServiceView,
   SERVICES_PAGE_SIZE,
 } from "@/lib/discover/filters";
-import { parseTableSorting } from "@/lib/table-state";
 import {
   DEFAULT_SELLERS_SORTING,
   SELLERS_SORT_IDS,
 } from "@/lib/table-sort-options";
+import { parseTableSorting } from "@/lib/table-state";
 import { parseUsageTimeframe } from "@/lib/timeframe";
+import { api, HydrateClient } from "@/trpc/server";
+
+import {
+  DiscoverServices,
+  LoadingDiscoverServices,
+} from "./_components/discover-origins";
+import { DiscoverHeading } from "./_components/heading";
+import { ServiceViewToggle } from "./_components/service-view-toggle";
+import { OverallStatsContent } from "./_components/stats";
 
 export default async function DiscoverPage({ searchParams }: PageProps<"/">) {
   const resolvedParams = await searchParams;

@@ -1,6 +1,6 @@
-import { router, withCors, OPTIONS } from "@/lib/router";
-import { registryOriginQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { handleRegistryOrigin } from "@/app/api/x402/_handlers/registry-origin";
+import { registryOriginQuerySchema } from "@/app/api/x402/_lib/schemas";
+import { router, withCors, OPTIONS } from "@/lib/router";
 
 export { OPTIONS };
 

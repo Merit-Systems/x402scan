@@ -9,8 +9,9 @@ import { z } from "zod";
 
 import { openApiInputAdvisorySchema } from "./json-schema";
 
-import type { JsonLikeValue, JsonSchemaNode } from "./json-schema";
 import type { JsonObject, JsonValue } from "@/lib/json";
+
+import type { JsonLikeValue, JsonSchemaNode } from "./json-schema";
 
 const MAX_DEPTH = 5;
 

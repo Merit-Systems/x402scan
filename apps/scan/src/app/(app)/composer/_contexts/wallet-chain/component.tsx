@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-
 import { ChevronDown } from "lucide-react";
+
+import { useState } from "react";
 
 import Image from "next/image";
 
@@ -14,10 +14,9 @@ import {
 } from "@/components/ui/popover";
 
 import { Chain } from "@/app/(app)/_components/chains";
+import { SUPPORTED_CHAINS, CHAIN_LABELS, CHAIN_ICONS } from "@/types/chain";
 
 import { useWalletChain } from "./hook";
-
-import { SUPPORTED_CHAINS, CHAIN_LABELS, CHAIN_ICONS } from "@/types/chain";
 
 import type { SupportedChain } from "@/types/chain";
 
