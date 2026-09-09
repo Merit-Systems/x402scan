@@ -7,7 +7,7 @@ export const ItemContainer = ({
 }) => {
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-sm font-medium font-mono">{label}</p>
+      <p className="font-mono text-sm font-medium">{label}</p>
       {value}
     </div>
   );
@@ -23,7 +23,7 @@ export const AuthenticationMethod = ({
   return (
     <ItemContainer
       label={label}
-      value={<p className="border rounded-md p-2 bg-muted">{value}</p>}
+      value={<p className="rounded-md border bg-muted p-2">{value}</p>}
     />
   );
 };

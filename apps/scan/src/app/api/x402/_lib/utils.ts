@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-import { z } from 'zod';
+import { z } from "zod";
 
-import { mixedAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from "@/lib/schemas";
 
-import type { MixedAddress } from '@/types/address';
-import type { Chain } from '@/types/chain';
+import type { MixedAddress } from "@/types/address";
+import type { Chain } from "@/types/chain";
 
 export function parseAddress(
   address: string
@@ -17,7 +17,7 @@ export function parseAddress(
     return {
       success: false,
       response: NextResponse.json(
-        { error: 'Invalid address', details: result.error.issues },
+        { error: "Invalid address", details: result.error.issues },
         { status: 400 }
       ),
     };
@@ -115,7 +115,7 @@ export function paginatedResponse(
  * Safe because Zod already validates the value is 'base' | 'solana'.
  */
 export function asChain(
-  chain: 'base' | 'solana' | undefined
+  chain: "base" | "solana" | undefined
 ): Chain | undefined {
   return chain as Chain | undefined;
 }
@@ -127,5 +127,5 @@ export function asChain(
  * paths that match the route's shape.
  */
 export function extractPathSegment(request: Request, index: number): string {
-  return new URL(request.url).pathname.split('/')[index]!;
+  return new URL(request.url).pathname.split("/")[index]!;
 }

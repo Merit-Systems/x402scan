@@ -1,52 +1,52 @@
-'use client';
+"use client";
 
-import { ArrowDown, ArrowUp, Key, Wallet } from 'lucide-react';
+import { ArrowDown, ArrowUp, Key, Wallet } from "lucide-react";
 
 import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Logo } from '@/components/logo';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/dialog";
+import { Logo } from "@/components/logo";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { ConnectedWalletTabsContent } from './content';
-import { ChainNotConnected } from './chain-not-connected';
+import { ConnectedWalletTabsContent } from "./content";
+import { ChainNotConnected } from "./chain-not-connected";
 
-import { WalletChain } from '../../../_contexts/wallet-chain/component';
+import { WalletChain } from "../../../_contexts/wallet-chain/component";
 
-import { useWalletChain } from '../../../_contexts/wallet-chain/hook';
-import { Chain } from '@/types/chain';
+import { useWalletChain } from "../../../_contexts/wallet-chain/hook";
+import { Chain } from "@/types/chain";
 
-import type { User } from '@coinbase/cdp-hooks';
-import type { ConnectedWallets } from '@/app/(app)/_hooks/use-connected-wallets';
+import type { User } from "@coinbase/cdp-hooks";
+import type { ConnectedWallets } from "@/app/(app)/_hooks/use-connected-wallets";
 
 interface Props {
   connectedWallets: ConnectedWallets;
   user?: User;
-  defaultTab?: 'wallet' | 'deposit' | 'withdraw';
+  defaultTab?: "wallet" | "deposit" | "withdraw";
 }
 
 export const DisplayWalletDialogContent: React.FC<Props> = ({
   connectedWallets,
   user,
-  defaultTab = 'wallet',
+  defaultTab = "wallet",
 }) => {
   const { chain } = useWalletChain();
 
   return (
-    <div className="w-full overflow-hidden flex flex-col gap-4">
+    <div className="flex w-full flex-col gap-4 overflow-hidden">
       <Tabs
-        className="w-full overflow-hidden flex flex-col gap-6"
+        className="flex w-full flex-col gap-6 overflow-hidden"
         defaultValue={defaultTab}
       >
         <DialogHeader className="gap-2 bg-muted">
-          <div className="flex gap-2 justify-between p-4">
-            <div className="flex flex-row gap-2 items-center">
+          <div className="flex justify-between gap-2 p-4">
+            <div className="flex flex-row items-center gap-2">
               <Logo className="size-6" />
               <div className="flex flex-col gap-2">
-                <DialogTitle className="text-primary text-xl">
+                <DialogTitle className="text-xl text-primary">
                   Your Wallet
                 </DialogTitle>
                 <DialogDescription className="hidden">
@@ -56,8 +56,8 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
             </div>
             <WalletChain />
           </div>
-          <TabsList className="w-full h-fit overflow-x-auto justify-start no-scrollbar">
-            <div className="h-[34px] border-b w-2 shrink-0" />
+          <TabsList className="no-scrollbar h-fit w-full justify-start overflow-x-auto">
+            <div className="h-[34px] w-2 shrink-0 border-b" />
             <TabsTrigger
               value="wallet"
               variant="github"
@@ -88,7 +88,7 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
                 <Key className="size-4" /> Export
               </TabsTrigger>
             )}
-            <div className="h-[34px] border-b flex-1 min-w-2" />
+            <div className="h-[34px] min-w-2 flex-1 border-b" />
           </TabsList>
         </DialogHeader>
         {chain === Chain.SOLANA ? (
@@ -109,8 +109,8 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
           <ChainNotConnected />
         )}
       </Tabs>
-      <DialogFooter className="bg-muted border-t p-4">
-        <p className="text-xs text-muted-foreground text-center">
+      <DialogFooter className="border-t bg-muted p-4">
+        <p className="text-center text-xs text-muted-foreground">
           We do not have access to your keys or the ability to make transactions
           on your behalf.
         </p>

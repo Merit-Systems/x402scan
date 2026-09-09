@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import type { Chain } from '@/types/chain';
-import { createContext } from 'react';
+import type { Chain } from "@/types/chain";
+import { createContext } from "react";
 
 interface ChainContextType {
   chain: Chain | undefined;

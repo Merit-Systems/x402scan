@@ -1,26 +1,26 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import { getOriginFromUrl } from '@/lib/url';
-import { jsonObjectSchema } from '@/lib/json';
-import { z } from 'zod';
-import { toPaginatedResponse } from '@/lib/pagination';
+import { getOriginFromUrl } from "@/lib/url";
+import { jsonObjectSchema } from "@/lib/json";
+import { z } from "zod";
+import { toPaginatedResponse } from "@/lib/pagination";
 
-import { supportedChainSchema } from '@/lib/schemas';
+import { supportedChainSchema } from "@/lib/schemas";
 
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { SUPPORTED_CHAINS } from "@/types/chain";
 
-import { upsertResourceSchema } from './resource-schema';
-import { ensureOriginExists, freeAuthModeFilters } from './origin';
+import { upsertResourceSchema } from "./resource-schema";
+import { ensureOriginExists, freeAuthModeFilters } from "./origin";
 
-import type { PaginatedQueryParams } from '@/lib/pagination';
-import type { Prisma } from '@x402scan/scan-db';
-import type { SupportedChain } from '@/types/chain';
+import type { PaginatedQueryParams } from "@/lib/pagination";
+import type { Prisma } from "@x402scan/scan-db";
+import type { SupportedChain } from "@/types/chain";
 
 import {
   createCachedArrayQuery,
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
+} from "@/lib/cache";
 
 export { upsertResourceSchema };
 
@@ -32,18 +32,18 @@ export const upsertResource = async (
     return;
   }
   const baseResource = parsedResourceInput.data;
-  const supportedAccepts = baseResource.accepts.filter(accept =>
+  const supportedAccepts = baseResource.accepts.filter((accept) =>
     SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
   const unsupportedAccepts = baseResource.accepts.filter(
-    accept => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+    (accept) => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
   if (supportedAccepts.length === 0) {
     return;
   }
   const originStr = getOriginFromUrl(baseResource.resource);
 
-  return await scanDb.$transaction(async tx => {
+  return await scanDb.$transaction(async (tx) => {
     await ensureOriginExists(tx, originStr);
 
     // Merge new metadata with existing to avoid clobbering fields set by a
@@ -109,7 +109,7 @@ export const upsertResource = async (
     });
 
     const accepts = await Promise.all(
-      supportedAccepts.map(async baseAccepts =>
+      supportedAccepts.map(async (baseAccepts) =>
         tx.accepts.upsert({
           where: {
             resourceId_scheme_network: {
@@ -192,21 +192,21 @@ export const listResourcesUncached = async (
       deprecatedAt: null,
     },
     orderBy: [
-      { invocations: { _count: 'desc' } },
-      { tags: { _count: 'desc' } },
+      { invocations: { _count: "desc" } },
+      { tags: { _count: "desc" } },
     ],
   });
 };
 
 export const listResources = createCachedArrayQuery({
   queryFn: listResourcesUncached,
-  cacheKeyPrefix: 'resources:list',
-  createCacheKey: where => createStandardCacheKey({ where }),
+  cacheKeyPrefix: "resources:list",
+  createCacheKey: (where) => createStandardCacheKey({ where }),
   dateFields: [],
-  tags: ['resources'],
+  tags: ["resources"],
 });
 
-export type ResourceSortId = 'lastUpdated' | 'toolCalls';
+export type ResourceSortId = "lastUpdated" | "toolCalls";
 
 interface ResourceSorting {
   id: ResourceSortId;
@@ -225,13 +225,13 @@ export const listResourcesWithPaginationUncached = async (
   const { page, page_size } = pagination;
 
   // Default sorting
-  const sortConfig = sorting ?? { id: 'toolCalls', desc: true };
+  const sortConfig = sorting ?? { id: "toolCalls", desc: true };
 
   // Map sorting to Prisma orderBy
   const orderBy: Prisma.ResourcesOrderByWithRelationInput =
-    sortConfig.id === 'lastUpdated'
-      ? { lastUpdated: sortConfig.desc ? 'desc' : 'asc' }
-      : { toolCalls: { _count: sortConfig.desc ? 'desc' : 'asc' } };
+    sortConfig.id === "lastUpdated"
+      ? { lastUpdated: sortConfig.desc ? "desc" : "asc" }
+      : { toolCalls: { _count: sortConfig.desc ? "desc" : "asc" } };
 
   // Exclude deprecated resources by default
   const whereWithDeprecation: Prisma.ResourcesWhereInput = { ...where };
@@ -275,10 +275,10 @@ export const listResourcesWithPaginationUncached = async (
 
 export const listResourcesWithPagination = createCachedPaginatedQuery({
   queryFn: listResourcesWithPaginationUncached,
-  cacheKeyPrefix: 'resources:list-paginated',
-  createCacheKey: input => createStandardCacheKey(input),
+  cacheKeyPrefix: "resources:list-paginated",
+  createCacheKey: (input) => createStandardCacheKey(input),
   dateFields: [],
-  tags: ['resources'],
+  tags: ["resources"],
 });
 
 export const getResourceByAddress = async (address: string) => {
@@ -334,7 +334,7 @@ const searchResourcesUncached = async (
               {
                 resource: {
                   contains: search,
-                  mode: 'insensitive',
+                  mode: "insensitive",
                 },
               },
               {
@@ -352,7 +352,7 @@ const searchResourcesUncached = async (
               },
               {
                 metadata: {
-                  path: ['title', 'description'],
+                  path: ["title", "description"],
                   string_contains: search,
                 },
               },
@@ -369,7 +369,7 @@ const searchResourcesUncached = async (
       accepts: {
         where: {
           payTo: {
-            not: '',
+            not: "",
           },
         },
       },
@@ -380,16 +380,16 @@ const searchResourcesUncached = async (
       },
     },
     take: limit,
-    orderBy: [{ toolCalls: { _count: 'desc' } }, { tags: { _count: 'desc' } }],
+    orderBy: [{ toolCalls: { _count: "desc" } }, { tags: { _count: "desc" } }],
   });
 };
 
 export const searchResources = createCachedArrayQuery({
   queryFn: searchResourcesUncached,
-  cacheKeyPrefix: 'resources:search',
-  createCacheKey: input => createStandardCacheKey(input),
+  cacheKeyPrefix: "resources:search",
+  createCacheKey: (input) => createStandardCacheKey(input),
   dateFields: [],
-  tags: ['resources'],
+  tags: ["resources"],
 });
 
 export const listResourcesForTools = async (resourceIds: string[]) => {
@@ -435,10 +435,12 @@ export const deprecateStaleResources = async (
     return 0;
   }
 
-  const activeKeys = new Set(activeResources.map(r => `${r.method}::${r.url}`));
+  const activeKeys = new Set(
+    activeResources.map((r) => `${r.method}::${r.url}`)
+  );
   const staleIds = allResources
-    .filter(r => !activeKeys.has(`${r.method}::${r.resource}`))
-    .map(r => r.id);
+    .filter((r) => !activeKeys.has(`${r.method}::${r.resource}`))
+    .map((r) => r.id);
 
   if (staleIds.length === 0) {
     return 0;

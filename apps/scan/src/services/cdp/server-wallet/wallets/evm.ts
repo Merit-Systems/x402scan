@@ -1,18 +1,18 @@
-import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
-import { getBalance, readContract } from 'viem/actions';
-import { toAccount } from 'viem/accounts';
+import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from "viem";
+import { getBalance, readContract } from "viem/actions";
+import { toAccount } from "viem/accounts";
 
-import { cdpClient } from '../client';
+import { cdpClient } from "../client";
 
-import { baseRpc } from '@/services/rpc/base';
+import { baseRpc } from "@/services/rpc/base";
 
-import { cdpResultFromPromise } from '../../result';
+import { cdpResultFromPromise } from "../../result";
 
-import { convertTokenAmount } from '@/lib/token';
+import { convertTokenAmount } from "@/lib/token";
 
-import type { EvmChain } from '@/types/chain';
-import type { Address } from 'viem';
-import type { NetworkServerWallet } from './types';
+import type { EvmChain } from "@/types/chain";
+import type { Address } from "viem";
+import type { NetworkServerWallet } from "./types";
 
 export const evmServerWallet =
   <T extends EvmChain>(chain: T): NetworkServerWallet<EvmChain> =>
@@ -25,67 +25,67 @@ export const evmServerWallet =
 
     return {
       address: () =>
-        cdpResultFromPromise('getAddress', getAddress(), e => ({
-          cause: 'bad_gateway',
+        cdpResultFromPromise("getAddress", getAddress(), (e) => ({
+          cause: "bad_gateway",
           message:
-            e instanceof Error ? e.message : 'Failed to get wallet address',
+            e instanceof Error ? e.message : "Failed to get wallet address",
         })),
       getNativeTokenBalance: () =>
         cdpResultFromPromise(
-          'getNativeTokenBalance',
+          "getNativeTokenBalance",
           getAddress()
-            .then(address =>
+            .then((address) =>
               getBalance(baseRpc, {
                 address,
               })
             )
-            .then(result => parseFloat(formatEther(result))),
-          e => ({
-            cause: 'bad_gateway',
+            .then((result) => parseFloat(formatEther(result))),
+          (e) => ({
+            cause: "bad_gateway",
             message:
               e instanceof Error
                 ? e.message
-                : 'Failed to get native token balance',
+                : "Failed to get native token balance",
           })
         ),
       getTokenBalance: ({ token }) =>
         cdpResultFromPromise(
-          'getTokenBalance',
+          "getTokenBalance",
           getAddress()
-            .then(address =>
+            .then((address) =>
               readContract(baseRpc, {
                 abi: erc20Abi,
                 address: token.address as Address,
                 args: [address],
-                functionName: 'balanceOf',
+                functionName: "balanceOf",
               })
             )
-            .then(balance => convertTokenAmount(balance)),
-          e => ({
-            cause: 'bad_gateway',
+            .then((balance) => convertTokenAmount(balance)),
+          (e) => ({
+            cause: "bad_gateway",
             message:
-              e instanceof Error ? e.message : 'Failed to get token balance',
+              e instanceof Error ? e.message : "Failed to get token balance",
           })
         ),
       export: () =>
         cdpResultFromPromise(
-          'export',
-          getAddress().then(address =>
+          "export",
+          getAddress().then((address) =>
             cdpClient.evm.exportAccount({
               address,
               name,
             })
           ),
-          e => ({
-            cause: 'bad_gateway',
-            message: e instanceof Error ? e.message : 'Failed to export wallet',
+          (e) => ({
+            cause: "bad_gateway",
+            message: e instanceof Error ? e.message : "Failed to export wallet",
           })
         ),
       signer: async () => toAccount(await getAccount()),
       sendTokens: ({ address, token, amount }) =>
         cdpResultFromPromise(
-          'sendTokens',
-          getAccount().then(account =>
+          "sendTokens",
+          getAccount().then((account) =>
             account
               .sendTransaction({
                 network: chain,
@@ -93,7 +93,7 @@ export const evmServerWallet =
                   to: token.address as Address,
                   data: encodeFunctionData({
                     abi: erc20Abi,
-                    functionName: 'transfer',
+                    functionName: "transfer",
                     args: [
                       address as Address,
                       parseUnits(amount.toString(), token.decimals),
@@ -103,9 +103,9 @@ export const evmServerWallet =
               })
               .then(({ transactionHash }) => transactionHash)
           ),
-          e => ({
-            cause: 'bad_gateway',
-            message: e instanceof Error ? e.message : 'Failed to send tokens',
+          (e) => ({
+            cause: "bad_gateway",
+            message: e instanceof Error ? e.message : "Failed to send tokens",
           })
         ),
     };

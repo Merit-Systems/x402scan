@@ -1,12 +1,12 @@
-import type { BitqueryUsageResponse } from './types';
+import type { BitqueryUsageResponse } from "./types";
 
-const USAGE_API_URL = 'https://account.bitquery.io/api/usage';
+const USAGE_API_URL = "https://account.bitquery.io/api/usage";
 export const USAGE_THRESHOLD = 0.95;
 
 export async function fetchBitqueryUsage(): Promise<BitqueryUsageResponse> {
   const apiKey = process.env.BITQUERY_API_KEY;
   if (!apiKey) {
-    throw new Error('BITQUERY_API_KEY is not configured');
+    throw new Error("BITQUERY_API_KEY is not configured");
   }
 
   const response = await fetch(USAGE_API_URL, {
@@ -16,7 +16,7 @@ export async function fetchBitqueryUsage(): Promise<BitqueryUsageResponse> {
   });
 
   if (!response.ok) {
-    const body = await response.text().catch(() => '');
+    const body = await response.text().catch(() => "");
     throw new Error(
       `Bitquery usage API failed: ${response.status} ${body.slice(0, 200)}`
     );

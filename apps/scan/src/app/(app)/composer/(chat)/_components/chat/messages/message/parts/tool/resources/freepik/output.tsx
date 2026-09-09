@@ -1,11 +1,11 @@
-import type { OutputComponent } from '../types';
+import type { OutputComponent } from "../types";
 
-import z from 'zod';
-import { api } from '@/trpc/client';
-import { useEffect, useState } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { JsonArray } from '@/components/ai-elements/json-viewer';
-import { JsonViewer } from '@/components/ai-elements/json-viewer';
+import z from "zod";
+import { api } from "@/trpc/client";
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { JsonArray } from "@/components/ai-elements/json-viewer";
+import { JsonViewer } from "@/components/ai-elements/json-viewer";
 
 const freepikOutputSchema = z.object({
   data: z.object({
@@ -16,7 +16,7 @@ const freepikOutputSchema = z.object({
 
 export const FreepikOutput: OutputComponent = ({ output, errorText }) => {
   if (errorText) {
-    return <div className="text-destructive text-sm">{errorText}</div>;
+    return <div className="text-sm text-destructive">{errorText}</div>;
   }
 
   const parseResult = freepikOutputSchema.safeParse(output);
@@ -25,7 +25,7 @@ export const FreepikOutput: OutputComponent = ({ output, errorText }) => {
     return (
       <JsonViewer
         data={
-          parseResult.error.issues.map(issue => ({
+          parseResult.error.issues.map((issue) => ({
             path: issue.path,
             message: issue.message,
           })) as JsonArray
@@ -54,22 +54,22 @@ const FreepikImageDisplay: React.FC<{ task_id: string }> = ({ task_id }) => {
   );
 
   useEffect(() => {
-    if (task?.data.status === 'COMPLETED') {
+    if (task?.data.status === "COMPLETED") {
       setIsTaskFetched(true);
     }
   }, [task, task_id]);
 
   if (taskError) {
-    return <div className="text-destructive text-sm">{taskError.message}</div>;
+    return <div className="text-sm text-destructive">{taskError.message}</div>;
   }
 
-  if (isTaskLoading || task?.data.status === 'IN_PROGRESS') {
+  if (isTaskLoading || task?.data.status === "IN_PROGRESS") {
     return <Skeleton className="size-48" />;
   }
 
   return (
     <div className="max-h-48">
-      {task?.data.generated.map(image => (
+      {task?.data.generated.map((image) => (
         <img
           key={image}
           src={image}

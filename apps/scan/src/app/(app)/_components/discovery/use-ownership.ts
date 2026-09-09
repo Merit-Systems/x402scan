@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { api } from '@/trpc/client';
+import { useMemo } from "react";
+import { api } from "@/trpc/client";
 
 interface OwnershipResult {
   ownershipProofs: string[];

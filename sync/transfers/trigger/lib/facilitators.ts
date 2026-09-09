@@ -1,12 +1,12 @@
-import { allFacilitators } from 'facilitators';
+import { allFacilitators } from "facilitators";
 import type {
   Facilitator as RawFacilitator,
   FacilitatorAddress,
   Token,
-} from 'facilitators';
-import { Network as FacilitatorsNetwork } from 'facilitators';
-import type { Facilitator, FacilitatorConfig } from '../types';
-import { Network } from '../types';
+} from "facilitators";
+import { Network as FacilitatorsNetwork } from "facilitators";
+import type { Facilitator, FacilitatorConfig } from "../types";
+import { Network } from "../types";
 
 const chainMap = {
   [FacilitatorsNetwork.BASE]: Network.BASE,
@@ -35,10 +35,10 @@ function convertFacilitator(raw: RawFacilitator<never>): Facilitator | null {
   for (const [chain, facilitatorAddresses] of Object.entries(raw.addresses)) {
     const mappedChain = chainMap[chain as FacilitatorsNetwork];
     if (mappedChain) {
-      const configs = facilitatorAddresses.flatMap(addr =>
+      const configs = facilitatorAddresses.flatMap((addr) =>
         convertAddressConfig(addr)
       );
-      if (configs.some(config => config.enabled)) {
+      if (configs.some((config) => config.enabled)) {
         addresses[mappedChain] = configs;
       }
     }
@@ -59,12 +59,12 @@ export const FACILITATORS: Facilitator[] = allFacilitators
   .filter((f): f is Facilitator => f !== null);
 
 export function FACILITATORS_BY_CHAIN(network: Network): Facilitator[] {
-  return FACILITATORS.map(f => ({
+  return FACILITATORS.map((f) => ({
     id: f.id,
     addresses: {
       [network]: f.addresses[network] ?? [],
     },
-  })).filter(f => f.addresses[network]?.some(config => config.enabled));
+  })).filter((f) => f.addresses[network]?.some((config) => config.enabled));
 }
 
 export const BASE_FACILITATORS = FACILITATORS_BY_CHAIN(Network.BASE);

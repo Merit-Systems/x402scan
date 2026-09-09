@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { Loader2, SearchX } from 'lucide-react';
+import { Loader2, SearchX } from "lucide-react";
 
 import {
   Command,
@@ -8,24 +8,24 @@ import {
   CommandGroup,
   CommandInput,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 
-import { Chain } from '@/app/(app)/_components/chains';
+import { Chain } from "@/app/(app)/_components/chains";
 
-import { Filters } from './filters';
+import { Filters } from "./filters";
 
-import { SelectedResourceItem } from './item/selected';
-import { UnselectedResourceItem } from './item/unselected';
+import { SelectedResourceItem } from "./item/selected";
+import { UnselectedResourceItem } from "./item/unselected";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
 import {
   CHAIN_LABELS,
   SUPPORTED_CHAINS,
   type SupportedChain,
-} from '@/types/chain';
+} from "@/types/chain";
 
-import type { SelectedResource } from '../../_types/chat-config';
+import type { SelectedResource } from "../../_types/chat-config";
 
 interface Props {
   selectedResourceIds: string[];
@@ -41,7 +41,7 @@ export const ResourceList: React.FC<Props> = ({
   onSelectResource,
   gradientClassName,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedChains, setSelectedChains] = useState<SupportedChain[]>([]);
 
@@ -65,31 +65,31 @@ export const ResourceList: React.FC<Props> = ({
         title="Categories"
         items={tags ?? []}
         isLoading={isLoadingTags}
-        onClickItem={tag =>
-          setSelectedTags(tags =>
+        onClickItem={(tag) =>
+          setSelectedTags((tags) =>
             tags.includes(tag.id)
-              ? tags.filter(t => t !== tag.id)
+              ? tags.filter((t) => t !== tag.id)
               : [...tags, tag.id]
           )
         }
-        isSelected={tag => selectedTags.includes(tag.id)}
-        itemKey={tag => tag.id}
-        itemComponent={tag => tag.name}
+        isSelected={(tag) => selectedTags.includes(tag.id)}
+        itemKey={(tag) => tag.id}
+        itemComponent={(tag) => tag.name}
       />
       <Filters
         title="Network"
         items={[...SUPPORTED_CHAINS]}
         isLoading={false}
-        onClickItem={chain =>
-          setSelectedChains(chains =>
+        onClickItem={(chain) =>
+          setSelectedChains((chains) =>
             chains.includes(chain)
-              ? chains.filter(c => c !== chain)
+              ? chains.filter((c) => c !== chain)
               : [...chains, chain]
           )
         }
-        isSelected={chain => selectedChains.includes(chain)}
-        itemKey={chain => chain}
-        itemComponent={chain => (
+        isSelected={(chain) => selectedChains.includes(chain)}
+        itemKey={(chain) => chain}
+        itemComponent={(chain) => (
           <>
             <Chain chain={chain} iconClassName="size-3" />
             <span>{CHAIN_LABELS[chain]}</span>
@@ -113,11 +113,11 @@ export const ResourceList: React.FC<Props> = ({
           ) : (
             <SearchX className="size-10" />
           )}
-          <h2>{isLoading ? 'Loading...' : 'No tools match your search'}</h2>
+          <h2>{isLoading ? "Loading..." : "No tools match your search"}</h2>
         </CommandEmpty>
         {selectedResourceIds.length > 0 && (
           <CommandGroup className="p-0" heading="Selected">
-            {selectedResourceIds.map(id => (
+            {selectedResourceIds.map((id) => (
               <SelectedResourceItem
                 key={id}
                 id={id}
@@ -129,8 +129,8 @@ export const ResourceList: React.FC<Props> = ({
         {tools && tools.length > 0 && (
           <CommandGroup className="p-0" heading="Tools">
             {tools
-              .filter(tool => !selectedResourceIds.includes(tool.id))
-              .map(tool => {
+              .filter((tool) => !selectedResourceIds.includes(tool.id))
+              .map((tool) => {
                 return (
                   <UnselectedResourceItem
                     key={tool.id}

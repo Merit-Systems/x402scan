@@ -1,8 +1,8 @@
-import { Search } from 'lucide-react';
+import { Search } from "lucide-react";
 
-import z from 'zod';
+import z from "zod";
 
-import type { InputComponent } from '../types';
+import type { InputComponent } from "../types";
 
 const schema = z.object({
   query: z.string(),
@@ -22,13 +22,13 @@ export const FirecrawlInput: InputComponent = ({ input }) => {
     <div className="flex items-center gap-2">
       <Search className="size-4 shrink-0" />
       <p className="text-sm font-medium">
-        {query}{' '}
+        {query}{" "}
         {limit ? (
-          <span className="text-muted-foreground text-xs">
-            ({limit} Result{limit > 1 ? 's' : ''})
+          <span className="text-xs text-muted-foreground">
+            ({limit} Result{limit > 1 ? "s" : ""})
           </span>
         ) : (
-          ''
+          ""
         )}
       </p>
     </div>

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { createContext } from 'react';
+import { createContext } from "react";
 
-export type ChartMode = 'bucketed' | 'cumulative';
+export type ChartMode = "bucketed" | "cumulative";
 
 interface ChartModeContextType {
   chartMode: ChartMode;
@@ -10,7 +10,7 @@ interface ChartModeContextType {
 }
 
 export const ChartModeContext = createContext<ChartModeContextType>({
-  chartMode: 'bucketed',
+  chartMode: "bucketed",
   selectChartMode: () => {
     void 0;
   },

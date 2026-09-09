@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import type { ComponentProps } from 'react';
-import { Button } from '@/components/ui/button';
+import type { ComponentProps } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
-const Actions = ({ className, children, ...props }: ComponentProps<'div'>) => (
-  <div className={cn('flex items-center gap-1 -ml-1', className)} {...props}>
+const Actions = ({ className, children, ...props }: ComponentProps<"div">) => (
+  <div className={cn("flex items-center gap-1 -ml-1", className)} {...props}>
     {children}
   </div>
 );
@@ -21,8 +21,8 @@ const Action = ({
   children,
   label,
   className,
-  variant = 'ghost',
-  size = 'icon',
+  variant = "ghost",
+  size = "icon",
   ...props
 }: ComponentProps<typeof Button> & {
   tooltip?: string;
@@ -31,7 +31,7 @@ const Action = ({
   const button = (
     <Button
       className={cn(
-        'relative size-fit md:size-fit p-1.5 text-muted-foreground hover:text-foreground',
+        "relative size-fit md:size-fit p-1.5 text-muted-foreground hover:text-foreground",
         className
       )}
       size={size}

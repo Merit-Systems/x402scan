@@ -1,14 +1,14 @@
-import 'server-only';
+import "server-only";
 
-import { getBaseUsdcBalances, getSolanaUsdcBalances } from './scan';
+import { getBaseUsdcBalances, getSolanaUsdcBalances } from "./scan";
 import {
   listAllServerAccounts,
   listAllSolanaServerAccounts,
-} from '@/services/cdp/server-wallet/list-accounts';
-import { listAllEndUsers } from '@/services/cdp/end-users/list';
-import { getOwnersByWalletName } from '@/services/db/composer-balances/owners';
+} from "@/services/cdp/server-wallet/list-accounts";
+import { listAllEndUsers } from "@/services/cdp/end-users/list";
+import { getOwnersByWalletName } from "@/services/db/composer-balances/owners";
 
-import { Chain } from '@/types/chain';
+import { Chain } from "@/types/chain";
 
 /**
  * Composer funds live in two generations of CDP wallet:
@@ -19,7 +19,7 @@ import { Chain } from '@/types/chain';
  *   login. These are non-custodial: the user controls the keys and we can only
  *   ask them to withdraw.
  */
-type WalletSource = 'server' | 'embedded';
+type WalletSource = "server" | "embedded";
 
 /**
  * Server wallets are named with the `ServerWallet.walletName` UUID. Anything
@@ -98,11 +98,11 @@ const collectServerWallets = async (): Promise<CandidateWallet[]> => {
   ]);
 
   return [
-    ...evm.map(a => ({ chain: Chain.BASE as const, ...a })),
-    ...svm.map(a => ({ chain: Chain.SOLANA as const, ...a })),
+    ...evm.map((a) => ({ chain: Chain.BASE as const, ...a })),
+    ...svm.map((a) => ({ chain: Chain.SOLANA as const, ...a })),
   ].flatMap(({ name, address, chain }) =>
     name
-      ? [{ source: 'server' as const, walletName: name, address, chain }]
+      ? [{ source: "server" as const, walletName: name, address, chain }]
       : []
   );
 };
@@ -114,20 +114,20 @@ const collectServerWallets = async (): Promise<CandidateWallet[]> => {
 const collectEmbeddedWallets = async (): Promise<CandidateWallet[]> => {
   const endUsers = await listAllEndUsers();
 
-  return endUsers.flatMap(user => {
+  return endUsers.flatMap((user) => {
     const email =
-      user.authenticationMethods.find(method => method.email)?.email ?? null;
+      user.authenticationMethods.find((method) => method.email)?.email ?? null;
 
     const evm = [...user.evmAccounts, ...user.evmSmartAccounts].map(
-      address => ({ address, chain: Chain.BASE as const })
+      (address) => ({ address, chain: Chain.BASE as const })
     );
-    const svm = user.solanaAccounts.map(address => ({
+    const svm = user.solanaAccounts.map((address) => ({
       address,
       chain: Chain.SOLANA as const,
     }));
 
     return [...evm, ...svm].map(({ address, chain }) => ({
-      source: 'embedded' as const,
+      source: "embedded" as const,
       walletName: user.userId,
       address,
       chain,
@@ -140,7 +140,7 @@ const summarise = (rows: ComposerWalletBalanceRow[]): SourceTotals => ({
   userCount: new Set(rows.map(personKey)).size,
   walletCount: rows.length,
   totalUsdc: rows.reduce((sum, r) => sum + r.usdc, 0),
-  withEmail: rows.filter(r => r.email).length,
+  withEmail: rows.filter((r) => r.email).length,
 });
 
 export const getComposerBalancesReport =
@@ -153,14 +153,14 @@ export const getComposerBalancesReport =
 
     const [baseBalances, solanaBalances] = await Promise.all([
       getBaseUsdcBalances(
-        candidates.filter(c => c.chain === Chain.BASE).map(c => c.address)
+        candidates.filter((c) => c.chain === Chain.BASE).map((c) => c.address)
       ),
       getSolanaUsdcBalances(
-        candidates.filter(c => c.chain === Chain.SOLANA).map(c => c.address)
+        candidates.filter((c) => c.chain === Chain.SOLANA).map((c) => c.address)
       ),
     ]);
 
-    const funded = candidates.flatMap(candidate => {
+    const funded = candidates.flatMap((candidate) => {
       const usdc =
         candidate.chain === Chain.BASE
           ? baseBalances.get(candidate.address.toLowerCase())
@@ -173,14 +173,14 @@ export const getComposerBalancesReport =
     const owners = await getOwnersByWalletName([
       ...new Set(
         funded
-          .filter(w => w.source === 'server' && UUID_RE.test(w.walletName))
-          .map(w => w.walletName)
+          .filter((w) => w.source === "server" && UUID_RE.test(w.walletName))
+          .map((w) => w.walletName)
       ),
     ]);
 
     const rows: ComposerWalletBalanceRow[] = funded
-      .filter(w => w.source === 'embedded' || UUID_RE.test(w.walletName))
-      .map(wallet => {
+      .filter((w) => w.source === "embedded" || UUID_RE.test(w.walletName))
+      .map((wallet) => {
         const owner = owners.get(wallet.walletName);
         return {
           source: wallet.source,
@@ -190,7 +190,7 @@ export const getComposerBalancesReport =
           usdc: wallet.usdc,
           userId:
             owner?.userId ??
-            (wallet.source === 'embedded' ? wallet.walletName : null),
+            (wallet.source === "embedded" ? wallet.walletName : null),
           email: owner?.email ?? wallet.email ?? null,
           loginAddresses: owner?.loginAddresses ?? [],
         };
@@ -198,8 +198,8 @@ export const getComposerBalancesReport =
       .sort((a, b) => b.usdc - a.usdc);
 
     const systemWallets: SystemWalletRow[] = funded
-      .filter(w => w.source === 'server' && !UUID_RE.test(w.walletName))
-      .map(w => ({
+      .filter((w) => w.source === "server" && !UUID_RE.test(w.walletName))
+      .map((w) => ({
         name: w.walletName,
         address: w.address,
         chain: w.chain,
@@ -207,21 +207,23 @@ export const getComposerBalancesReport =
       }))
       .sort((a, b) => b.usdc - a.usdc);
 
-    const serverRows = rows.filter(r => r.source === 'server');
-    const embeddedRows = rows.filter(r => r.source === 'embedded');
+    const serverRows = rows.filter((r) => r.source === "server");
+    const embeddedRows = rows.filter((r) => r.source === "embedded");
 
     return {
       rows,
       systemWallets,
       totals: {
         peopleCount: new Set(rows.map(personKey)).size,
-        userCount: new Set(rows.map(r => r.userId ?? `orphan:${r.walletName}`))
-          .size,
+        userCount: new Set(
+          rows.map((r) => r.userId ?? `orphan:${r.walletName}`)
+        ).size,
         walletCount: rows.length,
         totalUsdc: rows.reduce((sum, r) => sum + r.usdc, 0),
-        withEmail: rows.filter(r => r.email).length,
-        withLoginAddress: rows.filter(r => r.loginAddresses.length > 0).length,
-        orphaned: serverRows.filter(r => !r.userId).length,
+        withEmail: rows.filter((r) => r.email).length,
+        withLoginAddress: rows.filter((r) => r.loginAddresses.length > 0)
+          .length,
+        orphaned: serverRows.filter((r) => !r.userId).length,
       },
       bySource: {
         server: summarise(serverRows),

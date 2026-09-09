@@ -1,20 +1,20 @@
-import 'server-only';
+import "server-only";
 
-import { erc20Abi } from 'viem';
-import { address as toSolanaAddress } from '@solana/kit';
+import { erc20Abi } from "viem";
+import { address as toSolanaAddress } from "@solana/kit";
 import {
   findAssociatedTokenPda,
   TOKEN_PROGRAM_ADDRESS,
-} from '@solana-program/token';
+} from "@solana-program/token";
 
-import { baseRpc } from '@/services/rpc/base';
-import { solanaRpc } from '@/services/rpc/solana';
+import { baseRpc } from "@/services/rpc/base";
+import { solanaRpc } from "@/services/rpc/solana";
 
-import { convertTokenAmount } from '@/lib/token';
-import { USDC_ADDRESS } from '@/lib/utils';
-import { Chain } from '@/types/chain';
+import { convertTokenAmount } from "@/lib/token";
+import { USDC_ADDRESS } from "@/lib/utils";
+import { Chain } from "@/types/chain";
 
-import type { Address } from 'viem';
+import type { Address } from "viem";
 
 /** Multicall3 handles far larger batches, but this keeps single payloads sane. */
 const EVM_BATCH_SIZE = 500;
@@ -39,24 +39,24 @@ const chunk = <T>(items: T[], size: number): T[][] => {
 export const getBaseUsdcBalances = async (
   addresses: string[]
 ): Promise<Map<string, number>> => {
-  const unique = [...new Set(addresses.map(a => a.toLowerCase()))];
+  const unique = [...new Set(addresses.map((a) => a.toLowerCase()))];
   const usdcAddress = USDC_ADDRESS[Chain.BASE] as Address;
   const balances = new Map<string, number>();
 
   for (const batch of chunk(unique, EVM_BATCH_SIZE)) {
     const results = await baseRpc.multicall({
       allowFailure: true,
-      contracts: batch.map(owner => ({
+      contracts: batch.map((owner) => ({
         abi: erc20Abi,
         address: usdcAddress,
-        functionName: 'balanceOf' as const,
+        functionName: "balanceOf" as const,
         args: [owner as Address],
       })),
     });
 
     results.forEach((result, index) => {
       const owner = batch[index];
-      if (!owner || result.status !== 'success') return;
+      if (!owner || result.status !== "success") return;
       const usdc = convertTokenAmount(result.result);
       if (usdc > 0) balances.set(owner, usdc);
     });
@@ -69,7 +69,7 @@ export const getBaseUsdcBalances = async (
 const AMOUNT_OFFSET = 64;
 
 const readSplAmount = (base64Data: string): bigint => {
-  const raw = Buffer.from(base64Data, 'base64');
+  const raw = Buffer.from(base64Data, "base64");
   if (raw.length < AMOUNT_OFFSET + 8) return 0n;
   return raw.readBigUInt64LE(AMOUNT_OFFSET);
 };
@@ -89,7 +89,7 @@ export const getSolanaUsdcBalances = async (
   const balances = new Map<string, number>();
 
   const withAta = await Promise.all(
-    unique.map(async owner => {
+    unique.map(async (owner) => {
       const [ata] = await findAssociatedTokenPda({
         mint,
         owner: toSolanaAddress(owner),
@@ -102,8 +102,8 @@ export const getSolanaUsdcBalances = async (
   for (const batch of chunk(withAta, SVM_BATCH_SIZE)) {
     const { value } = await solanaRpc
       .getMultipleAccounts(
-        batch.map(entry => entry.ata),
-        { encoding: 'base64' }
+        batch.map((entry) => entry.ata),
+        { encoding: "base64" }
       )
       .send();
 

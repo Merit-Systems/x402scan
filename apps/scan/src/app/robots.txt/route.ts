@@ -1,6 +1,6 @@
-import { env } from '@/env';
+import { env } from "@/env";
 
-const baseUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+const baseUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
 
 /**
  * robots.txt with Content Signals.
@@ -28,8 +28,8 @@ Sitemap: ${baseUrl}/sitemap.xml
 export function GET() {
   return new Response(body, {
     headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
     },
   });
 }

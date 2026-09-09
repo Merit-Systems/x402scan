@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { Check, ChevronDown, Copy, ExternalLink, FileText } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { Check, ChevronDown, Copy, ExternalLink, FileText } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { env } from '@/env';
-import { PAGE_MARKDOWN } from '../_content/markdown';
+} from "@/components/ui/dropdown-menu";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { env } from "@/env";
+import { PAGE_MARKDOWN } from "../_content/markdown";
 
-const PAGE_PATH = '/discovery/spec';
+const PAGE_PATH = "/discovery/spec";
 
 export function CopyPageButton() {
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
-    toast.success('Copied page as Markdown');
+    toast.success("Copied page as Markdown");
   });
 
   return (
-    <div className="inline-flex items-center rounded-md border divide-x">
+    <div className="inline-flex items-center divide-x rounded-md border">
       <Button
         variant="ghost"
         size="sm"
@@ -33,14 +33,14 @@ export function CopyPageButton() {
         ) : (
           <Copy className="size-3.5" />
         )}
-        {isCopied ? 'Copied' : 'Copy page'}
+        {isCopied ? "Copied" : "Copy page"}
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
-            className="px-2 rounded-l-none border-0"
+            className="rounded-l-none border-0 px-2"
           >
             <ChevronDown className="size-3.5" />
           </Button>
@@ -54,7 +54,7 @@ export function CopyPageButton() {
               <Copy className="size-3.5" />
               Copy page
             </div>
-            <span className="text-xs text-muted-foreground ml-[22px]">
+            <span className="ml-[22px] text-xs text-muted-foreground">
               Copy page as Markdown for LLMs
             </span>
           </DropdownMenuItem>
@@ -70,7 +70,7 @@ export function CopyPageButton() {
                 View as Markdown
                 <ExternalLink className="size-3" />
               </div>
-              <span className="text-xs text-muted-foreground ml-[22px]">
+              <span className="ml-[22px] text-xs text-muted-foreground">
                 View this page as plain text
               </span>
             </a>
@@ -87,7 +87,7 @@ export function CopyPageButton() {
                 Open in Claude
                 <ExternalLink className="size-3" />
               </div>
-              <span className="text-xs text-muted-foreground ml-[22px]">
+              <span className="ml-[22px] text-xs text-muted-foreground">
                 Ask questions about this page
               </span>
             </a>
@@ -104,7 +104,7 @@ export function CopyPageButton() {
                 Open in ChatGPT
                 <ExternalLink className="size-3" />
               </div>
-              <span className="text-xs text-muted-foreground ml-[22px]">
+              <span className="ml-[22px] text-xs text-muted-foreground">
                 Ask questions about this page
               </span>
             </a>

@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
 
-import { columns } from './columns';
-import { api } from '@/trpc/client';
-import { useBuyerSellersSorting } from './sorting-provider';
+import { columns } from "./columns";
+import { api } from "@/trpc/client";
+import { useBuyerSellersSorting } from "./sorting-provider";
 
 interface Props {
   address: string;

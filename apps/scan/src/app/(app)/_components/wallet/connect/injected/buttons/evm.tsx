@@ -1,15 +1,15 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import { useConnect } from 'wagmi';
-import { base } from 'wagmi/chains';
+import { useConnect } from "wagmi";
+import { base } from "wagmi/chains";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { ConnectInjectedWalletButton } from './button';
+import { ConnectInjectedWalletButton } from "./button";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { Connector } from 'wagmi';
+import type { Connector } from "wagmi";
 
 interface Props {
   className?: string;
@@ -25,8 +25,8 @@ export const ConnectEVMInjectedWalletButtons: React.FC<Props> = ({
   prefix,
 }) => {
   return (
-    <div className={cn('flex flex-col gap-2 w-full', className)}>
-      {connectors.map(connector => (
+    <div className={cn("flex flex-col gap-2 w-full", className)}>
+      {connectors.map((connector) => (
         <ConnectEVMInjectedWalletButton
           key={connector.id}
           connector={connector}
@@ -58,9 +58,9 @@ const ConnectEVMInjectedWalletButton: React.FC<
       { connector, chainId: base.id },
       {
         onSuccess: () => {
-          void toast.success('Connected to wallet');
+          void toast.success("Connected to wallet");
         },
-        onError: error => {
+        onError: (error) => {
           void toast.error(error.message);
         },
       }

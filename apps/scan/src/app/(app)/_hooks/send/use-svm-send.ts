@@ -1,19 +1,19 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from "react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { useSPLTokenBalance } from '../balance/token/use-svm-token-balance';
+import { useSPLTokenBalance } from "../balance/token/use-svm-token-balance";
 
-import { useSvmX402Fetch } from '../x402/svm';
+import { useSvmX402Fetch } from "../x402/svm";
 
-import { solanaAddressSchema } from '@/lib/schemas';
-import { usdc } from '@/lib/tokens/usdc';
+import { solanaAddressSchema } from "@/lib/schemas";
+import { usdc } from "@/lib/tokens/usdc";
 
-import { Chain } from '@/types/chain';
+import { Chain } from "@/types/chain";
 
-import type { Token } from '@/types/token';
-import type { SolanaAddress } from '@/types/address';
-import type { UiWalletAccount } from '@wallet-standard/react';
+import type { Token } from "@/types/token";
+import type { SolanaAddress } from "@/types/address";
+import type { UiWalletAccount } from "@wallet-standard/react";
 
 interface Props {
   account: UiWalletAccount;
@@ -63,8 +63,8 @@ export const useSvmSend = ({
     targetUrl: `${window.location.origin}/api/x402/send`,
     value: amount ? BigInt(amount * 10 ** token.decimals) : BigInt(0),
     init: {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address: toAddress, amount, chain: Chain.SOLANA }),
     },
     options: {
@@ -83,8 +83,8 @@ export const useSvmSend = ({
           reset();
         }, 3000);
       },
-      onError: error => {
-        toast.error('Failed to send USDC', {
+      onError: (error) => {
+        toast.error("Failed to send USDC", {
           description: error.message,
         });
       },
@@ -95,12 +95,12 @@ export const useSvmSend = ({
   const handleSubmit = useCallback(() => {
     const parseResult = solanaAddressSchema.safeParse(toAddress);
     if (!parseResult.success) {
-      toast.error('Invalid Solana address');
+      toast.error("Invalid Solana address");
       return;
     }
 
     if (!amount) {
-      toast.error('Amount is required');
+      toast.error("Amount is required");
       return;
     }
 
@@ -108,12 +108,12 @@ export const useSvmSend = ({
   }, [toAddress, amount, sendTransaction]);
 
   const statusText = useMemo(() => {
-    if (isUsdcBalanceLoading) return 'Loading...';
-    if (!amount) return 'Enter an amount';
-    if (!usdcBalance || usdcBalance < amount) return 'Insufficient USDC';
-    if (isSending) return 'Sending...';
-    if (isSent) return 'USDC sent';
-    return 'Send USDC';
+    if (isUsdcBalanceLoading) return "Loading...";
+    if (!amount) return "Enter an amount";
+    if (!usdcBalance || usdcBalance < amount) return "Insufficient USDC";
+    if (isSending) return "Sending...";
+    if (isSent) return "USDC sent";
+    return "Send USDC";
   }, [isUsdcBalanceLoading, usdcBalance, amount, isSending, isSent]);
 
   return {

@@ -1,19 +1,19 @@
-import z3 from 'zod3';
+import z3 from "zod3";
 
-import { searchResources } from '../db/resources/resource';
+import { searchResources } from "../db/resources/resource";
 import {
   coerceAcceptForV1Schema,
   outputSchemaV1,
   paymentRequirementsSchemaV1,
-} from '@/lib/x402';
+} from "@/lib/x402";
 
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { SUPPORTED_CHAINS } from "@/types/chain";
 
-import type { searchResourcesSchema } from '../db/resources/resource';
-import type { z } from 'zod';
-import type { SupportedChain } from '@/types/chain';
-import { convertTokenAmount } from '@/lib/token';
-import { usdc } from '@/lib/tokens/usdc';
+import type { searchResourcesSchema } from "../db/resources/resource";
+import type { z } from "zod";
+import type { SupportedChain } from "@/types/chain";
+import { convertTokenAmount } from "@/lib/token";
+import { usdc } from "@/lib/tokens/usdc";
 
 interface X402ToolResponse {
   id: string;
@@ -42,7 +42,7 @@ export async function searchX402Tools(
           })
         )
         .safeParse(
-          resource.accepts.map(accept =>
+          resource.accepts.map((accept) =>
             coerceAcceptForV1Schema({
               x402Version: resource.x402Version,
               accept,
@@ -53,8 +53,8 @@ export async function searchX402Tools(
         continue;
       }
       const description =
-        parsedAccepts.data.find(accept => accept.description)?.description ??
-        '';
+        parsedAccepts.data.find((accept) => accept.description)?.description ??
+        "";
       toolDefinitions.push({
         id: resource.id,
         resource: resource.resource,
@@ -62,10 +62,10 @@ export async function searchX402Tools(
         favicon: resource.origin.favicon,
         invocations: resource._count.toolCalls,
         accepts: parsedAccepts.data
-          .filter(accept =>
+          .filter((accept) =>
             SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
           )
-          .map(accept => ({
+          .map((accept) => ({
             maxAmountRequired: convertTokenAmount(
               BigInt(accept.maxAmountRequired),
               usdc(accept.network as SupportedChain).decimals

@@ -1,10 +1,10 @@
-import { MarkdownPage } from '@/components/markdown-page';
-import type { Metadata } from 'next';
+import { MarkdownPage } from "@/components/markdown-page";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy',
+  title: "Privacy Policy",
   description:
-    'x402scan Privacy Policy - Learn how we collect, use, and protect your information.',
+    "x402scan Privacy Policy - Learn how we collect, use, and protect your information.",
 };
 
 export default function PrivacyPage() {

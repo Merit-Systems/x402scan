@@ -1,18 +1,18 @@
-import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
-import { Prisma } from '@x402scan/scan-db';
-import type { SearchResult } from './types';
-import { queryRaw } from '../db/query';
+import { generateObject } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+import { Prisma } from "@x402scan/scan-db";
+import type { SearchResult } from "./types";
+import { queryRaw } from "../db/query";
 
 const keywordExpansionSchema = z.object({
   keywords: z
     .array(z.string())
     .min(1)
     .describe(
-      'Array of expanded search keywords including the original term, synonyms, and related terms. MUST contain at least 1 keyword.'
+      "Array of expanded search keywords including the original term, synonyms, and related terms. MUST contain at least 1 keyword."
     ),
-  explanation: z.string().describe('Brief explanation of the search terms'),
+  explanation: z.string().describe("Brief explanation of the search terms"),
 });
 
 const searchResultSchema = z.object({
@@ -82,15 +82,15 @@ function buildSearchCondition(keywords: string[]): string {
   // This should never happen due to schema validation, but fail safely
   if (keywords.length === 0) {
     throw new Error(
-      'No keywords extracted from query. The AI must provide at least one keyword.'
+      "No keywords extracted from query. The AI must provide at least one keyword."
     );
   }
 
   // Escape single quotes in keywords for SQL safety
-  const sanitizedKeywords = keywords.map(k => k.replace(/'/g, "''"));
+  const sanitizedKeywords = keywords.map((k) => k.replace(/'/g, "''"));
 
   // Build OR conditions for each keyword across all searchable fields
-  const keywordConditions = sanitizedKeywords.map(keyword => {
+  const keywordConditions = sanitizedKeywords.map((keyword) => {
     const pattern = `%${keyword}%`;
     return `(
       r.resource ILIKE '${pattern}'
@@ -112,7 +112,7 @@ function buildSearchCondition(keywords: string[]): string {
   });
 
   // Join all keyword conditions with OR (resource matches if ANY keyword matches)
-  return keywordConditions.join(' OR ');
+  return keywordConditions.join(" OR ");
 }
 
 export const searchResourcesWithNaturalLanguage = async (
@@ -125,36 +125,36 @@ export const searchResourcesWithNaturalLanguage = async (
   keywords: string[];
 }> => {
   if (!naturalLanguageQuery.trim()) {
-    const allResults = await executeResourceSearch('true');
+    const allResults = await executeResourceSearch("true");
     if (!allResults.success) {
       throw new Error(`Failed to fetch all resources: ${allResults.error}`);
     }
     return {
       results: allResults.results,
-      explanation: 'Showing all resources',
+      explanation: "Showing all resources",
       totalCount: allResults.results.length,
-      sqlCondition: 'true',
+      sqlCondition: "true",
       keywords: [],
     };
   }
 
   // Generate expanded keywords using LLM
   const result = await generateObject({
-    model: openai('gpt-4.1-nano'),
+    model: openai("gpt-4.1-nano"),
     prompt: buildKeywordExpansionPrompt(naturalLanguageQuery),
     schema: keywordExpansionSchema,
     temperature: 0.3,
   });
 
   if (!result.object) {
-    throw new Error('Failed to generate keywords');
+    throw new Error("Failed to generate keywords");
   }
 
   const { keywords, explanation } = result.object;
 
   // Build SQL programmatically using the keywords
   const sqlCondition = buildSearchCondition(keywords);
-  console.log('Generated SQL condition:', sqlCondition);
+  console.log("Generated SQL condition:", sqlCondition);
 
   const executionResult = await executeResourceSearch(sqlCondition);
 
@@ -247,7 +247,7 @@ async function executeResourceSearch(
         Prisma.raw(whereCondition),
         Prisma.raw(' ORDER BY r."lastUpdated" DESC LIMIT 100'),
       ],
-      ''
+      ""
     );
 
     const results = await queryRaw(fullSql, searchResultsSchema);

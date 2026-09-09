@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,20 +8,20 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { api, type RouterOutputs } from '@/trpc/client';
-import { jsonObjectSchema } from '@/lib/json';
-import { toast } from 'sonner';
-import { Loader2, Save, Trash2 } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { api, type RouterOutputs } from "@/trpc/client";
+import { jsonObjectSchema } from "@/lib/json";
+import { toast } from "sonner";
+import { Loader2, Save, Trash2 } from "lucide-react";
 
 type Resource =
-  RouterOutputs['admin']['resources']['requestMetadata']['searchResources'][number];
+  RouterOutputs["admin"]["resources"]["requestMetadata"]["searchResources"][number];
 type Metadata =
-  RouterOutputs['admin']['resources']['requestMetadata']['list'][number];
+  RouterOutputs["admin"]["resources"]["requestMetadata"]["list"][number];
 
 interface EditMetadataModalProps {
   open: boolean;
@@ -36,22 +36,22 @@ export const EditMetadataModal = ({
   resource,
   existingMetadata,
 }: EditMetadataModalProps) => {
-  const [headers, setHeaders] = useState('');
-  const [body, setBody] = useState('');
-  const [queryParams, setQueryParams] = useState('');
-  const [inputSchema, setInputSchema] = useState('');
+  const [headers, setHeaders] = useState("");
+  const [body, setBody] = useState("");
+  const [queryParams, setQueryParams] = useState("");
+  const [inputSchema, setInputSchema] = useState("");
 
   const utils = api.useUtils();
 
   const createMutation = api.admin.resources.requestMetadata.create.useMutation(
     {
       onSuccess: () => {
-        toast.success('Request metadata created successfully');
+        toast.success("Request metadata created successfully");
         void utils.admin.resources.requestMetadata.list.invalidate();
         void utils.admin.resources.requestMetadata.searchResources.invalidate();
         onOpenChange(false);
       },
-      onError: error => {
+      onError: (error) => {
         toast.error(`Failed to create metadata: ${error.message}`);
       },
     }
@@ -60,12 +60,12 @@ export const EditMetadataModal = ({
   const updateMutation = api.admin.resources.requestMetadata.update.useMutation(
     {
       onSuccess: () => {
-        toast.success('Request metadata updated successfully');
+        toast.success("Request metadata updated successfully");
         void utils.admin.resources.requestMetadata.list.invalidate();
         void utils.admin.resources.requestMetadata.searchResources.invalidate();
         onOpenChange(false);
       },
-      onError: error => {
+      onError: (error) => {
         toast.error(`Failed to update metadata: ${error.message}`);
       },
     }
@@ -74,12 +74,12 @@ export const EditMetadataModal = ({
   const deleteMutation = api.admin.resources.requestMetadata.delete.useMutation(
     {
       onSuccess: () => {
-        toast.success('Request metadata deleted successfully');
+        toast.success("Request metadata deleted successfully");
         void utils.admin.resources.requestMetadata.list.invalidate();
         void utils.admin.resources.requestMetadata.searchResources.invalidate();
         onOpenChange(false);
       },
-      onError: error => {
+      onError: (error) => {
         toast.error(`Failed to delete metadata: ${error.message}`);
       },
     }
@@ -94,10 +94,10 @@ export const EditMetadataModal = ({
         setQueryParams(JSON.stringify(existingMetadata.queryParams, null, 2));
         setInputSchema(JSON.stringify(existingMetadata.inputSchema, null, 2));
       } else {
-        setHeaders('{}');
-        setBody('{}');
-        setQueryParams('{}');
-        setInputSchema('{}');
+        setHeaders("{}");
+        setBody("{}");
+        setQueryParams("{}");
+        setInputSchema("{}");
       }
     }
   }, [open, existingMetadata]);
@@ -107,7 +107,7 @@ export const EditMetadataModal = ({
       return jsonObjectSchema.parse(JSON.parse(jsonString));
     } catch (error) {
       throw new Error(
-        `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Invalid JSON: ${error instanceof Error ? error.message : "Unknown error"}`,
         { cause: error }
       );
     }
@@ -133,7 +133,7 @@ export const EditMetadataModal = ({
       }
     } catch (error) {
       toast.error(
-        `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Invalid JSON: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     }
   };
@@ -141,7 +141,7 @@ export const EditMetadataModal = ({
   const handleDelete = () => {
     if (
       existingMetadata &&
-      confirm('Are you sure you want to delete this metadata?')
+      confirm("Are you sure you want to delete this metadata?")
     ) {
       deleteMutation.mutate({ id: existingMetadata.id });
     }
@@ -154,10 +154,10 @@ export const EditMetadataModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {existingMetadata ? 'Edit' : 'Create'} Request Metadata
+            {existingMetadata ? "Edit" : "Create"} Request Metadata
           </DialogTitle>
           <DialogDescription>
             Configure request metadata for {resource.resource}
@@ -194,7 +194,7 @@ export const EditMetadataModal = ({
               <Textarea
                 id="headers"
                 value={headers}
-                onChange={e => setHeaders(e.target.value)}
+                onChange={(e) => setHeaders(e.target.value)}
                 placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
                 className="min-h-[200px] font-mono text-sm"
               />
@@ -207,7 +207,7 @@ export const EditMetadataModal = ({
               <Textarea
                 id="body"
                 value={body}
-                onChange={e => setBody(e.target.value)}
+                onChange={(e) => setBody(e.target.value)}
                 placeholder='{"key": "value", "nested": {"property": "value"}}'
                 className="min-h-[200px] font-mono text-sm"
               />
@@ -220,7 +220,7 @@ export const EditMetadataModal = ({
               <Textarea
                 id="queryParams"
                 value={queryParams}
-                onChange={e => setQueryParams(e.target.value)}
+                onChange={(e) => setQueryParams(e.target.value)}
                 placeholder='{"param1": "value1", "param2": "value2"}'
                 className="min-h-[200px] font-mono text-sm"
               />
@@ -233,7 +233,7 @@ export const EditMetadataModal = ({
               <Textarea
                 id="inputSchema"
                 value={inputSchema}
-                onChange={e => setInputSchema(e.target.value)}
+                onChange={(e) => setInputSchema(e.target.value)}
                 placeholder='{"type": "object", "properties": {"field": {"type": "string"}}}'
                 className="min-h-[200px] font-mono text-sm"
               />
@@ -268,7 +268,7 @@ export const EditMetadataModal = ({
             <Button onClick={handleSave} disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               <Save className="mr-2 h-4 w-4" />
-              {existingMetadata ? 'Update' : 'Create'}
+              {existingMetadata ? "Update" : "Create"}
             </Button>
           </div>
         </DialogFooter>

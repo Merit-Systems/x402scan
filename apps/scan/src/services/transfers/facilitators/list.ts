@@ -1,32 +1,32 @@
-import z from 'zod';
+import z from "zod";
 
-import { baseListQuerySchema } from '../schemas';
+import { baseListQuerySchema } from "../schemas";
 
-import { queryRaw } from '@/services/transfers/client';
+import { queryRaw } from "@/services/transfers/client";
 
-import { chainSchema } from '@/lib/schemas';
+import { chainSchema } from "@/lib/schemas";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
+} from "@/lib/cache";
 
-import { Prisma } from '@x402scan/transfers-db';
+import { Prisma } from "@x402scan/transfers-db";
 import {
   facilitatorIdMap,
   MIN_FACILITATOR_TRANSACTIONS,
-} from '@/lib/facilitators';
+} from "@/lib/facilitators";
 import {
   toPaginatedResponse,
   type paginatedQuerySchema,
-} from '@/lib/pagination';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+} from "@/lib/pagination";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 const FACILITATORS_SORT_IDS = [
-  'tx_count',
-  'total_amount',
-  'latest_block_timestamp',
-  'unique_buyers',
-  'unique_sellers',
+  "tx_count",
+  "total_amount",
+  "latest_block_timestamp",
+  "unique_buyers",
+  "unique_sellers",
 ] as const;
 
 export type FacilitatorsSortId = (typeof FACILITATORS_SORT_IDS)[number];
@@ -46,14 +46,14 @@ const listTopFacilitatorsUncached = async (
   const tableName = `stats_aggregated_${mvTimeframe}`;
 
   const sortColumnMap = {
-    tx_count: 'tx_count',
-    total_amount: 'total_amount',
-    latest_block_timestamp: 'latest_block_timestamp',
-    unique_buyers: 'unique_buyers',
-    unique_sellers: 'unique_sellers',
+    tx_count: "tx_count",
+    total_amount: "total_amount",
+    latest_block_timestamp: "latest_block_timestamp",
+    unique_buyers: "unique_buyers",
+    unique_sellers: "unique_sellers",
   } satisfies Record<FacilitatorsSortId, string>;
   const sortColumn = sortColumnMap[sorting.id];
-  const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
+  const sortDirection = Prisma.raw(sorting.desc ? "DESC" : "ASC");
 
   // Build WHERE clause for materialized view
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
@@ -68,7 +68,7 @@ const listTopFacilitatorsUncached = async (
     conditions.push(Prisma.sql`AND chain = ${input.chain}`);
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   // Query aggregated stats from materialized view
   const results = await queryRaw(
@@ -121,7 +121,7 @@ const listTopFacilitatorsUncached = async (
 
   // Map facilitator metadata and addresses from facilitatorIdMap
   const items = results
-    .map(result => {
+    .map((result) => {
       const facilitator = facilitatorIdMap.get(result.facilitator_id);
       if (!facilitator) {
         return null;
@@ -147,8 +147,8 @@ const listTopFacilitatorsUncached = async (
 
 export const listTopFacilitators = createCachedPaginatedQuery({
   queryFn: listTopFacilitatorsUncached,
-  cacheKeyPrefix: 'facilitators-list',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['latest_block_timestamp'],
-  tags: ['facilitators'],
+  cacheKeyPrefix: "facilitators-list",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["latest_block_timestamp"],
+  tags: ["facilitators"],
 });

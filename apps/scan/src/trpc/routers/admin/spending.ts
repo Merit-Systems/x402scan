@@ -1,32 +1,32 @@
-import z from 'zod';
+import z from "zod";
 
-import { adminProcedure, createTRPCRouter } from '../../trpc';
+import { adminProcedure, createTRPCRouter } from "../../trpc";
 
 import {
   getSpendingByWallet,
   getToolBreakdownByWallet,
   type WalletSpendingSortId,
   type ToolBreakdownSortId,
-} from '@/services/db/spending/by-wallet';
+} from "@/services/db/spending/by-wallet";
 
 import {
   getSpendingByTool,
   getWalletBreakdownByTool,
   type ToolSpendingSortId,
   type WalletBreakdownSortId,
-} from '@/services/db/spending/by-tool';
+} from "@/services/db/spending/by-tool";
 
 import {
   getToolCallsOverTime,
   toolCallsOverTimeQuerySchema,
-} from '@/services/db/spending/tool-calls-over-time';
+} from "@/services/db/spending/tool-calls-over-time";
 
-import { getWalletAddressFromName } from '@/services/cdp/server-wallet/admin';
+import { getWalletAddressFromName } from "@/services/cdp/server-wallet/admin";
 import {
   listAllServerAccounts,
   generateAccountsCsv,
-} from '@/services/cdp/server-wallet/list-accounts';
-import { paginatedQuerySchema } from '@/lib/pagination';
+} from "@/services/cdp/server-wallet/list-accounts";
+import { paginatedQuerySchema } from "@/lib/pagination";
 
 export const adminSpendingRouter = createTRPCRouter({
   byWallet: adminProcedure
@@ -39,10 +39,10 @@ export const adminSpendingRouter = createTRPCRouter({
         sorting: z
           .object({
             id: z.enum([
-              'walletName',
-              'totalToolCalls',
-              'uniqueResources',
-              'totalMaxAmount',
+              "walletName",
+              "totalToolCalls",
+              "uniqueResources",
+              "totalMaxAmount",
             ] satisfies WalletSpendingSortId[]),
             desc: z.boolean(),
           })
@@ -63,10 +63,10 @@ export const adminSpendingRouter = createTRPCRouter({
         sorting: z
           .object({
             id: z.enum([
-              'resourceUrl',
-              'toolCalls',
-              'maxAmountPerCall',
-              'totalMaxAmount',
+              "resourceUrl",
+              "toolCalls",
+              "maxAmountPerCall",
+              "totalMaxAmount",
             ] satisfies ToolBreakdownSortId[]),
             desc: z.boolean(),
           })
@@ -87,11 +87,11 @@ export const adminSpendingRouter = createTRPCRouter({
         sorting: z
           .object({
             id: z.enum([
-              'resourceUrl',
-              'totalToolCalls',
-              'uniqueWallets',
-              'totalMaxAmount',
-              'lastUsedAt',
+              "resourceUrl",
+              "totalToolCalls",
+              "uniqueWallets",
+              "totalMaxAmount",
+              "lastUsedAt",
             ] satisfies ToolSpendingSortId[]),
             desc: z.boolean(),
           })
@@ -112,11 +112,11 @@ export const adminSpendingRouter = createTRPCRouter({
         sorting: z
           .object({
             id: z.enum([
-              'walletName',
-              'toolCalls',
-              'maxAmountPerCall',
-              'totalMaxAmount',
-              'lastUsedAt',
+              "walletName",
+              "toolCalls",
+              "maxAmountPerCall",
+              "totalMaxAmount",
+              "lastUsedAt",
             ] satisfies WalletBreakdownSortId[]),
             desc: z.boolean(),
           })

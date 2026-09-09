@@ -1,14 +1,14 @@
-import { serverErr } from '@/lib/server-result';
+import { serverErr } from "@/lib/server-result";
 
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 import type {
   BaseServerError,
   ServerErrorType,
   ServerResult,
-} from '@/lib/server-result';
+} from "@/lib/server-result";
 
-const type = 'api';
+const type = "api";
 
 export const apiErr = (surface: string, error: BaseServerError) =>
   serverErr(type, surface, error);
@@ -29,7 +29,7 @@ const errorTypeToStatusCode = {
 
 export const toNextResponse = <T>(result: ServerResult<T>) =>
   result.match(
-    data => NextResponse.json(data),
-    error =>
+    (data) => NextResponse.json(data),
+    (error) =>
       NextResponse.json(error, { status: errorTypeToStatusCode[error.cause] })
   );

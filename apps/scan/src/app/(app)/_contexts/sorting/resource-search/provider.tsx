@@ -1,8 +1,8 @@
-import { SortingProvider } from '../base/provider';
-import { ResourceSearchSortingContext } from './context';
+import { SortingProvider } from "../base/provider";
+import { ResourceSearchSortingContext } from "./context";
 
-import type { ResourceSearchSortId } from './context';
-import type { SortType } from '../base/types';
+import type { ResourceSearchSortId } from "./context";
+import type { SortType } from "../base/types";
 
 export const ResourceSearchSortingProvider = ({
   children,

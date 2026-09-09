@@ -1,9 +1,9 @@
-import { defineConfig } from '@trigger.dev/sdk/v3';
+import { defineConfig } from "@trigger.dev/sdk/v3";
 
 export default defineConfig({
-  project: 'proj_uzmgkqxizvylnsnmftes',
-  runtime: 'node-22',
-  logLevel: 'log',
+  project: "proj_uzmgkqxizvylnsnmftes",
+  runtime: "node-22",
+  logLevel: "log",
   maxDuration: 300, // 5 minutes should be enough for balance checks
   retries: {
     enabledInDev: true,
@@ -15,5 +15,5 @@ export default defineConfig({
       randomize: true,
     },
   },
-  dirs: ['trigger'],
+  dirs: ["trigger"],
 });

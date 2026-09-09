@@ -1,90 +1,90 @@
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Body, Heading, Section } from '@/app/_components/layout/page-utils';
-import { JsonLd } from '@/components/json-ld';
-import { Button } from '@/components/ui/button';
-import { env } from '@/env';
+import { Body, Heading, Section } from "@/app/_components/layout/page-utils";
+import { JsonLd } from "@/components/json-ld";
+import { Button } from "@/components/ui/button";
+import { env } from "@/env";
 
 const description =
-  'Explore x402 payments, transactions, servers, facilitators, and paid APIs across the x402 ecosystem.';
+  "Explore x402 payments, transactions, servers, facilitators, and paid APIs across the x402 ecosystem.";
 
-const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
 
 const faqs = [
   {
-    question: 'What is x402?',
+    question: "What is x402?",
     answer:
-      'x402 is an open, neutral, HTTP-native payments standard that lets clients and servers complete payments through the existing 402 Payment Required flow.',
+      "x402 is an open, neutral, HTTP-native payments standard that lets clients and servers complete payments through the existing 402 Payment Required flow.",
   },
   {
-    question: 'How does x402 work?',
+    question: "How does x402 work?",
     answer:
-      'A client requests a paid resource, the server responds with 402 Payment Required, the client pays, retries the request, and receives API access.',
+      "A client requests a paid resource, the server responds with 402 Payment Required, the client pays, retries the request, and receives API access.",
   },
   {
-    question: 'What is x402scan?',
+    question: "What is x402scan?",
     answer:
-      'x402scan is an explorer, marketplace, and analytics dashboard for x402 servers, resources, facilitators, transactions, buyers, and sellers.',
+      "x402scan is an explorer, marketplace, and analytics dashboard for x402 servers, resources, facilitators, transactions, buyers, and sellers.",
   },
   {
-    question: 'Do x402 APIs need subscriptions or API keys?',
+    question: "Do x402 APIs need subscriptions or API keys?",
     answer:
-      'x402 APIs can support pay-per-request access without manual account setup, prepaid subscriptions, or long-lived API keys.',
+      "x402 APIs can support pay-per-request access without manual account setup, prepaid subscriptions, or long-lived API keys.",
   },
 ];
 
 const jsonLd = [
   {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: 'x402 Explorer',
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "x402 Explorer",
     url: `${appUrl}/x402`,
     description,
     isPartOf: {
-      '@type': 'WebSite',
-      name: 'x402scan',
+      "@type": "WebSite",
+      name: "x402scan",
       url: appUrl,
     },
   },
   {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: [
       {
-        '@type': 'ListItem',
+        "@type": "ListItem",
         position: 1,
-        name: 'Home',
+        name: "Home",
         item: `${appUrl}/`,
       },
       {
-        '@type': 'ListItem',
+        "@type": "ListItem",
         position: 2,
-        name: 'x402',
+        name: "x402",
         item: `${appUrl}/x402`,
       },
     ],
   },
   {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map(faq => ({
-      '@type': 'Question',
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
-        '@type': 'Answer',
+        "@type": "Answer",
         text: faq.answer,
       },
     })),
   },
   {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: 'x402scan',
-    applicationCategory: 'DeveloperApplication',
-    operatingSystem: 'Web',
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "x402scan",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Web",
     url: appUrl,
     description:
-      'Explorer, marketplace, and analytics dashboard for x402 payments and paid APIs.',
+      "Explorer, marketplace, and analytics dashboard for x402 payments and paid APIs.",
   },
 ];
 
@@ -179,7 +179,7 @@ export function X402Content() {
           title="Build with x402"
           description="Register an x402-compatible API so agents and developers can discover what it does, what it costs, and how to call it."
         >
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Button asChild>
               <Link href="/resources/register">Add your API</Link>
             </Button>

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
+import { useContext } from "react";
 
-import { TimeRangeContext } from './context';
+import { TimeRangeContext } from "./context";
 
 /**
  * Hook to access the time range context.

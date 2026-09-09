@@ -1,8 +1,8 @@
-import z from 'zod';
+import z from "zod";
 
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import { agentConfigurationSchema } from './schema';
+import { agentConfigurationSchema } from "./schema";
 
 export const createAgentConfigurationSchema = agentConfigurationSchema;
 
@@ -26,7 +26,7 @@ export const createAgentConfiguration = async (
       },
       resources: {
         createMany: {
-          data: resourceIds.map(resourceId => ({
+          data: resourceIds.map((resourceId) => ({
             resourceId,
           })),
         },
@@ -53,7 +53,7 @@ export const updateAgentConfiguration = async (
       resources: {
         deleteMany: {},
         createMany: {
-          data: resourceIds?.map(resourceId => ({ resourceId })) ?? [],
+          data: resourceIds?.map((resourceId) => ({ resourceId })) ?? [],
         },
       },
     },

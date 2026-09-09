@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { toast } from 'sonner';
+import React from "react";
+import { toast } from "sonner";
 
 interface CopyableProps {
   value: string;
@@ -14,7 +14,7 @@ export const Copyable: React.FC<CopyableProps> = ({
   value,
   children,
   className,
-  toastMessage = 'Copied to clipboard',
+  toastMessage = "Copied to clipboard",
 }) => {
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -22,7 +22,7 @@ export const Copyable: React.FC<CopyableProps> = ({
       await navigator.clipboard.writeText(value);
       toast.success(toastMessage);
     } catch {
-      toast.error('Failed to copy to clipboard');
+      toast.error("Failed to copy to clipboard");
     }
   };
 
@@ -30,7 +30,7 @@ export const Copyable: React.FC<CopyableProps> = ({
     <span
       onClick={void handleCopy}
       className={className}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: "pointer" }}
       tabIndex={0}
       role="button"
       aria-label="Copy to clipboard"

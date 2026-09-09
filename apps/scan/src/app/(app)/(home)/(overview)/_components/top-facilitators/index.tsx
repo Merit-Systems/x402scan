@@ -1,22 +1,22 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
 import {
   LoadingTopFacilitatorsContent,
   TopFacilitatorsContent,
-} from './content';
+} from "./content";
 
-import { Section } from '@/app/_components/layout/page-utils';
+import { Section } from "@/app/_components/layout/page-utils";
 
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
-import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 
-import { facilitatorAddresses, facilitators } from '@/lib/facilitators';
+import { facilitatorAddresses, facilitators } from "@/lib/facilitators";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 interface Props {
   chain?: Chain;
@@ -24,7 +24,7 @@ interface Props {
 
 export const TopFacilitators: React.FC<Props> = ({ chain }) => {
   const chainFacilitators = chain
-    ? facilitators.filter(f => f.addresses[chain])
+    ? facilitators.filter((f) => f.addresses[chain])
     : facilitatorAddresses;
 
   void api.public.stats.overall.prefetch({

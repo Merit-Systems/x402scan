@@ -1,4 +1,4 @@
-import { ServerOff } from 'lucide-react';
+import { ServerOff } from "lucide-react";
 
 import {
   Empty,
@@ -6,17 +6,17 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@/components/ui/empty';
+} from "@/components/ui/empty";
 
-import { ResourceCard, LoadingResourceCard } from './resource-card';
+import { ResourceCard, LoadingResourceCard } from "./resource-card";
 
-import { getBazaarMethod, isFreeResource, toBazaarMethod } from './utils';
-import { serializeAccepts } from '@/lib/token';
+import { getBazaarMethod, isFreeResource, toBazaarMethod } from "./utils";
+import { serializeAccepts } from "@/lib/token";
 
-import type { RouterOutputs } from '@/trpc/client';
+import type { RouterOutputs } from "@/trpc/client";
 
 interface Props {
-  resources: RouterOutputs['public']['origins']['list']['withResources'][number]['resources'];
+  resources: RouterOutputs["public"]["origins"]["list"]["withResources"][number]["resources"];
   hideOrigin?: boolean;
   isFlat?: boolean;
 }
@@ -27,7 +27,7 @@ export const OriginResources: React.FC<Props> = ({
   isFlat = false,
 }) => {
   const successfulResources = resources.filter(
-    resource =>
+    (resource) =>
       resource.success &&
       ((resource.accepts && resource.accepts.length > 0) ||
         isFreeResource(resource))
@@ -35,7 +35,7 @@ export const OriginResources: React.FC<Props> = ({
 
   if (successfulResources.length === 0) {
     return (
-      <Empty className="bg-card border mt-4">
+      <Empty className="mt-4 border bg-card">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <ServerOff />
@@ -48,12 +48,12 @@ export const OriginResources: React.FC<Props> = ({
   }
 
   return (
-    <div className="border-b-0 gap-0">
+    <div className="gap-0 border-b-0">
       {successfulResources
-        .filter(r => r.success)
-        .map(resource => {
+        .filter((r) => r.success)
+        .map((resource) => {
           const rawOutputSchema = resource.accepts.find(
-            accept => accept.outputSchema
+            (accept) => accept.outputSchema
           )?.outputSchema;
           // Prefer the method stored in the DB (from discovery) over the
           // inferred method from the x402 schema (which defaults to POST).
@@ -64,7 +64,7 @@ export const OriginResources: React.FC<Props> = ({
             <ResourceCard
               key={resource.id}
               resource={resource}
-              tags={resource.tags.map(tag => tag.tag)}
+              tags={resource.tags.map((tag) => tag.tag)}
               bazaarMethod={bazaarMethod}
               className="bg-transparent"
               response={resource.data}

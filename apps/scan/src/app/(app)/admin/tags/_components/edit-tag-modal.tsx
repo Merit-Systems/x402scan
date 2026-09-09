@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Tag, Plus, X, Trash2 } from 'lucide-react';
-import { api, type RouterInputs } from '@/trpc/client';
+import { useState } from "react";
+import { Tag, Plus, X, Trash2 } from "lucide-react";
+import { api, type RouterInputs } from "@/trpc/client";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from '@/components/ui/context-menu';
-import type { PaginatedQueryParams } from '@/lib/pagination';
+} from "@/components/ui/context-menu";
+import type { PaginatedQueryParams } from "@/lib/pagination";
 
 interface EditTagModalProps {
   open: boolean;
@@ -41,8 +41,8 @@ export function EditTagModal({
   selectedTagIds,
   setSelectedTagIds,
 }: EditTagModalProps) {
-  const [newTagName, setNewTagName] = useState('');
-  const [newTagColor, setNewTagColor] = useState('#3b82f6');
+  const [newTagName, setNewTagName] = useState("");
+  const [newTagColor, setNewTagColor] = useState("#3b82f6");
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [tagToDelete, setTagToDelete] = useState<{
     id: string;
@@ -60,7 +60,7 @@ export function EditTagModal({
     });
 
   function invalidateResourcesList() {
-    const input: RouterInputs['public']['resources']['list']['paginated'] = {
+    const input: RouterInputs["public"]["resources"]["list"]["paginated"] = {
       pagination,
     };
     // Mirror the filter shape resource-table passes to the paginated query so
@@ -83,8 +83,8 @@ export function EditTagModal({
   const createTag = api.admin.resources.tags.create.useMutation({
     onSuccess: () => {
       void utils.public.resources.tags.list.invalidate();
-      setNewTagName('');
-      setNewTagColor('#3b82f6');
+      setNewTagName("");
+      setNewTagColor("#3b82f6");
     },
   });
 
@@ -112,7 +112,7 @@ export function EditTagModal({
     },
   });
 
-  const assignedTagIds = new Set(resourceTags.map(rt => rt.tag.id));
+  const assignedTagIds = new Set(resourceTags.map((rt) => rt.tag.id));
 
   const handleCreateTag = () => {
     if (!newTagName.trim()) return;
@@ -144,7 +144,7 @@ export function EditTagModal({
   const handleConfirmDelete = () => {
     if (tagToDelete) {
       deleteTag.mutate(tagToDelete.id);
-      setSelectedTagIds(selectedTagIds.filter(id => id !== tagToDelete.id));
+      setSelectedTagIds(selectedTagIds.filter((id) => id !== tagToDelete.id));
     }
   };
 
@@ -163,16 +163,16 @@ export function EditTagModal({
 
         <div className="space-y-4">
           {/* Create new tag section */}
-          <div className="space-y-3 pb-4 border-b">
+          <div className="space-y-3 border-b pb-4">
             <Label className="text-sm font-medium">Create New Tag</Label>
             <div className="flex gap-2">
               <div className="flex-1">
                 <Input
                   placeholder="Tag name"
                   value={newTagName}
-                  onChange={e => setNewTagName(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
+                  onChange={(e) => setNewTagName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
                       handleCreateTag();
                     }
                   }}
@@ -181,7 +181,7 @@ export function EditTagModal({
               <Input
                 type="color"
                 value={newTagColor}
-                onChange={e => setNewTagColor(e.target.value)}
+                onChange={(e) => setNewTagColor(e.target.value)}
                 className="w-20 cursor-pointer"
               />
               <Button
@@ -202,28 +202,28 @@ export function EditTagModal({
                 No tags available. Create one above.
               </p>
             ) : (
-              <div className="max-h-[300px] overflow-y-auto space-y-2">
-                {allTags.map(tag => {
+              <div className="max-h-[300px] space-y-2 overflow-y-auto">
+                {allTags.map((tag) => {
                   const isAssigned = assignedTagIds.has(tag.id);
                   return (
                     <ContextMenu key={tag.id}>
                       <ContextMenuTrigger asChild>
-                        <div className="flex items-center justify-between p-2 rounded-md border hover:bg-accent transition-colors">
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <div className="flex items-center justify-between rounded-md border p-2 transition-colors hover:bg-accent">
+                          <div className="flex min-w-0 flex-1 items-center gap-2">
                             <div
-                              className="size-4 rounded-sm flex-shrink-0"
+                              className="size-4 flex-shrink-0 rounded-sm"
                               style={{ backgroundColor: tag.color }}
                             />
                             <span className="text-sm font-medium break-all">
                               {tag.name}
                             </span>
-                            <span className="text-xs text-muted-foreground flex-shrink-0">
+                            <span className="flex-shrink-0 text-xs text-muted-foreground">
                               ({tag._count.resourcesTags})
                             </span>
                           </div>
                           <Button
                             size="xs"
-                            variant={isAssigned ? 'destructive' : 'default'}
+                            variant={isAssigned ? "destructive" : "default"}
                             onClick={() => handleToggleTag(tag.id)}
                             disabled={
                               assignTag.isPending || unassignTag.isPending
@@ -269,7 +269,7 @@ export function EditTagModal({
         description={
           tagToDelete
             ? `Are you sure you want to delete the tag "${tagToDelete.name}"? This will remove it from all resources.`
-            : ''
+            : ""
         }
         confirmLabel="Delete"
         onConfirm={handleConfirmDelete}

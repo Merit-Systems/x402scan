@@ -1,16 +1,16 @@
-import { z } from 'zod';
-import { v4 } from 'uuid';
+import { z } from "zod";
+import { v4 } from "uuid";
 
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from "next/server";
 
-import { labelingPass } from '@/services/labeling/initial-label';
-import { iterateResourcesBatched } from '@/services/labeling/helpers';
+import { labelingPass } from "@/services/labeling/initial-label";
+import { iterateResourcesBatched } from "@/services/labeling/helpers";
 
-import { checkCronSecret } from '@/lib/cron';
+import { checkCronSecret } from "@/lib/cron";
 
-import type { Prisma } from '@x402scan/scan-db';
+import type { Prisma } from "@x402scan/scan-db";
 
 const resourceLabelingPayloadSchema = z.object({
   resourceIds: z.array(z.string()).optional(),
@@ -27,9 +27,9 @@ export const GET = async (request: NextRequest) => {
   const labelingStart = Date.now();
 
   const searchParams = request.nextUrl.searchParams;
-  const resourceIdsParam = searchParams.get('resourceIds');
+  const resourceIdsParam = searchParams.get("resourceIds");
   const resourceIds = resourceIdsParam
-    ? resourceIdsParam.split(',')
+    ? resourceIdsParam.split(",")
     : undefined;
 
   const payload = resourceLabelingPayloadSchema.parse({ resourceIds });
@@ -57,14 +57,14 @@ export const GET = async (request: NextRequest) => {
     select: { id: true },
   });
 
-  console.info('Starting resource labeling task', {
+  console.info("Starting resource labeling task", {
     resourceIds: payload.resourceIds,
-    mode: payload.resourceIds ? 'specific_resources' : 'unlabeled_resources',
+    mode: payload.resourceIds ? "specific_resources" : "unlabeled_resources",
     hasFilter: !!where,
     totalResources: resourcesToProcess.length,
   });
 
-  const resourceIdsToProcess = resourcesToProcess.map(r => r.id);
+  const resourceIdsToProcess = resourcesToProcess.map((r) => r.id);
   const whereWithIds: Prisma.ResourcesWhereInput = {
     id: { in: resourceIdsToProcess },
   };
@@ -73,7 +73,7 @@ export const GET = async (request: NextRequest) => {
     console.info(`Processing batch of ${batch.length} resources`);
 
     const batchResults = await Promise.allSettled(
-      batch.map(async resource => {
+      batch.map(async (resource) => {
         try {
           const result = await labelingPass(resource, { sessionId });
           return {
@@ -86,7 +86,7 @@ export const GET = async (request: NextRequest) => {
           return {
             resourceId: resource.id,
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: error instanceof Error ? error.message : "Unknown error",
           };
         }
       })
@@ -94,7 +94,7 @@ export const GET = async (request: NextRequest) => {
 
     for (const result of batchResults) {
       totalProcessed++;
-      if (result.status === 'fulfilled') {
+      if (result.status === "fulfilled") {
         if (result.value.success) {
           totalSuccess++;
         } else {
@@ -108,7 +108,7 @@ export const GET = async (request: NextRequest) => {
           error:
             result.reason instanceof Error
               ? result.reason.message
-              : 'Unknown error',
+              : "Unknown error",
         });
       }
     }
@@ -116,7 +116,7 @@ export const GET = async (request: NextRequest) => {
 
   const durationMs = Date.now() - labelingStart;
 
-  console.info('Resource labeling task completed', {
+  console.info("Resource labeling task completed", {
     totalProcessed,
     totalSuccess,
     totalFailed,
@@ -126,7 +126,7 @@ export const GET = async (request: NextRequest) => {
   return NextResponse.json(
     {
       success: true as const,
-      message: 'Resource labeling completed',
+      message: "Resource labeling completed",
       processed: totalProcessed,
       successful: totalSuccess,
       failed: totalFailed,

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
+import { useSession } from "next-auth/react";
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
 import {
   PromptInput,
@@ -10,15 +10,15 @@ import {
   PromptInputTextarea,
   PromptInputToolbar,
   PromptInputTools,
-} from '@/components/ai-elements/prompt-input';
+} from "@/components/ai-elements/prompt-input";
 
-import { ModelSelect } from './model-select';
-import { ResourcesSelect } from './resources-select';
-import { WalletButton } from './wallet';
+import { ModelSelect } from "./model-select";
+import { ResourcesSelect } from "./resources-select";
+import { WalletButton } from "./wallet";
 
-import type { ChatStatus } from 'ai';
-import type { SelectedResource } from '../../../_types/chat-config';
-import type { LanguageModel } from './model-select/types';
+import type { ChatStatus } from "ai";
+import type { SelectedResource } from "../../../_types/chat-config";
+import type { LanguageModel } from "./model-select/types";
 
 interface Props {
   input: string;
@@ -53,8 +53,8 @@ export const PromptInputSection: React.FC<Props> = ({
         }
         value={input}
         placeholder={
-          sessionStatus !== 'loading' && !session
-            ? 'Sign in to use the composer'
+          sessionStatus !== "loading" && !session
+            ? "Sign in to use the composer"
             : undefined
         }
       />
@@ -68,7 +68,7 @@ export const PromptInputSection: React.FC<Props> = ({
           <WalletButton />
         </PromptInputTools>
         <PromptInputSubmit
-          disabled={!input || status !== 'ready' || !!errorMessage}
+          disabled={!input || status !== "ready" || !!errorMessage}
           className="size-8 md:size-8"
         />
       </PromptInputToolbar>

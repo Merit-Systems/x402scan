@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 import Credentials, {
   type CredentialsConfig,
-} from 'next-auth/providers/credentials';
+} from "next-auth/providers/credentials";
 
 import {
   address as toAddress,
@@ -10,18 +10,18 @@ import {
   getPublicKeyFromAddress,
   signatureBytes,
   verifySignature,
-} from '@solana/kit';
+} from "@solana/kit";
 
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import { SIWS_PROVIDER_ID, SIWS_PROVIDER_NAME } from './constants';
+import { SIWS_PROVIDER_ID, SIWS_PROVIDER_NAME } from "./constants";
 
-import { solanaAddressSchema } from '@/lib/schemas';
+import { solanaAddressSchema } from "@/lib/schemas";
 
 const siwsCredentialsSchema = z.object({
   address: solanaAddressSchema,
-  signedMessage: z.string().transform(str => getBase58Encoder().encode(str)),
-  signature: z.string().transform(str => getBase58Encoder().encode(str)),
+  signedMessage: z.string().transform((str) => getBase58Encoder().encode(str)),
+  signature: z.string().transform((str) => getBase58Encoder().encode(str)),
   email: z.email().optional(),
 });
 
@@ -30,15 +30,15 @@ function SiwsProvider(options?: Partial<CredentialsConfig>) {
     id: SIWS_PROVIDER_ID,
     name: SIWS_PROVIDER_NAME,
     credentials: {
-      address: { label: 'Address', type: 'text' },
-      signedMessage: { label: 'Message', type: 'text' }, // actually will be passed as base58 string
-      signature: { label: 'Signature', type: 'text' }, // actually will be passed as base58 string
-      email: { label: 'Email', type: 'text', optional: true },
+      address: { label: "Address", type: "text" },
+      signedMessage: { label: "Message", type: "text" }, // actually will be passed as base58 string
+      signature: { label: "Signature", type: "text" }, // actually will be passed as base58 string
+      email: { label: "Email", type: "text", optional: true },
     },
     async authorize(credentials) {
       const parseResult = siwsCredentialsSchema.safeParse(credentials);
       if (!parseResult.success) {
-        throw new Error('Invalid credentials');
+        throw new Error("Invalid credentials");
       }
       const { address, signedMessage, signature, email } = parseResult.data;
 
@@ -49,12 +49,12 @@ function SiwsProvider(options?: Partial<CredentialsConfig>) {
       );
 
       if (!verified) {
-        throw new Error('Invalid signature');
+        throw new Error("Invalid signature");
       }
 
       // Imported lazily: '@/auth' statically imports this provider, so a
       // top-level import would create a module cycle.
-      const { auth } = await import('@/auth');
+      const { auth } = await import("@/auth");
       const session = await auth();
 
       if (session?.user?.id) {
@@ -70,7 +70,7 @@ function SiwsProvider(options?: Partial<CredentialsConfig>) {
             userId: session.user.id,
           },
           create: {
-            type: 'siwe',
+            type: "siwe",
             userId: session.user.id,
             provider: SIWS_PROVIDER_ID,
             providerAccountId: address,
@@ -107,7 +107,7 @@ function SiwsProvider(options?: Partial<CredentialsConfig>) {
               email,
               accounts: {
                 create: {
-                  type: 'siwe',
+                  type: "siwe",
                   provider: SIWS_PROVIDER_ID,
                   providerAccountId: address,
                 },

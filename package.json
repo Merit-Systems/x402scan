@@ -1,6 +1,7 @@
 {
   "name": "@x402scan/monorepo",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "packageManager": "pnpm@11.22.0",
   "scripts": {
@@ -14,8 +15,8 @@
     "lint:fix": "oxlint --fix",
     "types:check": "turbo run types:check",
     "types:generate": "turbo run types:generate",
-    "format": "prettier --write apps packages sync",
-    "format:check": "prettier --check apps packages sync",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
     "knip": "knip",
     "knip:check": "turbo run knip",
     "test": "turbo run test --filter=@x402scan/app --filter=@x402scan/sync-transfers",
@@ -28,11 +29,12 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
+    "@merit-systems/oxfmt-config": "catalog:foundation",
     "@oxlint/plugins": "1.78.0",
     "knip": "^5.80.0",
+    "oxfmt": "catalog:",
     "oxlint": "1.78.0",
     "oxlint-tsgolint": "7.0.2001",
-    "prettier": "^3.7.4",
     "rimraf": "catalog:",
     "turbo": "^2.8.0",
     "typescript": "catalog:"

@@ -1,10 +1,10 @@
-import 'server-only';
+import "server-only";
 
-import { after } from 'next/server';
+import { after } from "next/server";
 
-import { env } from '@/env';
+import { env } from "@/env";
 
-const NEW_SERVER_USERNAME = '🆕 Server';
+const NEW_SERVER_USERNAME = "🆕 Server";
 
 interface NewServerNotification {
   originId: string;
@@ -25,14 +25,14 @@ export function notifyNewServer(
   scheduleDiscordNotification({
     webhookUrl: env.DISCORD_NOTIFICATIONS_WEBHOOK_URL,
     username: NEW_SERVER_USERNAME,
-    embed: config => buildNewServerEmbed(notification, config),
+    embed: (config) => buildNewServerEmbed(notification, config),
   });
 
   if (options?.merchantResearch ?? true) {
     scheduleDiscordNotification({
       webhookUrl: env.DISCORD_MERCHANT_RESEARCH_WEBHOOK_URL,
       username: NEW_SERVER_USERNAME,
-      embed: config => buildMerchantResearchEmbed(notification, config),
+      embed: (config) => buildMerchantResearchEmbed(notification, config),
     });
   }
 }
@@ -71,11 +71,11 @@ function scheduleDiscordNotification(options: {
 function getDiscordConfig(
   webhookUrl: string | undefined
 ): DiscordConfig | null {
-  if (process.env.VERCEL_ENV !== 'production' || !webhookUrl) return null;
+  if (process.env.VERCEL_ENV !== "production" || !webhookUrl) return null;
 
   return {
     webhookUrl,
-    appUrl: env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, ''),
+    appUrl: env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, ""),
   };
 }
 
@@ -88,15 +88,15 @@ async function postDiscordWebhook(
   }
 ) {
   const response = await fetch(webhookUrl, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
-    const body = await response.text().catch(() => '');
+    const body = await response.text().catch(() => "");
     throw new Error(
       `Discord webhook failed with ${response.status}: ${body.slice(0, 200)}`
     );
@@ -124,7 +124,7 @@ function buildNewServerEmbed(
   }
 
   return {
-    description: lines.join('\n'),
+    description: lines.join("\n"),
   };
 }
 
@@ -146,7 +146,7 @@ function buildMerchantResearchEmbed(
   }
 
   return {
-    description: lines.join('\n'),
+    description: lines.join("\n"),
   };
 }
 
@@ -165,12 +165,12 @@ function domainFromOrigin(origin: string) {
   try {
     return new URL(origin).host;
   } catch {
-    return origin.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    return origin.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
   }
 }
 
 function logNotificationError(cause: unknown, username: string) {
-  console.error('[discord-notifications] failed to send notification', {
+  console.error("[discord-notifications] failed to send notification", {
     error: cause instanceof Error ? cause.message : String(cause),
     username,
   });
@@ -178,10 +178,10 @@ function logNotificationError(cause: unknown, username: string) {
 
 function escapeMarkdown(value: string) {
   return value
-    .replaceAll('\\', '\\\\')
-    .replaceAll('*', '\\*')
-    .replaceAll('[', '\\[')
-    .replaceAll(']', '\\]')
-    .replaceAll('(', '\\(')
-    .replaceAll(')', '\\)');
+    .replaceAll("\\", "\\\\")
+    .replaceAll("*", "\\*")
+    .replaceAll("[", "\\[")
+    .replaceAll("]", "\\]")
+    .replaceAll("(", "\\(")
+    .replaceAll(")", "\\)");
 }

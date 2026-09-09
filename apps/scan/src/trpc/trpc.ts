@@ -1,15 +1,15 @@
-import superjson from 'superjson';
-import z from 'zod';
+import superjson from "superjson";
+import z from "zod";
 
-import { initTRPC, TRPCError } from '@trpc/server';
+import { initTRPC, TRPCError } from "@trpc/server";
 
-import { auth } from '@/auth';
+import { auth } from "@/auth";
 
-import { paginatedQuerySchema } from '@/lib/pagination';
+import { paginatedQuerySchema } from "@/lib/pagination";
 
-import { env } from '@/env';
+import { env } from "@/env";
 
-import type { Session } from 'next-auth';
+import type { Session } from "next-auth";
 
 /**
  * Context that is passed to all TRPC procedures
@@ -28,8 +28,8 @@ export async function createTRPCContext(headers: Headers): Promise<Context> {
 
   // Check for cache warming header (only valid with cron secret)
   const isWarmingCache =
-    headers.get('x-cache-warming') === 'true' &&
-    headers.get('authorization') === `Bearer ${env.CRON_SECRET}`;
+    headers.get("x-cache-warming") === "true" &&
+    headers.get("authorization") === `Bearer ${env.CRON_SECRET}`;
 
   return {
     headers,
@@ -77,14 +77,14 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
 
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.session?.user) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
+    throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({ ctx: { ...ctx, session: ctx.session } });
 });
 
 export const adminProcedure = t.procedure.use(async ({ ctx, next }) => {
-  if (!ctx.session?.user || ctx.session.user.role !== 'admin') {
-    throw new TRPCError({ code: 'FORBIDDEN' });
+  if (!ctx.session?.user || ctx.session.user.role !== "admin") {
+    throw new TRPCError({ code: "FORBIDDEN" });
   }
   return next({ ctx: { ...ctx, session: ctx.session } });
 });

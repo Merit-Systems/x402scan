@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary } from "react-error-boundary";
 
-import { OriginOverviewSection } from '../section';
+import { OriginOverviewSection } from "../section";
 
-import { LoadingOverallStatsCard, OverallStatsCard } from './card';
+import { LoadingOverallStatsCard, OverallStatsCard } from "./card";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
+import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 
-import { ActivityTimeframe } from '@/types/timeframes';
-import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+import { ActivityTimeframe } from "@/types/timeframes";
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
-import type { ChartData } from '@/components/ui/charts/chart/types';
+import type { ChartData } from "@/components/ui/charts/chart/types";
 interface Props {
   originId: string;
 }
@@ -60,7 +60,7 @@ const OriginActivityCharts: React.FC<Props> = ({ originId }) => {
     totalAmount: number;
     buyers: number;
     sellers: number;
-  }>[] = bucketedStats.map(stat => ({
+  }>[] = bucketedStats.map((stat) => ({
     transactions: stat.total_transactions,
     totalAmount: parseFloat(
       convertTokenAmount(BigInt(stat.total_amount)).toString()
@@ -75,22 +75,22 @@ const OriginActivityCharts: React.FC<Props> = ({ originId }) => {
       <OverallStatsCard
         title="Transactions"
         value={overallStats.total_transactions.toLocaleString(undefined, {
-          notation: 'compact',
+          notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
         items={{
-          type: 'bar',
-          bars: [{ dataKey: 'transactions', color: 'var(--color-primary)' }],
+          type: "bar",
+          bars: [{ dataKey: "transactions", color: "var(--color-primary)" }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: 'transactions',
-            label: 'Transactions',
-            getValue: data =>
+            key: "transactions",
+            label: "Transactions",
+            getValue: (data) =>
               data.toLocaleString(undefined, {
-                notation: 'compact',
+                notation: "compact",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
               }),
@@ -101,21 +101,21 @@ const OriginActivityCharts: React.FC<Props> = ({ originId }) => {
         title="Volume"
         value={formatTokenAmount(BigInt(overallStats.total_amount))}
         items={{
-          type: 'bar',
-          bars: [{ dataKey: 'totalAmount', color: 'var(--color-primary)' }],
+          type: "bar",
+          bars: [{ dataKey: "totalAmount", color: "var(--color-primary)" }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: 'totalAmount',
-            label: 'Volume',
-            getValue: data =>
+            key: "totalAmount",
+            label: "Volume",
+            getValue: (data) =>
               data.toLocaleString(undefined, {
-                notation: 'compact',
+                notation: "compact",
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-                style: 'currency',
-                currency: 'USD',
+                style: "currency",
+                currency: "USD",
               }),
           },
         ]}
@@ -123,22 +123,22 @@ const OriginActivityCharts: React.FC<Props> = ({ originId }) => {
       <OverallStatsCard
         title="Buyers"
         value={overallStats.unique_buyers.toLocaleString(undefined, {
-          notation: 'compact',
+          notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
         items={{
-          type: 'bar',
-          bars: [{ dataKey: 'buyers', color: 'var(--color-primary)' }],
+          type: "bar",
+          bars: [{ dataKey: "buyers", color: "var(--color-primary)" }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: 'buyers',
-            label: 'Buyers',
-            getValue: data =>
+            key: "buyers",
+            label: "Buyers",
+            getValue: (data) =>
               data.toLocaleString(undefined, {
-                notation: 'compact',
+                notation: "compact",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               }),
@@ -180,7 +180,7 @@ const OriginActivityContainer = ({
 }) => {
   return (
     <OriginOverviewSection title="Activity" action={action}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">{children}</div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">{children}</div>
     </OriginOverviewSection>
   );
 };

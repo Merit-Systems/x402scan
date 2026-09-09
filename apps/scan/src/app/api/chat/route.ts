@@ -1,6 +1,6 @@
-import { after, NextResponse } from 'next/server';
+import { after, NextResponse } from "next/server";
 
-import { z } from 'zod';
+import { z } from "zod";
 
 import {
   APICallError,
@@ -10,31 +10,31 @@ import {
   streamText,
   generateId,
   createIdGenerator,
-} from 'ai';
+} from "ai";
 
-import { createResumableStreamContext } from 'resumable-stream';
+import { createResumableStreamContext } from "resumable-stream";
 
-import { createChat, getChat, updateChat } from '@/services/db/composer/chat';
+import { createChat, getChat, updateChat } from "@/services/db/composer/chat";
 
-import { auth } from '@/auth';
+import { auth } from "@/auth";
 
-import { createX402AITools } from '@/services/agent/create-tools';
+import { createX402AITools } from "@/services/agent/create-tools";
 
-import { ChatError } from '@/lib/errors';
-import { messageSchema } from '@/lib/message-schema';
+import { ChatError } from "@/lib/errors";
+import { messageSchema } from "@/lib/message-schema";
 
-import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
-import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
+import { getAgentConfigurationDetails } from "@/services/db/agent-config/get";
+import { agentSystemPrompt, baseSystemPrompt } from "./system-prompt";
 
-import type { NextRequest } from 'next/server';
-import type { LanguageModel, UIMessage } from 'ai';
+import type { NextRequest } from "next/server";
+import type { LanguageModel, UIMessage } from "ai";
 
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
 const openrouter = createOpenRouter({
   headers: {
-    'HTTP-Referer': 'https://x402scan.com',
-    'X-Title': 'x402scan',
+    "HTTP-Referer": "https://x402scan.com",
+    "X-Title": "x402scan",
   },
 });
 
@@ -50,14 +50,14 @@ export async function POST(request: NextRequest) {
   const session = await auth();
 
   if (!session) {
-    return new ChatError('unauthorized:auth').toResponse();
+    return new ChatError("unauthorized:auth").toResponse();
   }
 
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
-    console.error('Bad request:', requestBody.error);
-    return new ChatError('bad_request:chat').toResponse();
+    console.error("Bad request:", requestBody.error);
+    return new ChatError("bad_request:chat").toResponse();
   }
 
   const { model, resourceIds, message, chatId, agentConfigurationId } =
@@ -71,13 +71,13 @@ export async function POST(request: NextRequest) {
     // Start title generation in parallel (don't await)
     const titlePromise = generateTitleFromUserMessage({
       message: lastMessage,
-      model: openrouter.chat('gpt-4.1-nano'),
+      model: openrouter.chat("gpt-4.1-nano"),
     });
 
     // Create chat with temporary title immediately
     chat = await createChat({
       id: chatId,
-      title: 'New Chat', // Temporary title
+      title: "New Chat", // Temporary title
       user: {
         connect: { id: session.user.id },
       },
@@ -109,21 +109,21 @@ export async function POST(request: NextRequest) {
 
     // Update title in the background
     titlePromise
-      .then(async generatedTitle => {
+      .then(async (generatedTitle) => {
         try {
           await updateChat(session.user.id, chatId, {
             title: generatedTitle,
           });
         } catch {
-          console.error('Failed to update chat title:');
+          console.error("Failed to update chat title:");
         }
       })
       .catch(() => {
-        console.error('Failed to generate chat title:');
+        console.error("Failed to generate chat title:");
       });
   } else {
     if (chat.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await updateChat(session.user.id, chatId, {
@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       }
       return agentSystemPrompt({
         agentName: details.name,
-        agentDescription: details.description ?? '',
+        agentDescription: details.description ?? "",
         systemPrompt: details.systemPrompt,
       });
     }
@@ -186,7 +186,7 @@ export async function POST(request: NextRequest) {
   return result.toUIMessageStreamResponse({
     originalMessages: messages,
     generateMessageId: createIdGenerator({
-      prefix: 'msg',
+      prefix: "msg",
       size: 16,
     }),
     onFinish: async ({ responseMessage }) => {
@@ -213,16 +213,16 @@ export async function POST(request: NextRequest) {
         });
       }
     },
-    onError: error => {
+    onError: (error) => {
       if (error instanceof APICallError) {
         if (error.statusCode === 402) {
-          return new ChatError('payment_required:chat').message;
+          return new ChatError("payment_required:chat").message;
         }
       }
       if (error instanceof ChatError) {
         return error.message;
       }
-      return new ChatError('bad_request:chat').message;
+      return new ChatError("bad_request:chat").message;
     },
     async consumeSseStream({ stream }) {
       const streamId = generateId();
@@ -254,7 +254,7 @@ async function generateTitleFromUserMessage({
       model,
       messages: [
         {
-          role: 'system',
+          role: "system",
           content: `\n
       - you will generate a short title in english based on the first message a user begins a conversation with
       - ensure it is not more than 80 characters long
@@ -270,7 +270,7 @@ async function generateTitleFromUserMessage({
 
     return title;
   } catch {
-    console.error('Error generating title:');
-    throw new ChatError('server:chat');
+    console.error("Error generating title:");
+    throw new ChatError("server:chat");
   }
 }

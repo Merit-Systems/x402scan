@@ -1,9 +1,9 @@
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Bot, Edit } from 'lucide-react';
+import { Bot, Edit } from "lucide-react";
 
-import { Heading } from '@/app/_components/layout/page-utils';
-import { Button } from '@/components/ui/button';
+import { Heading } from "@/app/_components/layout/page-utils";
+import { Button } from "@/components/ui/button";
 
 export const ComposerHomeHeading = () => {
   return (
@@ -26,7 +26,7 @@ export const ComposerHomeHeading = () => {
           </Link>
         </div>
       }
-      className="flex-col md:flex-col items-start md:items-start"
+      className="flex-col items-start md:flex-col md:items-start"
     />
   );
 };

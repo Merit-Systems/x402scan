@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { useMemo, useState } from "react";
+import { Loader2, RefreshCw } from "lucide-react";
 
 import {
   DiscoveryPanel,
   useDiscovery,
-} from '@/app/(app)/_components/discovery';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+} from "@/app/(app)/_components/discovery";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 function normalizeUrl(value: string): string {
   const trimmed = value.trim();
   if (!trimmed) return trimmed;
-  if (trimmed.includes('://')) return trimmed;
+  if (trimmed.includes("://")) return trimmed;
   return `https://${trimmed}`;
 }
 
 export function TryDiscovery() {
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const normalizedUrl = useMemo(() => normalizeUrl(url), [url]);
 
   const {
@@ -59,11 +59,11 @@ export function TryDiscovery() {
                 type="text"
                 placeholder="https://yourdomain.com"
                 value={url}
-                onChange={e => setUrl(e.target.value)}
+                onChange={(e) => setUrl(e.target.value)}
                 className="pr-10"
               />
               {isDiscoveryLoading && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="absolute top-1/2 right-3 -translate-y-1/2">
                   <Loader2 className="size-4 animate-spin text-muted-foreground" />
                 </div>
               )}
@@ -88,7 +88,7 @@ export function TryDiscovery() {
                 className="gap-1"
               >
                 <RefreshCw
-                  className={cn('size-3', isBatchTestLoading && 'animate-spin')}
+                  className={cn("size-3", isBatchTestLoading && "animate-spin")}
                 />
                 Refresh
               </Button>

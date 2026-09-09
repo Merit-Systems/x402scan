@@ -1,10 +1,10 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
 
 export const getWalletForUserId = async (userId: string) => {
   const wallet = await scanDb.serverWallet.findFirst({
-    where: { userId, type: 'CHAT' },
+    where: { userId, type: "CHAT" },
   });
 
   if (wallet) {
@@ -15,7 +15,7 @@ export const getWalletForUserId = async (userId: string) => {
     data: {
       userId,
       walletName: uuid(),
-      type: 'CHAT',
+      type: "CHAT",
     },
   });
   return newWallet;

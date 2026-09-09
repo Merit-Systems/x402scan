@@ -1,7 +1,7 @@
 export interface BitqueryUsageResponse {
   account_id: number;
   payer_id: number;
-  status: 'active' | 'grace' | 'blocked' | 'expired';
+  status: "active" | "grace" | "blocked" | "expired";
   billing_period: {
     started_at: string;
     ended_at: string;

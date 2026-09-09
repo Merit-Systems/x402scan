@@ -1,18 +1,18 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { env } from '@/env';
-import { CACHE_TTL_SECONDS } from '@/lib/cache';
-import { getRedisClient } from '@/lib/redis';
+import { env } from "@/env";
+import { CACHE_TTL_SECONDS } from "@/lib/cache";
+import { getRedisClient } from "@/lib/redis";
 
 /** Wire shape of AgentCash's internal used-origins endpoint. */
 const usedOriginsResponseSchema = z.looseObject({
   origins: z.array(z.string()),
 });
 
-const PROTOCOL = 'x402';
-const CACHE_KEY = 'discover:origins:catalog:v1';
+const PROTOCOL = "x402";
+const CACHE_KEY = "discover:origins:catalog:v1";
 /** Long-lived fallback so a transient AgentCash outage doesn't wipe the list */
-const STALE_CACHE_KEY = 'discover:origins:catalog:v1:stale';
+const STALE_CACHE_KEY = "discover:origins:catalog:v1:stale";
 const STALE_TTL_SECONDS = 86400; // 24 hours
 
 /**
@@ -33,18 +33,18 @@ export const fetchUsedOriginsFromAgentCash = async (
   let res: Response;
   try {
     const url = new URL(
-      '/api/internal/catalog/used-origins',
+      "/api/internal/catalog/used-origins",
       env.AGENTCASH_URL
     );
-    url.searchParams.set('protocol', protocol);
+    url.searchParams.set("protocol", protocol);
     res = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
         Authorization: `Bearer ${env.AGENTCASH_INTERNAL_API_KEY}`,
       },
     });
   } catch (error) {
-    console.warn('[discover] AgentCash used-origins fetch failed:', error);
+    console.warn("[discover] AgentCash used-origins fetch failed:", error);
     return null;
   }
 
@@ -58,7 +58,7 @@ export const fetchUsedOriginsFromAgentCash = async (
     payload = await res.json();
   } catch (error) {
     console.warn(
-      '[discover] AgentCash used-origins returned invalid JSON:',
+      "[discover] AgentCash used-origins returned invalid JSON:",
       error
     );
     return null;
@@ -66,7 +66,7 @@ export const fetchUsedOriginsFromAgentCash = async (
 
   const parsed = usedOriginsResponseSchema.safeParse(payload);
   if (!parsed.success) {
-    console.warn('[discover] AgentCash used-origins response malformed');
+    console.warn("[discover] AgentCash used-origins response malformed");
     return null;
   }
 
@@ -113,7 +113,7 @@ export const getDiscoverOrigins = async (): Promise<string[]> => {
       const stale = await redis.get(STALE_CACHE_KEY).catch(() => null);
       if (stale) {
         console.warn(
-          '[discover] AgentCash returned empty, using stale fallback'
+          "[discover] AgentCash returned empty, using stale fallback"
         );
         return JSON.parse(stale) as string[];
       }

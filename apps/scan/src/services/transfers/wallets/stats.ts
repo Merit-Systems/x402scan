@@ -1,14 +1,14 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { queryRaw } from '@/services/transfers/client';
-import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
-import { chainSchema } from '@/lib/schemas';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { queryRaw } from "@/services/transfers/client";
+import { createCachedQuery, createStandardCacheKey } from "@/lib/cache";
+import { chainSchema } from "@/lib/schemas";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 type WalletStatsInput = {
   address: string;
-  chain?: 'base' | 'solana';
+  chain?: "base" | "solana";
   timeframe: number;
 };
 
@@ -23,7 +23,7 @@ const getWalletStatsUncached = async (input: WalletStatsInput) => {
     conditions.push(Prisma.sql`AND chain = ${chain}`);
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   const empty = {
     total_transactions: 0,
@@ -55,7 +55,7 @@ const getWalletStatsUncached = async (input: WalletStatsInput) => {
 
     return result[0] ?? empty;
   } catch (error) {
-    if (String(error).includes('does not exist')) {
+    if (String(error).includes("does not exist")) {
       console.warn(
         `[wallet-stats] MV ${tableName} not yet available, returning empty`
       );
@@ -67,8 +67,8 @@ const getWalletStatsUncached = async (input: WalletStatsInput) => {
 
 export const getWalletStats = createCachedQuery({
   queryFn: getWalletStatsUncached,
-  cacheKeyPrefix: 'wallet-stats',
-  createCacheKey: input => createStandardCacheKey(input),
+  cacheKeyPrefix: "wallet-stats",
+  createCacheKey: (input) => createStandardCacheKey(input),
   dateFields: [],
-  tags: ['wallets'],
+  tags: ["wallets"],
 });

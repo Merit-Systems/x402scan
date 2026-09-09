@@ -1,28 +1,28 @@
-import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
+import { generateObject } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
 import type {
   SearchResult,
   FilterQuestion,
   FilteredSearchResult,
-} from './types';
+} from "./types";
 
 const filterQuestionsSchema = z.object({
   questions: z
     .array(z.string())
     .min(3)
     .max(5)
-    .describe('3-5 yes/no filter questions to evaluate each resource'),
+    .describe("3-5 yes/no filter questions to evaluate each resource"),
   explanation: z
     .string()
-    .describe('Brief explanation of what these filters are checking for'),
+    .describe("Brief explanation of what these filters are checking for"),
 });
 
 const filterEvaluationSchema = z.object({
   answer: z
     .boolean()
-    .describe('Yes/no answer to whether this resource matches the criteria'),
-  reasoning: z.string().describe('Brief reasoning for the answer'),
+    .describe("Yes/no answer to whether this resource matches the criteria"),
+  reasoning: z.string().describe("Brief reasoning for the answer"),
 });
 
 function buildFilterGenerationPrompt(naturalLanguageQuery: string): string {
@@ -55,10 +55,10 @@ function buildFilterEvaluationPrompt(
   const resourceContext = {
     title: resource.origin.title ?? resource.origin.origin,
     description:
-      resource.accepts?.find(accept => accept.description)?.description ??
-      'No description',
+      resource.accepts?.find((accept) => accept.description)?.description ??
+      "No description",
     origin: resource.origin.origin,
-    tags: resource.tags.map(t => t.name).join(', ') || 'No tags',
+    tags: resource.tags.map((t) => t.name).join(", ") || "No tags",
   };
 
   return `Evaluate if this API resource matches the following criteria.
@@ -84,13 +84,13 @@ export async function generateFilterQuestions(
   if (!naturalLanguageQuery.trim()) {
     return {
       questions: [],
-      explanation: 'No filters applied',
+      explanation: "No filters applied",
     };
   }
 
   try {
     const result = await generateObject({
-      model: openai('gpt-4.1-nano'),
+      model: openai("gpt-4.1-nano"),
       prompt: buildFilterGenerationPrompt(naturalLanguageQuery),
       schema: filterQuestionsSchema,
       temperature: 0.3,
@@ -98,11 +98,11 @@ export async function generateFilterQuestions(
 
     if (!result.object) {
       console.warn(
-        '[Filter Generation] No object generated, returning empty filters'
+        "[Filter Generation] No object generated, returning empty filters"
       );
       return {
         questions: [],
-        explanation: 'Failed to generate filter questions',
+        explanation: "Failed to generate filter questions",
       };
     }
 
@@ -117,12 +117,12 @@ export async function generateFilterQuestions(
     };
   } catch (error) {
     console.error(
-      '[Filter Generation] Error generating filter questions:',
+      "[Filter Generation] Error generating filter questions:",
       error instanceof Error ? error.message : String(error)
     );
     return {
       questions: [],
-      explanation: 'Failed to generate filter questions due to error',
+      explanation: "Failed to generate filter questions due to error",
     };
   }
 }
@@ -133,21 +133,21 @@ async function evaluateResourceAgainstFilter(
 ): Promise<boolean> {
   try {
     const result = await generateObject({
-      model: openai('gpt-4o-mini'),
+      model: openai("gpt-4o-mini"),
       prompt: buildFilterEvaluationPrompt(question, resource),
       schema: filterEvaluationSchema,
       temperature: 0.1,
     });
 
     if (!result.object) {
-      console.warn('[Filter Evaluation] No object generated, returning false');
+      console.warn("[Filter Evaluation] No object generated, returning false");
       return false;
     }
 
     return result.object.answer;
   } catch (error) {
     console.warn(
-      '[Filter Evaluation] Error evaluating filter:',
+      "[Filter Evaluation] Error evaluating filter:",
       error instanceof Error ? error.message : String(error)
     );
     return false;
@@ -159,7 +159,7 @@ export async function applyLLMFilters(
   filterQuestions: FilterQuestion[]
 ): Promise<FilteredSearchResult[]> {
   if (filterQuestions.length === 0) {
-    return results.map(r => ({
+    return results.map((r) => ({
       ...r,
       filterMatches: 0,
       filterAnswers: [],
@@ -168,9 +168,9 @@ export async function applyLLMFilters(
 
   // Evaluate each result against all filter questions
   const evaluatedResults = await Promise.all(
-    results.map(async resource => {
+    results.map(async (resource) => {
       const answers = await Promise.all(
-        filterQuestions.map(fq =>
+        filterQuestions.map((fq) =>
           evaluateResourceAgainstFilter(fq.question, resource)
         )
       );

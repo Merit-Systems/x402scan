@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
+import { useContext } from "react";
 
-import { ChartModeContext } from './context';
+import { ChartModeContext } from "./context";
 
 export const useChartMode = () => {
   return useContext(ChartModeContext);

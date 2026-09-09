@@ -5,12 +5,12 @@
  * request validation so the x402 paywall can fire.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
-import { openApiInputAdvisorySchema } from './json-schema';
+import { openApiInputAdvisorySchema } from "./json-schema";
 
-import type { JsonLikeValue, JsonSchemaNode } from './json-schema';
-import type { JsonObject, JsonValue } from '@/lib/json';
+import type { JsonLikeValue, JsonSchemaNode } from "./json-schema";
+import type { JsonObject, JsonValue } from "@/lib/json";
 
 const MAX_DEPTH = 5;
 
@@ -21,9 +21,9 @@ function sampleValue(
   if (depth > MAX_DEPTH) return undefined;
 
   // Use enum/const/default/example if available
-  if ('const' in schema) return schema.const;
-  if ('default' in schema) return schema.default;
-  if ('example' in schema) return schema.example;
+  if ("const" in schema) return schema.const;
+  if ("default" in schema) return schema.default;
+  if ("example" in schema) return schema.example;
   if (schema.examples !== undefined && schema.examples.length > 0) {
     return schema.examples[0];
   }
@@ -31,32 +31,32 @@ function sampleValue(
     return schema.enum[0];
   }
 
-  if (schema.type === 'object' || schema.properties) {
+  if (schema.type === "object" || schema.properties) {
     return buildMinimalSample(schema, depth + 1);
   }
-  if (schema.type === 'array') {
+  if (schema.type === "array") {
     if (schema.items) {
       const item = sampleValue(schema.items, depth + 1);
       return item !== undefined ? [item] : [];
     }
     return [];
   }
-  if (schema.type === 'string') {
-    if (schema.format === 'uri' || schema.format === 'url') {
-      return 'https://placehold.co/1x1.png';
+  if (schema.type === "string") {
+    if (schema.format === "uri" || schema.format === "url") {
+      return "https://placehold.co/1x1.png";
     }
-    if (schema.format === 'email') return 'test@example.com';
-    if (schema.format === 'date') return '2025-01-01';
-    if (schema.format === 'date-time') return '2025-01-01T00:00:00Z';
-    if (schema.format === 'uuid') return '00000000-0000-0000-0000-000000000000';
-    return 'test';
+    if (schema.format === "email") return "test@example.com";
+    if (schema.format === "date") return "2025-01-01";
+    if (schema.format === "date-time") return "2025-01-01T00:00:00Z";
+    if (schema.format === "uuid") return "00000000-0000-0000-0000-000000000000";
+    return "test";
   }
-  if (schema.type === 'number' || schema.type === 'integer') {
+  if (schema.type === "number" || schema.type === "integer") {
     return schema.minimum ?? 0;
   }
-  if (schema.type === 'boolean') return true;
+  if (schema.type === "boolean") return true;
 
-  return 'test';
+  return "test";
 }
 
 function buildMinimalSample(
@@ -84,7 +84,7 @@ function buildMinimalSample(
 
   // Only fill properties explicitly marked required. If the merchant doesn't
   // mark required fields, that's their spec to fix.
-  const keys = Object.keys(properties).filter(k => required.has(k));
+  const keys = Object.keys(properties).filter((k) => required.has(k));
 
   if (keys.length === 0) return undefined;
 
@@ -114,7 +114,7 @@ export function buildMinimalSampleFromInputSchema(
   if (!advisory.success) return undefined;
 
   const wrappedSchema =
-    advisory.data.body?.content?.['application/json']?.schema;
+    advisory.data.body?.content?.["application/json"]?.schema;
   const effectiveSchema =
     wrappedSchema ?? advisory.data.requestBody ?? advisory.data;
 
@@ -136,7 +136,7 @@ function scalarParamValue(value: JsonValue): string {
 
 /** Serializes a sampled value into a query-string value. */
 function queryParamValue(value: JsonValue): string {
-  if (Array.isArray(value)) return value.map(scalarParamValue).join(',');
+  if (Array.isArray(value)) return value.map(scalarParamValue).join(",");
   return scalarParamValue(value);
 }
 
@@ -158,7 +158,7 @@ export function buildMinimalQueryParamsFromInputSchema(
   const result: Record<string, string> = {};
 
   for (const param of parameters) {
-    if (param.in !== 'query') continue;
+    if (param.in !== "query") continue;
     if (!param.required) continue;
 
     if (param.schema) {
@@ -168,7 +168,7 @@ export function buildMinimalQueryParamsFromInputSchema(
         continue;
       }
     }
-    result[param.name] = 'test';
+    result[param.name] = "test";
   }
 
   return Object.keys(result).length > 0 ? result : undefined;

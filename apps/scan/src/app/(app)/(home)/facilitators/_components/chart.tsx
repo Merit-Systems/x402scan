@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { LoadingMultiCharts, MultiCharts } from '@/components/ui/charts/multi';
-import { facilitators } from '@/lib/facilitators';
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import type { ChartData } from "@/components/ui/charts/chart/types";
+import { LoadingMultiCharts, MultiCharts } from "@/components/ui/charts/multi";
+import { facilitators } from "@/lib/facilitators";
 
-import { formatTokenAmount } from '@/lib/token';
-import { createTab } from '@/lib/charts';
-import { api } from '@/trpc/client';
+import { formatTokenAmount } from "@/lib/token";
+import { createTab } from "@/lib/charts";
+import { api } from "@/trpc/client";
 
-type FacilitatorKey = `${string}-${'transactions' | 'amount'}`;
+type FacilitatorKey = `${string}-${"transactions" | "amount"}`;
 
 export const FacilitatorsChart = () => {
   const { chain } = useChain();
@@ -28,7 +28,7 @@ export const FacilitatorsChart = () => {
   });
 
   const chartData: ChartData<Record<FacilitatorKey, number>>[] =
-    bucketedFacilitatorData.map(item => ({
+    bucketedFacilitatorData.map((item) => ({
       timestamp: item.bucket_start.toISOString(),
       ...Object.fromEntries(
         Object.entries(item.facilitators).flatMap<[string, number]>(
@@ -59,7 +59,7 @@ export const FacilitatorsChart = () => {
 
   const totals = bucketedFacilitatorData[0]?.totals;
 
-  const facilitatorTotals = facilitators.map(facilitator => ({
+  const facilitatorTotals = facilitators.map((facilitator) => ({
     facilitator,
     totalTransactions: totals?.[facilitator.id]?.totalTransactions ?? 0,
     totalAmount: totals?.[facilitator.id]?.totalAmount ?? 0,
@@ -82,29 +82,29 @@ export const FacilitatorsChart = () => {
             Record<FacilitatorKey, number>,
             (typeof facilitators)[number]
           >({
-            label: 'Transactions',
+            label: "Transactions",
             amount: overallData.total_transactions.toLocaleString(),
-            items: facilitatorsByTransactions.map(f => f.facilitator),
+            items: facilitatorsByTransactions.map((f) => f.facilitator),
             getValue: (
               data: number,
               dataType: string,
               allData: Record<FacilitatorKey, number>
             ) => getValueHandler(data, dataType, allData),
-            getKey: f => f.id,
+            getKey: (f) => f.id,
           }),
           createTab<
             Record<FacilitatorKey, number>,
             (typeof facilitators)[number]
           >({
-            label: 'Amount',
+            label: "Amount",
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
-            items: facilitatorsByAmount.map(f => f.facilitator),
+            items: facilitatorsByAmount.map((f) => f.facilitator),
             getValue: (
               data: number,
               dataType: string,
               allData: Record<FacilitatorKey, number>
             ) => getValueHandler(data, dataType, allData),
-            getKey: f => f.id,
+            getKey: (f) => f.id,
           }),
         ]}
       />
@@ -117,12 +117,12 @@ export const LoadingFacilitatorsChart = () => {
     <LoadingMultiCharts
       tabs={[
         {
-          type: 'bar',
-          label: 'Transactions',
+          type: "bar",
+          label: "Transactions",
         },
         {
-          type: 'bar',
-          label: 'Amount',
+          type: "bar",
+          label: "Amount",
         },
       ]}
     />

@@ -1,12 +1,12 @@
-import { useConnect } from '@wallet-standard/react';
+import { useConnect } from "@wallet-standard/react";
 
-import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+import { useSolanaWallet } from "@/app/_contexts/solana/hook";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import { ConnectInjectedWalletButton } from './button';
+import { ConnectInjectedWalletButton } from "./button";
 
-import type { UiWallet } from '@wallet-standard/react';
+import type { UiWallet } from "@wallet-standard/react";
 
 interface Props {
   className?: string;
@@ -22,8 +22,8 @@ export const ConnectSVMInjectedWalletButtons: React.FC<Props> = ({
   prefix,
 }) => {
   return (
-    <div className={cn('flex flex-col gap-2 w-full', className)}>
-      {wallets.map(wallet => (
+    <div className={cn("flex flex-col gap-2 w-full", className)}>
+      {wallets.map((wallet) => (
         <ConnectSVMInjectedWalletButton
           key={wallet.name}
           wallet={wallet}
@@ -59,7 +59,7 @@ const ConnectSVMInjectedWalletButton: React.FC<
       setConnectedWallet({ account: first!, wallet });
       return connectedAccount;
     } catch (error) {
-      console.error('Failed to connect wallet:', error);
+      console.error("Failed to connect wallet:", error);
     }
   };
 

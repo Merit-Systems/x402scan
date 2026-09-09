@@ -1,11 +1,11 @@
-import { logger } from '@trigger.dev/sdk/v3';
+import { logger } from "@trigger.dev/sdk/v3";
 import type {
   SyncConfig,
   Facilitator,
   TransferEventData,
   FacilitatorConfig,
   RawTransferQueryResponse,
-} from '../../types';
+} from "../../types";
 
 interface BitqueryGraphqlResponse {
   data: RawTransferQueryResponse;
@@ -74,13 +74,13 @@ async function executeBitqueryRequest(
   query: string
 ): Promise<TransferEventData[]> {
   const headers = new Headers();
-  headers.append('Content-Type', 'application/json');
-  headers.append('Authorization', `Bearer ${process.env.BITQUERY_API_KEY!}`);
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", `Bearer ${process.env.BITQUERY_API_KEY!}`);
 
   const rawQuery = JSON.stringify({ query });
 
   const requestOptions = {
-    method: 'POST',
+    method: "POST",
     headers: headers,
     body: rawQuery,
   };

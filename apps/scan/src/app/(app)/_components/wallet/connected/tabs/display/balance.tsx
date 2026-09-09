@@ -1,14 +1,14 @@
-import { skipToken } from '@tanstack/react-query';
+import { skipToken } from "@tanstack/react-query";
 
-import { Chain } from '@/types/chain';
-import { useWalletChain } from '../../../../../_contexts/wallet-chain/hook';
-import { ItemContainer } from './item';
-import { Loading } from '@/components/ui/loading';
-import { api } from '@/trpc/client';
-import { useEvmTokenBalance } from '@/app/(app)/_hooks/balance/token/use-evm-token-balance';
-import { usdc } from '@/lib/tokens/usdc';
-import { Skeleton } from '@/components/ui/skeleton';
-import { solanaAddressSchema } from '@/lib/schemas';
+import { Chain } from "@/types/chain";
+import { useWalletChain } from "../../../../../_contexts/wallet-chain/hook";
+import { ItemContainer } from "./item";
+import { Loading } from "@/components/ui/loading";
+import { api } from "@/trpc/client";
+import { useEvmTokenBalance } from "@/app/(app)/_hooks/balance/token/use-evm-token-balance";
+import { usdc } from "@/lib/tokens/usdc";
+import { Skeleton } from "@/components/ui/skeleton";
+import { solanaAddressSchema } from "@/lib/schemas";
 
 interface Props {
   address: string;
@@ -57,11 +57,11 @@ const BalanceItem = ({
     <ItemContainer
       label="Balance"
       value={
-        <div className="bg-muted rounded-md border p-2">
+        <div className="rounded-md border bg-muted p-2">
           <Loading
             value={balance}
             isLoading={isLoading}
-            component={value => <p>{value} USDC</p>}
+            component={(value) => <p>{value} USDC</p>}
             loadingComponent={<Skeleton className="h-6 w-16" />}
           />
         </div>

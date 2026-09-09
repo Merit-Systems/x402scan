@@ -1,5 +1,5 @@
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props<T> {
   title: string;
@@ -22,18 +22,18 @@ export const Filters = <T,>({
 }: Props<T>) => {
   return (
     <div className="my-2">
-      <div className="text-muted-foreground mb-1.5 px-2 text-xs font-medium">
+      <div className="mb-1.5 px-2 text-xs font-medium text-muted-foreground">
         {title}
       </div>
       <div className="no-scrollbar flex gap-1 overflow-x-auto px-2">
         {isLoading
           ? Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="w-12 h-[22px]" />
+              <Skeleton key={index} className="h-[22px] w-12" />
             ))
-          : items?.map(item => (
+          : items?.map((item) => (
               <Badge
                 key={itemKey(item)}
-                variant={isSelected(item) ? 'default' : 'outline'}
+                variant={isSelected(item) ? "default" : "outline"}
                 className="shrink-0 cursor-pointer gap-1 px-1.5 py-0.5"
                 onClick={() => onClickItem(item)}
               >

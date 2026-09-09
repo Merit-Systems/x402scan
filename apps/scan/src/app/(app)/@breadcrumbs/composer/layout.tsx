@@ -1,10 +1,10 @@
-import { Network } from 'lucide-react';
-import { Breadcrumb } from '../_components/breadcrumb';
-import { Separator } from '../_components/separator';
+import { Network } from "lucide-react";
+import { Breadcrumb } from "../_components/breadcrumb";
+import { Separator } from "../_components/separator";
 
 export default function ComposerBreadcrumbsLayout({
   children,
-}: LayoutProps<'/composer'>) {
+}: LayoutProps<"/composer">) {
   return (
     <>
       <Separator />

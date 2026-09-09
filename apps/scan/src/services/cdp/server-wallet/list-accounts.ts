@@ -1,6 +1,6 @@
-import 'server-only';
+import "server-only";
 
-import { cdpClient } from './client';
+import { cdpClient } from "./client";
 
 interface ServerAccount {
   address: string;
@@ -30,10 +30,10 @@ export const listAllServerAccounts = async (): Promise<ServerAccount[]> => {
 };
 
 export const generateAccountsCsv = (accounts: ServerAccount[]): string => {
-  const header = 'name,address\n';
+  const header = "name,address\n";
   const rows = accounts
-    .map(account => `${account.name ?? ''},${account.address}`)
-    .join('\n');
+    .map((account) => `${account.name ?? ""},${account.address}`)
+    .join("\n");
   return header + rows;
 };
 

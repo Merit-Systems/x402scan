@@ -31,11 +31,11 @@ import {
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
-} from '../facilitators';
+} from "../facilitators";
 
-import { validateUniqueFacilitators } from './validate';
+import { validateUniqueFacilitators } from "./validate";
 
-import type { Facilitator } from '../types';
+import type { Facilitator } from "../types";
 
 const FACILITATORS = validateUniqueFacilitators([
   coinbaseFacilitator,

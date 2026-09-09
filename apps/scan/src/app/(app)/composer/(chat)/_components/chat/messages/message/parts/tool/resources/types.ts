@@ -1,12 +1,12 @@
-import type { ToolUIPart } from 'ai';
+import type { ToolUIPart } from "ai";
 
 export type InputComponent = React.FC<{
-  input: ToolUIPart['input'];
+  input: ToolUIPart["input"];
 }>;
 
 export type OutputComponent = React.FC<{
-  output: ToolUIPart['output'];
-  errorText: ToolUIPart['errorText'];
+  output: ToolUIPart["output"];
+  errorText: ToolUIPart["errorText"];
 }>;
 
 export interface ResourceComponent {

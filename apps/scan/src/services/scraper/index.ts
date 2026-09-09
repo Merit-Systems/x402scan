@@ -1,8 +1,8 @@
-import { scrapeFavicon } from '@agentcash/discovery';
-import type { OgObject } from 'open-graph-scraper/types';
-import { fetchHtml } from './html';
-import { parseMetadataFromHtml } from './metadata';
-import { parseOgFromHtml } from './og';
+import { scrapeFavicon } from "@agentcash/discovery";
+import type { OgObject } from "open-graph-scraper/types";
+import { fetchHtml } from "./html";
+import { parseMetadataFromHtml } from "./metadata";
+import { parseOgFromHtml } from "./og";
 
 /**
  * Parses OG and metadata from an HTML string
@@ -21,8 +21,8 @@ const parseAllFromHtml = async (html: string) => {
  */
 const hasOgData = (og: OgObject | null): boolean => {
   if (!og) return false;
-  return ['ogTitle', 'ogDescription', 'ogImage'].some(
-    key => og[key as keyof OgObject]
+  return ["ogTitle", "ogDescription", "ogImage"].some(
+    (key) => og[key as keyof OgObject]
   );
 };
 
@@ -55,7 +55,7 @@ export const scrapeOriginData = async (inputOrigin: string) => {
   let favicon = initialFavicon;
 
   // Handle API subdomain fallback
-  if (origin.startsWith('https://api.')) {
+  if (origin.startsWith("https://api.")) {
     const baseOrigin = `https://${origin.slice(12)}`;
     const needsOg = !hasOgData(og);
     const needsMetadata = !hasMetadata(metadata);

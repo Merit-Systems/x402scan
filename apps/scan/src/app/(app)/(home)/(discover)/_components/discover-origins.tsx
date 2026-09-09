@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
+import { useSellersSorting } from "@/app/(app)/_contexts/sorting/sellers/hook";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
 
-import { featuredServiceColumns as columns } from '@/app/(app)/(home)/(overview)/_components/sellers/featured-columns';
-import { api } from '@/trpc/client';
+import { featuredServiceColumns as columns } from "@/app/(app)/(home)/(overview)/_components/sellers/featured-columns";
+import { api } from "@/trpc/client";
 
 export const DiscoverSellersTable: React.FC = () => {
   const { sorting } = useSellersSorting();

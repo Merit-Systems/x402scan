@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useRef } from 'react';
+import { useRef } from "react";
 
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from "lucide-react";
 
-import { useTheme } from 'next-themes';
+import { useTheme } from "next-themes";
 
-import { flushSync } from 'react-dom';
+import { flushSync } from "react-dom";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface props {
   className?: string;
@@ -24,8 +24,8 @@ export const AnimatedThemeToggler = ({ className }: props) => {
 
     await document.startViewTransition(() => {
       flushSync(() => {
-        const dark = document.documentElement.classList.toggle('dark');
-        setTheme(dark ? 'dark' : 'light');
+        const dark = document.documentElement.classList.toggle("dark");
+        setTheme(dark ? "dark" : "light");
       });
     }).ready;
 
@@ -47,8 +47,8 @@ export const AnimatedThemeToggler = ({ className }: props) => {
       },
       {
         duration: 700,
-        easing: 'ease-in-out',
-        pseudoElement: '::view-transition-new(root)',
+        easing: "ease-in-out",
+        pseudoElement: "::view-transition-new(root)",
       }
     );
   };

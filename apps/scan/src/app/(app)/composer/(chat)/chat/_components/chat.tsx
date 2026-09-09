@@ -1,6 +1,6 @@
-import { Chat as BaseChat } from '../../_components/chat';
+import { Chat as BaseChat } from "../../_components/chat";
 
-import type { Message } from '@x402scan/scan-db/types';
+import type { Message } from "@x402scan/scan-db/types";
 
 interface Props {
   id: string;

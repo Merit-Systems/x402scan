@@ -1,19 +1,19 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { baseQuerySchema } from '../../schemas';
-import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { baseQuerySchema } from "../../schemas";
+import { createCachedQuery, createStandardCacheKey } from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 export const sellerStatisticsMVInputSchema = baseQuerySchema;
 
 // Map timeframe suffix to PostgreSQL interval
 const intervalByTimeframe = new Map<string, string>([
-  ['1d', '1 day'],
-  ['7d', '7 days'],
-  ['14d', '14 days'],
-  ['30d', '30 days'],
+  ["1d", "1 day"],
+  ["7d", "7 days"],
+  ["14d", "14 days"],
+  ["30d", "30 days"],
 ]);
 
 const getTimeframeInterval = (mvTimeframe: string): string | null =>
@@ -54,7 +54,7 @@ const getOverallSellerStatisticsMVUncached = async (
     );
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   // Query the appropriate materialized view with new_sellers from recipient_first_seen
   // For 0d (all-time), new_sellers equals total_sellers since all sellers were "new" at some point
@@ -127,8 +127,8 @@ const getOverallSellerStatisticsMVUncached = async (
 
 export const getOverallSellerStatisticsMV = createCachedQuery({
   queryFn: getOverallSellerStatisticsMVUncached,
-  cacheKeyPrefix: 'overall-seller-statistics-mv',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['latest_block_timestamp'],
-  tags: ['statistics', 'sellers'],
+  cacheKeyPrefix: "overall-seller-statistics-mv",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["latest_block_timestamp"],
+  tags: ["statistics", "sellers"],
 });

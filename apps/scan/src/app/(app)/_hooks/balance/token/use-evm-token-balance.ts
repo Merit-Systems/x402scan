@@ -1,18 +1,18 @@
-import { useAccount, useBalance as useBalanceWagmi } from 'wagmi';
+import { useAccount, useBalance as useBalanceWagmi } from "wagmi";
 
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
 
-import { CHAIN_ID } from '@/types/chain';
+import { CHAIN_ID } from "@/types/chain";
 
-import type { Token } from '@/types/token';
-import type { UseBalanceParameters } from 'wagmi';
-import type { Address } from 'viem';
-import type { UseBalanceReturnType } from '../types';
+import type { Token } from "@/types/token";
+import type { UseBalanceParameters } from "wagmi";
+import type { Address } from "viem";
+import type { UseBalanceReturnType } from "../types";
 
 interface Props {
   token: Token;
   address?: Address;
-  query?: UseBalanceParameters['query'];
+  query?: UseBalanceParameters["query"];
 }
 
 export const useEvmTokenBalance = (props: Props): UseBalanceReturnType => {

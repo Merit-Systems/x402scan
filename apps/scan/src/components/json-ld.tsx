@@ -1,4 +1,4 @@
-import type { JsonValue } from '@/lib/json';
+import type { JsonValue } from "@/lib/json";
 
 /** A JSON-LD schema object. `undefined` values are dropped by JSON.stringify. */
 type JsonLdObject = Record<string, JsonValue | undefined>;
@@ -19,7 +19,7 @@ export function JsonLd({ data }: JsonLdProps) {
           key={i}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(item).replace(/</g, '\\u003c'),
+            __html: JSON.stringify(item).replace(/</g, "\\u003c"),
           }}
         />
       ))}

@@ -1,6 +1,6 @@
-import z from 'zod';
+import z from "zod";
 
-import { adminProcedure, createTRPCRouter } from '../../trpc';
+import { adminProcedure, createTRPCRouter } from "../../trpc";
 
 import {
   createTag,
@@ -13,7 +13,7 @@ import {
   deleteResourceTag,
   removeSubTagsFromTag,
   unassignAllSubTags,
-} from '@/services/db/resources/tag';
+} from "@/services/db/resources/tag";
 import {
   createResourceRequestMetadata,
   createResourceRequestMetadataSchema,
@@ -23,7 +23,7 @@ import {
   getAllResourceRequestMetadata,
   deleteResourceRequestMetadata,
   searchResourcesForMetadata,
-} from '@/services/db/resources/request-metadata';
+} from "@/services/db/resources/request-metadata";
 import {
   createExcludedResource,
   createExcludedResourceSchema,
@@ -31,26 +31,26 @@ import {
   deleteExcludedResource,
   deleteExcludedResourceByResourceId,
   searchResourcesForExcludes,
-} from '@/services/db/resources/excludes';
+} from "@/services/db/resources/excludes";
 import {
   getBucketedResourceCreations,
   getBucketedToolCalls,
   getBucketedToolCallsByTags,
   getBucketedToolCallsByResources,
   resourceBucketedQuerySchema,
-} from '@/services/db/resources/stats';
-import { searchResourcesCombined } from '@/services/resource-search/combined-search';
+} from "@/services/db/resources/stats";
+import { searchResourcesCombined } from "@/services/resource-search/combined-search";
 
-const refinementModeSchema = z.enum(['none', 'llm', 'reranker', 'both']);
-const queryModeSchema = z.enum(['keywords', 'sql', 'sql-parallel']);
+const refinementModeSchema = z.enum(["none", "llm", "reranker", "both"]);
+const queryModeSchema = z.enum(["keywords", "sql", "sql-parallel"]);
 
 export const adminResourcesRouter = createTRPCRouter({
   search: adminProcedure
     .input(
       z.object({
         query: z.string(),
-        refinementMode: refinementModeSchema.optional().default('none'),
-        queryMode: queryModeSchema.optional().default('keywords'),
+        refinementMode: refinementModeSchema.optional().default("none"),
+        queryMode: queryModeSchema.optional().default("keywords"),
       })
     )
     .query(async ({ input }) => {

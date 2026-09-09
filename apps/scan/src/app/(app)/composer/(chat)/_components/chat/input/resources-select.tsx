@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
 import {
   Drawer,
@@ -9,21 +9,21 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer';
+} from "@/components/ui/drawer";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { Favicons } from '@/app/(app)/_components/favicon';
+} from "@/components/ui/popover";
+import { Favicons } from "@/app/(app)/_components/favicon";
 
-import { ResourceList } from '../../resource-list';
+import { ResourceList } from "../../resource-list";
 
-import { useIsMobile } from '@/hooks/use-is-mobile';
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { SelectedResource } from '../../../_types/chat-config';
+import type { SelectedResource } from "../../../_types/chat-config";
 
 interface Props {
   resources: SelectedResource[];
@@ -39,21 +39,21 @@ export const ResourcesSelect: React.FC<Props> = ({
   const trigger = (
     <Button variant="outline" size="sm">
       <Favicons
-        favicons={resources.map(resource => resource.favicon)}
+        favicons={resources.map((resource) => resource.favicon)}
         iconContainerClassName="size-5"
       />
       <span className="text-xs">
         {resources.length > 0
-          ? `${resources.length} Tool${resources.length > 1 ? 's' : ''}`
-          : 'Select Tools'}
+          ? `${resources.length} Tool${resources.length > 1 ? "s" : ""}`
+          : "Select Tools"}
       </span>
     </Button>
   );
 
   const content = (
-    <div className={cn('w-full max-w-full')}>
+    <div className={cn("w-full max-w-full")}>
       <ResourceList
-        selectedResourceIds={resources.map(resource => resource.id)}
+        selectedResourceIds={resources.map((resource) => resource.id)}
         onSelectResource={onSelectResource}
         gradientClassName="md:from-popover"
       />

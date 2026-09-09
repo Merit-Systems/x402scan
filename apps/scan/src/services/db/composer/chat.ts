@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import type { Prisma } from '@x402scan/scan-db';
+import type { Prisma } from "@x402scan/scan-db";
 
 export const createChat = async (data: Prisma.ChatCreateInput) => {
   return await scanDb.chat.create({
@@ -20,10 +20,10 @@ export const createChat = async (data: Prisma.ChatCreateInput) => {
 
 export const getChat = async (id: string, userId?: string) => {
   return await scanDb.chat.findFirst({
-    where: { id, OR: [{ userId }, { visibility: 'public' }] },
+    where: { id, OR: [{ userId }, { visibility: "public" }] },
     include: {
       messages: {
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: "asc" },
       },
       userAgentConfiguration: {
         select: {
@@ -36,7 +36,7 @@ export const getChat = async (id: string, userId?: string) => {
 
 export const getChatStreamId = async (id: string, userId?: string) => {
   return await scanDb.chat.findFirst({
-    where: { id, OR: [{ userId }, { visibility: 'public' }] },
+    where: { id, OR: [{ userId }, { visibility: "public" }] },
     select: { activeStreamId: true },
   });
 };
@@ -56,7 +56,7 @@ export const listChats = async (
         ? { agentConfigurationId: agentId }
         : null,
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     include: {
       userAgentConfiguration: {
         select: {

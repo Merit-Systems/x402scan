@@ -1,30 +1,30 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
-import { toPaginatedResponse } from '@/lib/pagination';
+import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
+import { toPaginatedResponse } from "@/lib/pagination";
 
-import { baseListQuerySchema } from '../../schemas';
+import { baseListQuerySchema } from "../../schemas";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+} from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getTimeRangeFromTimeframe } from "@/lib/time-range";
 
-import type { paginatedQuerySchema } from '@/lib/pagination';
+import type { paginatedQuerySchema } from "@/lib/pagination";
 
 const BUYER_SELLERS_SORT_IDS = [
-  'tx_count',
-  'total_amount',
-  'latest_block_timestamp',
+  "tx_count",
+  "total_amount",
+  "latest_block_timestamp",
 ] as const;
 
 export type BuyerSellerSortId = (typeof BUYER_SELLERS_SORT_IDS)[number];
 
 export const listBuyerSellersInputSchema = baseListQuerySchema({
   sortIds: BUYER_SELLERS_SORT_IDS,
-  defaultSortId: 'tx_count',
+  defaultSortId: "tx_count",
 }).extend({
   sender: mixedAddressSchema,
 });
@@ -53,7 +53,7 @@ const listBuyerSellersUncached = async (
     conditions.push(Prisma.sql`AND t.chain = ${input.chain}`);
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
   const offset = pagination.page * pagination.page_size;
 
   const items = await queryRaw(
@@ -68,7 +68,7 @@ const listBuyerSellersUncached = async (
     FROM "TransferEvent" t
     ${whereClause}
     GROUP BY t.recipient
-    ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw('DESC') : Prisma.raw('ASC')}
+    ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw("DESC") : Prisma.raw("ASC")}
     LIMIT ${pagination.page_size}
     OFFSET ${offset}`,
     z.array(
@@ -112,8 +112,8 @@ const listBuyerSellersUncached = async (
 
 export const listBuyerSellers = createCachedPaginatedQuery({
   queryFn: listBuyerSellersUncached,
-  cacheKeyPrefix: 'buyer-sellers-list',
+  cacheKeyPrefix: "buyer-sellers-list",
   createCacheKey: createStandardCacheKey,
-  dateFields: ['latest_block_timestamp'],
-  tags: ['buyers', 'sellers'],
+  dateFields: ["latest_block_timestamp"],
+  tags: ["buyers", "sellers"],
 });

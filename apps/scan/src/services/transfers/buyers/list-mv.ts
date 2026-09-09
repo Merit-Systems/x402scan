@@ -1,32 +1,32 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
-import { toPaginatedResponse } from '@/lib/pagination';
+import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
+import { toPaginatedResponse } from "@/lib/pagination";
 
-import { baseListQuerySchema } from '../schemas';
+import { baseListQuerySchema } from "../schemas";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
-import { buildBuyersOrderByColumn } from './order-by';
+} from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
+import { buildBuyersOrderByColumn } from "./order-by";
 
-import type { paginatedQuerySchema } from '@/lib/pagination';
+import type { paginatedQuerySchema } from "@/lib/pagination";
 
 const BUYERS_SORT_IDS = [
-  'tx_count',
-  'total_amount',
-  'latest_block_timestamp',
-  'unique_sellers',
+  "tx_count",
+  "total_amount",
+  "latest_block_timestamp",
+  "unique_sellers",
 ] as const;
 
 export type BuyerSortId = (typeof BUYERS_SORT_IDS)[number];
 
 export const listTopBuyersMVInputSchema = baseListQuerySchema({
   sortIds: BUYERS_SORT_IDS,
-  defaultSortId: 'tx_count',
+  defaultSortId: "tx_count",
 });
 
 const listTopBuyersMVUncached = async (
@@ -61,7 +61,7 @@ const listTopBuyersMVUncached = async (
     );
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   const t0 = performance.now();
   const offset = pagination.page * pagination.page_size;
@@ -151,7 +151,7 @@ const listTopBuyersMVUncached = async (
       ...pagination,
     });
   } catch (error) {
-    if (String(error).includes('does not exist')) {
+    if (String(error).includes("does not exist")) {
       console.warn(
         `[buyers-mv] MV ${tableName} not yet available, returning empty`
       );
@@ -167,8 +167,8 @@ const listTopBuyersMVUncached = async (
 
 export const listTopBuyersMV = createCachedPaginatedQuery({
   queryFn: listTopBuyersMVUncached,
-  cacheKeyPrefix: 'buyers-list-mv',
+  cacheKeyPrefix: "buyers-list-mv",
   createCacheKey: createStandardCacheKey,
-  dateFields: ['latest_block_timestamp'],
-  tags: ['buyers'],
+  dateFields: ["latest_block_timestamp"],
+  tags: ["buyers"],
 });

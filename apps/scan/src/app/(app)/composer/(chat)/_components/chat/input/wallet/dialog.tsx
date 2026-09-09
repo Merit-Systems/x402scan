@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import { ArrowUp, Key } from 'lucide-react';
+import { ArrowUp, Key } from "lucide-react";
 
 import {
   Dialog,
@@ -9,20 +9,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Logo } from '@/components/logo';
+import { Logo } from "@/components/logo";
 
-import { Send } from './content/send';
-import { WalletExport } from './content/export';
+import { Send } from "./content/send";
+import { WalletExport } from "./content/export";
 
-import { OnrampSessionDialog } from './content/onramp-session-dialog';
+import { OnrampSessionDialog } from "./content/onramp-session-dialog";
 
-import { WalletChainProvider } from '@/app/(app)/_contexts/wallet-chain/provider';
-import { WalletChain } from '@/app/(app)/_contexts/wallet-chain/component';
+import { WalletChainProvider } from "@/app/(app)/_contexts/wallet-chain/provider";
+import { WalletChain } from "@/app/(app)/_contexts/wallet-chain/component";
 
-import type { SupportedChain } from '@/types/chain';
+import type { SupportedChain } from "@/types/chain";
 
 interface Props {
   children: React.ReactNode;
@@ -34,7 +34,7 @@ export const WalletDialog: React.FC<Props> = ({
   chainsWithBalance,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [tab, setTab] = useState<'send' | 'export'>('send');
+  const [tab, setTab] = useState<"send" | "export">("send");
 
   return (
     <WalletChainProvider
@@ -45,20 +45,20 @@ export const WalletDialog: React.FC<Props> = ({
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>{children}</DialogTrigger>
         <DialogContent
-          className="p-0 overflow-hidden sm:max-w-md"
+          className="overflow-hidden p-0 sm:max-w-md"
           showCloseButton={false}
         >
           <Tabs
-            className="w-full overflow-hidden flex flex-col gap-4"
+            className="flex w-full flex-col gap-4 overflow-hidden"
             value={tab}
-            onValueChange={value => setTab(value as 'send' | 'export')}
+            onValueChange={(value) => setTab(value as "send" | "export")}
           >
-            <DialogHeader className=" gap-2 bg-muted">
-              <div className="flex flex-row justify-between items-center p-4">
-                <div className="flex flex-row gap-2 items-center">
+            <DialogHeader className="gap-2 bg-muted">
+              <div className="flex flex-row items-center justify-between p-4">
+                <div className="flex flex-row items-center gap-2">
                   <Logo className="size-8" />
                   <div className="flex flex-col gap-2">
-                    <DialogTitle className="text-primary text-xl">
+                    <DialogTitle className="text-xl text-primary">
                       Your Composer Wallet
                     </DialogTitle>
                     <DialogDescription className="hidden">
@@ -68,8 +68,8 @@ export const WalletDialog: React.FC<Props> = ({
                 </div>
                 <WalletChain options={chainsWithBalance} />
               </div>
-              <TabsList className="w-full h-fit max-w-full overflow-x-auto no-scrollbar">
-                <div className="h-[34px] border-b w-4" />
+              <TabsList className="no-scrollbar h-fit w-full max-w-full overflow-x-auto">
+                <div className="h-[34px] w-4 border-b" />
                 <TabsTrigger
                   value="send"
                   variant="github"
@@ -84,22 +84,22 @@ export const WalletDialog: React.FC<Props> = ({
                 >
                   <Key className="size-4" /> Export
                 </TabsTrigger>
-                <div className="h-[34px] border-b flex-1" />
+                <div className="h-[34px] flex-1 border-b" />
               </TabsList>
             </DialogHeader>
-            <div className="text-xs font-mono p-4 bg-primary/10 mx-4 rounded-md border-primary border text-primary">
+            <div className="mx-4 rounded-md border border-primary bg-primary/10 p-4 font-mono text-xs text-primary">
               Composer no longer uses these funds. Withdraw all funds deposited
               on the Composer to your wallet.
             </div>
             <TabsContent
               value="send"
-              className="w-full overflow-hidden mt-0 px-4 pb-4"
+              className="mt-0 w-full overflow-hidden px-4 pb-4"
             >
               <Send />
             </TabsContent>
             <TabsContent
               value="export"
-              className="w-full overflow-hidden mt-0 px-4 pb-4"
+              className="mt-0 w-full overflow-hidden px-4 pb-4"
             >
               <WalletExport />
             </TabsContent>

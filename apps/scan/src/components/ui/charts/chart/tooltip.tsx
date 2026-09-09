@@ -1,10 +1,10 @@
-import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
-import { Card } from '../../card';
+import { Card } from "../../card";
 
-import type { ChartData, TooltipRowProps } from './types';
+import type { ChartData, TooltipRowProps } from "./types";
 
 interface Props<T extends Record<string, number>> {
   data: ChartData<T>;
@@ -16,7 +16,7 @@ export const TooltipContent = <T extends Record<string, number>>({
   rows,
 }: Props<T>) => {
   const sortedRows = rows
-    .filter(row => row.key in data)
+    .filter((row) => row.key in data)
     .sort((a, b) => data[b.key]! - data[a.key]!);
 
   return (
@@ -24,7 +24,7 @@ export const TooltipContent = <T extends Record<string, number>>({
       <TooltipDate date={new Date(data.timestamp)} />
       <Separator />
       <div className="py-2">
-        {sortedRows.map(row => (
+        {sortedRows.map((row) => (
           <TooltipRow
             {...row}
             key={row.key as string}
@@ -46,7 +46,7 @@ const TooltipRow = <T extends Record<string, number>, K extends keyof T>({
   value: string;
 }) => {
   return (
-    <div className="flex justify-between w-full gap-4 px-2">
+    <div className="flex w-full justify-between gap-4 px-2">
       <div className="flex items-center gap-2">
         {dotColor && (
           <div
@@ -54,13 +54,13 @@ const TooltipRow = <T extends Record<string, number>, K extends keyof T>({
             style={{ backgroundColor: dotColor }}
           />
         )}
-        <p className={cn('text-xs text-muted-foreground', labelClassName)}>
+        <p className={cn("text-xs text-muted-foreground", labelClassName)}>
           {label}
         </p>
       </div>
       <p
         className={cn(
-          'text-xs text-muted-foreground font-medium',
+          "text-xs text-muted-foreground font-medium",
           valueClassName
         )}
       >
@@ -72,8 +72,8 @@ const TooltipRow = <T extends Record<string, number>, K extends keyof T>({
 
 const TooltipDate = ({ date }: { date: Date }) => {
   return (
-    <div className="flex justify-between items-center w-full gap-4 bg-muted p-2">
-      <p className="font-medium text-xs">{format(date, 'MMM d H:mm a')}</p>
+    <div className="flex w-full items-center justify-between gap-4 bg-muted p-2">
+      <p className="text-xs font-medium">{format(date, "MMM d H:mm a")}</p>
     </div>
   );
 };

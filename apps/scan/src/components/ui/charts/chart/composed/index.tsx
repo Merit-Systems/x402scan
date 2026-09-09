@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { Area, Bar, Line } from 'recharts';
+import { Area, Bar, Line } from "recharts";
 
-import { BaseChart } from '../chart';
-import { simulateChartData } from '../simulate';
+import { BaseChart } from "../chart";
+import { simulateChartData } from "../simulate";
 
-import type { ComposedChartProps } from './types';
+import type { ComposedChartProps } from "./types";
 
 export const BaseComposedChart = <
-  T extends Omit<Record<string, number>, 'timestamp'>,
+  T extends Omit<Record<string, number>, "timestamp">,
 >({
   data,
   children,

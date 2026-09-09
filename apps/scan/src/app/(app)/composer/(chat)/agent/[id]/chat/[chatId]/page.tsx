@@ -1,11 +1,11 @@
-import { api } from '@/trpc/server';
-import { notFound } from 'next/navigation';
-import { AgentChat } from '../_components/chat';
-import { auth } from '@/auth';
+import { api } from "@/trpc/server";
+import { notFound } from "next/navigation";
+import { AgentChat } from "../_components/chat";
+import { auth } from "@/auth";
 
 export default async function AgentPage({
   params,
-}: PageProps<'/composer/agent/[id]/chat/[chatId]'>) {
+}: PageProps<"/composer/agent/[id]/chat/[chatId]">) {
   const { id, chatId } = await params;
 
   const [session, agentConfiguration, chat] = await Promise.all([

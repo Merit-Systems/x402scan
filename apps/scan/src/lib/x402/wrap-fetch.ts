@@ -4,21 +4,21 @@
  * Simplified wrapper using the official @x402 library.
  * Handles both v1 and v2 protocols automatically.
  */
-import type { Account } from 'viem';
-import type { x402Client as X402Client } from '@x402/core/client';
-import type { ClientEvmSigner } from '@x402/evm';
-import type { ClientSvmSigner } from '@x402/svm';
-import { registerExactEvmScheme } from '@x402/evm/exact/client';
-import { x402Client, wrapFetchWithPayment } from '@x402/fetch';
-import { ExactSvmScheme } from '@x402/svm/exact/client';
-import { ExactSvmSchemeV1 } from '@x402/svm/exact/v1/client';
+import type { Account } from "viem";
+import type { x402Client as X402Client } from "@x402/core/client";
+import type { ClientEvmSigner } from "@x402/evm";
+import type { ClientSvmSigner } from "@x402/svm";
+import { registerExactEvmScheme } from "@x402/evm/exact/client";
+import { x402Client, wrapFetchWithPayment } from "@x402/fetch";
+import { ExactSvmScheme } from "@x402/svm/exact/client";
+import { ExactSvmSchemeV1 } from "@x402/svm/exact/v1/client";
 
 export { x402Client, wrapFetchWithPayment };
 export { registerExactEvmScheme };
 export type { ClientEvmSigner };
 
 /** The EIP-712 payload @x402 clients hand to a signer. */
-type TypedDataPayload = Parameters<ClientEvmSigner['signTypedData']>[0];
+type TypedDataPayload = Parameters<ClientEvmSigner["signTypedData"]>[0];
 
 /**
  * NOTE(shafu): main difference is that WalletClient has `account.address`
@@ -52,12 +52,12 @@ export function registerSvmX402Client(params: {
   const client = new x402Client();
 
   // v2
-  client.register('solana:*', new ExactSvmScheme(signer, { rpcUrl }));
+  client.register("solana:*", new ExactSvmScheme(signer, { rpcUrl }));
 
   // v1
-  client.registerV1('solana', new ExactSvmSchemeV1(signer, { rpcUrl }));
-  client.registerV1('solana-devnet', new ExactSvmSchemeV1(signer, { rpcUrl }));
-  client.registerV1('solana-testnet', new ExactSvmSchemeV1(signer, { rpcUrl }));
+  client.registerV1("solana", new ExactSvmSchemeV1(signer, { rpcUrl }));
+  client.registerV1("solana-devnet", new ExactSvmSchemeV1(signer, { rpcUrl }));
+  client.registerV1("solana-testnet", new ExactSvmSchemeV1(signer, { rpcUrl }));
 
   return client;
 }

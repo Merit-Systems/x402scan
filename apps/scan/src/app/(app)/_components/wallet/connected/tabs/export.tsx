@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import { AlertTriangle, Download, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { AlertTriangle, Download, Eye, EyeOff, Loader2 } from "lucide-react";
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
 import {
   useExportEvmAccount,
   useExportSolanaAccount,
-} from '@coinbase/cdp-hooks';
+} from "@coinbase/cdp-hooks";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button';
-import { CopyCode } from '@/components/ui/copy-code';
+import { Button } from "@/components/ui/button";
+import { CopyCode } from "@/components/ui/copy-code";
 
-import { useWalletChain } from '../../../../_contexts/wallet-chain/hook';
+import { useWalletChain } from "../../../../_contexts/wallet-chain/hook";
 
-import { Chain } from '@/types/chain';
+import { Chain } from "@/types/chain";
 
-import type { Address } from 'viem';
+import type { Address } from "viem";
 
 interface Props {
   address: string;
@@ -58,17 +58,17 @@ export const ExportWallet: React.FC<Props> = ({ address }) => {
     onSuccess: () => {
       setIsRevealed(true);
       setShowConfirmation(false);
-      toast.success('Private key copied to clipboard', {
-        description: 'Please store it securely and clear your clipboard.',
+      toast.success("Private key copied to clipboard", {
+        description: "Please store it securely and clear your clipboard.",
       });
     },
-    onError: error => {
+    onError: (error) => {
       setShowConfirmation(false);
-      toast.error('Failed to export private key', {
+      toast.error("Failed to export private key", {
         description:
           error instanceof Error
             ? error.message
-            : 'An error occurred while exporting your private key.',
+            : "An error occurred while exporting your private key.",
       });
     },
   });
@@ -85,8 +85,8 @@ export const ExportWallet: React.FC<Props> = ({ address }) => {
 
   const handleExportClick = () => {
     if (!address) {
-      toast.error('No wallet address found', {
-        description: 'Please ensure you are logged in with an embedded wallet.',
+      toast.error("No wallet address found", {
+        description: "Please ensure you are logged in with an embedded wallet.",
       });
       setShowConfirmation(false);
       return;
@@ -98,8 +98,8 @@ export const ExportWallet: React.FC<Props> = ({ address }) => {
     <div className="flex flex-col gap-4">
       {showConfirmation ? (
         <>
-          <div className="bg-red-600/10 border border-red-600/20 rounded-lg p-4 flex items-start gap-3">
-            <AlertTriangle className="size-5 text-red-600 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 rounded-lg border border-red-600/20 bg-red-600/10 p-4">
+            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600" />
             <div className="flex flex-col gap-3">
               <p className="text-sm font-semibold text-red-600">
                 Security Warning
@@ -107,7 +107,7 @@ export const ExportWallet: React.FC<Props> = ({ address }) => {
               <p className="text-sm font-medium">
                 Exporting your private key is a high-risk operation.
               </p>
-              <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+              <ul className="list-inside list-disc space-y-1 text-xs text-muted-foreground">
                 <li>
                   Anyone with your private key has complete control of your
                   wallet
@@ -141,15 +141,15 @@ export const ExportWallet: React.FC<Props> = ({ address }) => {
                   Exporting...
                 </>
               ) : (
-                'Yes, Export Private Key'
+                "Yes, Export Private Key"
               )}
             </Button>
           </div>
         </>
       ) : privateKey ? (
         <>
-          <div className="bg-yellow-600/10 border border-yellow-600/20 rounded-lg p-4 flex items-start gap-3">
-            <AlertTriangle className="size-5 text-yellow-600 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 rounded-lg border border-yellow-600/20 bg-yellow-600/10 p-4">
+            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-yellow-600" />
             <div className="flex flex-col gap-2">
               <p className="text-sm font-semibold text-yellow-600">
                 Warning: Keep your key safe
@@ -161,8 +161,8 @@ export const ExportWallet: React.FC<Props> = ({ address }) => {
           </div>
 
           <div className="flex flex-col gap-1">
-            <div className="flex justify-between items-center">
-              <span className="font-medium text-sm">Private Key</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Private Key</span>
               <Button
                 onClick={() => setIsRevealed(!isRevealed)}
                 variant="ghost"
@@ -189,8 +189,8 @@ export const ExportWallet: React.FC<Props> = ({ address }) => {
                 className="max-h-64 overflow-auto"
               />
             ) : (
-              <div className="border rounded-md p-4 bg-muted text-center">
-                <p className="text-sm text-muted-foreground font-mono">
+              <div className="rounded-md border bg-muted p-4 text-center">
+                <p className="font-mono text-sm text-muted-foreground">
                   ••••••••
                 </p>
               </div>
@@ -203,20 +203,20 @@ export const ExportWallet: React.FC<Props> = ({ address }) => {
         </>
       ) : (
         <>
-          <div className="gap-1 flex items-center justify-between">
+          <div className="flex items-center justify-between gap-1">
             <div className="flex items-center gap-1">
               <Image
                 src="/coinbase.png"
                 alt="Base"
                 height={16}
                 width={16}
-                className="size-4 inline-block mr-1 rounded-full"
+                className="mr-1 inline-block size-4 rounded-full"
               />
-              <span className="font-bold text-sm">Export Wallet</span>
+              <span className="text-sm font-bold">Export Wallet</span>
             </div>
           </div>
-          <div className="bg-red-600/10 border border-red-600/20 rounded-lg p-4 flex items-start gap-3">
-            <AlertTriangle className="size-5 text-red-600 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 rounded-lg border border-red-600/20 bg-red-600/10 p-4">
+            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600" />
             <div className="flex flex-col gap-2">
               <p className="text-sm font-semibold text-red-600">
                 Warning: Keep your keys safe

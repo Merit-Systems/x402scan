@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { cleanExternalText, truncateAtDelimiter } from '@/lib/utils';
-import { isBrowser } from '@/lib/runtime-env';
-import type { RouterOutputs } from '@/trpc/client';
+import { useState } from "react";
+import { cleanExternalText, truncateAtDelimiter } from "@/lib/utils";
+import { isBrowser } from "@/lib/runtime-env";
+import type { RouterOutputs } from "@/trpc/client";
 
-type Origin = NonNullable<RouterOutputs['public']['origins']['get']>;
+type Origin = NonNullable<RouterOutputs["public"]["origins"]["get"]>;
 
-export type ChartMetric = 'transactions' | 'volume' | 'buyers';
-export type BottomMetric = 'transactions' | 'volume' | 'buyers' | 'resources';
+export type ChartMetric = "transactions" | "volume" | "buyers";
+export type BottomMetric = "transactions" | "volume" | "buyers" | "resources";
 
 interface Props {
   origin: Origin;
@@ -28,10 +28,10 @@ const X402_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268.
 
 function generateGrainDataUrl(): string {
   const size = 256;
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext("2d")!;
   const imageData = ctx.createImageData(size, size);
   const { data } = imageData;
   for (let i = 0; i < data.length; i += 4) {
@@ -42,7 +42,7 @@ function generateGrainDataUrl(): string {
     data[i + 3] = 18; // low opacity grain
   }
   ctx.putImageData(imageData, 0, 0);
-  return canvas.toDataURL('image/png');
+  return canvas.toDataURL("image/png");
 }
 
 export async function fetchImageAsDataUrl(url: string): Promise<string | null> {
@@ -51,12 +51,12 @@ export async function fetchImageAsDataUrl(url: string): Promise<string | null> {
     const res = await fetch(proxyUrl);
     if (!res.ok) return null;
     const blob = await res.blob();
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.addEventListener('loadend', () =>
+      reader.addEventListener("loadend", () =>
         resolve(reader.result as string)
       );
-      reader.addEventListener('error', () => resolve(null));
+      reader.addEventListener("error", () => resolve(null));
       reader.readAsDataURL(blob);
     });
   } catch {
@@ -100,14 +100,14 @@ function AreaChart({
   });
 
   const linePath = smoothed
-    .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`)
-    .join(' ');
+    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`)
+    .join(" ");
   const first = smoothed[0]!;
   const last = smoothed[smoothed.length - 1]!;
   const areaPath = `${linePath} L${last.x},${height} L${first.x},${height} Z`;
 
   return (
-    <svg width={width} height={height} style={{ display: 'block' }}>
+    <svg width={width} height={height} style={{ display: "block" }}>
       <defs>
         <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity={0.1} />
@@ -134,28 +134,28 @@ export const ScreenshotCard: React.FC<Props> = ({
   resourceCount,
   stats,
   chartData,
-  chartMetric = 'transactions',
-  bottomMetrics = ['volume', 'buyers', 'resources'],
+  chartMetric = "transactions",
+  bottomMetrics = ["volume", "buyers", "resources"],
   faviconDataUrl = null,
 }) => {
   const [grainDataUrl] = useState(() => generateGrainDataUrl());
 
   const geistSans = isBrowser
     ? getComputedStyle(document.documentElement)
-        .getPropertyValue('--font-geist-sans')
+        .getPropertyValue("--font-geist-sans")
         .trim()
-    : '';
+    : "";
   const geistMono = isBrowser
     ? getComputedStyle(document.documentElement)
-        .getPropertyValue('--font-geist-mono')
+        .getPropertyValue("--font-geist-mono")
         .trim()
-    : '';
+    : "";
   const sansFontFamily = geistSans
     ? `${geistSans}, -apple-system, BlinkMacSystemFont, sans-serif`
     : '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
   const monoFontFamily = geistMono
     ? `${geistMono}, ui-monospace, SFMono-Regular, monospace`
-    : 'ui-monospace, SFMono-Regular, monospace';
+    : "ui-monospace, SFMono-Regular, monospace";
 
   const rawTitle = origin.title
     ? cleanExternalText(origin.title)
@@ -167,7 +167,7 @@ export const ScreenshotCard: React.FC<Props> = ({
 
   const formatCompact = (n: number) =>
     n.toLocaleString(undefined, {
-      notation: 'compact',
+      notation: "compact",
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     });
@@ -175,14 +175,14 @@ export const ScreenshotCard: React.FC<Props> = ({
   const logoDataUrl = `data:image/svg+xml;base64,${btoa(X402_LOGO_SVG)}`;
 
   const chartDataMap = {
-    transactions: chartData.map(d => d.transactions),
-    volume: chartData.map(d => d.totalAmount),
-    buyers: chartData.map(d => d.buyers),
+    transactions: chartData.map((d) => d.transactions),
+    volume: chartData.map((d) => d.totalAmount),
+    buyers: chartData.map((d) => d.buyers),
   } satisfies Record<ChartMetric, number[]>;
   const chartLabelMap = {
-    transactions: 'Transactions',
-    volume: 'Volume',
-    buyers: 'Buyers',
+    transactions: "Transactions",
+    volume: "Volume",
+    buyers: "Buyers",
   } satisfies Record<ChartMetric, string>;
   const chartValueMap = {
     transactions: formatCompact(stats.transactions),
@@ -196,14 +196,14 @@ export const ScreenshotCard: React.FC<Props> = ({
 
   const metricLookup = {
     transactions: {
-      label: 'Transactions',
+      label: "Transactions",
       value: formatCompact(stats.transactions),
     },
-    volume: { label: 'Volume', value: stats.volume },
-    buyers: { label: 'Buyers', value: formatCompact(stats.buyers) },
-    resources: { label: 'Resources', value: resourceCount.toString() },
+    volume: { label: "Volume", value: stats.volume },
+    buyers: { label: "Buyers", value: formatCompact(stats.buyers) },
+    resources: { label: "Resources", value: resourceCount.toString() },
   } satisfies Record<BottomMetric, { label: string; value: string }>;
-  const visibleBottomMetrics = bottomMetrics.map(id => ({
+  const visibleBottomMetrics = bottomMetrics.map((id) => ({
     id,
     ...metricLookup[id],
   }));
@@ -211,9 +211,9 @@ export const ScreenshotCard: React.FC<Props> = ({
   return (
     <div
       style={{
-        position: 'absolute',
-        left: '-9999px',
-        top: '-9999px',
+        position: "absolute",
+        left: "-9999px",
+        top: "-9999px",
       }}
       aria-hidden
     >
@@ -222,52 +222,52 @@ export const ScreenshotCard: React.FC<Props> = ({
         style={{
           width: 1200,
           height: 630,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
           padding: 80,
-          color: '#0a0a0a',
+          color: "#0a0a0a",
           fontFamily: sansFontFamily,
-          overflow: 'hidden',
-          boxSizing: 'border-box',
-          background: 'linear-gradient(to right, #ffffff 0%, #e6e6e6 100%)',
-          position: 'relative',
+          overflow: "hidden",
+          boxSizing: "border-box",
+          background: "linear-gradient(to right, #ffffff 0%, #e6e6e6 100%)",
+          position: "relative",
         }}
       >
         {/* Grain overlay */}
         {grainDataUrl && (
           <div
             style={{
-              position: 'absolute',
+              position: "absolute",
               inset: 0,
               backgroundImage: `url(${grainDataUrl})`,
-              backgroundRepeat: 'repeat',
-              pointerEvents: 'none',
+              backgroundRepeat: "repeat",
+              pointerEvents: "none",
             }}
           />
         )}
         {/* Top: Favicon + Title/Desc (left) | Chart (right) */}
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'row',
+            display: "flex",
+            flexDirection: "row",
             gap: 60,
           }}
         >
           {/* Left: Favicon + text */}
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
               flex: 1,
               minWidth: 0,
             }}
           >
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
                 gap: 24,
               }}
             >
@@ -277,11 +277,11 @@ export const ScreenshotCard: React.FC<Props> = ({
                   width: 96,
                   height: 96,
                   borderRadius: 16,
-                  overflow: 'hidden',
+                  overflow: "hidden",
                   flexShrink: 0,
                   background: faviconDataUrl
                     ? `#fafafa url(${faviconDataUrl}) center/contain no-repeat`
-                    : '#f0f0f0',
+                    : "#f0f0f0",
                 }}
               />
               <div
@@ -292,12 +292,12 @@ export const ScreenshotCard: React.FC<Props> = ({
                   ),
                   fontWeight: 700,
                   lineHeight: 1.15,
-                  overflow: 'hidden',
-                  display: '-webkit-box',
+                  overflow: "hidden",
+                  display: "-webkit-box",
                   WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  wordBreak: title.includes(' ') ? 'normal' : 'break-all',
-                  textWrap: 'balance',
+                  WebkitBoxOrient: "vertical",
+                  wordBreak: title.includes(" ") ? "normal" : "break-all",
+                  textWrap: "balance",
                   minWidth: 0,
                 }}
               >
@@ -311,7 +311,7 @@ export const ScreenshotCard: React.FC<Props> = ({
                   fontFamily: sansFontFamily,
                   lineHeight: 1.45,
                   marginTop: 20,
-                  color: '#525252',
+                  color: "#525252",
                   maxWidth: 620,
                 }}
               >
@@ -325,7 +325,7 @@ export const ScreenshotCard: React.FC<Props> = ({
             style={{
               width: 400,
               flexShrink: 0,
-              position: 'relative',
+              position: "relative",
             }}
           >
             {(() => {
@@ -342,26 +342,26 @@ export const ScreenshotCard: React.FC<Props> = ({
               // Default to left; only move if left is busy (>40% of max) and another zone is clearly lower
               const best =
                 leftScore > 0.4 && rightScore < leftScore - 0.15
-                  ? 'right'
+                  ? "right"
                   : leftScore > 0.4 && centerScore < leftScore - 0.15
-                    ? 'center'
-                    : 'left';
+                    ? "center"
+                    : "left";
 
               const posStyle: React.CSSProperties =
-                best === 'center'
-                  ? { left: 0, right: 0, alignItems: 'center' }
-                  : best === 'right'
-                    ? { right: 0, alignItems: 'flex-end' }
-                    : { left: 0, alignItems: 'flex-start' };
+                best === "center"
+                  ? { left: 0, right: 0, alignItems: "center" }
+                  : best === "right"
+                    ? { right: 0, alignItems: "flex-end" }
+                    : { left: 0, alignItems: "flex-start" };
 
               return (
                 <div
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     top: 0,
                     zIndex: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
+                    display: "flex",
+                    flexDirection: "column",
                     ...posStyle,
                   }}
                 >
@@ -382,28 +382,28 @@ export const ScreenshotCard: React.FC<Props> = ({
         {/* Bottom: Branding + Stats */}
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            borderTop: '4px solid rgba(0,0,0,0.1)',
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            borderTop: "4px solid rgba(0,0,0,0.1)",
             paddingTop: 48,
           }}
         >
           {/* x402scan branding — sized to match metric values */}
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
             }}
           >
             <div style={METRIC_LABEL_STYLE}>&nbsp;</div>
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
                 gap: 12,
               }}
             >
@@ -418,7 +418,7 @@ export const ScreenshotCard: React.FC<Props> = ({
                 style={{
                   ...METRIC_VALUE_STYLE,
                   fontFamily: monoFontFamily,
-                  color: '#0a0a0a',
+                  color: "#0a0a0a",
                 }}
               >
                 x402scan
@@ -428,12 +428,12 @@ export const ScreenshotCard: React.FC<Props> = ({
           {/* Stats */}
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'row',
+              display: "flex",
+              flexDirection: "row",
               gap: 48,
             }}
           >
-            {visibleBottomMetrics.map(m => (
+            {visibleBottomMetrics.map((m) => (
               <Metric key={m.id} label={m.label} value={m.value} />
             ))}
           </div>
@@ -446,26 +446,26 @@ export const ScreenshotCard: React.FC<Props> = ({
 const METRIC_LABEL_STYLE: React.CSSProperties = {
   fontSize: 24,
   fontWeight: 400,
-  color: '#737373',
+  color: "#737373",
   margin: 0,
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em',
-  textAlign: 'right',
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  textAlign: "right",
 };
 
 const METRIC_VALUE_STYLE: React.CSSProperties = {
   fontSize: 48,
   fontWeight: 700,
   margin: 0,
-  textAlign: 'right',
+  textAlign: "right",
 };
 
 const Metric = ({ label, value }: { label: string; value: string }) => (
   <div
     style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-end',
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-end",
     }}
   >
     <div style={METRIC_LABEL_STYLE}>{label}</div>

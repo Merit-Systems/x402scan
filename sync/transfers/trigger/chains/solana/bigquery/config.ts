@@ -1,13 +1,13 @@
-import type { SyncConfig } from '@/trigger/types';
-import { PaginationStrategy, QueryProvider, Network } from '@/trigger/types';
-import { buildQuery, transformResponse } from './query';
-import { ONE_DAY_IN_MS, ONE_MINUTE_IN_SECONDS } from '@/trigger/lib/constants';
-import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
+import type { SyncConfig } from "@/trigger/types";
+import { PaginationStrategy, QueryProvider, Network } from "@/trigger/types";
+import { buildQuery, transformResponse } from "./query";
+import { ONE_DAY_IN_MS, ONE_MINUTE_IN_SECONDS } from "@/trigger/lib/constants";
+import { FACILITATORS_BY_CHAIN } from "@/trigger/lib/facilitators";
 
 export const solanaBigQueryConfig: SyncConfig = {
-  cron: '0 * * * *',
+  cron: "0 * * * *",
   maxDurationInSeconds: ONE_MINUTE_IN_SECONDS * 10,
-  chain: 'solana',
+  chain: "solana",
   provider: QueryProvider.BIGQUERY,
   paginationStrategy: PaginationStrategy.TIME_WINDOW,
   timeWindowInMs: ONE_DAY_IN_MS * 30,
@@ -16,5 +16,5 @@ export const solanaBigQueryConfig: SyncConfig = {
   buildQuery,
   transformResponse,
   enabled: false,
-  machine: 'small-1x',
+  machine: "small-1x",
 };

@@ -1,14 +1,14 @@
-import { ArrowLeftRight, Calendar, DollarSign, Users } from 'lucide-react';
+import { ArrowLeftRight, Calendar, DollarSign, Users } from "lucide-react";
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
-import type { LucideIcon } from 'lucide-react';
-import { formatTokenAmount } from '@/lib/token';
+import type { LucideIcon } from "lucide-react";
+import { formatTokenAmount } from "@/lib/token";
 
-import type { RouterOutputs } from '@/trpc/client';
+import type { RouterOutputs } from "@/trpc/client";
 
 interface Props {
-  stats: RouterOutputs['public']['facilitators']['list']['items'][number];
+  stats: RouterOutputs["public"]["facilitators"]["list"]["items"][number];
 }
 
 interface Stat {
@@ -17,10 +17,10 @@ interface Stat {
 }
 
 const statsData: Stat[] = [
-  { title: 'Requests', Icon: ArrowLeftRight },
-  { title: 'Volume', Icon: DollarSign },
-  { title: 'Buyers', Icon: Users },
-  { title: 'Sellers', Icon: Calendar },
+  { title: "Requests", Icon: ArrowLeftRight },
+  { title: "Volume", Icon: DollarSign },
+  { title: "Buyers", Icon: Users },
+  { title: "Sellers", Icon: Calendar },
 ];
 
 export const StatsCards: React.FC<Props> = ({ stats }) => {
@@ -28,18 +28,18 @@ export const StatsCards: React.FC<Props> = ({ stats }) => {
     stats.tx_count.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-      notation: 'compact',
+      notation: "compact",
     }),
     formatTokenAmount(BigInt(stats.total_amount)),
     stats.unique_buyers.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-      notation: 'compact',
+      notation: "compact",
     }),
     stats.unique_sellers.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-      notation: 'compact',
+      notation: "compact",
     }),
   ];
 
@@ -49,7 +49,9 @@ export const StatsCards: React.FC<Props> = ({ stats }) => {
 };
 
 export const LoadingStatsCards = () => {
-  return statsData.map(stat => <LoadingStatCard {...stat} key={stat.title} />);
+  return statsData.map((stat) => (
+    <LoadingStatCard {...stat} key={stat.title} />
+  ));
 };
 
 type StatsCardProps = {
@@ -59,7 +61,7 @@ type StatsCardProps = {
 const StatCard = ({ value, ...stat }: StatsCardProps) => {
   return (
     <BaseStatCard {...stat}>
-      <div className="text-sm font-bold font-mono">{value}</div>
+      <div className="font-mono text-sm font-bold">{value}</div>
     </BaseStatCard>
   );
 };
@@ -67,7 +69,7 @@ const StatCard = ({ value, ...stat }: StatsCardProps) => {
 const LoadingStatCard = (stat: Stat) => {
   return (
     <BaseStatCard {...stat}>
-      <Skeleton className="w-16 h-[14px] my-[3px]" />
+      <Skeleton className="my-[3px] h-[14px] w-16" />
     </BaseStatCard>
   );
 };
@@ -79,9 +81,9 @@ const BaseStatCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex flex-row justify-between items-center md:flex-col md:justify-center md:items-start flex-1 p-2">
-      <p className="text-[10px] font-medium leading-none">{title}</p>
-      <div className="gap-1 flex items-center justify-start">{children}</div>
+    <div className="flex flex-1 flex-row items-center justify-between p-2 md:flex-col md:items-start md:justify-center">
+      <p className="text-[10px] leading-none font-medium">{title}</p>
+      <div className="flex items-center justify-start gap-1">{children}</div>
     </div>
   );
 };

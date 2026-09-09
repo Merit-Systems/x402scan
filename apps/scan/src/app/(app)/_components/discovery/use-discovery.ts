@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import z from 'zod';
+import { useMemo } from "react";
+import z from "zod";
 
-import { api } from '@/trpc/client';
-import { useRegisterFromOrigin } from '@/hooks/use-register-from-origin';
+import { api } from "@/trpc/client";
+import { useRegisterFromOrigin } from "@/hooks/use-register-from-origin";
 import {
   isOpenApiDeclaredFree,
   isRegistrableEndpoint,
-} from '@/lib/discovery/catalog-auth';
-import { resourceKey } from '@/lib/resource-key';
+} from "@/lib/discovery/catalog-auth";
+import { resourceKey } from "@/lib/resource-key";
 
-import type { FailedResource, TestedResource } from '@/types/batch-test';
+import type { FailedResource, TestedResource } from "@/types/batch-test";
 import type {
   AuthMode,
   DiscoveredResource,
   DiscoverySource,
-} from '@/types/discovery';
-import type { OriginPreview } from './discovery-panel';
-import { useBatchTest } from './use-batch-test';
-import { useOwnership } from './use-ownership';
+} from "@/types/discovery";
+import type { OriginPreview } from "./discovery-panel";
+import { useBatchTest } from "./use-batch-test";
+import { useOwnership } from "./use-ownership";
 
 /** Invalid-resource badge info keyed by composite resource key. */
 export interface InvalidResourceStatus {
@@ -44,7 +44,7 @@ function getOrigin(urlString: string): string {
 function isOriginUrl(urlString: string): boolean {
   try {
     const parsed = new URL(urlString);
-    return parsed.pathname === '/' || parsed.pathname === '';
+    return parsed.pathname === "/" || parsed.pathname === "";
   } catch {
     return false;
   }
@@ -192,7 +192,7 @@ export function useDiscovery({
     // alongside a payable resource — mirror the server-side gate so a
     // catalog-only origin shows its endpoints as skipped, not registrable.
     const hasPayableCandidate = raw.some(
-      r =>
+      (r) =>
         !isOpenApiDeclaredFree(r.authMode, discoverySource) &&
         isRegistrableEndpoint(r.authMode, discoverySource)
     );
@@ -215,7 +215,7 @@ export function useDiscovery({
   // Check if the entered URL is in the discovered resources
   const enteredUrlInDiscovery = useMemo(() => {
     if (!isValidUrl || isOriginOnly) return true; // Origin-only URLs don't need to be in discovery
-    return discoveryResources.some(r => r.url === url);
+    return discoveryResources.some((r) => r.url === url);
   }, [url, isValidUrl, isOriginOnly, discoveryResources]);
 
   // Compute effective resources: entered URL at top if not in discovery, then discovered
@@ -257,7 +257,7 @@ export function useDiscovery({
 
   // Extract URLs for the checkRegistered query
   const resourceInputs = useMemo(
-    () => effectiveResources.map(r => ({ url: r.url, method: r.method })),
+    () => effectiveResources.map((r) => ({ url: r.url, method: r.method })),
     [effectiveResources]
   );
   // Create map of compositeKey -> invalid status for displaying badges
@@ -319,7 +319,7 @@ export function useDiscovery({
     error: bulkError,
     reset: resetBulk,
   } = useRegisterFromOrigin({
-    onSuccess: data =>
+    onSuccess: (data) =>
       onRegisterAllSuccess?.({
         registered: data.registered,
         total: data.total,
@@ -354,8 +354,8 @@ export function useDiscovery({
     actualDiscoveredResources: discoveryResources,
     skippedResources,
     freeResourceCount: discoveryResources.filter(
-      r =>
-        r.authMode === 'siwx' ||
+      (r) =>
+        r.authMode === "siwx" ||
         isOpenApiDeclaredFree(r.authMode, discoverySource)
     ).length,
     discoveryResourceCount: effectiveResources.length,

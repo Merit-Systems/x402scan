@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
 
-import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
-import { Separator } from '@/components/ui/separator';
+import { Separator } from "@/components/ui/separator";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import { isValidElement } from 'react';
+import { isValidElement } from "react";
 
-import type { ReactElement, ReactNode } from 'react';
-import type { Route } from 'next';
+import type { ReactElement, ReactNode } from "react";
+import type { Route } from "next";
 
 interface HeadingProps {
   title: string | ReactElement;
@@ -30,17 +30,17 @@ export const Heading: React.FC<HeadingProps> = ({
   return (
     <HeadingContainer
       className={cn(
-        'flex flex-col md:flex-row md:items-center md:justify-between gap-4',
+        "flex flex-col md:flex-row md:items-center md:justify-between gap-4",
         className
       )}
     >
-      <div className="flex items-center gap-4 shrink-0 flex-1">
+      <div className="flex flex-1 shrink-0 items-center gap-4">
         {icon}
-        <div className="flex flex-col gap-1 md:gap-3 text-left">
+        <div className="flex flex-col gap-1 text-left md:gap-3">
           {isValidElement(title) ? (
             title
           ) : (
-            <h1 className="text-2xl md:text-4xl font-bold font-mono">
+            <h1 className="font-mono text-2xl font-bold md:text-4xl">
               {title}
             </h1>
           )}
@@ -48,7 +48,7 @@ export const Heading: React.FC<HeadingProps> = ({
             (isValidElement(description) ? (
               description
             ) : (
-              <p className="text-muted-foreground/80 text-sm md:text-base">
+              <p className="text-sm text-muted-foreground/80 md:text-base">
                 {description}
               </p>
             ))}
@@ -70,7 +70,7 @@ export const HeadingContainer = ({
     <>
       <div
         className={cn(
-          'max-w-full md:max-w-6xl w-full px-2 pb-6 md:pb-8 mx-auto',
+          "max-w-full md:max-w-6xl w-full px-2 pb-6 md:pb-8 mx-auto",
           className
         )}
       >
@@ -90,7 +90,7 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
   return (
     <div
       className={cn(
-        'flex flex-col gap-8 max-w-6xl w-full mx-auto py-8 px-2',
+        "flex flex-col gap-8 max-w-6xl w-full mx-auto py-8 px-2",
         className
       )}
     >
@@ -117,15 +117,15 @@ const SectionHeader = ({
 }) => {
   return (
     <div
-      className={cn('flex items-center gap-1', href && 'group cursor-pointer')}
+      className={cn("flex items-center gap-1", href && "group cursor-pointer")}
     >
       {isValidElement(title) ? (
         title
       ) : (
-        <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
+        <h1 className="text-xl font-bold md:text-2xl">{title}</h1>
       )}
       {href && (
-        <div className="flex items-center gap-2 bg-muted/0 hover:bg-muted rounded-md p-0.5 transition-all hover:scale-105 group-hover:translate-x-1">
+        <div className="flex items-center gap-2 rounded-md bg-muted/0 p-0.5 transition-all group-hover:translate-x-1 hover:scale-105 hover:bg-muted">
           <ChevronRight className="size-4 text-foreground/60 group-hover:text-muted-foreground" />
         </div>
       )}
@@ -142,9 +142,9 @@ export const Section = <T extends string>({
   href,
 }: SectionProps<T>) => {
   return (
-    <div className={cn('flex flex-col gap-4 md:gap-6', className)}>
+    <div className={cn("flex flex-col gap-4 md:gap-6", className)}>
       <div className="flex flex-col gap-1">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           {href ? (
             <Link href={href}>
               <SectionHeader title={title} href={href} />
@@ -155,7 +155,7 @@ export const Section = <T extends string>({
           {actions}
         </div>
         {description && (
-          <p className="text-muted-foreground text-sm md:text-base">
+          <p className="text-sm text-muted-foreground md:text-base">
             {description}
           </p>
         )}

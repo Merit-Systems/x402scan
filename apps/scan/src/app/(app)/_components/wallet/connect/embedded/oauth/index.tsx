@@ -1,23 +1,23 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import { useSignInWithOAuth } from '@coinbase/cdp-hooks';
+import { useSignInWithOAuth } from "@coinbase/cdp-hooks";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { oauthProviders } from './providers';
+import { oauthProviders } from "./providers";
 
 export const ConnectEmbeddedWalletOAuth = () => {
   const { signInWithOAuth } = useSignInWithOAuth();
 
   return (
-    <div className="flex flex-row gap-2 w-full">
-      {oauthProviders.map(provider => (
+    <div className="flex w-full flex-row gap-2">
+      {oauthProviders.map((provider) => (
         <Button
           key={provider.id}
           variant="outline"
           type="button"
           onClick={() => void signInWithOAuth(provider.id)}
-          className="w-full h-12 md:h-12"
+          className="h-12 w-full md:h-12"
         >
           <Image
             src={provider.icon}

@@ -1,8 +1,8 @@
-import { SortingProvider } from '../base/provider';
-import { ToolSpendingSortingContext } from './context';
+import { SortingProvider } from "../base/provider";
+import { ToolSpendingSortingContext } from "./context";
 
-import type { ToolSpendingSortId } from './context';
-import type { SortType } from '../base/types';
+import type { ToolSpendingSortId } from "./context";
+import type { SortType } from "../base/types";
 
 export const ToolSpendingSortingProvider = ({
   children,

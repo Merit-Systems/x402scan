@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
+import { X } from "lucide-react";
 
-import { Badge } from '@/components/ui/badge';
-import { ModelProviderIcon } from '@/app/(app)/_components/model-icon';
+import { Badge } from "@/components/ui/badge";
+import { ModelProviderIcon } from "@/app/(app)/_components/model-icon";
 import {
   Command,
   CommandEmpty,
@@ -11,30 +11,30 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer';
+} from "@/components/ui/drawer";
 
-import { capabilityColors, capabilityIcons, modelProviderNames } from './utils';
-import type { LanguageModelCapability } from './types';
+import { capabilityColors, capabilityIcons, modelProviderNames } from "./utils";
+import type { LanguageModelCapability } from "./types";
 
-import { useModelSelect } from './use-model-select';
+import { useModelSelect } from "./use-model-select";
 
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-is-mobile';
-import type { LanguageModel } from './types';
-import { languageModels } from './models';
-import { PromptInputButton } from '@/components/ai-elements/prompt-input';
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import type { LanguageModel } from "./types";
+import { languageModels } from "./models";
+import { PromptInputButton } from "@/components/ai-elements/prompt-input";
 
 const MODEL_HEIGHT = 36;
 const NUM_MODELS_TO_SHOW = 5;
@@ -61,7 +61,7 @@ const ModelSelectContent: React.FC<{
 }) => (
   <Command
     filter={(value, search) => {
-      const model = filteredModels.find(m => m.modelId === value);
+      const model = filteredModels.find((m) => m.modelId === value);
       if (!model) return 0;
 
       const nameMatch = model.name.toLowerCase().includes(search.toLowerCase())
@@ -83,15 +83,15 @@ const ModelSelectContent: React.FC<{
       onValueChange={setSearchQuery}
     />
     <div>
-      <div className="text-muted-foreground mb-1.5 px-2 text-xs font-medium">
+      <div className="mb-1.5 px-2 text-xs font-medium text-muted-foreground">
         Providers
       </div>
       <div className="no-scrollbar flex gap-1 overflow-x-auto px-2">
-        {availableProviders.map(provider => (
+        {availableProviders.map((provider) => (
           <Badge
             key={provider}
             variant={
-              selectedProviders.includes(provider) ? 'default' : 'outline'
+              selectedProviders.includes(provider) ? "default" : "outline"
             }
             className="shrink-0 cursor-pointer gap-1 px-1.5 py-0.5"
             onClick={() => toggleProvider(provider)}
@@ -130,7 +130,7 @@ const ModelSelectContent: React.FC<{
       </div>
     </div> */}
     <CommandList
-      className={cn('w-full max-w-full overflow-x-hidden overflow-y-auto p-0')}
+      className={cn("w-full max-w-full overflow-x-hidden overflow-y-auto p-0")}
       style={{
         height: `${MODEL_HEIGHT * (NUM_MODELS_TO_SHOW + 0.5)}px`,
       }}
@@ -138,13 +138,13 @@ const ModelSelectContent: React.FC<{
     >
       <CommandEmpty>No models found.</CommandEmpty>
       <CommandGroup className="p-0">
-        {filteredModels.map(model => (
+        {filteredModels.map((model) => (
           <CommandItem
             key={model.modelId}
             value={model.modelId}
             onSelect={() => handleModelSelect(model)}
             className={cn(
-              'flex w-full max-w-full cursor-pointer items-center gap-2 rounded-none px-3 py-2 transition-colors'
+              "flex w-full max-w-full cursor-pointer items-center gap-2 rounded-none px-3 py-2 transition-colors"
             )}
           >
             {/* Name, provider, new badge stack */}
@@ -162,7 +162,7 @@ const ModelSelectContent: React.FC<{
             </div>
             {/* Capabilities justified to the right */}
             <div className="flex flex-1 justify-end gap-1">
-              {model.capabilities?.map(capability => {
+              {model.capabilities?.map((capability) => {
                 const Icon = capabilityIcons[capability];
                 return (
                   <Badge
@@ -204,15 +204,15 @@ export const ModelSelect: React.FC<Props> = ({ model, setModel }) => {
 
   // Get unique providers from models
   const availableProviders = Array.from(
-    new Set(languageModels.map(model => model.provider))
+    new Set(languageModels.map((model) => model.provider))
   );
 
   const triggerButton = (
     <PromptInputButton
       variant="outline"
-      size={isMobile ? 'icon' : 'sm'}
-      className={cn('justify-center bg-transparent md:justify-start')}
-      onClick={event => {
+      size={isMobile ? "icon" : "sm"}
+      className={cn("justify-center bg-transparent md:justify-start")}
+      onClick={(event) => {
         const target = event.target as HTMLElement;
         const isNativeSearchToggle = target.closest(
           '[data-native-search-toggle="true"]'
@@ -225,7 +225,7 @@ export const ModelSelect: React.FC<Props> = ({ model, setModel }) => {
       {model ? (
         <>
           <ModelProviderIcon provider={model.provider} className="size-4" />
-          <span className="hidden flex-1 truncate text-left md:block text-xs">
+          <span className="hidden flex-1 truncate text-left text-xs md:block">
             {model.name}
           </span>
         </>

@@ -1,10 +1,10 @@
 import {
   PaymentRequirementsV2Schema,
   ResourceInfoSchema,
-} from '@x402/core/schemas';
-import { z as z3 } from 'zod3';
+} from "@x402/core/schemas";
+import { z as z3 } from "zod3";
 
-import { jsonValueSchema3 } from '../shared';
+import { jsonValueSchema3 } from "../shared";
 
 /**
  * A JSON-Schema-shaped node as attached by bazaar discovery extensions.

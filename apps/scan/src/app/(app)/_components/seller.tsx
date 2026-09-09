@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { Address } from '@/components/ui/address';
+import { Skeleton } from "@/components/ui/skeleton";
+import { Address } from "@/components/ui/address";
 
-import { Origins } from '@/app/(app)/_components/origins';
+import { Origins } from "@/app/(app)/_components/origins";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { MixedAddress } from '@/types/address';
+import type { MixedAddress } from "@/types/address";
 
 interface Props {
   address: MixedAddress;
@@ -42,7 +42,7 @@ export const Seller: React.FC<Props> = ({
       <Link href={`/recipient/${address}`}>
         <Address
           address={address}
-          className={cn('text-xs font-medium', addressClassName)}
+          className={cn("text-xs font-medium", addressClassName)}
           disableCopy={disableCopy}
         />
       </Link>

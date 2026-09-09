@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useMemo, useState, useEffect, useRef } from 'react';
-import { api, type RouterInputs } from '@/trpc/client';
-import type { TestedResource, FailedResource } from '@/types/batch-test';
-import type { DiscoveredResource } from '@/types/discovery';
+import { useMemo, useState, useEffect, useRef } from "react";
+import { api, type RouterInputs } from "@/trpc/client";
+import type { TestedResource, FailedResource } from "@/types/batch-test";
+import type { DiscoveredResource } from "@/types/discovery";
 
 export interface BatchTestProgress {
   checked: number;
@@ -69,7 +69,7 @@ export function useBatchTest(
   // This prevents rate limiting from burning through all probes on non-paid
   // endpoints before reaching the ones that actually matter.
   const sortedResources = useMemo(() => {
-    const paidModes = new Set(['paid', 'apiKey+paid']);
+    const paidModes = new Set(["paid", "apiKey+paid"]);
     return [...effectiveResources].sort((a, b) => {
       const aPaid = a.authMode != null && paidModes.has(a.authMode) ? 0 : 1;
       const bPaid = b.authMode != null && paidModes.has(b.authMode) ? 0 : 1;
@@ -101,7 +101,7 @@ export function useBatchTest(
       try {
         for (const chunk of chunks) {
           if (cancelled) return;
-          const input: RouterInputs['developer']['batchTest'] = {
+          const input: RouterInputs["developer"]["batchTest"] = {
             resources: chunk,
           };
           // Pass sessionId from first chunk so all results share one cache
@@ -126,11 +126,11 @@ export function useBatchTest(
         }
       } catch (err) {
         if (cancelled) return;
-        const error = err instanceof Error ? err.message : 'Request failed';
+        const error = err instanceof Error ? err.message : "Request failed";
         setFailed(
           chunks
             .flat()
-            .map(r => ({ success: false as const, url: r.url, error }))
+            .map((r) => ({ success: false as const, url: r.url, error }))
         );
       } finally {
         if (!cancelled) {
@@ -167,9 +167,9 @@ export function useBatchTest(
     options?: { sampleBody?: string; testUrl?: string }
   ) => {
     const probeUrl = options?.testUrl ?? url;
-    const resource = effectiveResources.find(r => r.url === url);
+    const resource = effectiveResources.find((r) => r.url === url);
     try {
-      const input: RouterInputs['developer']['batchTest'] = {
+      const input: RouterInputs["developer"]["batchTest"] = {
         resources: [
           {
             url: probeUrl,
@@ -188,18 +188,18 @@ export function useBatchTest(
       const result = await mutateAsyncRef.current(input);
 
       // Merge result: replace existing entry for the original URL
-      setResources(prev => {
-        const without = prev.filter(r => r.url !== url);
+      setResources((prev) => {
+        const without = prev.filter((r) => r.url !== url);
         return [...without, ...result.resources];
       });
-      setFailed(prev => {
-        const without = prev.filter(r => r.url !== url);
+      setFailed((prev) => {
+        const without = prev.filter((r) => r.url !== url);
         return [...without, ...result.failed];
       });
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Request failed';
-      setFailed(prev => {
-        const without = prev.filter(r => r.url !== url);
+      const error = err instanceof Error ? err.message : "Request failed";
+      setFailed((prev) => {
+        const without = prev.filter((r) => r.url !== url);
         return [...without, { success: false as const, url, error }];
       });
     }
@@ -212,7 +212,7 @@ export function useBatchTest(
     failed: active ? failed : [],
     payToAddresses,
     probeSessionId: active ? probeSessionId : null,
-    refetch: () => setRunCount(c => c + 1),
+    refetch: () => setRunCount((c) => c + 1),
     retryOne,
   };
 }

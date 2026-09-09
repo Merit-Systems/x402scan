@@ -1,23 +1,23 @@
-import { isOpenApiDeclaredFree } from './catalog-auth';
-import { probeX402Endpoint } from './probe';
-import { getCachedProbeResult } from './probe-cache';
-import { getRegistrationErrorMessage } from './utils';
-import { registerResource, registerFreeResource } from '@/lib/resources';
-import { deprecateStaleResources } from '@/services/db/resources/resource';
+import { isOpenApiDeclaredFree } from "./catalog-auth";
+import { probeX402Endpoint } from "./probe";
+import { getCachedProbeResult } from "./probe-cache";
+import { getRegistrationErrorMessage } from "./utils";
+import { registerResource, registerFreeResource } from "@/lib/resources";
+import { deprecateStaleResources } from "@/services/db/resources/resource";
 import {
   getOriginResourceCount,
   upsertOrigin,
-} from '@/services/db/resources/origin';
-import { notifyNewServer } from '@/lib/discord-notifications';
-import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
-import { scrapeOriginData } from '@/services/scraper';
+} from "@/services/db/resources/origin";
+import { notifyNewServer } from "@/lib/discord-notifications";
+import { getOriginFromUrl, normalizeResourceUrl } from "@/lib/url";
+import { scrapeOriginData } from "@/services/scraper";
 
-import type { FreeAuthMode } from '@/lib/resource-auth';
+import type { FreeAuthMode } from "@/lib/resource-auth";
 import type {
   AuditWarning,
   AuthMode,
   EndpointMethodAdvisory,
-} from '@agentcash/discovery';
+} from "@agentcash/discovery";
 
 const BULK_REGISTER_CONCURRENCY = 6;
 
@@ -50,9 +50,9 @@ async function mapSettledWithConcurrency<T, R>(
 
       try {
         const value = await mapper(item, current);
-        results[current] = { status: 'fulfilled', value };
+        results[current] = { status: "fulfilled", value };
       } catch (reason) {
-        results[current] = { status: 'rejected', reason };
+        results[current] = { status: "rejected", reason };
       }
     }
   }
@@ -64,7 +64,7 @@ async function mapSettledWithConcurrency<T, R>(
   return results.map((result, index) => {
     if (!result) {
       return {
-        status: 'rejected',
+        status: "rejected",
         reason: new Error(`Missing result at index ${index}`),
       };
     }
@@ -132,13 +132,14 @@ export async function registerResourcesFromDiscovery(
   contactEmail?: string
 ): Promise<RegisterOriginResult> {
   const uniqueOrigins = [
-    ...new Set(resources.map(resource => getOriginFromUrl(resource.url))),
+    ...new Set(resources.map((resource) => getOriginFromUrl(resource.url))),
   ];
 
   const originResourceCounts = new Map(
     await Promise.all(
       uniqueOrigins.map(
-        async origin => [origin, await getOriginResourceCount(origin)] as const
+        async (origin) =>
+          [origin, await getOriginResourceCount(origin)] as const
       )
     )
   );
@@ -184,40 +185,40 @@ export async function registerResourcesFromDiscovery(
   // that arm would let a batch whose paid probes all failed transiently
   // register catalog rows, set originId, and deprecate every existing paid
   // row. Catalog rows alone must never create or sustain a server page.
-  const catalogResources = resources.filter(r =>
+  const catalogResources = resources.filter((r) =>
     isOpenApiDeclaredFree(r.authMode, source)
   );
   const mainResources = resources.filter(
-    r => !isOpenApiDeclaredFree(r.authMode, source)
+    (r) => !isOpenApiDeclaredFree(r.authMode, source)
   );
 
   const mainResults = await mapSettledWithConcurrency(
     mainResources,
-    async resource => {
+    async (resource) => {
       const resourceUrl = resource.url;
 
       // Openapi-declared free endpoints were partitioned out above — anything
       // still carrying these modes came from a source we don't trust for
       // catalog listing.
-      if (resource.authMode === 'unprotected') {
+      if (resource.authMode === "unprotected") {
         return {
           success: false as const,
           url: resourceUrl,
-          error: 'Unprotected endpoint (no x402 paywall)',
+          error: "Unprotected endpoint (no x402 paywall)",
           skipped: true as const,
         };
       }
-      if (resource.authMode === 'apiKey') {
+      if (resource.authMode === "apiKey") {
         return {
           success: false as const,
           url: resourceUrl,
-          error: 'Non-registrable endpoint (declare it in openapi.json)',
+          error: "Non-registrable endpoint (declare it in openapi.json)",
           skipped: true as const,
         };
       }
 
-      if (resource.authMode === 'siwx') {
-        return registerAsFree(resource, 'siwx');
+      if (resource.authMode === "siwx") {
+        return registerAsFree(resource, "siwx");
       }
 
       // Check server-side probe cache (from the batch test). This skips
@@ -254,18 +255,18 @@ export async function registerResourcesFromDiscovery(
         advisory = probeResult.advisory;
 
         // Drop discovery-level schema warnings superseded by other checks.
-        probeWarnings = probeResult.warnings.filter(w => {
-          if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
+        probeWarnings = probeResult.warnings.filter((w) => {
+          if (w.code === "SCHEMA_INPUT_MISSING" && advisory.inputSchema)
             return false;
-          if (w.code === 'SCHEMA_OUTPUT_MISSING') return false;
+          if (w.code === "SCHEMA_OUTPUT_MISSING") return false;
           return true;
         });
       }
 
       // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
-      if (advisory.authMode === 'siwx') {
-        return registerAsFree(resource, 'siwx');
+      if (advisory.authMode === "siwx") {
+        return registerAsFree(resource, "siwx");
       }
 
       const result = await registerResource(resourceUrl, advisory, {
@@ -294,9 +295,9 @@ export async function registerResourcesFromDiscovery(
   // rows for another.
   const succeededOrigins = new Set(
     mainResults.flatMap((r, i) =>
-      r.status === 'fulfilled' &&
+      r.status === "fulfilled" &&
       r.value &&
-      'success' in r.value &&
+      "success" in r.value &&
       r.value.success &&
       mainResources[i]
         ? [getOriginFromUrl(mainResources[i].url)]
@@ -306,20 +307,20 @@ export async function registerResourcesFromDiscovery(
 
   const catalogResults = await mapSettledWithConcurrency(
     catalogResources,
-    async resource => {
+    async (resource) => {
       const origin = getOriginFromUrl(resource.url);
       if (!succeededOrigins.has(origin)) {
         return {
           success: false as const,
           url: resource.url,
           error:
-            'No paid or SIWX resources registered for this origin — public/API-key endpoints are only listed alongside payable endpoints',
+            "No paid or SIWX resources registered for this origin — public/API-key endpoints are only listed alongside payable endpoints",
           skipped: true as const,
         };
       }
       return registerAsFree(
         resource,
-        resource.authMode === 'apiKey' ? 'apiKey' : 'unprotected'
+        resource.authMode === "apiKey" ? "apiKey" : "unprotected"
       );
     }
   );
@@ -355,25 +356,25 @@ export async function registerResourcesFromDiscovery(
 
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
-    const resourceUrl = orderedResources[i]?.url ?? 'unknown';
-    const resourceMethod = orderedResources[i]?.method ?? '';
+    const resourceUrl = orderedResources[i]?.url ?? "unknown";
+    const resourceMethod = orderedResources[i]?.method ?? "";
 
     if (!result) continue;
 
-    if (result.status === 'fulfilled' && result.value) {
+    if (result.status === "fulfilled" && result.value) {
       const value = result.value;
-      if ('success' in value && value.success) {
-        if ('free' in value && value.free) {
+      if ("success" in value && value.success) {
+        if ("free" in value && value.free) {
           freeResults.push({
             url: resourceUrl,
             method: resourceMethod,
             authMode: value.authMode,
           });
           // Extract originId from free registration result
-          if (!originId && 'resource' in value && value.resource?.origin?.id) {
+          if (!originId && "resource" in value && value.resource?.origin?.id) {
             originId = value.resource.origin.id;
           }
-        } else if ('resource' in value) {
+        } else if ("resource" in value) {
           successfulResults.push({
             url: resourceUrl,
             method: resourceMethod,
@@ -382,11 +383,11 @@ export async function registerResourcesFromDiscovery(
             description:
               value.registrationDetails.originMetadata.description ?? null,
           });
-          if (!originId && 'resource' in value && value.resource?.origin?.id) {
+          if (!originId && "resource" in value && value.resource?.origin?.id) {
             originId = value.resource.origin.id;
           }
           if (
-            'warnings' in value &&
+            "warnings" in value &&
             Array.isArray(value.warnings) &&
             value.warnings.length > 0
           ) {
@@ -403,30 +404,30 @@ export async function registerResourcesFromDiscovery(
           }
         }
       } else if (
-        'success' in value &&
+        "success" in value &&
         !value.success &&
-        'skipped' in value &&
+        "skipped" in value &&
         value.skipped === true
       ) {
         skippedResults.push({
           url: resourceUrl,
           error: value.error,
-          status: 'status' in value ? value.status : undefined,
+          status: "status" in value ? value.status : undefined,
         });
-      } else if ('success' in value && !value.success) {
+      } else if ("success" in value && !value.success) {
         failedResults.push({
           url: resourceUrl,
           error: value.error,
-          status: 'status' in value ? value.status : undefined,
+          status: "status" in value ? value.status : undefined,
         });
       }
-    } else if (result.status === 'rejected') {
+    } else if (result.status === "rejected") {
       failedResults.push({
         url: resourceUrl,
         error:
           result.reason instanceof Error
             ? result.reason.message
-            : 'Promise rejected',
+            : "Promise rejected",
       });
     }
   }
@@ -437,11 +438,11 @@ export async function registerResourcesFromDiscovery(
     // the discovery input — skipped/failed endpoints must not keep stale
     // rows alive.
     const activeResources = [
-      ...successfulResults.map(r => ({
+      ...successfulResults.map((r) => ({
         url: normalizeResourceUrl(r.url),
         method: r.method,
       })),
-      ...freeResults.map(r => ({
+      ...freeResults.map((r) => ({
         url: normalizeResourceUrl(r.url),
         method: r.method,
       })),
@@ -472,10 +473,10 @@ export async function registerResourcesFromDiscovery(
   // failed have no origin row — scraping would cause upsertOrigin to create
   // one, re-introducing the orphan problem.
   const originsWithResources = new Set(
-    [...successfulResults, ...freeResults].map(r => getOriginFromUrl(r.url))
+    [...successfulResults, ...freeResults].map((r) => getOriginFromUrl(r.url))
   );
   const originsToScrape = uniqueOrigins.filter(
-    origin =>
+    (origin) =>
       originsWithResources.has(origin) ||
       (originResourceCounts.get(origin) ?? 0) > 0
   );
@@ -489,7 +490,7 @@ export async function registerResourcesFromDiscovery(
   // was unreliable (the deferred scrape+upsert could be killed before
   // completing, leaving stale ICO URLs in the DB).
   await Promise.all(
-    originsToScrape.map(async origin => {
+    originsToScrape.map(async (origin) => {
       try {
         const { og, metadata, favicon } = await scrapeOriginData(origin);
         const title =
@@ -507,7 +508,7 @@ export async function registerResourcesFromDiscovery(
           favicon: favicon ?? undefined,
           email: contactEmail ?? undefined,
           ogImages:
-            og?.ogImage?.flatMap(image => {
+            og?.ogImage?.flatMap((image) => {
               try {
                 return [
                   {
@@ -532,9 +533,9 @@ export async function registerResourcesFromDiscovery(
     })
   );
 
-  const siwxResults = freeResults.filter(r => r.authMode === 'siwx');
-  const publicResults = freeResults.filter(r => r.authMode === 'unprotected');
-  const apiKeyResults = freeResults.filter(r => r.authMode === 'apiKey');
+  const siwxResults = freeResults.filter((r) => r.authMode === "siwx");
+  const publicResults = freeResults.filter((r) => r.authMode === "unprotected");
+  const apiKeyResults = freeResults.filter((r) => r.authMode === "apiKey");
 
   return {
     registered: successfulResults.length,

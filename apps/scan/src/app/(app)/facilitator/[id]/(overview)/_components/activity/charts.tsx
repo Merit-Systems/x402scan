@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { format } from 'date-fns';
-import { MultiCharts, LoadingMultiCharts } from '@/components/ui/charts/multi';
+import { format } from "date-fns";
+import { MultiCharts, LoadingMultiCharts } from "@/components/ui/charts/multi";
 
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { useMemo } from 'react';
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
+import { useMemo } from "react";
+import type { ChartData } from "@/components/ui/charts/chart/types";
+import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 
 interface Props {
   facilitatorId: string;
@@ -47,7 +47,7 @@ export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
       ),
       unique_buyers: rest.unique_buyers,
       unique_sellers: rest.unique_sellers,
-      timestamp: format(bucket_start, 'MMM dd HH:mm yyyy'),
+      timestamp: format(bucket_start, "MMM dd HH:mm yyyy"),
     }));
   }, [bucketedStats]);
 
@@ -56,30 +56,30 @@ export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
       tabs={[
         {
           trigger: {
-            value: 'total_transactions',
-            label: 'Transactions',
+            value: "total_transactions",
+            label: "Transactions",
             amount: overallStats.total_transactions.toLocaleString(undefined, {
-              notation: 'compact',
+              notation: "compact",
               minimumFractionDigits: 0,
               maximumFractionDigits: 2,
             }),
           },
           items: {
-            type: 'bar',
+            type: "bar",
             bars: [
               {
-                dataKey: 'total_transactions',
-                color: 'var(--color-primary)',
+                dataKey: "total_transactions",
+                color: "var(--color-primary)",
               },
             ],
           },
           tooltipRows: [
             {
-              key: 'total_transactions',
-              label: 'Transactions',
-              getValue: data =>
+              key: "total_transactions",
+              label: "Transactions",
+              getValue: (data) =>
                 data.toLocaleString(undefined, {
-                  notation: 'compact',
+                  notation: "compact",
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 2,
                 }),
@@ -88,60 +88,60 @@ export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
         },
         {
           trigger: {
-            value: 'total_amount',
-            label: 'Volume',
+            value: "total_amount",
+            label: "Volume",
             amount: formatTokenAmount(BigInt(overallStats.total_amount)),
           },
           items: {
-            type: 'bar',
+            type: "bar",
             bars: [
               {
-                dataKey: 'total_amount',
-                color: 'var(--color-primary)',
+                dataKey: "total_amount",
+                color: "var(--color-primary)",
               },
             ],
           },
           tooltipRows: [
             {
-              key: 'total_amount',
-              label: 'Volume',
-              getValue: data =>
+              key: "total_amount",
+              label: "Volume",
+              getValue: (data) =>
                 data.toLocaleString(undefined, {
-                  notation: 'compact',
+                  notation: "compact",
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-                  style: 'currency',
-                  currency: 'USD',
+                  style: "currency",
+                  currency: "USD",
                 }),
             },
           ],
         },
         {
           trigger: {
-            value: 'unique_buyers',
-            label: 'Buyers',
+            value: "unique_buyers",
+            label: "Buyers",
             amount: overallStats.unique_buyers.toLocaleString(undefined, {
-              notation: 'compact',
+              notation: "compact",
               minimumFractionDigits: 0,
               maximumFractionDigits: 2,
             }),
           },
           items: {
-            type: 'bar',
+            type: "bar",
             bars: [
               {
-                dataKey: 'unique_buyers',
-                color: 'var(--color-primary)',
+                dataKey: "unique_buyers",
+                color: "var(--color-primary)",
               },
             ],
           },
           tooltipRows: [
             {
-              key: 'unique_buyers',
-              label: 'Buyers',
-              getValue: data =>
+              key: "unique_buyers",
+              label: "Buyers",
+              getValue: (data) =>
                 data.toLocaleString(undefined, {
-                  notation: 'compact',
+                  notation: "compact",
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 2,
                 }),
@@ -158,9 +158,9 @@ export const LoadingActivityCharts = () => {
   return (
     <LoadingMultiCharts
       tabs={[
-        { type: 'bar', label: 'Transactions' },
-        { type: 'bar', label: 'Volume' },
-        { type: 'bar', label: 'Buyers' },
+        { type: "bar", label: "Transactions" },
+        { type: "bar", label: "Volume" },
+        { type: "bar", label: "Buyers" },
       ]}
     />
   );

@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { Command as CommandPrimitive } from 'cmdk';
-import { SearchIcon } from 'lucide-react';
+import * as React from "react";
+import { Command as CommandPrimitive } from "cmdk";
+import { SearchIcon } from "lucide-react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 
 function Command({
   className,
@@ -21,7 +21,7 @@ function Command({
     <CommandPrimitive
       data-slot="command"
       className={cn(
-        'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md',
+        "bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md",
         className
       )}
       {...props}
@@ -30,8 +30,8 @@ function Command({
 }
 
 function CommandDialog({
-  title = 'Command Palette',
-  description = 'Search for a command to run...',
+  title = "Command Palette",
+  description = "Search for a command to run...",
   children,
   className,
   showCloseButton = true,
@@ -51,12 +51,12 @@ function CommandDialog({
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       <DialogContent
-        className={cn('overflow-hidden p-0', className)}
+        className={cn("overflow-hidden p-0", className)}
         showCloseButton={showCloseButton}
       >
         <Command
           shouldFilter={shouldFilter}
-          className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
+          className="**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
         >
           {children}
         </Command>
@@ -79,7 +79,7 @@ const CommandInput = React.forwardRef<
     <div
       data-slot="command-input-wrapper"
       className={cn(
-        'flex h-9 items-center gap-2 border-b px-3',
+        "flex h-9 items-center gap-2 border-b px-3",
         containerClassName
       )}
     >
@@ -88,7 +88,7 @@ const CommandInput = React.forwardRef<
         ref={ref}
         data-slot="command-input"
         className={cn(
-          'placeholder:text-muted-foreground flex h-10 min-w-0 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
+          "placeholder:text-muted-foreground flex h-10 min-w-0 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         {...props}
@@ -111,11 +111,11 @@ function CommandList({
   gradientClassName?: string;
 }) {
   return (
-    <div className={cn('relative', containerClassName)}>
+    <div className={cn("relative", containerClassName)}>
       <CommandPrimitive.List
         data-slot="command-list"
         className={cn(
-          'relative max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto pb-4',
+          "relative max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto pb-4",
           className
         )}
         {...props}
@@ -124,7 +124,7 @@ function CommandList({
       </CommandPrimitive.List>
       <div
         className={cn(
-          'from-background absolute right-0 bottom-0 left-0 h-4 bg-linear-to-t to-transparent',
+          "from-background absolute right-0 bottom-0 left-0 h-4 bg-linear-to-t to-transparent",
           gradientClassName
         )}
       />
@@ -152,7 +152,7 @@ function CommandGroup({
     <CommandPrimitive.Group
       data-slot="command-group"
       className={cn(
-        'text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
+        "text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
         className
       )}
       {...props}

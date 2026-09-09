@@ -1,8 +1,8 @@
-import { parseChain } from './parse';
+import { parseChain } from "./parse";
 
-import { getDataChainCookieServer } from '@/app/(app)/_contexts/chain/cookies/server';
+import { getDataChainCookieServer } from "@/app/(app)/_contexts/chain/cookies/server";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 export const getChainForPage = async (
   searchParams: Record<string, string | string[] | undefined>

@@ -1,18 +1,18 @@
-import type { registryRegisterBodySchema } from '@/app/api/x402/_lib/schemas';
-import { jsonResponse } from '@/app/api/x402/_lib/utils';
-import { jsonObjectSchema } from '@/lib/json';
-import { registerEndpoint } from '@/lib/discovery/register-endpoint';
-import { urlMatchesDiscoveredResource } from '@/lib/url';
-import { fetchDiscoveryDocument } from '@/services/discovery';
-import { revalidatePath } from 'next/cache';
-import { z } from 'zod';
+import type { registryRegisterBodySchema } from "@/app/api/x402/_lib/schemas";
+import { jsonResponse } from "@/app/api/x402/_lib/utils";
+import { jsonObjectSchema } from "@/lib/json";
+import { registerEndpoint } from "@/lib/discovery/register-endpoint";
+import { urlMatchesDiscoveredResource } from "@/lib/url";
+import { fetchDiscoveryDocument } from "@/services/discovery";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
-import type { SerializableValue } from '@/app/api/x402/_lib/utils';
+import type { SerializableValue } from "@/app/api/x402/_lib/utils";
 
 const bigintSchema = z.bigint();
 
 const CONTACT_EMAIL_WARNING =
-  'Add info.contact.email to your openapi.json to verify ownership, let users contact you, and customize your merchant pages on tryponcho.com.';
+  "Add info.contact.email to your openapi.json to verify ownership, let users contact you, and customize your merchant pages on tryponcho.com.";
 
 export function contactEmailFields(contactEmail: string | undefined) {
   return contactEmail ? { contactEmail } : { warning: CONTACT_EMAIL_WARNING };
@@ -31,17 +31,17 @@ export async function handleRegistryRegister(
       {
         success: false,
         error: {
-          type: 'no_discovery',
+          type: "no_discovery",
           message:
             discoveryResult.error ??
-            'No discovery document found. Add an openapi.json to your origin to register endpoints.',
+            "No discovery document found. Add an openapi.json to your origin to register endpoints.",
         },
       },
       404
     );
   }
 
-  const urlInSpec = discoveryResult.resources.some(r =>
+  const urlInSpec = discoveryResult.resources.some((r) =>
     urlMatchesDiscoveredResource(body.url, r.url)
   );
 
@@ -50,7 +50,7 @@ export async function handleRegistryRegister(
       {
         success: false,
         error: {
-          type: 'not_in_spec',
+          type: "not_in_spec",
           message:
             "This endpoint is not listed in the origin's openapi.json. Add it to the spec before registering.",
         },
@@ -68,7 +68,7 @@ export async function handleRegistryRegister(
       revalidatePath(`/server/${result.resource.origin.id}`);
     }
   } catch (e) {
-    console.error('revalidatePath failed:', e);
+    console.error("revalidatePath failed:", e);
   }
 
   if (!result.success) {

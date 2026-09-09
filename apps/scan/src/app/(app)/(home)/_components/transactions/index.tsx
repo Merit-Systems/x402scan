@@ -1,7 +1,7 @@
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { columns } from './columns';
-import { Table } from './table';
+import { columns } from "./columns";
+import { Table } from "./table";
 
 interface Props {
   pageSize: number;

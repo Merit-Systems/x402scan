@@ -1,20 +1,20 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { Section } from '@/app/_components/layout/page-utils';
+import { Section } from "@/app/_components/layout/page-utils";
 
-import { LatestTransactionsTable } from '../../../_components/transactions/table';
+import { LatestTransactionsTable } from "../../../_components/transactions/table";
 
-import { TransfersSortingProvider } from '@/app/(app)/_contexts/sorting/transfers/provider';
+import { TransfersSortingProvider } from "@/app/(app)/_contexts/sorting/transfers/provider";
 
-import { columns } from '../../../_components/transactions/columns';
+import { columns } from "../../../_components/transactions/columns";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
+import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
   facilitatorId: string;

@@ -1,14 +1,14 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { auth } from '@/auth';
-import { api } from '@/trpc/server';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { auth } from "@/auth";
+import { api } from "@/trpc/server";
 
-import { notFound, unauthorized } from 'next/navigation';
-import { EditAgentForm } from './_components/edit-form';
-import { DeleteAgentButton } from './_components/delete';
+import { notFound, unauthorized } from "next/navigation";
+import { EditAgentForm } from "./_components/edit-form";
+import { DeleteAgentButton } from "./_components/delete";
 
 export default async function EditAgentPage({
   params,
-}: PageProps<'/composer/agent/[id]/edit'>) {
+}: PageProps<"/composer/agent/[id]/edit">) {
   const session = await auth();
 
   if (!session) {
@@ -28,7 +28,7 @@ export default async function EditAgentPage({
   }
 
   return (
-    <div className="flex w-full flex-1 h-0 flex-col pt-8 md:pt-12 overflow-y-auto relative">
+    <div className="relative flex h-0 w-full flex-1 flex-col overflow-y-auto pt-8 md:pt-12">
       <Heading title="Edit Agent" className="md:max-w-2xl" />
       <Body className="max-w-2xl">
         <EditAgentForm agentConfiguration={agentConfiguration} />

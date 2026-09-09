@@ -1,11 +1,11 @@
-import z from 'zod';
-import { Methods } from '@/types/x402';
+import z from "zod";
+import { Methods } from "@/types/x402";
 
-import { jsonObjectSchema } from '@/lib/json';
+import { jsonObjectSchema } from "@/lib/json";
 
-import type { FieldDefinition } from '@/types/x402';
-import type { JsonObject, JsonValue } from '@/lib/json';
-import type { InputSchema } from '.';
+import type { FieldDefinition } from "@/types/x402";
+import type { JsonObject, JsonValue } from "@/lib/json";
+import type { InputSchema } from ".";
 
 /**
  * Headers that are part of the x402/MPP payment protocol and should not
@@ -13,12 +13,12 @@ import type { InputSchema } from '.';
  * by the payment flow.
  */
 const PROTOCOL_HEADERS = new Set([
-  'authorization',
-  'payment-signature',
-  'payment-required',
-  'x-payment',
-  'x-payment-signature',
-  'sign-in-with-x',
+  "authorization",
+  "payment-signature",
+  "payment-required",
+  "x-payment",
+  "x-payment-signature",
+  "sign-in-with-x",
 ]);
 
 function filterProtocolHeaders(headers: JsonObject): JsonObject {
@@ -50,7 +50,7 @@ function asStringArray(value: JsonValue | undefined): string[] | undefined {
 export function extractFieldsFromSchema(
   inputSchema: InputSchema,
   method: Methods,
-  fieldType: 'query' | 'body' | 'header'
+  fieldType: "query" | "body" | "header"
 ): FieldDefinition[] {
   const parsedInput = jsonObjectSchema.safeParse(inputSchema);
   if (!parsedInput.success) {
@@ -58,7 +58,7 @@ export function extractFieldsFromSchema(
   }
   const input = parsedInput.data;
 
-  if (fieldType === 'header') {
+  if (fieldType === "header") {
     const headerFields = asJsonObject(input.headerFields);
     if (headerFields) {
       return getFields(filterProtocolHeaders(headerFields));
@@ -70,12 +70,12 @@ export function extractFieldsFromSchema(
   const body = asJsonObject(input.body);
 
   const hasJsonSchemaQuery =
-    queryParams !== undefined && 'properties' in queryParams;
-  const hasJsonSchemaBody = body !== undefined && 'properties' in body;
+    queryParams !== undefined && "properties" in queryParams;
+  const hasJsonSchemaBody = body !== undefined && "properties" in body;
   const hasJsonSchemaRaw =
-    !input.queryParams && !input.bodyFields && 'properties' in input;
+    !input.queryParams && !input.bodyFields && "properties" in input;
 
-  if (fieldType === 'query') {
+  if (fieldType === "query") {
     if (hasJsonSchemaQuery && queryParams) {
       return getFields(
         asJsonObject(queryParams.properties),
@@ -120,7 +120,7 @@ function getFields(
   if (!record) {
     return [];
   }
-  return expandFields(record, '', requiredFields);
+  return expandFields(record, "", requiredFields);
 }
 
 const fieldItemsSchema = z
@@ -155,7 +155,7 @@ const fieldNodeSchema = z.union([
 
 function expandFields(
   record: JsonObject,
-  prefix = '',
+  prefix = "",
   parentRequired?: string[]
 ): FieldDefinition[] {
   const fields: FieldDefinition[] = [];
@@ -178,7 +178,7 @@ function expandFields(
         : (parentRequired?.includes(name) ?? false);
 
     // Handle array type with items - preserve items schema
-    if (field.type === 'array' && field.items) {
+    if (field.type === "array" && field.items) {
       fields.push({
         name: fullName,
         type: field.type,
@@ -194,7 +194,7 @@ function expandFields(
       } satisfies FieldDefinition);
     }
     // Handle object type with properties - expand recursively
-    else if (field.type === 'object' && field.properties) {
+    else if (field.type === "object" && field.properties) {
       const expandedFields = expandFields(
         field.properties,
         fullName,

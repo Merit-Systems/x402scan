@@ -1,6 +1,6 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface Props {
   provider: string;
@@ -14,7 +14,7 @@ export const ModelProviderIcon: React.FC<Props> = ({ provider, className }) => {
       alt={provider}
       width={16}
       height={16}
-      className={cn('rounded-full', className ?? '')}
+      className={cn("rounded-full", className ?? "")}
     />
   );
 };

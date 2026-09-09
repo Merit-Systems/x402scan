@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Plus, ServerOff } from 'lucide-react';
+import { Plus, ServerOff } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Empty,
   EmptyContent,
@@ -15,24 +15,24 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@/components/ui/empty';
+} from "@/components/ui/empty";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
+} from "@/components/ui/accordion";
 
-import { OriginResources } from './origin-resources';
+import { OriginResources } from "./origin-resources";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
 import {
   LoadingOriginCard,
   OriginCard,
-} from '@/app/(app)/_components/resources/origin';
+} from "@/app/(app)/_components/resources/origin";
 
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
 
 interface Props {
   emptyText: string;
@@ -52,7 +52,7 @@ export const ResourcesByOrigin: React.FC<Props> = ({
 
   // Default to opening all origins if not specified
   const [openOrigins, setOpenOrigins] = useState<string[]>(
-    () => defaultOpenOrigins ?? originsWithResources.map(o => o.id)
+    () => defaultOpenOrigins ?? originsWithResources.map((o) => o.id)
   );
 
   if (originsWithResources.length === 0) {
@@ -101,7 +101,7 @@ export const ResourcesByOrigin: React.FC<Props> = ({
           <div className="pl-4">
             <div className="h-4 w-[1px] bg-border" />
             {index === originsWithResources.length - 1 && (
-              <div className="size-3 bg-border rounded-full -ml-[5px]" />
+              <div className="-ml-[5px] size-3 rounded-full bg-border" />
             )}
           </div>
         </AccordionItem>
@@ -125,7 +125,7 @@ export const LoadingResourcesByOrigin: React.FC<
           <div className="pl-4">
             <div className="h-4 w-[1px] bg-border" />
             {index === loadingRowCount - 1 && (
-              <div className="size-3 bg-border rounded-full -ml-[5px]" />
+              <div className="-ml-[5px] size-3 rounded-full bg-border" />
             )}
           </div>
         </div>

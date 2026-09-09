@@ -5,4 +5,4 @@
 export const buildBuyersOrderByColumn = (sorting: {
   id: string;
   desc: boolean;
-}): string => `"${sorting.id}" ${sorting.desc ? 'DESC' : 'ASC'}, sender ASC`;
+}): string => `"${sorting.id}" ${sorting.desc ? "DESC" : "ASC"}, sender ASC`;

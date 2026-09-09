@@ -1,4 +1,4 @@
-import { Network, type Token } from 'facilitators';
+import { Network, type Token } from "facilitators";
 
 export { Network, type Token };
 
@@ -32,15 +32,15 @@ export interface TransferEventData {
 }
 
 export enum PaginationStrategy {
-  TIME_WINDOW = 'time-window',
-  OFFSET = 'offset',
+  TIME_WINDOW = "time-window",
+  OFFSET = "offset",
 }
 
 export enum QueryProvider {
-  BITQUERY = 'bitquery',
-  BITQUERY_CHANNELS = 'bitquery-channels',
-  BIGQUERY = 'bigquery',
-  CDP = 'cdp',
+  BITQUERY = "bitquery",
+  BITQUERY_CHANNELS = "bitquery-channels",
+  BIGQUERY = "bigquery",
+  CDP = "cdp",
 }
 
 /**
@@ -102,7 +102,7 @@ export type SyncConfig = QueryConfig & {
   facilitators: Facilitator[];
   limit: number;
   enabled: boolean;
-  machine: 'small-1x' | 'medium-1x' | 'large-2x';
+  machine: "small-1x" | "medium-1x" | "large-2x";
   splitSyncByFacilitator?: boolean;
   useSyncState?: boolean;
   syncStateCutoverAt?: Date;

@@ -1,6 +1,6 @@
-import type { InsertDataFunction } from './types';
-import { Tables } from './types';
-import { createTable, insertData } from '../utils';
+import type { InsertDataFunction } from "./types";
+import { Tables } from "./types";
+import { createTable, insertData } from "../utils";
 
 const partnersTable = `
     CREATE TABLE IF NOT EXISTS ${Tables.Partners} (
@@ -21,8 +21,9 @@ export const createPartnersTable = async () => {
   return createTable(partnersTable);
 };
 
-export const insertPartner: InsertDataFunction<Tables.Partners> = async data =>
-  insertData(Tables.Partners, [data]);
+export const insertPartner: InsertDataFunction<Tables.Partners> = async (
+  data
+) => insertData(Tables.Partners, [data]);
 
 export interface PartnerData {
   id: string;

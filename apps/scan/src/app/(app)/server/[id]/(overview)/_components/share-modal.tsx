@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   Download,
   Link,
@@ -8,7 +8,7 @@ import {
   Loader2,
   Check,
   GripVertical,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -16,16 +16,16 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   SortableContext,
   horizontalListSortingStrategy,
   useSortable,
   arrayMove,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -33,18 +33,18 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { api, type RouterOutputs } from '@/trpc/client';
-import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
-import { ActivityTimeframe } from '@/types/timeframes';
+} from "@/components/ui/dialog";
+import { api, type RouterOutputs } from "@/trpc/client";
+import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
+import { ActivityTimeframe } from "@/types/timeframes";
 import {
   ScreenshotCard,
   fetchImageAsDataUrl,
   type ChartMetric,
   type BottomMetric,
-} from './screenshot-card';
+} from "./screenshot-card";
 
-type Origin = NonNullable<RouterOutputs['public']['origins']['get']>;
+type Origin = NonNullable<RouterOutputs["public"]["origins"]["get"]>;
 
 interface Props {
   originTitle: string;
@@ -53,16 +53,16 @@ interface Props {
 }
 
 const CHART_OPTIONS: { id: ChartMetric; label: string }[] = [
-  { id: 'transactions', label: 'Transactions' },
-  { id: 'volume', label: 'Volume' },
-  { id: 'buyers', label: 'Buyers' },
+  { id: "transactions", label: "Transactions" },
+  { id: "volume", label: "Volume" },
+  { id: "buyers", label: "Buyers" },
 ];
 
 const BOTTOM_OPTIONS: { id: BottomMetric; label: string }[] = [
-  { id: 'transactions', label: 'Transactions' },
-  { id: 'volume', label: 'Volume' },
-  { id: 'buyers', label: 'Buyers' },
-  { id: 'resources', label: 'Resources' },
+  { id: "transactions", label: "Transactions" },
+  { id: "volume", label: "Volume" },
+  { id: "buyers", label: "Buyers" },
+  { id: "resources", label: "Resources" },
 ];
 
 export const ShareModal: React.FC<Props> = ({
@@ -76,11 +76,11 @@ export const ShareModal: React.FC<Props> = ({
   const [captureError, setCaptureError] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const linkTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
-  const [chartMetric, setChartMetric] = useState<ChartMetric>('transactions');
+  const [chartMetric, setChartMetric] = useState<ChartMetric>("transactions");
   const [bottomMetrics, setBottomMetrics] = useState<BottomMetric[]>([
-    'volume',
-    'buyers',
-    'resources',
+    "volume",
+    "buyers",
+    "resources",
   ]);
   const [faviconDataUrl, setFaviconDataUrl] = useState<string | null>(null);
 
@@ -101,8 +101,8 @@ export const ShareModal: React.FC<Props> = ({
       metadata
         ? Array.from(
             new Set(
-              metadata.resources.flatMap(resource =>
-                resource.accepts.map(accept => accept.payTo)
+              metadata.resources.flatMap((resource) =>
+                resource.accepts.map((accept) => accept.payTo)
               )
             )
           )
@@ -136,7 +136,7 @@ export const ShareModal: React.FC<Props> = ({
     : null;
 
   const chartData = bucketedStats
-    ? bucketedStats.map(stat => ({
+    ? bucketedStats.map((stat) => ({
         transactions: stat.total_transactions,
         totalAmount: parseFloat(
           convertTokenAmount(BigInt(stat.total_amount)).toString()
@@ -153,9 +153,9 @@ export const ShareModal: React.FC<Props> = ({
     try {
       setCaptureError(false);
       // Small delay to let the card render after config change
-      await new Promise(r => setTimeout(r, 150));
+      await new Promise((r) => setTimeout(r, 150));
 
-      const cardEl = document.getElementById('origin-screenshot-card');
+      const cardEl = document.getElementById("origin-screenshot-card");
       if (!cardEl) {
         setCaptureError(true);
         return;
@@ -163,33 +163,33 @@ export const ShareModal: React.FC<Props> = ({
 
       const wrapper = cardEl.parentElement;
       if (wrapper) {
-        wrapper.style.position = 'fixed';
-        wrapper.style.left = '0';
-        wrapper.style.top = '0';
-        wrapper.style.zIndex = '-1';
-        wrapper.style.opacity = '0';
-        wrapper.style.pointerEvents = 'none';
+        wrapper.style.position = "fixed";
+        wrapper.style.left = "0";
+        wrapper.style.top = "0";
+        wrapper.style.zIndex = "-1";
+        wrapper.style.opacity = "0";
+        wrapper.style.pointerEvents = "none";
       }
 
-      const { toPng } = await import('html-to-image');
+      const { toPng } = await import("html-to-image");
       const dataUrl = await toPng(cardEl, {
         pixelRatio: 2,
         skipFonts: true,
       });
 
       if (wrapper) {
-        wrapper.style.position = 'absolute';
-        wrapper.style.left = '-9999px';
-        wrapper.style.top = '-9999px';
-        wrapper.style.zIndex = '';
-        wrapper.style.opacity = '';
-        wrapper.style.pointerEvents = '';
+        wrapper.style.position = "absolute";
+        wrapper.style.left = "-9999px";
+        wrapper.style.top = "-9999px";
+        wrapper.style.zIndex = "";
+        wrapper.style.opacity = "";
+        wrapper.style.pointerEvents = "";
       }
 
       setScreenshotUrl(dataUrl);
     } catch (err) {
       console.error(
-        'Screenshot capture failed:',
+        "Screenshot capture failed:",
         err instanceof Error ? err.message : err
       );
       setCaptureError(true);
@@ -218,8 +218,8 @@ export const ShareModal: React.FC<Props> = ({
 
   const handleDownload = () => {
     if (!screenshotUrl) return;
-    const link = document.createElement('a');
-    link.download = `${originTitle.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}-x402scan.png`;
+    const link = document.createElement("a");
+    link.download = `${originTitle.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase()}-x402scan.png`;
     link.href = screenshotUrl;
     link.click();
   };
@@ -234,8 +234,8 @@ export const ShareModal: React.FC<Props> = ({
   const MAX_BOTTOM_METRICS = 3;
 
   const toggleBottomMetric = (metric: BottomMetric) => {
-    setBottomMetrics(prev => {
-      if (prev.includes(metric)) return prev.filter(m => m !== metric);
+    setBottomMetrics((prev) => {
+      if (prev.includes(metric)) return prev.filter((m) => m !== metric);
       if (prev.length >= MAX_BOTTOM_METRICS) return prev;
       return [...prev, metric];
     });
@@ -248,7 +248,7 @@ export const ShareModal: React.FC<Props> = ({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    setBottomMetrics(prev => {
+    setBottomMetrics((prev) => {
       const oldIndex = prev.indexOf(active.id as BottomMetric);
       const newIndex = prev.indexOf(over.id as BottomMetric);
       return arrayMove(prev, oldIndex, newIndex);
@@ -256,7 +256,7 @@ export const ShareModal: React.FC<Props> = ({
   };
 
   const unselectedMetrics = BOTTOM_OPTIONS.filter(
-    opt => !bottomMetrics.includes(opt.id)
+    (opt) => !bottomMetrics.includes(opt.id)
   );
 
   const handleOpenChange = (open: boolean) => {
@@ -274,7 +274,7 @@ export const ShareModal: React.FC<Props> = ({
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <button className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium cursor-pointer">
+        <button className="inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90">
           <Share2 className="size-3" />
           Share
         </button>
@@ -288,19 +288,19 @@ export const ShareModal: React.FC<Props> = ({
         </DialogHeader>
         <div className="flex flex-col gap-4">
           {/* Screenshot preview */}
-          <div className="rounded-md border overflow-hidden bg-muted">
+          <div className="overflow-hidden rounded-md border bg-muted">
             {captureError ? (
-              <div className="flex flex-col items-center justify-center h-48 gap-2 text-muted-foreground">
+              <div className="flex h-48 flex-col items-center justify-center gap-2 text-muted-foreground">
                 <p className="text-sm">Failed to generate preview</p>
                 <button
                   onClick={() => void captureScreenshot()}
-                  className="text-xs underline cursor-pointer hover:text-foreground"
+                  className="cursor-pointer text-xs underline hover:text-foreground"
                 >
                   Retry
                 </button>
               </div>
             ) : isCapturing || !screenshotUrl ? (
-              <div className="flex items-center justify-center h-48">
+              <div className="flex h-48 items-center justify-center">
                 <Loader2 className="size-6 animate-spin text-muted-foreground" />
               </div>
             ) : (
@@ -316,18 +316,18 @@ export const ShareModal: React.FC<Props> = ({
           <div className="flex flex-col gap-3">
             {/* Chart metric */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground w-12 shrink-0">
+              <span className="w-12 shrink-0 text-xs font-medium text-muted-foreground">
                 Chart
               </span>
-              <div className="flex gap-1.5 flex-wrap">
-                {CHART_OPTIONS.map(opt => (
+              <div className="flex flex-wrap gap-1.5">
+                {CHART_OPTIONS.map((opt) => (
                   <button
                     key={opt.id}
                     onClick={() => setChartMetric(opt.id)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium cursor-pointer transition-colors ${
+                    className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                       chartMetric === opt.id
-                        ? 'bg-foreground text-background'
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        ? "bg-foreground text-background"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }`}
                   >
                     {opt.label}
@@ -337,10 +337,10 @@ export const ShareModal: React.FC<Props> = ({
             </div>
             {/* Bottom metrics — drag to reorder, click to toggle */}
             <div className="flex items-start gap-2">
-              <span className="text-xs font-medium text-muted-foreground w-12 shrink-0 py-1">
+              <span className="w-12 shrink-0 py-1 text-xs font-medium text-muted-foreground">
                 Stats
               </span>
-              <div className="flex gap-1.5 flex-wrap">
+              <div className="flex flex-wrap gap-1.5">
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
@@ -350,23 +350,23 @@ export const ShareModal: React.FC<Props> = ({
                     items={bottomMetrics}
                     strategy={horizontalListSortingStrategy}
                   >
-                    {bottomMetrics.map(metricId => (
+                    {bottomMetrics.map((metricId) => (
                       <SortableMetricPill
                         key={metricId}
                         id={metricId}
                         label={
-                          BOTTOM_OPTIONS.find(o => o.id === metricId)!.label
+                          BOTTOM_OPTIONS.find((o) => o.id === metricId)!.label
                         }
                         onRemove={() => toggleBottomMetric(metricId)}
                       />
                     ))}
                   </SortableContext>
                 </DndContext>
-                {unselectedMetrics.map(opt => (
+                {unselectedMetrics.map((opt) => (
                   <button
                     key={opt.id}
                     onClick={() => toggleBottomMetric(opt.id)}
-                    className="px-2.5 py-1 rounded-md text-xs font-medium cursor-pointer transition-colors bg-muted text-muted-foreground hover:bg-muted/80"
+                    className="cursor-pointer rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/80"
                   >
                     {opt.label}
                   </button>
@@ -395,7 +395,7 @@ export const ShareModal: React.FC<Props> = ({
               ) : (
                 <Link className="size-4" />
               )}
-              {linkCopied ? 'Copied!' : 'Copy Link'}
+              {linkCopied ? "Copied!" : "Copy Link"}
             </Button>
           </div>
         </div>
@@ -448,7 +448,7 @@ const SortableMetricPill = ({
       className="inline-flex items-center gap-1 rounded-md bg-foreground text-background"
     >
       <button
-        className="pl-1 py-1 cursor-grab active:cursor-grabbing touch-none"
+        className="cursor-grab touch-none py-1 pl-1 active:cursor-grabbing"
         {...attributes}
         {...listeners}
       >
@@ -456,7 +456,7 @@ const SortableMetricPill = ({
       </button>
       <button
         onClick={onRemove}
-        className="pr-2.5 py-1 text-xs font-medium cursor-pointer"
+        className="cursor-pointer py-1 pr-2.5 text-xs font-medium"
       >
         {label}
       </button>

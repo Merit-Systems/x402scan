@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { HardDrive, Tag, Wallet } from 'lucide-react';
+import { HardDrive, Tag, Wallet } from "lucide-react";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { Addresses } from '@/components/ui/address';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Addresses } from "@/components/ui/address";
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { Tags } from '@/app/(app)/_components/tags';
+import { Tags } from "@/app/(app)/_components/tags";
 
-import type { LucideIcon } from 'lucide-react';
-import type { Tag as TagType } from '@x402scan/scan-db/types';
+import type { LucideIcon } from "lucide-react";
+import type { Tag as TagType } from "@x402scan/scan-db/types";
 
 interface Props {
   originId: string;
@@ -22,9 +22,9 @@ interface Stat {
 }
 
 const stats: Stat[] = [
-  { title: 'Resources', Icon: HardDrive },
-  { title: 'Tags', Icon: Tag },
-  { title: 'Addresses', Icon: Wallet },
+  { title: "Resources", Icon: HardDrive },
+  { title: "Tags", Icon: Tag },
+  { title: "Addresses", Icon: Wallet },
 ];
 
 export const StatsCards: React.FC<Props> = ({ originId }) => {
@@ -40,15 +40,15 @@ export const StatsCards: React.FC<Props> = ({ originId }) => {
       tags={
         Array.from(
           new Set(
-            metadata.resources.flatMap(resource =>
-              resource.tags.map(tag => tag.tag.id)
+            metadata.resources.flatMap((resource) =>
+              resource.tags.map((tag) => tag.tag.id)
             )
           )
         )
-          .map(tagId =>
+          .map((tagId) =>
             metadata.resources
-              .flatMap(resource => resource.tags.map(tag => tag.tag))
-              .find(tag => tag.id === tagId)
+              .flatMap((resource) => resource.tags.map((tag) => tag.tag))
+              .find((tag) => tag.id === tagId)
           )
           .filter(Boolean) as TagType[]
       }
@@ -58,8 +58,8 @@ export const StatsCards: React.FC<Props> = ({ originId }) => {
       key="addresses"
       addresses={Array.from(
         new Set(
-          metadata.resources.flatMap(resource =>
-            resource.accepts.map(accept => accept.payTo)
+          metadata.resources.flatMap((resource) =>
+            resource.accepts.map((accept) => accept.payTo)
           )
         )
       )}
@@ -73,7 +73,7 @@ export const StatsCards: React.FC<Props> = ({ originId }) => {
 };
 
 export const LoadingStatsCards = () => {
-  return stats.map(stat => <LoadingStatCard {...stat} key={stat.title} />);
+  return stats.map((stat) => <LoadingStatCard {...stat} key={stat.title} />);
 };
 
 type StatsCardProps = {
@@ -83,7 +83,7 @@ type StatsCardProps = {
 const StatCard = ({ value, ...stat }: StatsCardProps) => {
   return (
     <BaseStatCard {...stat}>
-      <div className="text-base md:text-lg font-bold font-mono">{value}</div>
+      <div className="font-mono text-base font-bold md:text-lg">{value}</div>
     </BaseStatCard>
   );
 };
@@ -91,7 +91,7 @@ const StatCard = ({ value, ...stat }: StatsCardProps) => {
 const LoadingStatCard = (stat: Stat) => {
   return (
     <BaseStatCard {...stat}>
-      <Skeleton className="w-16 h-[28px]" />
+      <Skeleton className="h-[28px] w-16" />
     </BaseStatCard>
   );
 };
@@ -104,12 +104,12 @@ const BaseStatCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex flex-col md:flex-row justify-between flex-1 px-4 gap-1 md:gap-2 py-2 md:py-1 h-full">
+    <div className="flex h-full flex-1 flex-col justify-between gap-1 px-4 py-2 md:flex-row md:gap-2 md:py-1">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Icon className="size-4 shrink-0" />
         <span className="text-xs font-medium tracking-wider">{title}</span>
       </div>
-      <div className="gap-1 flex items-center">{children}</div>
+      <div className="flex items-center gap-1">{children}</div>
     </div>
   );
 };

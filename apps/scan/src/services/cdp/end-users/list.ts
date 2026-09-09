@@ -1,7 +1,7 @@
-import 'server-only';
+import "server-only";
 
-import z from 'zod';
-import { cdpFetch } from '../lib/fetch';
+import z from "zod";
+import { cdpFetch } from "../lib/fetch";
 
 const authenticationMethodSchema = z
   .object({
@@ -30,18 +30,18 @@ const listEndUsersResponseSchema = z.object({
 type EndUser = z.infer<typeof endUserSchema>;
 
 const listEndUsers = async (pageToken?: string) => {
-  const queryParams = new URLSearchParams({ pageSize: '100' });
+  const queryParams = new URLSearchParams({ pageSize: "100" });
   if (pageToken) {
-    queryParams.set('pageToken', pageToken);
+    queryParams.set("pageToken", pageToken);
   }
   const basePath = `/platform/v2/end-users`;
   const path = `${basePath}?${queryParams.toString()}`;
 
   const response = await cdpFetch(
     {
-      requestMethod: 'GET',
+      requestMethod: "GET",
       requestPath: path,
-      requestHost: 'api.cdp.coinbase.com',
+      requestHost: "api.cdp.coinbase.com",
     },
     listEndUsersResponseSchema
   );

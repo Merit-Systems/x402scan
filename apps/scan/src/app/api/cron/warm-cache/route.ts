@@ -1,18 +1,18 @@
-import { NextResponse } from 'next/server';
-import { createCaller } from '@/trpc/routers';
-import { createTRPCContext } from '@/trpc/trpc';
-import { defaultBuyersSorting } from '@/app/(app)/_contexts/sorting/buyers/default';
-import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
-import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
-import { ACTIVITY_TIMEFRAMES } from '@/types/timeframes';
-import type { ActivityTimeframe } from '@/types/timeframes';
-import { facilitatorAddresses } from '@/lib/facilitators';
-import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
-import { Chain } from '@/types/chain';
+import { NextResponse } from "next/server";
+import { createCaller } from "@/trpc/routers";
+import { createTRPCContext } from "@/trpc/trpc";
+import { defaultBuyersSorting } from "@/app/(app)/_contexts/sorting/buyers/default";
+import { defaultSellersSorting } from "@/app/(app)/_contexts/sorting/sellers/default";
+import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
+import { ACTIVITY_TIMEFRAMES } from "@/types/timeframes";
+import type { ActivityTimeframe } from "@/types/timeframes";
+import { facilitatorAddresses } from "@/lib/facilitators";
+import { CACHE_DURATION_MINUTES } from "@/lib/cache-constants";
+import { Chain } from "@/types/chain";
 
-import type { NextRequest } from 'next/server';
-import { checkCronSecret } from '@/lib/cron';
-import { env } from '@/env';
+import type { NextRequest } from "next/server";
+import { checkCronSecret } from "@/lib/cron";
+import { env } from "@/env";
 
 export const maxDuration = 300;
 
@@ -47,13 +47,13 @@ async function withRetry<T>(
 
       if (attempt < maxRetries) {
         console.warn(
-          `[Cache Warming] ${taskName ? `${taskName}: ` : ''}Attempt ${attempt + 1} failed, retrying... Error: ${lastError.message}`
+          `[Cache Warming] ${taskName ? `${taskName}: ` : ""}Attempt ${attempt + 1} failed, retrying... Error: ${lastError.message}`
         );
       }
     }
   }
 
-  const errorMessage = `[Cache Warming] ${taskName ? `${taskName}: ` : ''}All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`;
+  const errorMessage = `[Cache Warming] ${taskName ? `${taskName}: ` : ""}All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`;
   console.error(errorMessage);
   throw lastError ?? new Error(errorMessage);
 }
@@ -259,13 +259,13 @@ function getFacilitatorsPageTasks(
 /**
  * Page types that can be warmed
  */
-type WarmablePage = 'home' | 'buyers' | 'networks' | 'facilitators';
+type WarmablePage = "home" | "buyers" | "networks" | "facilitators";
 
 const ALL_PAGES: WarmablePage[] = [
-  'home',
-  'buyers',
-  'networks',
-  'facilitators',
+  "home",
+  "buyers",
+  "networks",
+  "facilitators",
 ];
 
 export async function GET(request: NextRequest) {
@@ -279,30 +279,32 @@ export async function GET(request: NextRequest) {
 
     // Create cache warming API with authenticated headers
     const warmingHeaders = new Headers();
-    warmingHeaders.set('x-cache-warming', 'true');
-    warmingHeaders.set('authorization', `Bearer ${env.CRON_SECRET ?? ''}`);
+    warmingHeaders.set("x-cache-warming", "true");
+    warmingHeaders.set("authorization", `Bearer ${env.CRON_SECRET ?? ""}`);
 
     const ctx = await createTRPCContext(warmingHeaders);
     const api = createCaller(ctx);
 
     // Optional query params
     const { searchParams } = new URL(request.url);
-    const pagesParam = searchParams.get('pages'); // e.g., "home,networks"
-    const chainParam = searchParams.get('chain'); // e.g., "base", "solana", "all"
+    const pagesParam = searchParams.get("pages"); // e.g., "home,networks"
+    const chainParam = searchParams.get("chain"); // e.g., "base", "solana", "all"
 
     const timeframesToWarm = ACTIVITY_TIMEFRAMES;
 
     // Filter pages if requested
     const pagesToWarm: WarmablePage[] = pagesParam
       ? (pagesParam
-          .split(',')
-          .filter(p => ALL_PAGES.includes(p as WarmablePage)) as WarmablePage[])
+          .split(",")
+          .filter((p) =>
+            ALL_PAGES.includes(p as WarmablePage)
+          ) as WarmablePage[])
       : ALL_PAGES;
 
     // Parse chain filter if provided
-    const chainFilter: Chain | 'all' | undefined = chainParam
-      ? chainParam === 'all'
-        ? 'all'
+    const chainFilter: Chain | "all" | undefined = chainParam
+      ? chainParam === "all"
+        ? "all"
         : chainParam === (Chain.BASE as string)
           ? Chain.BASE
           : chainParam === (Chain.SOLANA as string)
@@ -311,14 +313,14 @@ export async function GET(request: NextRequest) {
       : undefined;
 
     console.log(
-      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? '' : 's'}: ${pagesToWarm.join(', ')}`
+      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? "" : "s"} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? "" : "s"}: ${pagesToWarm.join(", ")}`
     );
 
     const allTasks: (() => Promise<unknown>)[] = [];
 
     for (const timeframe of timeframesToWarm) {
-      if (pagesToWarm.includes('home')) {
-        if (!chainFilter || chainFilter === 'all') {
+      if (pagesToWarm.includes("home")) {
+        if (!chainFilter || chainFilter === "all") {
           allTasks.push(...getHomePageTasks(api, timeframe));
         }
         if (!chainFilter || chainFilter === Chain.BASE) {
@@ -329,8 +331,8 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      if (pagesToWarm.includes('buyers')) {
-        if (!chainFilter || chainFilter === 'all') {
+      if (pagesToWarm.includes("buyers")) {
+        if (!chainFilter || chainFilter === "all") {
           allTasks.push(...getBuyersPageTasks(api, timeframe));
         }
         if (!chainFilter || chainFilter === Chain.BASE) {
@@ -341,11 +343,11 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      if (pagesToWarm.includes('networks')) {
+      if (pagesToWarm.includes("networks")) {
         allTasks.push(...getNetworksPageTasks(api, timeframe));
       }
 
-      if (pagesToWarm.includes('facilitators')) {
+      if (pagesToWarm.includes("facilitators")) {
         allTasks.push(...getFacilitatorsPageTasks(api, timeframe));
       }
     }
@@ -375,7 +377,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
-      message: 'Cache warmed successfully',
+      message: "Cache warmed successfully",
       tasksCompleted: allTasks.length,
       timeframesWarmed: timeframesToWarm.length,
       timings: {
@@ -388,11 +390,11 @@ export async function GET(request: NextRequest) {
           : undefined,
     });
   } catch (error) {
-    console.error('[Cache Warming] Error warming cache:', error);
+    console.error("[Cache Warming] Error warming cache:", error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );

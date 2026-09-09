@@ -1,8 +1,8 @@
-import { Body } from '@/app/_components/layout/page-utils';
+import { Body } from "@/app/_components/layout/page-utils";
 
-import { LoadingHeaderCard } from './_components/header';
-import { LoadingActivity } from './_components/activity';
-import { LoadingLatestTransactions } from './_components/transactions';
+import { LoadingHeaderCard } from "./_components/header";
+import { LoadingActivity } from "./_components/activity";
+import { LoadingLatestTransactions } from "./_components/transactions";
 
 export default function LoadingRecipientPage() {
   return (

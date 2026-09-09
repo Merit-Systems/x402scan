@@ -1,18 +1,18 @@
-import { Suspense } from 'react';
-import { HeaderCard, LoadingHeaderCard } from './_components/header';
-import { api, HydrateClient } from '@/trpc/server';
-import { notFound } from 'next/navigation';
-import { Body } from '@/app/_components/layout/page-utils';
+import { Suspense } from "react";
+import { HeaderCard, LoadingHeaderCard } from "./_components/header";
+import { api, HydrateClient } from "@/trpc/server";
+import { notFound } from "next/navigation";
+import { Body } from "@/app/_components/layout/page-utils";
 import {
   LoadingOriginResources,
   OriginResources,
-} from './_components/resources';
-import { LoadingOriginActivity, OriginActivity } from './_components/activity';
-import { ActivityTimeframe } from '@/types/timeframes';
+} from "./_components/resources";
+import { LoadingOriginActivity, OriginActivity } from "./_components/activity";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 export default async function OriginPage({
   params,
-}: PageProps<'/server/[id]'>) {
+}: PageProps<"/server/[id]">) {
   const { id } = await params;
   const origin = await api.public.origins.get(id);
   if (!origin) {

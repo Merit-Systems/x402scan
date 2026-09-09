@@ -1,11 +1,11 @@
-import { NoSessionContent } from './component';
+import { NoSessionContent } from "./component";
 
-import { useSiws } from '@/app/(app)/_hooks/sign-in/use-siws';
+import { useSiws } from "@/app/(app)/_hooks/sign-in/use-siws";
 
-import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+import { useSolanaWallet } from "@/app/_contexts/solana/hook";
 
-import type { UiWalletAccount } from '@wallet-standard/react';
-import { Chain } from '@/types/chain';
+import type { UiWalletAccount } from "@wallet-standard/react";
+import { Chain } from "@/types/chain";
 
 export const NoSVMSessionContent = () => {
   const { connectedWallet } = useSolanaWallet();
@@ -21,7 +21,7 @@ const SVMSignInContent = ({ account }: { account: UiWalletAccount }) => {
   const { signIn, isPending } = useSiws({
     account,
     redirectParams: {
-      onramp: 'true',
+      onramp: "true",
       chain: Chain.SOLANA,
     },
   });

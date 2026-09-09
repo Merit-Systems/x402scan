@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { Logo } from '@/components/logo';
+import Link from "next/link";
+import Image from "next/image";
+import { Logo } from "@/components/logo";
 
 const MERIT_ICON_SVG = (
   <svg
@@ -58,12 +58,12 @@ const MERIT_ICON_SVG = (
 
 export function Footer() {
   return (
-    <footer className="w-full border-t mt-auto">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
-        <div className="relative flex items-center justify-evenly md:justify-between text-sm text-muted-foreground">
-          <Link href="/" className="flex items-center gap-2 group">
+    <footer className="mt-auto w-full border-t">
+      <div className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-6">
+        <div className="relative flex items-center justify-evenly text-sm text-muted-foreground md:justify-between">
+          <Link href="/" className="group flex items-center gap-2">
             <Logo className="size-5" />
-            <span className="font-medium group-hover:text-foreground transition-colors font-mono">
+            <span className="font-mono font-medium transition-colors group-hover:text-foreground">
               x402scan
             </span>
           </Link>
@@ -72,10 +72,10 @@ export function Footer() {
             href="https://merit.systems"
             target="_blank"
             rel="noopener noreferrer"
-            className="md:absolute md:left-1/2 md:-translate-x-1/2 flex items-center gap-1.5 hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 transition-colors hover:text-foreground md:absolute md:left-1/2 md:-translate-x-1/2"
           >
             {MERIT_ICON_SVG}
-            <span className="hidden md:inline font-medium font-mono text-xs tracking-widest uppercase">
+            <span className="hidden font-mono text-xs font-medium tracking-widest uppercase md:inline">
               Merit
             </span>
           </a>
@@ -85,7 +85,7 @@ export function Footer() {
               href="https://github.com/Merit-Systems/x402scan"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
+              className="transition-colors hover:text-foreground"
               aria-label="GitHub"
             >
               <Image
@@ -100,7 +100,7 @@ export function Footer() {
               href="https://x.com/x402scan"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
+              className="transition-colors hover:text-foreground"
               aria-label="Twitter"
             >
               <svg
@@ -115,14 +115,14 @@ export function Footer() {
             <Link
               href="/privacy"
               prefetch={false}
-              className="hover:text-foreground transition-colors"
+              className="transition-colors hover:text-foreground"
             >
               Privacy
             </Link>
             <Link
               href="/tos"
               prefetch={false}
-              className="hover:text-foreground transition-colors"
+              className="transition-colors hover:text-foreground"
             >
               Terms
             </Link>

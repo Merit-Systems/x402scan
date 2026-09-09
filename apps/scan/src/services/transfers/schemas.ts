@@ -1,16 +1,16 @@
-import z from 'zod';
+import z from "zod";
 
 import {
   chainSchema,
   mixedAddressSchema,
   timePeriodSchema,
-} from '@/lib/schemas';
-import { ActivityTimeframe } from '@/types/timeframes';
-import { timeframeSchema } from '@/lib/schemas';
+} from "@/lib/schemas";
+import { ActivityTimeframe } from "@/types/timeframes";
+import { timeframeSchema } from "@/lib/schemas";
 
 const addressArray = z
   .array(mixedAddressSchema)
-  .transform(addresses => [...addresses].sort((a, b) => a.localeCompare(b)));
+  .transform((addresses) => [...addresses].sort((a, b) => a.localeCompare(b)));
 
 const addressesSchema = z.object({
   include: addressArray.optional(),

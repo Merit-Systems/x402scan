@@ -1,8 +1,8 @@
-import { CdpError } from './error';
-import { generateCdpJwt } from './generate-jwt';
-import { cdpFetchSchema } from './schema';
+import { CdpError } from "./error";
+import { generateCdpJwt } from "./generate-jwt";
+import { cdpFetchSchema } from "./schema";
 
-import type z from 'zod';
+import type z from "zod";
 
 export const cdpFetch = async <T>(
   request: z.input<typeof cdpFetchSchema>,
@@ -13,7 +13,7 @@ export const cdpFetch = async <T>(
     cdpFetchSchema.parse(request);
 
   // Split path into base path (for JWT) and query params (for actual request)
-  const [basePath] = requestPath.split('?');
+  const [basePath] = requestPath.split("?");
 
   const jwt = await generateCdpJwt({
     requestMethod: request.requestMethod,
@@ -30,7 +30,7 @@ export const cdpFetch = async <T>(
       // HeadersInit may be a Headers instance or entry array; normalize before
       // merging — spreading those into an object literal drops/garbles them.
       ...Object.fromEntries(new Headers(init?.headers).entries()),
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
   });
@@ -39,7 +39,7 @@ export const cdpFetch = async <T>(
     const errorBody = await response.text();
     const message = `Failed to ${requestMethod} ${requestPath} from ${requestHost}: ${response.status}`;
     console.error(message);
-    console.error('Response body:', errorBody);
+    console.error("Response body:", errorBody);
     throw new CdpError(message, {
       status: response.status,
     });

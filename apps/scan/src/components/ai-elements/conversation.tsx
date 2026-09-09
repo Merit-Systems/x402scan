@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { ArrowDownIcon } from 'lucide-react';
-import type { ComponentProps } from 'react';
-import { useCallback } from 'react';
-import { StickToBottom, useStickToBottomContext } from 'use-stick-to-bottom';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { ArrowDownIcon } from "lucide-react";
+import type { ComponentProps } from "react";
+import { useCallback } from "react";
+import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const Conversation = ({
   className,
   ...props
 }: ComponentProps<typeof StickToBottom>) => (
   <StickToBottom
-    className={cn('relative h-full overflow-y-scroll no-scrollbar', className)}
+    className={cn("relative h-full overflow-y-scroll no-scrollbar", className)}
     initial="smooth"
     resize="smooth"
     role="log"
@@ -24,18 +24,18 @@ const ConversationContent = ({
   className,
   ...props
 }: ComponentProps<typeof StickToBottom.Content>) => (
-  <StickToBottom.Content className={cn('p-4', className)} {...props} />
+  <StickToBottom.Content className={cn("p-4", className)} {...props} />
 );
 
 const ConversationEmptyState = ({
   className,
-  title = 'No messages yet',
-  description = 'Start a conversation to see messages here',
+  title = "No messages yet",
+  description = "Start a conversation to see messages here",
   icon,
   children,
   button,
   ...props
-}: ComponentProps<'div'> & {
+}: ComponentProps<"div"> & {
   title?: string;
   description?: string;
   icon?: React.ReactNode;
@@ -43,7 +43,7 @@ const ConversationEmptyState = ({
 }) => (
   <div
     className={cn(
-      'flex size-full flex-col items-center justify-center gap-4 p-8 text-center',
+      "flex size-full flex-col items-center justify-center gap-4 p-8 text-center",
       className
     )}
     {...props}
@@ -52,9 +52,9 @@ const ConversationEmptyState = ({
       <>
         {icon && <div className="text-muted-foreground">{icon}</div>}
         <div className="space-y-2">
-          <h3 className="font-bold text-xl md:text-2xl">{title}</h3>
+          <h3 className="text-xl font-bold md:text-2xl">{title}</h3>
           {description && (
-            <p className="text-muted-foreground text-xs md:text-sm font-mono max-w-xs">
+            <p className="max-w-xs font-mono text-xs text-muted-foreground md:text-sm">
               {description}
             </p>
           )}
@@ -79,7 +79,7 @@ const ConversationScrollButton = ({
     !isAtBottom && (
       <Button
         className={cn(
-          'absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full',
+          "absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full",
           className
         )}
         onClick={() => void handleScrollToBottom()}

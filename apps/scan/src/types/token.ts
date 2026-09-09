@@ -1,6 +1,6 @@
-import z from 'zod';
+import z from "zod";
 
-import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
+import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
 
 export const tokenSchema = z.object({
   symbol: z.string(),

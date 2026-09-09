@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from "react";
 
-import { useCdpSolanaStandardWallet } from '@coinbase/cdp-solana-standard-wallet';
-import { useWallets } from '@wallet-standard/react';
+import { useCdpSolanaStandardWallet } from "@coinbase/cdp-solana-standard-wallet";
+import { useWallets } from "@wallet-standard/react";
 
-import { SolanaWalletContext } from './context';
-import { solanaWalletCookies } from './cookies';
+import { SolanaWalletContext } from "./context";
+import { solanaWalletCookies } from "./cookies";
 
-import type { ReactNode } from 'react';
-import type { ConnectedSolanaWallet } from './context';
+import type { ReactNode } from "react";
+import type { ConnectedSolanaWallet } from "./context";
 
 interface Props {
   children: ReactNode;
@@ -43,8 +43,8 @@ export function SolanaWalletProvider({ children }: Props) {
   useEffect(() => {
     if (ready && cdpWallet) {
       const wallet = wallets.find(
-        wallet =>
-          wallet.features.includes('cdp:') &&
+        (wallet) =>
+          wallet.features.includes("cdp:") &&
           wallet.accounts[0]?.address === cdpWallet.accounts[0]?.address
       );
       if (wallet) {
@@ -65,12 +65,14 @@ export function SolanaWalletProvider({ children }: Props) {
     }
 
     // Try to find and reconnect to the saved wallet
-    const matchingWallet = wallets.find(w => w.name === savedWallet.walletName);
+    const matchingWallet = wallets.find(
+      (w) => w.name === savedWallet.walletName
+    );
 
     if (matchingWallet && matchingWallet.accounts.length > 0) {
       // Check if wallet has matching account (some wallets auto-populate accounts)
       const matchingAccount = matchingWallet.accounts.find(
-        acc => acc.address === savedWallet.address
+        (acc) => acc.address === savedWallet.address
       );
 
       if (matchingAccount) {

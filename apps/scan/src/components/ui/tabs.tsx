@@ -1,8 +1,8 @@
-import * as React from 'react';
-import * as TabsPrimitive from '@radix-ui/react-tabs';
-import { cva, type VariantProps } from 'class-variance-authority';
+import * as React from "react";
+import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 // Add a new interface for the Tabs component to include the disableKeyboardNavigation prop
 type TabsProps = {
@@ -16,9 +16,9 @@ const Tabs = React.forwardRef<
 >(({ disableKeyboardNavigation, ...props }, ref) => (
   <TabsPrimitive.Root
     ref={ref}
-    dir={disableKeyboardNavigation ? 'ltr' : undefined}
-    orientation={disableKeyboardNavigation ? undefined : 'horizontal'}
-    activationMode={disableKeyboardNavigation ? 'manual' : undefined}
+    dir={disableKeyboardNavigation ? "ltr" : undefined}
+    orientation={disableKeyboardNavigation ? undefined : "horizontal"}
+    activationMode={disableKeyboardNavigation ? "manual" : undefined}
     {...props}
   />
 ));
@@ -31,7 +31,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      'inline-flex h-10 items-center justify-center rounded-md bg-transparent',
+      "inline-flex h-10 items-center justify-center rounded-md bg-transparent",
       className
     )}
     {...props}
@@ -40,72 +40,72 @@ const TabsList = React.forwardRef<
 TabsList.displayName = TabsPrimitive.List.displayName;
 
 const tabsTriggerVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap gap-2 px-3 py-1.5 text-sm font-medium transition-all outline-none disabled:pointer-events-none disabled:opacity-50 group cursor-pointer',
+  "inline-flex items-center justify-center whitespace-nowrap gap-2 px-3 py-1.5 text-sm font-medium transition-all outline-none disabled:pointer-events-none disabled:opacity-50 group cursor-pointer",
   {
     variants: {
       variant: {
         default:
-          'rounded-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:ring-offset-background dark:focus-visible:ring-ring',
+          "rounded-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:ring-offset-background dark:focus-visible:ring-ring",
         underline: [
-          'relative text-muted-foreground',
+          "relative text-muted-foreground",
           "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent after:content-['']",
         ],
         github: [
-          'relative text-muted-foreground border border-transparent border-b-border rounded-none font-bold',
-          'hover:text-foreground rounded-t-md rounded-b-none',
-          'data-[state=active]:border-border data-[state=active]:border-b-transparent',
+          "relative text-muted-foreground border border-transparent border-b-border rounded-none font-bold",
+          "hover:text-foreground rounded-t-md rounded-b-none",
+          "data-[state=active]:border-border data-[state=active]:border-b-transparent",
         ],
         ghost: [
-          'relative text-muted-foreground',
-          'hover:text-secondary',
-          'data-[state=active]:text-secondary',
+          "relative text-muted-foreground",
+          "hover:text-secondary",
+          "data-[state=active]:text-secondary",
         ],
       },
       color: {
-        primary: '',
-        secondary: '',
+        primary: "",
+        secondary: "",
       },
     },
     compoundVariants: [
       {
-        variant: 'default',
-        color: 'primary',
+        variant: "default",
+        color: "primary",
         className:
-          'data-[state=active]:bg-background data-[state=active]:text-foreground dark:data-[state=active]:bg-background dark:data-[state=active]:text-foreground',
+          "data-[state=active]:bg-background data-[state=active]:text-foreground dark:data-[state=active]:bg-background dark:data-[state=active]:text-foreground",
       },
       {
-        variant: 'default',
-        color: 'secondary',
+        variant: "default",
+        color: "secondary",
         className:
-          'data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground dark:data-[state=active]:bg-secondary dark:data-[state=active]:text-secondary-foreground',
+          "data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground dark:data-[state=active]:bg-secondary dark:data-[state=active]:text-secondary-foreground",
       },
       {
-        variant: 'underline',
-        color: 'primary',
+        variant: "underline",
+        color: "primary",
         className:
-          'data-[state=active]:text-primary data-[state=active]:after:bg-primary',
+          "data-[state=active]:text-primary data-[state=active]:after:bg-primary",
       },
       {
-        variant: 'underline',
-        color: 'secondary',
+        variant: "underline",
+        color: "secondary",
         className:
-          'data-[state=active]:text-secondary data-[state=active]:after:bg-secondary',
+          "data-[state=active]:text-secondary data-[state=active]:after:bg-secondary",
       },
       {
-        variant: 'github',
-        color: 'secondary',
-        className: 'data-[state=active]:text-secondary',
+        variant: "github",
+        color: "secondary",
+        className: "data-[state=active]:text-secondary",
       },
     ],
     defaultVariants: {
-      variant: 'default',
-      color: 'primary',
+      variant: "default",
+      color: "primary",
     },
   }
 );
 
 type TabsTriggerProps = {
-  color?: 'primary' | 'secondary';
+  color?: "primary" | "secondary";
 } & React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> &
   VariantProps<typeof tabsTriggerVariants>;
 
@@ -128,7 +128,7 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      'mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300',
+      "mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300",
       className
     )}
     {...props}

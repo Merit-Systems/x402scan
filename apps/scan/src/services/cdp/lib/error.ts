@@ -7,7 +7,7 @@ export class CdpError extends Error {
     options: { status: number; innerError?: unknown }
   ) {
     super(message);
-    this.name = 'CdpError';
+    this.name = "CdpError";
     this.status = options.status;
     this.innerError = options.innerError;
     // Maintains proper stack trace (only available on V8)

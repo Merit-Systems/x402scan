@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Bot, Plus, X } from 'lucide-react';
+import { Bot, Plus, X } from "lucide-react";
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Field,
   FieldContent,
@@ -23,19 +23,19 @@ import {
   FieldSeparator,
   FieldSet,
   FieldTitle,
-} from '@/components/ui/field';
-import { Dropzone } from '@/components/ui/dropzone';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+} from "@/components/ui/field";
+import { Dropzone } from "@/components/ui/dropzone";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-import { ResourceList } from '../../../../_components/resource-list';
+import { ResourceList } from "../../../../_components/resource-list";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { agentConfigurationSchema } from '@/services/db/agent-config/mutate/schema';
+import { agentConfigurationSchema } from "@/services/db/agent-config/mutate/schema";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type z from 'zod';
+import type z from "zod";
 
 interface Props {
   onSubmit: (data: z.infer<typeof agentConfigurationSchema>) => void;
@@ -56,18 +56,18 @@ export const AgentForm: React.FC<Props> = ({
   const form = useForm({
     resolver: zodResolver(agentConfigurationSchema),
     defaultValues: defaultValues ?? {
-      name: '',
-      description: '',
-      systemPrompt: '',
+      name: "",
+      description: "",
+      systemPrompt: "",
       resourceIds: [],
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const { mutate: uploadImage, isPending: isUploading } =
     api.user.upload.image.useMutation({
       onSuccess: ({ url }) => {
-        form.setValue('image', url, {
+        form.setValue("image", url, {
           shouldValidate: true,
           shouldDirty: true,
           shouldTouch: true,
@@ -82,16 +82,16 @@ export const AgentForm: React.FC<Props> = ({
     >
       <FieldSet>
         <FieldLegend>Tools</FieldLegend>
-        <FieldGroup className="w-full items-start gap-6 flex flex-col">
+        <FieldGroup className="flex w-full flex-col items-start gap-6">
           <Controller
             control={form.control}
             name="resourceIds"
             render={({ field }) => (
               <Field>
-                <div className="border rounded-md">
+                <div className="rounded-md border">
                   <ResourceList
                     selectedResourceIds={field.value}
-                    onSelectResource={resource => {
+                    onSelectResource={(resource) => {
                       field.onChange(
                         field.value.includes(resource.id)
                           ? field.value.filter(
@@ -115,25 +115,25 @@ export const AgentForm: React.FC<Props> = ({
               control={form.control}
               name="image"
               render={({ field }) => (
-                <Field className="shrink-0 h-[156px] w-[136px]">
+                <Field className="h-[156px] w-[136px] shrink-0">
                   <FieldLabel htmlFor="image">Image</FieldLabel>
                   <Dropzone
                     accept={{
-                      'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
+                      "image/*": [".jpg", ".jpeg", ".png", ".webp"],
                     }}
                     maxFiles={1}
                     maxSize={5 * 1024 * 1024}
-                    onDrop={files => {
+                    onDrop={(files) => {
                       if (files.length === 0) {
-                        toast.error('No file selected');
+                        toast.error("No file selected");
                         return;
                       }
                       uploadImage(files[0]!);
                     }}
                     disabled={isUploading}
                     className={cn(
-                      'flex-1 p-0 flex flex-col items-center justify-center gap-1 overflow-hidden bg-transparent',
-                      field.value && 'border-none shadow-none'
+                      "flex-1 p-0 flex flex-col items-center justify-center gap-1 overflow-hidden bg-transparent",
+                      field.value && "border-none shadow-none"
                     )}
                   >
                     {field.value ? (
@@ -142,7 +142,7 @@ export const AgentForm: React.FC<Props> = ({
                         alt="Profile Picture"
                         width={96}
                         height={96}
-                        className="size-full hover:opacity-80 transition-opacity"
+                        className="size-full transition-opacity hover:opacity-80"
                         unoptimized
                       />
                     ) : (
@@ -203,17 +203,17 @@ export const AgentForm: React.FC<Props> = ({
                 >
                   {[
                     {
-                      value: 'public',
-                      title: 'Public',
+                      value: "public",
+                      title: "Public",
                       description:
-                        'Your agent will be discoverable by other users.',
+                        "Your agent will be discoverable by other users.",
                     },
                     {
-                      value: 'private',
-                      title: 'Private',
-                      description: 'Your agent will only be accessible to you.',
+                      value: "private",
+                      title: "Private",
+                      description: "Your agent will only be accessible to you.",
                     },
-                  ].map(option => (
+                  ].map((option) => (
                     <FieldLabel
                       key={option.value}
                       htmlFor={`form-rhf-radiogroup-${option.value}`}
@@ -248,7 +248,7 @@ export const AgentForm: React.FC<Props> = ({
       <FieldSeparator className="my-0" />
       <FieldSet>
         <FieldLegend>Behavior</FieldLegend>
-        <FieldGroup className="w-full items-start gap-6 flex flex-col">
+        <FieldGroup className="flex w-full flex-col items-start gap-6">
           <Controller
             control={form.control}
             name="systemPrompt"
@@ -274,11 +274,11 @@ export const AgentForm: React.FC<Props> = ({
       </FieldSet>
       <FieldSet>
         <FieldLegend>Starter Prompts</FieldLegend>
-        <FieldGroup className="w-full flex flex-col gap-2">
+        <FieldGroup className="flex w-full flex-col gap-2">
           <Controller
             control={form.control}
             name="starterPrompts"
-            defaultValue={defaultValues?.starterPrompts ?? ['']}
+            defaultValue={defaultValues?.starterPrompts ?? [""]}
             render={({ field }) => {
               const prompts: string[] = field.value ?? [];
               return (
@@ -287,7 +287,7 @@ export const AgentForm: React.FC<Props> = ({
                     <div key={idx} className="flex items-center gap-2">
                       <Input
                         value={value}
-                        onChange={e => {
+                        onChange={(e) => {
                           const newPrompts = [...prompts];
                           newPrompts[idx] = e.target.value;
                           field.onChange(newPrompts);
@@ -316,7 +316,7 @@ export const AgentForm: React.FC<Props> = ({
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => field.onChange([...prompts, ''])}
+                    onClick={() => field.onChange([...prompts, ""])}
                     disabled={isSubmitting || prompts.length >= 10}
                     className="w-full"
                   >
@@ -333,12 +333,12 @@ export const AgentForm: React.FC<Props> = ({
           />
         </FieldGroup>
       </FieldSet>
-      <div className="sticky bottom-0 pb-2 bg-background">
+      <div className="sticky bottom-0 bg-background pb-2">
         <Button
           type="submit"
           variant="turbo"
           disabled={!form.formState.isValid || isSubmitting}
-          className="w-full h-12 md:h-12 sticky bottom-0"
+          className="sticky bottom-0 h-12 w-full md:h-12"
         >
           {isSubmitting ? submitText.submitting : submitText.default}
         </Button>

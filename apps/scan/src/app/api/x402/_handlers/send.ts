@@ -1,6 +1,6 @@
-import type { sendUsdcBodySchema } from '@/lib/schemas';
+import type { sendUsdcBodySchema } from "@/lib/schemas";
 
-import type { z } from 'zod';
+import type { z } from "zod";
 
 export function handleSend(body: z.infer<typeof sendUsdcBodySchema>) {
   return {

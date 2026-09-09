@@ -1,13 +1,13 @@
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+import { useSolanaWallet } from "@/app/_contexts/solana/hook";
 
-import { useSvmSend } from '@/app/(app)/_hooks/send/use-svm-send';
+import { useSvmSend } from "@/app/(app)/_hooks/send/use-svm-send";
 
-import type { UiWalletAccount } from '@wallet-standard/react';
-import type { SolanaAddress } from '@/types/address';
+import type { UiWalletAccount } from "@wallet-standard/react";
+import type { SolanaAddress } from "@/types/address";
 
 interface Props {
   amount: number;

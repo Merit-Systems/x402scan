@@ -1,4 +1,4 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
 export const hasUserAcknowledgedComposer = async (
   userId: string

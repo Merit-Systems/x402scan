@@ -1,11 +1,11 @@
-import type { registryRegisterOriginBodySchema } from '@/app/api/x402/_lib/schemas';
-import { jsonResponse } from '@/app/api/x402/_lib/utils';
-import { fetchDiscoveryDocument } from '@/services/discovery';
-import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
-import { contactEmailFields } from './registry-register';
-import { revalidatePath } from 'next/cache';
+import type { registryRegisterOriginBodySchema } from "@/app/api/x402/_lib/schemas";
+import { jsonResponse } from "@/app/api/x402/_lib/utils";
+import { fetchDiscoveryDocument } from "@/services/discovery";
+import { registerResourcesFromDiscovery } from "@/lib/discovery/register-origin";
+import { contactEmailFields } from "./registry-register";
+import { revalidatePath } from "next/cache";
 
-import type { z } from 'zod';
+import type { z } from "zod";
 
 export async function handleRegistryRegisterOrigin(
   body: z.infer<typeof registryRegisterOriginBodySchema>
@@ -18,8 +18,8 @@ export async function handleRegistryRegisterOrigin(
       {
         success: false,
         error: {
-          type: 'no_discovery',
-          message: discoveryResult.error ?? 'No discovery document found',
+          type: "no_discovery",
+          message: discoveryResult.error ?? "No discovery document found",
         },
       },
       404
@@ -39,7 +39,7 @@ export async function handleRegistryRegisterOrigin(
       revalidatePath(`/server/${result.originId}`);
     }
   } catch (e) {
-    console.error('revalidatePath failed:', e);
+    console.error("revalidatePath failed:", e);
   }
 
   if (result.registered === 0) {
@@ -47,9 +47,9 @@ export async function handleRegistryRegisterOrigin(
       {
         success: false,
         error: {
-          type: 'no_valid_resources',
+          type: "no_valid_resources",
           message:
-            'No valid paid x402 resources were found for this origin. Add at least one paid x402 resource that passes validation to complete registration.',
+            "No valid paid x402 resources were found for this origin. Add at least one paid x402 resource that passes validation to complete registration.",
         },
         result,
       },

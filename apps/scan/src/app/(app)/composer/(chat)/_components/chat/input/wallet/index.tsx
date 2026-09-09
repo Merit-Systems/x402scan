@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Bot } from 'lucide-react';
+import { Bot } from "lucide-react";
 
-import { useSession } from 'next-auth/react';
+import { useSession } from "next-auth/react";
 
-import { PromptInputButton } from '@/components/ai-elements/prompt-input';
+import { PromptInputButton } from "@/components/ai-elements/prompt-input";
 
-import { WalletDialog } from './dialog';
+import { WalletDialog } from "./dialog";
 
-import { api } from '@/trpc/client';
-import { WalletChainProvider } from '@/app/(app)/_contexts/wallet-chain/provider';
+import { api } from "@/trpc/client";
+import { WalletChainProvider } from "@/app/(app)/_contexts/wallet-chain/provider";
 
-import type { SupportedChain } from '@/types/chain';
+import type { SupportedChain } from "@/types/chain";
 
 export const WalletButton = () => {
   const { data: session } = useSession();

@@ -1,9 +1,9 @@
-import { serverResultFromPromise, serverErr } from '@/lib/server-result';
+import { serverResultFromPromise, serverErr } from "@/lib/server-result";
 
-import type { ServerResultAsync, BaseServerError } from '@/lib/server-result';
-import type { Err } from '@x402scan/neverthrow/types';
+import type { ServerResultAsync, BaseServerError } from "@/lib/server-result";
+import type { Err } from "@x402scan/neverthrow/types";
 
-const type = 'cdp';
+const type = "cdp";
 
 export type CdpResultAsync<T> = ServerResultAsync<T>;
 export type CdpErr<T> = Err<T, BaseServerError>;

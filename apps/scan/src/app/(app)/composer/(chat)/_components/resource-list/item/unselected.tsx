@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { BaseResourceItem } from './base';
+import { BaseResourceItem } from "./base";
 
-import type { RouterOutputs } from '@/trpc/client';
-import type { SelectedResource } from '../../../_types/chat-config';
+import type { RouterOutputs } from "@/trpc/client";
+import type { SelectedResource } from "../../../_types/chat-config";
 
 interface Props {
-  resource: RouterOutputs['public']['tools']['search'][number];
+  resource: RouterOutputs["public"]["tools"]["search"][number];
   onSelectResource: (resource: SelectedResource) => void;
 }
 

@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { WalletDialog } from '@/app/(app)/_components/wallet/dialog';
-import { Chain } from '@/app/(app)/_components/chains';
+import { WalletDialog } from "@/app/(app)/_components/wallet/dialog";
+import { Chain } from "@/app/(app)/_components/chains";
 
-import type { SupportedChain } from '@/types/chain';
+import type { SupportedChain } from "@/types/chain";
 
 interface Props {
   chain: SupportedChain;

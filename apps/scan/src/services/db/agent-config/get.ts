@@ -1,8 +1,8 @@
-import z from 'zod';
+import z from "zod";
 
-import { scanDb, Prisma } from '@x402scan/scan-db';
+import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { queryRaw } from '../query';
+import { queryRaw } from "../query";
 
 export const getAgentConfigurationDetails = async (id: string) => {
   const agentConfiguration = await scanDb.agentConfiguration.findUnique({
@@ -128,7 +128,7 @@ export const getAgentConfiguration = async (id: string, userId?: string) => {
         description: z.string().nullable(),
         image: z.string().nullable(),
         systemPrompt: z.string(),
-        visibility: z.enum(['public', 'private']),
+        visibility: z.enum(["public", "private"]),
         createdAt: z.date(),
         updatedAt: z.date(),
         model: z.string().nullable(),

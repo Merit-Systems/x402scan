@@ -1,22 +1,22 @@
-import { ResourceFetch } from '@/app/(app)/_components/resource-fetch';
-import { Button } from '@/components/ui/button';
-import { Loading } from '@/components/ui/loading';
-import { Skeleton } from '@/components/ui/skeleton';
-import { supportedChainSchema } from '@/lib/schemas';
-import { usdc } from '@/lib/tokens/usdc';
+import { ResourceFetch } from "@/app/(app)/_components/resource-fetch";
+import { Button } from "@/components/ui/button";
+import { Loading } from "@/components/ui/loading";
+import { Skeleton } from "@/components/ui/skeleton";
+import { supportedChainSchema } from "@/lib/schemas";
+import { usdc } from "@/lib/tokens/usdc";
 
-import type { RouterOutputs } from '@/trpc/client';
-import type { SupportedChain } from '@/types/chain';
-import type { UseChatHelpers } from '@ai-sdk/react';
-import type { ToolUIPart, UIMessage } from 'ai';
-import { parseUnits } from 'viem';
+import type { RouterOutputs } from "@/trpc/client";
+import type { SupportedChain } from "@/types/chain";
+import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ToolUIPart, UIMessage } from "ai";
+import { parseUnits } from "viem";
 
 interface Props {
   isResourceLoading: boolean;
-  resource: RouterOutputs['public']['resources']['get'] | undefined;
-  input: ToolUIPart['input'];
+  resource: RouterOutputs["public"]["resources"]["get"] | undefined;
+  input: ToolUIPart["input"];
   chatId: string;
-  addToolResult: UseChatHelpers<UIMessage>['addToolResult'];
+  addToolResult: UseChatHelpers<UIMessage>["addToolResult"];
   toolCallId: string;
 }
 
@@ -29,23 +29,23 @@ export const ToolInvoke: React.FC<Props> = ({
   addToolResult,
 }) => {
   return (
-    <div className={'flex flex-col gap-2'}>
+    <div className={"flex flex-col gap-2"}>
       <Loading
         value={resource}
         isLoading={isResourceLoading}
-        component={resource => (
+        component={(resource) => (
           <>
             <ResourceFetch
               chains={
                 resource.accepts
-                  .map(accept => accept.network)
+                  .map((accept) => accept.network)
                   .filter(
-                    network => supportedChainSchema.safeParse(network).success
+                    (network) => supportedChainSchema.safeParse(network).success
                   ) as SupportedChain[]
               }
               allRequiredFieldsFilled={true}
               maxAmountRequired={bigIntMax(
-                ...resource.accepts.map(accept =>
+                ...resource.accepts.map((accept) =>
                   parseUnits(
                     accept.maxAmountRequired.toString(),
                     usdc(accept.network as SupportedChain).decimals
@@ -53,10 +53,10 @@ export const ToolInvoke: React.FC<Props> = ({
                 )
               )}
               targetUrl={new URL(
-                '/api/chat/execute-tool',
+                "/api/chat/execute-tool",
                 window.location.origin
               ).toString()}
-              requestInit={chain => ({
+              requestInit={(chain) => ({
                 body: JSON.stringify({
                   resourceId: resource.id,
                   chatId,
@@ -64,23 +64,23 @@ export const ToolInvoke: React.FC<Props> = ({
                   parameters: input,
                   chain: chain,
                 }),
-                method: 'POST',
+                method: "POST",
                 headers: {
-                  'Content-Type': 'application/json',
+                  "Content-Type": "application/json",
                 },
               })}
               options={{
-                onSuccess: data => {
+                onSuccess: (data) => {
                   void addToolResult({
-                    state: 'output-available',
+                    state: "output-available",
                     toolCallId: toolCallId,
                     output: data.data,
                     tool: resource.id,
                   });
                 },
-                onError: error => {
+                onError: (error) => {
                   void addToolResult({
-                    state: 'output-error',
+                    state: "output-error",
                     toolCallId: toolCallId,
                     errorText: error.message,
                     tool: resource.id,
@@ -96,9 +96,9 @@ export const ToolInvoke: React.FC<Props> = ({
               size="sm"
               onClick={() => {
                 void addToolResult({
-                  state: 'output-error',
+                  state: "output-error",
                   toolCallId: toolCallId,
-                  errorText: 'I do not want to use this tool',
+                  errorText: "I do not want to use this tool",
                   tool: resource.id,
                 });
               }}

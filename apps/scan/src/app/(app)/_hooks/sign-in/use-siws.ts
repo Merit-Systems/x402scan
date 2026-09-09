@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { useSignMessage } from '@solana/react';
+import { useSignMessage } from "@solana/react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { signInWithSolana } from '@/auth/providers/siws/sign-in';
+import { signInWithSolana } from "@/auth/providers/siws/sign-in";
 
-import type { UiWalletAccount } from '@wallet-standard/react';
+import type { UiWalletAccount } from "@wallet-standard/react";
 
 interface Props {
   account: UiWalletAccount;
@@ -23,7 +23,7 @@ export const useSiws = (props: Props) => {
   const { mutate: signIn, isPending } = useMutation({
     mutationFn: () => {
       if (!account.address) {
-        throw new Error('No address found');
+        throw new Error("No address found");
       }
       return signInWithSolana({
         address: account.address,
@@ -34,11 +34,11 @@ export const useSiws = (props: Props) => {
       });
     },
     onSuccess: () => {
-      toast.success('Signed in successfully');
+      toast.success("Signed in successfully");
     },
-    onError: error => {
+    onError: (error) => {
       console.error(error);
-      toast.error('Failed to sign in');
+      toast.error("Failed to sign in");
     },
   });
 

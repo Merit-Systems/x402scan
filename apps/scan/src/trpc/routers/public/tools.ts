@@ -2,14 +2,14 @@ import {
   createTRPCRouter,
   paginatedProcedure,
   publicProcedure,
-} from '../../trpc';
+} from "../../trpc";
 
-import { searchX402Tools } from '@/services/agent/search-tools';
+import { searchX402Tools } from "@/services/agent/search-tools";
 import {
   listTopTools,
   listTopToolsSchema,
-} from '@/services/db/composer/tool-call';
-import { searchResourcesSchema } from '@/services/db/resources/resource';
+} from "@/services/db/composer/tool-call";
+import { searchResourcesSchema } from "@/services/db/resources/resource";
 
 export const publicToolsRouter = createTRPCRouter({
   search: publicProcedure

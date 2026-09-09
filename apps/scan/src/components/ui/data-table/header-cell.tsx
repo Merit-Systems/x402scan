@@ -1,9 +1,9 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import { ArrowDown, ArrowUp, type LucideIcon } from 'lucide-react';
+import { ArrowDown, ArrowUp, type LucideIcon } from "lucide-react";
 
-import type { SortingContext } from '@/app/(app)/_contexts/sorting/base/context';
-import { useSorting } from '@/app/(app)/_contexts/sorting/base/hook';
+import type { SortingContext } from "@/app/(app)/_contexts/sorting/base/context";
+import { useSorting } from "@/app/(app)/_contexts/sorting/base/hook";
 
 interface BaseProps {
   Icon: LucideIcon;
@@ -58,7 +58,7 @@ const SortableHeaderCell = <SortKey extends string>({
       label={label}
       className={cn(
         className,
-        'cursor-pointer hover:bg-accent rounded-md transition-all'
+        "cursor-pointer hover:bg-accent rounded-md transition-all"
       )}
       onClick={() => {
         if (isSortable) {
@@ -95,7 +95,7 @@ const HeaderCellInternal: React.FC<HeaderCellInternalProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center justify-center gap-1 text-sm text-muted-foreground w-fit',
+        "flex items-center justify-center gap-1 text-sm text-muted-foreground w-fit",
         className
       )}
       onClick={onClick}

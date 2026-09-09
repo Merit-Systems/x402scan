@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { api } from '@/trpc/client';
-import { AgentCard } from '../lib/agent-card';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { api } from "@/trpc/client";
+import { AgentCard } from "../lib/agent-card";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 export const AgentsContent: React.FC = () => {
   const [topAgents] = api.public.agents.list.useSuspenseQuery({
@@ -15,7 +15,7 @@ export const AgentsContent: React.FC = () => {
 
   return (
     <>
-      {topAgents.items.slice(0, 4).map(agent => (
+      {topAgents.items.slice(0, 4).map((agent) => (
         <AgentCard key={agent.id} agentConfiguration={agent} />
       ))}
     </>

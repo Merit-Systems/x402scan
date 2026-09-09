@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { LucideIcon } from 'lucide-react';
-import type { Route } from 'next';
+import type { LucideIcon } from "lucide-react";
+import type { Route } from "next";
 
 interface Props<T extends string> {
   href: Route<T>;
@@ -35,15 +35,15 @@ export const Breadcrumb = <T extends string>({
   return (
     <Link
       href={href}
-      className={cn(disabled && 'pointer-events-none', className)}
+      className={cn(disabled && "pointer-events-none", className)}
       aria-disabled={disabled}
     >
-      <div className="flex items-center gap-2 cursor-pointer min-w-0">
+      <div className="flex min-w-0 cursor-pointer items-center gap-2">
         {(Fallback !== null || image !== null) && (
           <Avatar
             className={cn(
-              'rounded-md overflow-hidden bg-card size-5 shrink-0',
-              mobileHideImage && 'hidden md:block'
+              "rounded-md overflow-hidden bg-card size-5 shrink-0",
+              mobileHideImage && "hidden md:block"
             )}
           >
             {image ? (
@@ -53,8 +53,8 @@ export const Breadcrumb = <T extends string>({
             )}
             <AvatarFallback
               className={cn(
-                'size-full flex items-center justify-center border rounded-md',
-                'size-5'
+                "size-full flex items-center justify-center border rounded-md",
+                "size-5"
               )}
             >
               {Fallback && <Fallback className="size-3" />}
@@ -64,9 +64,9 @@ export const Breadcrumb = <T extends string>({
 
         <p
           className={cn(
-            'font-semibold text-sm font-mono md:text-base truncate min-w-0',
+            "font-semibold text-sm font-mono md:text-base truncate min-w-0",
             textClassName,
-            mobileHideText && 'hidden md:block'
+            mobileHideText && "hidden md:block"
           )}
         >
           {name}

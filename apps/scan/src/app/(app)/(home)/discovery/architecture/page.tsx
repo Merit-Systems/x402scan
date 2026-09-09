@@ -1,8 +1,8 @@
-import Link from 'next/link';
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { CopyPageButton } from './_components/copy-page-button';
+import Link from "next/link";
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { CopyPageButton } from "./_components/copy-page-button";
 import {
   Table,
   TableBody,
@@ -10,19 +10,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Architecture Patterns',
+  title: "Architecture Patterns",
   description:
-    'High-level architectures for building agent-payable services with x402.',
+    "High-level architectures for building agent-payable services with x402.",
 };
 
 function CodeBlock({ code }: { code: string }) {
   return (
-    <pre className="rounded-md bg-muted p-3 overflow-x-auto text-xs">
+    <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs">
       <code>{code}</code>
     </pre>
   );
@@ -104,7 +104,7 @@ export default function ArchitecturePage() {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Responsibility split</h2>
           <Card>
-            <CardContent className="px-0 pb-0 pt-0">
+            <CardContent className="px-0 pt-0 pb-0">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -116,20 +116,20 @@ export default function ArchitecturePage() {
                 <TableBody>
                   {(
                     [
-                      [<>Payment verification (x402)</>, 'Yes', '—'],
-                      [<>Wallet identity</>, 'Yes', '—'],
-                      [<>Per-wallet authorization</>, 'Yes', '—'],
-                      [<>Per-wallet rate limiting</>, 'Yes', '—'],
+                      [<>Payment verification (x402)</>, "Yes", "—"],
+                      [<>Wallet identity</>, "Yes", "—"],
+                      [<>Per-wallet authorization</>, "Yes", "—"],
+                      [<>Per-wallet rate limiting</>, "Yes", "—"],
                       [
                         <>
                           Discovery document (<code>/openapi.json</code>)
                         </>,
-                        'Yes',
-                        '—',
+                        "Yes",
+                        "—",
                       ],
-                      [<>Business logic</>, '—', 'Yes'],
-                      [<>User records, billing, quotas</>, '—', 'Yes'],
-                      [<>Long-term data storage</>, '—', 'Yes'],
+                      [<>Business logic</>, "—", "Yes"],
+                      [<>User records, billing, quotas</>, "—", "Yes"],
+                      [<>Long-term data storage</>, "—", "Yes"],
                     ] as [React.ReactNode, string, string][]
                   ).map(([concern, proxy, prod], i) => (
                     <TableRow key={i}>
@@ -178,9 +178,9 @@ export default function ArchitecturePage() {
             <p>
               For example, if your API exposes <code>list_jobs()</code>:
             </p>
-            <ul className="list-disc pl-5 space-y-2">
+            <ul className="list-disc space-y-2 pl-5">
               <li>
-                <strong>Wrong:</strong> the proxy calls <code>list_jobs()</code>{' '}
+                <strong>Wrong:</strong> the proxy calls <code>list_jobs()</code>{" "}
                 and returns the full response. This leaks every wallet&apos;s
                 jobs to every caller.
               </li>
@@ -191,7 +191,7 @@ export default function ArchitecturePage() {
               </li>
             </ul>
             <p>
-              The same rule applies to <code>get_job</code>,{' '}
+              The same rule applies to <code>get_job</code>,{" "}
               <code>update_job</code>, and delete operations. Any endpoint that
               takes a resource ID must verify that the calling wallet owns that
               resource before proxying through.
@@ -218,7 +218,7 @@ export default function ArchitecturePage() {
               call to your production API fails after settlement, you have two
               options:
             </p>
-            <ol className="list-decimal pl-5 space-y-1">
+            <ol className="list-decimal space-y-1 pl-5">
               <li>
                 <strong>Don&apos;t settle on failure.</strong> Validate upstream
                 health and cheap preconditions before accepting payment, and
@@ -226,7 +226,7 @@ export default function ArchitecturePage() {
               </li>
               <li>
                 <strong>Refund on failure.</strong> Catch downstream errors and
-                issue a refund through the settlement network before returning{' '}
+                issue a refund through the settlement network before returning{" "}
                 <code>5xx</code> to the caller.
               </li>
             </ol>
@@ -245,7 +245,7 @@ export default function ArchitecturePage() {
               lightweight database alongside the proxy is usually enough. Common
               tables:
             </p>
-            <ul className="list-disc pl-5 space-y-1">
+            <ul className="list-disc space-y-1 pl-5">
               <li>
                 <code>wallet_address → owned_resource_ids</code> for ownership
                 lookups.
@@ -271,20 +271,20 @@ export default function ArchitecturePage() {
           <h2 className="text-xl font-semibold">Exposing discovery</h2>
           <div className="space-y-4 text-sm text-muted-foreground">
             <p>
-              The proxy is also where you serve your discovery document. Publish{' '}
-              <code>/openapi.json</code> on the proxy origin with{' '}
+              The proxy is also where you serve your discovery document. Publish{" "}
+              <code>/openapi.json</code> on the proxy origin with{" "}
               <code>x-payment-info</code> and <code>402</code> responses on each
               payable operation. Agents discover and call the proxy and never
               the production API directly.
             </p>
             <p>
-              See{' '}
+              See{" "}
               <Link
                 href="/discovery/spec"
-                className="underline hover:no-underline font-medium text-foreground"
+                className="font-medium text-foreground underline hover:no-underline"
               >
                 Server Discovery
-              </Link>{' '}
+              </Link>{" "}
               for the full OpenAPI contract.
             </p>
           </div>
@@ -292,7 +292,7 @@ export default function ArchitecturePage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">When this pattern fits</h2>
-          <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
             <li>
               You want to expose existing endpoints over x402 with minimal risk
               to production.
@@ -317,10 +317,10 @@ export default function ArchitecturePage() {
         </section>
 
         <p className="text-sm text-muted-foreground">
-          For further questions, contact us at{' '}
+          For further questions, contact us at{" "}
           <a
             href="mailto:merchants@merit.systems"
-            className="underline hover:no-underline font-medium text-foreground"
+            className="font-medium text-foreground underline hover:no-underline"
           >
             merchants@merit.systems
           </a>

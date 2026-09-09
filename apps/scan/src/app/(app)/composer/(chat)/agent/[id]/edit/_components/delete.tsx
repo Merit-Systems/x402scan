@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogTrigger,
@@ -9,10 +9,10 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { api } from '@/trpc/client';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+} from "@/components/ui/dialog";
+import { api } from "@/trpc/client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Props {
   agentId: string;
@@ -24,11 +24,11 @@ export const DeleteAgentButton: React.FC<Props> = ({ agentId }) => {
   const { mutate: deleteAgent, isPending } =
     api.user.agentConfigurations.delete.useMutation({
       onSuccess: () => {
-        toast.success('Agent deleted successfully');
-        router.push('/composer');
+        toast.success("Agent deleted successfully");
+        router.push("/composer");
       },
       onError: () => {
-        toast.error('Failed to delete agent');
+        toast.error("Failed to delete agent");
       },
     });
   return (
@@ -50,7 +50,7 @@ export const DeleteAgentButton: React.FC<Props> = ({ agentId }) => {
             onClick={() => deleteAgent(agentId)}
             disabled={isPending}
           >
-            {isPending ? 'Deleting...' : 'Delete'}
+            {isPending ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

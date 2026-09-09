@@ -1,7 +1,7 @@
-import Image from 'next/image';
-import React from 'react';
+import Image from "next/image";
+import React from "react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 type LogoProps = {
   className?: string;
@@ -23,7 +23,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
           alt="x402scan Logo"
           width={200}
           height={200}
-          className={cn('size-6', className)}
+          className={cn("size-6", className)}
           priority={priority}
         />
       </div>
@@ -31,4 +31,4 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
   }
 );
 
-Logo.displayName = 'Logo';
+Logo.displayName = "Logo";

@@ -8,13 +8,13 @@ import {
   markTransferSyncStateStarted,
   recordTransferSyncStateError,
   type TransferSyncStateKey,
-} from '@/db/services';
-import { logger, schedules } from '@trigger.dev/sdk/v3';
-import { Network, PaginationStrategy, QueryProvider } from './types';
-import { fetchTransfers } from './fetch/fetch';
-import { collapseTransferChains } from './lib/collapse';
+} from "@/db/services";
+import { logger, schedules } from "@trigger.dev/sdk/v3";
+import { Network, PaginationStrategy, QueryProvider } from "./types";
+import { fetchTransfers } from "./fetch/fetch";
+import { collapseTransferChains } from "./lib/collapse";
 
-import type { Facilitator, FacilitatorConfig, SyncConfig } from './types';
+import type { Facilitator, FacilitatorConfig, SyncConfig } from "./types";
 
 function normalizeAddress(chain: string, address: string): string {
   return chain === Network.SOLANA.toString() ? address : address.toLowerCase();
@@ -41,7 +41,7 @@ async function getBootstrapCursor(
   transactionFrom: string
 ) {
   const mostRecentCdpTransfer = await getTransferEvents({
-    orderBy: { block_timestamp: 'desc' },
+    orderBy: { block_timestamp: "desc" },
     take: 1,
     where: {
       address: normalizeAddress(
@@ -62,7 +62,7 @@ async function getBootstrapCursor(
       : undefined,
   ].filter((date): date is Date => date !== undefined);
 
-  return new Date(Math.max(...candidates.map(date => date.getTime())));
+  return new Date(Math.max(...candidates.map((date) => date.getTime())));
 }
 
 async function getOrCreateTransferSyncState(
@@ -154,7 +154,7 @@ async function syncFacilitator(
           facilitatorConfig,
           since,
           now,
-          async batch => {
+          async (batch) => {
             const collapsed = collapseTransferChains(batch);
             const syncResult = syncConfig.upsertOnConflict
               ? await upsertManyTransferEvents(collapsed)
@@ -193,7 +193,7 @@ async function syncFacilitator(
     }
 
     const mostRecentTransfer = await getTransferEvents({
-      orderBy: { block_timestamp: 'desc' },
+      orderBy: { block_timestamp: "desc" },
       take: 1,
       where: {
         chain: syncConfig.chain,
@@ -223,7 +223,7 @@ async function syncFacilitator(
       facilitatorConfig,
       since,
       now,
-      async batch => {
+      async (batch) => {
         const collapsed = collapseTransferChains(batch);
         const syncResult = syncConfig.upsertOnConflict
           ? await upsertManyTransferEvents(collapsed)
@@ -243,7 +243,7 @@ async function syncFacilitator(
 
 function createSingleSyncTask(syncConfig: SyncConfig) {
   return schedules.task({
-    id: syncConfig.chain + '-' + syncConfig.provider,
+    id: syncConfig.chain + "-" + syncConfig.provider,
     cron: syncConfig.cron,
     maxDuration: syncConfig.maxDurationInSeconds,
     machine: syncConfig.machine,
@@ -265,7 +265,7 @@ function createSingleSyncTask(syncConfig: SyncConfig) {
 }
 
 function createSplitSyncTasks(syncConfig: SyncConfig) {
-  return syncConfig.facilitators.map(facilitator => {
+  return syncConfig.facilitators.map((facilitator) => {
     return schedules.task({
       id: `${syncConfig.chain}-${syncConfig.provider}-${facilitator.id}`,
       cron: syncConfig.cron,

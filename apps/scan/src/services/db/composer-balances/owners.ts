@@ -1,4 +1,4 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
 interface WalletOwner {
   userId: string;
@@ -35,12 +35,12 @@ export const getOwnersByWalletName = async (
   });
 
   return new Map(
-    wallets.map(wallet => [
+    wallets.map((wallet) => [
       wallet.walletName,
       {
         userId: wallet.user.id,
         email: wallet.user.email,
-        loginAddresses: wallet.user.accounts.map(a => a.providerAccountId),
+        loginAddresses: wallet.user.accounts.map((a) => a.providerAccountId),
       },
     ])
   );

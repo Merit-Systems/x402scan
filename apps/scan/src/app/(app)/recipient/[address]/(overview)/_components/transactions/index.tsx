@@ -1,16 +1,16 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { columns } from '../../../_components/transactions/columns';
-import { LatestTransactionsTable } from '../../../_components/transactions/table';
+import { columns } from "../../../_components/transactions/columns";
+import { LatestTransactionsTable } from "../../../_components/transactions/table";
 
-import { api, HydrateClient } from '@/trpc/server';
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
-import { Section } from '@/app/_components/layout/page-utils';
-import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
-import { ActivityTimeframe } from '@/types/timeframes';
-import { TransfersSortingProvider } from '@/app/(app)/_contexts/sorting/transfers/provider';
+import { api, HydrateClient } from "@/trpc/server";
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
+import { Section } from "@/app/_components/layout/page-utils";
+import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
+import { ActivityTimeframe } from "@/types/timeframes";
+import { TransfersSortingProvider } from "@/app/(app)/_contexts/sorting/transfers/provider";
 
 interface Props {
   address: string;

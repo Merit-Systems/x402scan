@@ -1,15 +1,15 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { Line } from 'recharts';
+import { Line } from "recharts";
 
-import { BaseChart } from '../chart';
+import { BaseChart } from "../chart";
 
-import { simulateChartData } from '../simulate';
+import { simulateChartData } from "../simulate";
 
-import type { AreaChartProps } from './types';
+import type { AreaChartProps } from "./types";
 
 export const BaseLineChart = <
-  T extends Omit<Record<string, number>, 'timestamp'>,
+  T extends Omit<Record<string, number>, "timestamp">,
 >({
   data,
   children,
@@ -57,9 +57,9 @@ export const LoadingAreaChart = ({
         data={simulatedData}
         lines={[
           {
-            dataKey: 'value',
+            dataKey: "value",
             color:
-              'color-mix(in oklab, var(--color-neutral-500) 20%, transparent)',
+              "color-mix(in oklab, var(--color-neutral-500) 20%, transparent)",
             isAnimationActive: false,
           },
         ]}

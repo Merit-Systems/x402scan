@@ -1,6 +1,6 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
 
-import { LoadingLatestTransactionsTable } from '../_components/transactions/table';
+import { LoadingLatestTransactionsTable } from "../_components/transactions/table";
 
 export default function LoadingTransactionsPage() {
   return (

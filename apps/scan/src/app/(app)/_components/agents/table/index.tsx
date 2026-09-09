@@ -1,20 +1,20 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
 import {
   AgentsTable as AgentsTableComponent,
   LoadingAgentsTable,
-} from '@/app/(app)/_components/agents/table/table';
+} from "@/app/(app)/_components/agents/table/table";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { defaultAgentsSorting } from '@/app/(app)/_contexts/sorting/agents/default';
+import { defaultAgentsSorting } from "@/app/(app)/_contexts/sorting/agents/default";
 
-import type { RouterInputs } from '@/trpc/client';
+import type { RouterInputs } from "@/trpc/client";
 
 interface Props {
   input: Omit<
-    RouterInputs['public']['agents']['list'],
-    'sorting' | 'pagination'
+    RouterInputs["public"]["agents"]["list"],
+    "sorting" | "pagination"
   >;
   limit?: number;
 }

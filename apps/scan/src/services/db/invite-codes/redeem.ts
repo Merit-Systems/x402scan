@@ -1,19 +1,19 @@
-import z from 'zod';
+import z from "zod";
 
-import { formatUnits } from 'viem';
+import { formatUnits } from "viem";
 
-import { InviteCodeStatus, RedemptionStatus, scanDb } from '@x402scan/scan-db';
+import { InviteCodeStatus, RedemptionStatus, scanDb } from "@x402scan/scan-db";
 
-import { inviteWallets } from '@/services/cdp/server-wallet/invite';
+import { inviteWallets } from "@/services/cdp/server-wallet/invite";
 
-import { usdc } from '@/lib/tokens/usdc';
-import { mixedAddressSchema } from '@/lib/schemas';
+import { usdc } from "@/lib/tokens/usdc";
+import { mixedAddressSchema } from "@/lib/schemas";
 
-import { Chain } from '@/types/chain';
-import { dbErr, dbOk, dbResultFromPromise } from '../result';
-import { upsertWalletAddressForInviteCode } from '../partners';
+import { Chain } from "@/types/chain";
+import { dbErr, dbOk, dbResultFromPromise } from "../result";
+import { upsertWalletAddressForInviteCode } from "../partners";
 
-import { cdpErr, type CdpErr } from '@/services/cdp/result';
+import { cdpErr, type CdpErr } from "@/services/cdp/result";
 
 export const validateInviteCodeSchema = z.object({
   code: z.string().min(1),
@@ -25,13 +25,13 @@ export const validateInviteCode = async ({
   recipientAddr,
 }: z.infer<typeof validateInviteCodeSchema>) => {
   const result = await dbResultFromPromise(
-    'validateInviteCode',
+    "validateInviteCode",
     scanDb.inviteCode.findUnique({
       where: { code },
     }),
-    e => ({
-      cause: 'not_found',
-      message: e instanceof Error ? e.message : 'Failed to find invite code',
+    (e) => ({
+      cause: "not_found",
+      message: e instanceof Error ? e.message : "Failed to find invite code",
     })
   );
 
@@ -45,23 +45,23 @@ export const validateInviteCode = async ({
   const inviteCode = result.value;
 
   if (!inviteCode) {
-    return dbErr('validateInviteCode', {
-      cause: 'not_found',
-      message: 'Invalid invite code',
+    return dbErr("validateInviteCode", {
+      cause: "not_found",
+      message: "Invalid invite code",
     });
   }
 
-  if (inviteCode.status !== 'ACTIVE') {
-    return dbErr('validateInviteCode', {
-      cause: 'conflict',
+  if (inviteCode.status !== "ACTIVE") {
+    return dbErr("validateInviteCode", {
+      cause: "conflict",
       message: `Invite code is ${inviteCode.status.toLowerCase()}`,
     });
   }
 
   if (inviteCode.expiresAt && inviteCode.expiresAt < new Date()) {
-    return dbErr('validateInviteCode', {
-      cause: 'conflict',
-      message: 'Invite code has expired',
+    return dbErr("validateInviteCode", {
+      cause: "conflict",
+      message: "Invite code has expired",
     });
   }
 
@@ -69,9 +69,9 @@ export const validateInviteCode = async ({
     inviteCode.maxRedemptions > 0 &&
     inviteCode.redemptionCount >= inviteCode.maxRedemptions
   ) {
-    return dbErr('validateInviteCode', {
-      cause: 'conflict',
-      message: 'Invite code has been fully redeemed',
+    return dbErr("validateInviteCode", {
+      cause: "conflict",
+      message: "Invite code has been fully redeemed",
     });
   }
 
@@ -80,18 +80,18 @@ export const validateInviteCode = async ({
       where: {
         inviteCodeId: inviteCode.id,
         recipientAddr: recipientAddr.toLowerCase(),
-        status: { in: ['PENDING', 'SUCCESS'] },
+        status: { in: ["PENDING", "SUCCESS"] },
       },
     });
     if (existingRedemption) {
-      return dbErr('validateInviteCode', {
-        cause: 'conflict',
-        message: 'You have already redeemed this invite code',
+      return dbErr("validateInviteCode", {
+        cause: "conflict",
+        message: "You have already redeemed this invite code",
       });
     }
   }
 
-  return dbOk({ message: 'Invite code is valid' });
+  return dbOk({ message: "Invite code is valid" });
 };
 
 export const redeemInviteCodeSchema = z.object({
@@ -108,24 +108,24 @@ export const redeemInviteCode = async ({
   // Use a transaction with serializable isolation to prevent race conditions
   // This ensures atomic check-and-increment of redemption count
   const transactionResult = await dbResultFromPromise(
-    'redeemInviteCode',
+    "redeemInviteCode",
     scanDb.$transaction(
-      async tx => {
+      async (tx) => {
         // Lock and fetch the invite code
         const inviteCode = await tx.inviteCode.findUnique({
           where: { code },
         });
 
         if (!inviteCode) {
-          return dbErr('redeemInviteCode', {
-            cause: 'not_found',
-            message: 'Invalid invite code',
+          return dbErr("redeemInviteCode", {
+            cause: "not_found",
+            message: "Invalid invite code",
           });
         }
 
         if (inviteCode.status !== InviteCodeStatus.ACTIVE) {
-          return dbErr('redeemInviteCode', {
-            cause: 'conflict',
+          return dbErr("redeemInviteCode", {
+            cause: "conflict",
             message: `Invite code is ${inviteCode.status.toLowerCase()}`,
           });
         }
@@ -136,9 +136,9 @@ export const redeemInviteCode = async ({
             where: { id: inviteCode.id },
             data: { status: InviteCodeStatus.EXPIRED },
           });
-          return dbErr('redeemInviteCode', {
-            cause: 'conflict',
-            message: 'Invite code has expired',
+          return dbErr("redeemInviteCode", {
+            cause: "conflict",
+            message: "Invite code has expired",
           });
         }
 
@@ -146,9 +146,9 @@ export const redeemInviteCode = async ({
           inviteCode.maxRedemptions > 0 &&
           inviteCode.redemptionCount >= inviteCode.maxRedemptions
         ) {
-          return dbErr('redeemInviteCode', {
-            cause: 'conflict',
-            message: 'Invite code has been fully redeemed',
+          return dbErr("redeemInviteCode", {
+            cause: "conflict",
+            message: "Invite code has been fully redeemed",
           });
         }
 
@@ -158,13 +158,13 @@ export const redeemInviteCode = async ({
             where: {
               inviteCodeId: inviteCode.id,
               recipientAddr: normalizedAddr,
-              status: { in: ['PENDING', 'SUCCESS'] },
+              status: { in: ["PENDING", "SUCCESS"] },
             },
           });
           if (existingRedemption) {
-            return dbErr('redeemInviteCode', {
-              cause: 'conflict',
-              message: 'You have already redeemed this invite code',
+            return dbErr("redeemInviteCode", {
+              cause: "conflict",
+              message: "You have already redeemed this invite code",
             });
           }
         }
@@ -212,12 +212,12 @@ export const redeemInviteCode = async ({
         return dbOk({ inviteCode, redemption, updatedCode });
       },
       {
-        isolationLevel: 'Serializable',
+        isolationLevel: "Serializable",
       }
     ),
-    e => ({
-      cause: 'internal',
-      message: e instanceof Error ? e.message : 'Invite code redemption failed',
+    (e) => ({
+      cause: "internal",
+      message: e instanceof Error ? e.message : "Invite code redemption failed",
     })
   );
 
@@ -284,14 +284,14 @@ export const redeemInviteCode = async ({
   await scanDb.inviteRedemption.update({
     where: { id: redemption.id },
     data: {
-      status: 'SUCCESS',
+      status: "SUCCESS",
       txHash,
       completedAt: new Date(),
     },
   });
 
   const updateSuccessResult = await dbResultFromPromise(
-    'updateSuccess',
+    "updateSuccess",
     scanDb.inviteRedemption.update({
       where: { id: redemption.id },
       data: {
@@ -300,16 +300,16 @@ export const redeemInviteCode = async ({
         completedAt: new Date(),
       },
     }),
-    e => ({
-      cause: 'internal',
+    (e) => ({
+      cause: "internal",
       message:
-        e instanceof Error ? e.message : 'Failed to update redemption status',
+        e instanceof Error ? e.message : "Failed to update redemption status",
     })
   );
 
   if (updateSuccessResult.isErr()) {
     console.error(
-      'Failed to update redemption status after successful transfer:',
+      "Failed to update redemption status after successful transfer:",
       updateSuccessResult.error.message
     );
   }
@@ -334,10 +334,10 @@ const handleRedemptionFailure = async <T>({
   inviteCodeId,
   error,
 }: HandleRedemptionFailureData<T>) => {
-  console.error('Invite code redemption transfer failed:', error.error.message);
+  console.error("Invite code redemption transfer failed:", error.error.message);
 
   await dbResultFromPromise(
-    'updateRedemption',
+    "updateRedemption",
     scanDb.inviteRedemption.update({
       where: { id: redemptionId },
       data: {
@@ -346,26 +346,26 @@ const handleRedemptionFailure = async <T>({
         completedAt: new Date(),
       },
     }),
-    e => ({
-      cause: 'internal',
+    (e) => ({
+      cause: "internal",
       message:
-        e instanceof Error ? e.message : 'Failed to update redemption status',
+        e instanceof Error ? e.message : "Failed to update redemption status",
       error,
     })
   );
 
   await dbResultFromPromise(
-    'updateInviteCode',
+    "updateInviteCode",
     scanDb.inviteCode.update({
       where: { id: inviteCodeId },
       data: { redemptionCount: { decrement: 1 } },
     }),
-    e => ({
-      cause: 'internal',
+    (e) => ({
+      cause: "internal",
       message:
-        e instanceof Error ? e.message : 'Failed to decrement redemption count',
+        e instanceof Error ? e.message : "Failed to decrement redemption count",
     })
-  ).map(async updatedCode => {
+  ).map(async (updatedCode) => {
     if (
       updatedCode.status === InviteCodeStatus.EXHAUSTED &&
       (updatedCode.maxRedemptions === 0 ||

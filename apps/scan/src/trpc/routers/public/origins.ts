@@ -1,5 +1,5 @@
-import z from 'zod';
-import { createTRPCRouter, publicProcedure } from '../../trpc';
+import z from "zod";
+import { createTRPCRouter, publicProcedure } from "../../trpc";
 import {
   getOrigin,
   getOriginMetadata,
@@ -9,9 +9,9 @@ import {
   listOriginsWithResourcesSchema,
   searchOrigins,
   searchOriginsSchema,
-} from '@/services/db/resources/origin';
-import { scanDb } from '@x402scan/scan-db';
-import { TRPCError } from '@trpc/server';
+} from "@/services/db/resources/origin";
+import { scanDb } from "@x402scan/scan-db";
+import { TRPCError } from "@trpc/server";
 
 // Per-origin rate limit: 5 requests per 60 seconds
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -21,12 +21,12 @@ const requestLog = new Map<string, number[]>();
 function checkRateLimit(originId: string): void {
   const now = Date.now();
   const timestamps = requestLog.get(originId) ?? [];
-  const recent = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
   if (recent.length >= RATE_LIMIT_MAX) {
     requestLog.set(originId, recent);
     throw new TRPCError({
-      code: 'TOO_MANY_REQUESTS',
-      message: 'Too many requests',
+      code: "TOO_MANY_REQUESTS",
+      message: "Too many requests",
     });
   }
   recent.push(now);
@@ -68,8 +68,8 @@ export const originsRouter = createTRPCRouter({
       });
       if (!origin) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Origin not found',
+          code: "NOT_FOUND",
+          message: "Origin not found",
         });
       }
       await scanDb.resourceOrigin.update({

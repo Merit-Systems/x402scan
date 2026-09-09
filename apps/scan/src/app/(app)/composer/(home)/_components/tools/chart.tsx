@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
 import {
   BaseAreaChart,
   LoadingAreaChart,
-} from '@/components/ui/charts/chart/area';
-import { api } from '@/trpc/client';
+} from "@/components/ui/charts/chart/area";
+import { api } from "@/trpc/client";
 
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { ActivityTimeframe } from '@/types/timeframes';
+import type { ChartData } from "@/components/ui/charts/chart/types";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
   addresses: string[];
@@ -34,7 +34,7 @@ export const KnownSellerChart = ({ addresses }: Props) => {
 
   const chartData: ChartData<{
     value: number;
-  }>[] = bucketedStats.map(stat => ({
+  }>[] = bucketedStats.map((stat) => ({
     timestamp: stat.bucket_start.toISOString(),
     value: stat.total_transactions,
   }));
@@ -44,8 +44,8 @@ export const KnownSellerChart = ({ addresses }: Props) => {
       data={chartData}
       areas={[
         {
-          dataKey: 'value',
-          color: 'var(--color-primary)',
+          dataKey: "value",
+          color: "var(--color-primary)",
         },
       ]}
       height={32}

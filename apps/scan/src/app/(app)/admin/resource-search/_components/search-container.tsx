@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { SearchInput } from './search-input';
-import { ResultsTable } from './table/results-table';
-import { SearchStats } from './search-stats';
-import { Card } from '@/components/ui/card';
-import { api } from '@/trpc/client';
-import { ResourceSearchSortingProvider } from '@/app/(app)/_contexts/sorting/resource-search/provider';
-import { defaultResourceSearchSorting } from '@/app/(app)/_contexts/sorting/resource-search/default';
+import { useState, useCallback } from "react";
+import { SearchInput } from "./search-input";
+import { ResultsTable } from "./table/results-table";
+import { SearchStats } from "./search-stats";
+import { Card } from "@/components/ui/card";
+import { api } from "@/trpc/client";
+import { ResourceSearchSortingProvider } from "@/app/(app)/_contexts/sorting/resource-search/provider";
+import { defaultResourceSearchSorting } from "@/app/(app)/_contexts/sorting/resource-search/default";
 
-type RefinementMode = 'none' | 'llm' | 'reranker' | 'both';
-type QueryMode = 'keywords' | 'sql' | 'sql-parallel';
+type RefinementMode = "none" | "llm" | "reranker" | "both";
+type QueryMode = "keywords" | "sql" | "sql-parallel";
 
 export const SearchContainer = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [refinementMode, setRefinementMode] = useState<RefinementMode>('none');
-  const [queryMode, setQueryMode] = useState<QueryMode>('keywords');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [refinementMode, setRefinementMode] = useState<RefinementMode>("none");
+  const [queryMode, setQueryMode] = useState<QueryMode>("keywords");
   const [searchKey, setSearchKey] = useState(0);
 
   const { data, isLoading } = api.admin.resources.search.useQuery(
@@ -31,7 +31,7 @@ export const SearchContainer = () => {
         setSearchQuery(query);
         setRefinementMode(refinement);
         setQueryMode(qMode);
-        setSearchKey(prev => prev + 1);
+        setSearchKey((prev) => prev + 1);
       }
     },
     []
@@ -45,7 +45,7 @@ export const SearchContainer = () => {
         <SearchInput
           onSearch={handleSearch}
           isLoading={isLoading}
-          className="max-w-4xl mx-auto"
+          className="mx-auto max-w-4xl"
         />
       </Card>
 

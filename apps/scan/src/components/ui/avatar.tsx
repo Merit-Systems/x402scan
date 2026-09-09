@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { User } from 'lucide-react';
+import { User } from "lucide-react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface Props {
   src: string | null | undefined;
@@ -19,7 +19,7 @@ export const Avatar: React.FC<Props> = ({ src, fallback, className }) => {
     return (
       <div
         className={cn(
-          'rounded-md overflow-hidden bg-card flex items-center justify-center border',
+          "rounded-md overflow-hidden bg-card flex items-center justify-center border",
           className
         )}
       >
@@ -29,7 +29,7 @@ export const Avatar: React.FC<Props> = ({ src, fallback, className }) => {
   }
 
   return (
-    <div className={cn('rounded-md overflow-hidden shrink-0', className)}>
+    <div className={cn("rounded-md overflow-hidden shrink-0", className)}>
       <img
         src={src}
         alt=""

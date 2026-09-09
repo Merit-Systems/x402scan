@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 export function ExpandableLink({
   label,
@@ -19,8 +19,8 @@ export function ExpandableLink({
         setOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
   return (
@@ -31,14 +31,14 @@ export function ExpandableLink({
       onMouseLeave={() => setOpen(false)}
     >
       <button
-        onClick={() => setOpen(prev => !prev)}
-        className="cursor-default hover:text-foreground transition-colors"
+        onClick={() => setOpen((prev) => !prev)}
+        className="cursor-default transition-colors hover:text-foreground"
       >
         {label}
       </button>
       {open && (
-        <span className="absolute top-full pt-1 flex flex-col items-center">
-          <span className="flex items-center gap-3 rounded-md border bg-background px-3 py-1.5 shadow-sm whitespace-nowrap">
+        <span className="absolute top-full flex flex-col items-center pt-1">
+          <span className="flex items-center gap-3 rounded-md border bg-background px-3 py-1.5 whitespace-nowrap shadow-sm">
             {children}
           </span>
         </span>

@@ -1,8 +1,8 @@
-import type { ResourceSortId } from '@/services/db/resources/resource';
+import type { ResourceSortId } from "@/services/db/resources/resource";
 
-import type { SortType } from '../base/types';
+import type { SortType } from "../base/types";
 
 export const defaultResourcesSorting: SortType<ResourceSortId> = {
-  id: 'toolCalls',
+  id: "toolCalls",
   desc: true,
 };

@@ -1,41 +1,41 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { Card } from '@/components/ui/card';
+import { Card } from "@/components/ui/card";
 
-import { Body, Heading } from '@/app/_components/layout/page-utils';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
 
 import {
   FacilitatorsChart,
   LoadingFacilitatorsChart,
-} from './_components/chart';
+} from "./_components/chart";
 import {
   FacilitatorsTable,
   LoadingFacilitatorsTable,
-} from './_components/facilitators';
+} from "./_components/facilitators";
 
-import { FacilitatorsSortingProvider } from '@/app/(app)/_contexts/sorting/facilitators/provider';
-import { defaultFacilitatorsSorting } from '@/app/(app)/_contexts/sorting/facilitators/default';
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
-import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
+import { FacilitatorsSortingProvider } from "@/app/(app)/_contexts/sorting/facilitators/provider";
+import { defaultFacilitatorsSorting } from "@/app/(app)/_contexts/sorting/facilitators/default";
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { getChainForPage } from '@/app/(app)/_lib/chain/page';
+import { getChainForPage } from "@/app/(app)/_lib/chain/page";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Facilitators',
-  description: 'Top facilitators processing x402 transactions',
+  title: "Facilitators",
+  description: "Top facilitators processing x402 transactions",
 };
 
 const PAGE_SIZE = 10;
 
 export default async function FacilitatorsPage({
   searchParams,
-}: PageProps<'/facilitators'>) {
+}: PageProps<"/facilitators">) {
   const chain = await getChainForPage(await searchParams);
 
   void api.public.facilitators.bucketedStatistics.prefetch({

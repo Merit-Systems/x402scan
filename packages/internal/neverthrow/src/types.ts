@@ -4,13 +4,13 @@ export type {
   ResultAsync as NeverthrowResultAsync,
   Err as NeverthrowErr,
   Ok as NeverthrowOk,
-} from 'neverthrow';
+} from "neverthrow";
 
 import type {
   Result as NeverthrowResult,
   ResultAsync as NeverthrowResultAsync,
   Err as NeverthrowErr,
-} from 'neverthrow';
+} from "neverthrow";
 
 export interface BaseError<ErrorCause extends string = string> {
   cause: ErrorCause;

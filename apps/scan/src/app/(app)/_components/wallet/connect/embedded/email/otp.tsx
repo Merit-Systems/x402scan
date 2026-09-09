@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
-import { useVerifyEmailOTP } from '@coinbase/cdp-hooks';
+import { useVerifyEmailOTP } from "@coinbase/cdp-hooks";
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
   InputOTPSeparator,
-} from '@/components/ui/input-otp';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface Props {
   flowId: string;
@@ -27,7 +27,7 @@ interface Props {
 }
 
 export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
 
   const { verifyEmailOTP } = useVerifyEmailOTP();
 
@@ -44,25 +44,25 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
       });
     },
     onSuccess: () => {
-      toast.success('Signed in successfully');
+      toast.success("Signed in successfully");
     },
     onError: () => {
-      toast.error('OTP verification failed');
+      toast.error("OTP verification failed");
     },
   });
 
   const otpGroupProps = (isSuccess: boolean) => {
     return {
       className: cn(
-        'flex-1 rounded-md',
-        isSuccess && 'shadow-[0_0_8px_var(--color-green-600)]'
+        "flex-1 rounded-md",
+        isSuccess && "shadow-[0_0_8px_var(--color-green-600)]"
       ),
     };
   };
 
   const otpSlotProps = (isSuccess: boolean) => {
     return {
-      className: cn('h-12 flex-1 text-xl', isSuccess && 'border-green-600'),
+      className: cn("h-12 flex-1 text-xl", isSuccess && "border-green-600"),
     };
   };
 
@@ -82,7 +82,7 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
             <InputOTPSlot index={2} {...otpSlotProps(verifyOTPSuccess)} />
           </InputOTPGroup>
           <InputOTPSeparator
-            className={cn(verifyOTPSuccess && 'text-green-600')}
+            className={cn(verifyOTPSuccess && "text-green-600")}
           />
           <InputOTPGroup {...otpGroupProps(verifyOTPSuccess)}>
             <InputOTPSlot index={3} {...otpSlotProps(verifyOTPSuccess)} />
@@ -91,11 +91,11 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
           </InputOTPGroup>
         </InputOTP>
         {verifyOTPError ? (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             {verifyOTPError.message}
           </p>
         ) : (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             Check your email for the OTP code
           </p>
         )}
@@ -110,10 +110,10 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
           {isVerifyingOTP || verifyOTPSuccess ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              {verifyOTPSuccess ? 'Logging in...' : 'Verifying...'}
+              {verifyOTPSuccess ? "Logging in..." : "Verifying..."}
             </>
           ) : (
-            'Verify OTP'
+            "Verify OTP"
           )}
         </Button>
         <Button

@@ -1,15 +1,15 @@
-import { Server, Wallet } from 'lucide-react';
+import { Server, Wallet } from "lucide-react";
 
-import { Breadcrumb } from '../../_components/breadcrumb';
+import { Breadcrumb } from "../../_components/breadcrumb";
 
-import { Separator } from '../../_components/separator';
-import { facilitatorIdMap } from '@/lib/facilitators';
-import { notFound } from 'next/navigation';
+import { Separator } from "../../_components/separator";
+import { facilitatorIdMap } from "@/lib/facilitators";
+import { notFound } from "next/navigation";
 
 export default async function RecipientPage({
   params,
   children,
-}: LayoutProps<'/facilitator/[id]'>) {
+}: LayoutProps<"/facilitator/[id]">) {
   const { id } = await params;
   const facilitator = facilitatorIdMap.get(id);
   if (!facilitator) {

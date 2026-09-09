@@ -1,10 +1,10 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
 
-import { Card } from '@/components/ui/card';
+import { Card } from "@/components/ui/card";
 
-import { LoadingFacilitatorsChart } from './_components/chart';
-import { LoadingFacilitatorsTable } from './_components/facilitators';
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
+import { LoadingFacilitatorsChart } from "./_components/chart";
+import { LoadingFacilitatorsTable } from "./_components/facilitators";
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
 
 export default function LoadingFacilitatorsPage() {
   return (

@@ -1,6 +1,6 @@
-import { Chain } from '@/types/chain';
-import { SIWE_PROVIDER_ID } from './siwe/constants';
-import { SIWS_PROVIDER_ID } from './siws/constants';
+import { Chain } from "@/types/chain";
+import { SIWE_PROVIDER_ID } from "./siwe/constants";
+import { SIWS_PROVIDER_ID } from "./siws/constants";
 
 export const chainToAuthProviderId = {
   [Chain.BASE]: SIWE_PROVIDER_ID,

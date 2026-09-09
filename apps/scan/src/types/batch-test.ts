@@ -1,12 +1,12 @@
 import type {
   EndpointMethodAdvisory,
   AuditWarning,
-} from '@agentcash/discovery';
+} from "@agentcash/discovery";
 
 export interface TestedResource {
   success: true;
   url: string;
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   description: string | null;
   parsed: EndpointMethodAdvisory;
   warnings: AuditWarning[];

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { columns } from './columns';
+import { columns } from "./columns";
 
-import { useTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/hook';
+import { useTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/hook";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
   address: string;

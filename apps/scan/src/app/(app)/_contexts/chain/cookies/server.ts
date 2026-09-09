@@ -1,10 +1,10 @@
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
 
-import { COOKIE_KEYS } from './keys';
+import { COOKIE_KEYS } from "./keys";
 
-import { parseChain } from '@/app/(app)/_lib/chain/parse';
+import { parseChain } from "@/app/(app)/_lib/chain/parse";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 export const getDataChainCookieServer = async (): Promise<
   Chain | undefined
@@ -13,7 +13,7 @@ export const getDataChainCookieServer = async (): Promise<
     const cookieStore = await cookies();
     return parseChain(cookieStore.get(COOKIE_KEYS.DATA_CHAIN)?.value);
   } catch (error) {
-    console.warn('Failed to read cookies:', error);
+    console.warn("Failed to read cookies:", error);
     return undefined;
   }
 };

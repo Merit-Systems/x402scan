@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
 import {
   useCurrentUser,
   useIsInitialized,
   useSignOut,
-} from '@coinbase/cdp-hooks';
-import { signOut, useSession } from 'next-auth/react';
+} from "@coinbase/cdp-hooks";
+import { signOut, useSession } from "next-auth/react";
 
-import { useConnections } from 'wagmi';
+import { useConnections } from "wagmi";
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { Button } from '@/components/ui/button';
-import { CopyCode } from '@/components/ui/copy-code';
+import { Button } from "@/components/ui/button";
+import { CopyCode } from "@/components/ui/copy-code";
 
-import { AuthenticationMethod, ItemContainer } from './item';
-import { Balance } from './balance';
+import { AuthenticationMethod, ItemContainer } from "./item";
+import { Balance } from "./balance";
 
-import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+import { useSolanaWallet } from "@/app/_contexts/solana/hook";
 
-import type { User } from '@coinbase/cdp-hooks';
+import type { User } from "@coinbase/cdp-hooks";
 
 interface Props {
   address: string;
@@ -44,7 +44,7 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
         await signOutWallet();
       } else {
         await Promise.all(
-          connections.map(connection => connection.connector.disconnect())
+          connections.map((connection) => connection.connector.disconnect())
         );
         disconnect();
       }
@@ -55,7 +55,7 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
   });
 
   return (
-    <div className="space-y-4 w-full overflow-hidden">
+    <div className="w-full space-y-4 overflow-hidden">
       <ItemContainer
         label="Address"
         value={
@@ -82,24 +82,24 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
       {user?.authenticationMethods?.google && (
         <AuthenticationMethod
           label="Google"
-          value={user.authenticationMethods.google.email ?? 'Unknown Email'}
+          value={user.authenticationMethods.google.email ?? "Unknown Email"}
         />
       )}
       {user?.authenticationMethods?.apple && (
         <AuthenticationMethod
           label="Apple"
-          value={user.authenticationMethods.apple.email ?? 'Unknown Email'}
+          value={user.authenticationMethods.apple.email ?? "Unknown Email"}
         />
       )}
       <Button
         onClick={() => void handleSignOut()}
         className="w-full"
-        disabled={!isInitialized || isSigningOut || status === 'loading'}
+        disabled={!isInitialized || isSigningOut || status === "loading"}
       >
         {isSigningOut ? (
           <Loader2 className="size-4 animate-spin" />
         ) : (
-          'Disconnect'
+          "Disconnect"
         )}
       </Button>
     </div>

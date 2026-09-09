@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Calendar,
@@ -7,30 +7,30 @@ import {
   MoreHorizontal,
   User,
   Wallet,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Skeleton } from '@/components/ui/skeleton';
-import { formatCompactAgo, formatCurrency } from '@/lib/utils';
-import { formatUnits } from 'viem';
+} from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatCompactAgo, formatCurrency } from "@/lib/utils";
+import { formatUnits } from "viem";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
 
-type ColumnType = RouterOutputs['admin']['inviteCodes']['list'][number];
+type ColumnType = RouterOutputs["admin"]["inviteCodes"]["list"][number];
 
 interface ColumnHandlers {
   onDisable?: (id: string) => void;
@@ -40,18 +40,18 @@ interface ColumnHandlers {
 
 const getStatusVariant = (
   status: string
-): 'default' | 'secondary' | 'destructive' | 'outline' => {
+): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
-    case 'ACTIVE':
-      return 'default';
-    case 'EXHAUSTED':
-      return 'secondary';
-    case 'EXPIRED':
-      return 'outline';
-    case 'DISABLED':
-      return 'destructive';
+    case "ACTIVE":
+      return "default";
+    case "EXHAUSTED":
+      return "secondary";
+    case "EXPIRED":
+      return "outline";
+    case "DISABLED":
+      return "destructive";
     default:
-      return 'outline';
+      return "outline";
   }
 };
 
@@ -62,14 +62,14 @@ export const createColumns = (
   handlers?: ColumnHandlers
 ): ExtendedColumnDef<ColumnType>[] => [
   {
-    accessorKey: 'code',
+    accessorKey: "code",
     header: () => (
       <HeaderCell Icon={Hash} label="Code" className="justify-start" />
     ),
     cell: ({ row }) => {
       const { code, note } = row.original;
       const codeElement = (
-        <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
+        <code className="rounded bg-muted px-2 py-1 font-mono text-xs">
           {code}
         </code>
       );
@@ -87,7 +87,7 @@ export const createColumns = (
     loading: () => <Skeleton className="h-4 w-24" />,
   },
   {
-    accessorKey: 'amount',
+    accessorKey: "amount",
     header: () => (
       <HeaderCell Icon={DollarSign} label="Amount" className="mx-auto" />
     ),
@@ -97,10 +97,10 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'redemptions',
+    accessorKey: "redemptions",
     header: () => (
       <HeaderCell Icon={Hash} label="Redemptions" className="mx-auto" />
     ),
@@ -113,10 +113,10 @@ export const createColumns = (
       return <div className="text-center font-mono text-xs">{text}</div>;
     },
     size: 120,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'redeemedBy',
+    accessorKey: "redeemedBy",
     header: () => (
       <HeaderCell Icon={Wallet} label="Redeemed By" className="justify-start" />
     ),
@@ -125,13 +125,13 @@ export const createColumns = (
       if (!redemptions || redemptions.length === 0) {
         return <div className="text-xs text-muted-foreground">-</div>;
       }
-      const addresses = redemptions.map(r => r.recipientAddr);
+      const addresses = redemptions.map((r) => r.recipientAddr);
       const uniqueAddresses = [...new Set(addresses)];
       const firstAddress = uniqueAddresses[0];
       if (uniqueAddresses.length === 1 && firstAddress) {
         return (
           <code
-            className="text-xs font-mono cursor-pointer hover:bg-muted px-1 rounded"
+            className="cursor-pointer rounded px-1 font-mono text-xs hover:bg-muted"
             title={firstAddress}
             onClick={() => void navigator.clipboard.writeText(firstAddress)}
           >
@@ -140,11 +140,11 @@ export const createColumns = (
         );
       }
       return (
-        <div className="text-xs space-y-0.5">
-          {uniqueAddresses.slice(0, 2).map(addr => (
+        <div className="space-y-0.5 text-xs">
+          {uniqueAddresses.slice(0, 2).map((addr) => (
             <code
               key={addr}
-              className="block font-mono cursor-pointer hover:bg-muted px-1 rounded"
+              className="block cursor-pointer rounded px-1 font-mono hover:bg-muted"
               title={addr}
               onClick={() => void navigator.clipboard.writeText(addr)}
             >
@@ -163,7 +163,7 @@ export const createColumns = (
     loading: () => <Skeleton className="h-4 w-24" />,
   },
   {
-    accessorKey: 'status',
+    accessorKey: "status",
     header: () => <HeaderCell Icon={Hash} label="Status" className="mx-auto" />,
     cell: ({ row }) => (
       <div className="text-center">
@@ -173,36 +173,36 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'uniqueRecipients',
+    accessorKey: "uniqueRecipients",
     header: () => (
       <HeaderCell Icon={User} label="Unique Only" className="mx-auto" />
     ),
     cell: ({ row }) => (
       <div className="text-center text-xs">
-        {row.original.uniqueRecipients ? 'Yes' : 'No'}
+        {row.original.uniqueRecipients ? "Yes" : "No"}
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-12" />,
   },
   {
-    accessorKey: 'createdBy',
+    accessorKey: "createdBy",
     header: () => (
       <HeaderCell Icon={User} label="Created By" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <div className="text-center text-xs text-muted-foreground truncate max-w-[120px]">
-        {row.original.createdBy.email ?? row.original.createdBy.name ?? 'N/A'}
+      <div className="max-w-[120px] truncate text-center text-xs text-muted-foreground">
+        {row.original.createdBy.email ?? row.original.createdBy.name ?? "N/A"}
       </div>
     ),
     size: 120,
-    loading: () => <Skeleton className="h-4 w-20 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-20" />,
   },
   {
-    accessorKey: 'expiresAt',
+    accessorKey: "expiresAt",
     header: () => (
       <HeaderCell Icon={Calendar} label="Expires" className="mx-auto" />
     ),
@@ -210,14 +210,14 @@ export const createColumns = (
       <div className="text-center font-mono text-xs">
         {row.original.expiresAt
           ? formatCompactAgo(row.original.expiresAt, { allowFuture: true })
-          : 'Never'}
+          : "Never"}
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: "createdAt",
     header: () => (
       <HeaderCell Icon={Calendar} label="Created" className="mx-auto" />
     ),
@@ -227,14 +227,14 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       const { status, id, maxRedemptions } = row.original;
-      const canDisable = status === 'ACTIVE';
-      const canReactivate = status === 'DISABLED' || status === 'EXPIRED';
+      const canDisable = status === "ACTIVE";
+      const canReactivate = status === "DISABLED" || status === "EXPIRED";
 
       return (
         <DropdownMenu>

@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import Link from "next/link";
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -9,18 +9,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { CopyForAgentsButton } from './copy-for-agents-button';
-import { AgentPromptPreview } from './agent-prompt-preview';
-import { TryDiscovery } from './try-discovery';
-import { CopyPageButton } from './_components/copy-page-button';
+} from "@/components/ui/table";
+import { CopyForAgentsButton } from "./copy-for-agents-button";
+import { AgentPromptPreview } from "./agent-prompt-preview";
+import { TryDiscovery } from "./try-discovery";
+import { CopyPageButton } from "./_components/copy-page-button";
 
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Become Discoverable',
+  title: "Become Discoverable",
   description:
-    'Build once, register reliably, and keep your resources discoverable by agents.',
+    "Build once, register reliably, and keep your resources discoverable by agents.",
 };
 
 const endpointExample = `curl -i -X POST https://yourdomain.com/api/route
@@ -101,7 +101,7 @@ Done when:
 
 function CodeBlock({ code }: { code: string }) {
   return (
-    <pre className="rounded-md bg-muted p-3 overflow-x-auto text-xs">
+    <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs">
       <code>{code}</code>
     </pre>
   );
@@ -137,7 +137,7 @@ export default function DiscoverySpecPage() {
               churn, and more real agent traffic.
             </p>
           </div>
-          <ul className="mt-3 list-disc pl-5 space-y-1 text-sm">
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm">
             <li>Publish OpenAPI as the canonical machine-readable contract.</li>
             <li>
               Treat runtime <code>402</code> challenge behavior as the final
@@ -177,10 +177,10 @@ export default function DiscoverySpecPage() {
               machine-readable contract and best agent compatibility.
             </p>
             <p>
-              The <code>x-payment-info</code> fields are a superset of the{' '}
+              The <code>x-payment-info</code> fields are a superset of the{" "}
               <a
                 href="https://paymentauth.org/draft-payment-discovery-00.txt"
-                className="underline hover:no-underline font-medium text-foreground"
+                className="font-medium text-foreground underline hover:no-underline"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -196,23 +196,23 @@ export default function DiscoverySpecPage() {
           <Card>
             <CardContent className="space-y-4 pt-4">
               <h3 className="text-sm font-semibold">Requirements</h3>
-              <ul className="list-disc pl-5 space-y-1 text-sm">
+              <ul className="list-disc space-y-1 pl-5 text-sm">
                 <li>
-                  Top-level fields: <code>openapi</code>,{' '}
-                  <code>info.title</code>, <code>info.x-guidance</code>,{' '}
+                  Top-level fields: <code>openapi</code>,{" "}
+                  <code>info.title</code>, <code>info.x-guidance</code>,{" "}
                   <code>info.version</code>, <code>paths</code>.
                 </li>
                 <li>
-                  For paid operations: <code>responses.402</code> and{' '}
+                  For paid operations: <code>responses.402</code> and{" "}
                   <code>x-payment-info</code>.
                 </li>
                 <li>
                   Set <code>x-payment-info.protocols</code> (array of protocol
-                  objects) and one pricing mode (<code>fixed</code> or{' '}
+                  objects) and one pricing mode (<code>fixed</code> or{" "}
                   <code>dynamic</code>) with <code>currency</code>.
                 </li>
                 <li>
-                  Use OpenAPI <code>security</code> +{' '}
+                  Use OpenAPI <code>security</code> +{" "}
                   <code>components.securitySchemes</code> for auth declaration.
                 </li>
                 <li>
@@ -221,16 +221,16 @@ export default function DiscoverySpecPage() {
                 </li>
               </ul>
               <h3 className="text-sm font-semibold">Recommended</h3>
-              <ul className="list-disc pl-5 space-y-1 text-sm">
+              <ul className="list-disc space-y-1 pl-5 text-sm">
                 <li>
                   <code>info.contact.email</code> — your contact email. Lets you
                   verify ownership of your origin, allows users to contact you,
-                  and lets you customize your merchant pages on{' '}
+                  and lets you customize your merchant pages on{" "}
                   <a
                     href="https://tryponcho.com"
                     target="_blank"
                     rel="noreferrer"
-                    className="underline hover:no-underline font-medium text-foreground"
+                    className="font-medium text-foreground underline hover:no-underline"
                   >
                     Poncho
                   </a>
@@ -240,9 +240,9 @@ export default function DiscoverySpecPage() {
               <h3 className="text-sm font-semibold">
                 Pricing modes in <code>x-payment-info</code>
               </h3>
-              <ul className="list-disc pl-5 space-y-1 text-sm">
+              <ul className="list-disc space-y-1 pl-5 text-sm">
                 <li>
-                  Fixed:{' '}
+                  Fixed:{" "}
                   <code>
                     {
                       '{ price: { mode: "fixed", currency: "USD", amount: "<amount>" } }'
@@ -250,7 +250,7 @@ export default function DiscoverySpecPage() {
                   </code>
                 </li>
                 <li>
-                  Dynamic:{' '}
+                  Dynamic:{" "}
                   <code>
                     {
                       '{ price: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" } }'
@@ -260,7 +260,7 @@ export default function DiscoverySpecPage() {
                 <li>
                   OpenAPI <code>x-payment-info.price.amount</code> is decimal
                   USD; runtime x402 v2 <code>accepts[].amount</code> is token
-                  atomic units. For USDC, <code>0.01</code> becomes{' '}
+                  atomic units. For USDC, <code>0.01</code> becomes{" "}
                   <code>&quot;10000&quot;</code>.
                 </li>
               </ul>
@@ -329,11 +329,11 @@ export default function DiscoverySpecPage() {
           <h2 className="text-xl font-semibold">Discovery Precedence</h2>
           <p className="text-sm text-muted-foreground">
             x402scan uses the OpenAPI document at <code>/openapi.json</code> to
-            discover your API. It will also check the runtime <code>402</code>{' '}
+            discover your API. It will also check the runtime <code>402</code>{" "}
             challenge behavior to ensure it is correct.
           </p>
           <Card>
-            <CardContent className="px-0 pb-0 pt-0">
+            <CardContent className="px-0 pt-0 pb-0">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -373,15 +373,15 @@ export default function DiscoverySpecPage() {
             SIWX routes are identity-gated, requiring a wallet proof but no
             payment. Agents with an agentcash wallet can call these for free.
           </p>
-          <ul className="list-disc pl-5 space-y-1 text-sm">
+          <ul className="list-disc space-y-1 pl-5 text-sm">
             <li>
-              Declare a security scheme named <code>siwx</code> in{' '}
+              Declare a security scheme named <code>siwx</code> in{" "}
               <code>components.securitySchemes</code>.
             </li>
             <li>
-              Reference it on each identity-gated operation via{' '}
+              Reference it on each identity-gated operation via{" "}
               <code>
-                security: [{'{'} &quot;siwx&quot;: [] {'}'}]
+                security: [{"{"} &quot;siwx&quot;: [] {"}"}]
               </code>
               .
             </li>
@@ -414,7 +414,7 @@ export default function DiscoverySpecPage() {
           />
           <p className="text-sm text-muted-foreground">
             The scheme <strong>must</strong> be named <code>siwx</code>.
-            Discovery resolves it by name. Routes with both{' '}
+            Discovery resolves it by name. Routes with both{" "}
             <code>x-payment-info</code> and <code>siwx</code> security are
             classified as paid, not SIWX.
           </p>
@@ -424,14 +424,14 @@ export default function DiscoverySpecPage() {
           <h2 className="text-xl font-semibold">Endpoint-Only Fallback</h2>
           <p className="text-sm text-muted-foreground">
             If no OpenAPI document exists, a single endpoint URL can still be
-            registered. x402scan probes the URL directly via{' '}
-            <code>checkEndpointSchema</code> from{' '}
+            registered. x402scan probes the URL directly via{" "}
+            <code>checkEndpointSchema</code> from{" "}
             <code>@agentcash/discovery</code>.
           </p>
-          <ul className="list-disc pl-5 space-y-1 text-sm">
+          <ul className="list-disc space-y-1 pl-5 text-sm">
             <li>
-              The probe is method-aware. It tries <code>POST</code> first, then{' '}
-              <code>GET</code>, <code>PUT</code>, <code>PATCH</code>,{' '}
+              The probe is method-aware. It tries <code>POST</code> first, then{" "}
+              <code>GET</code>, <code>PUT</code>, <code>PATCH</code>,{" "}
               <code>DELETE</code>, and picks the first response with a valid
               x402 payment option.
             </li>
@@ -440,13 +440,13 @@ export default function DiscoverySpecPage() {
               with at least one x402 entry in <code>accepts</code>.
             </li>
             <li>
-              Request validation should let unauthenticated probes reach the{' '}
+              Request validation should let unauthenticated probes reach the{" "}
               <code>402</code> challenge before body/query schema checks reject
               the request.
             </li>
             <li>
               Endpoints without an input schema are non-invocable and are
-              skipped during registration. Publish an OpenAPI schema (or a{' '}
+              skipped during registration. Publish an OpenAPI schema (or a{" "}
               <code>402</code> body that carries one) to make the endpoint
               registerable.
             </li>
@@ -472,34 +472,34 @@ export default function DiscoverySpecPage() {
                   fix: React.ReactNode;
                 }[] = [
                   {
-                    error: 'Not Found',
+                    error: "Not Found",
                     cause: (
                       <>
                         <span>OpenAPI not found at </span>
-                        <code>{'{origin}'}/openapi.json</code>
+                        <code>{"{origin}"}/openapi.json</code>
                       </>
                     ),
                     fix: (
                       <>
                         <span>Add an OpenAPI document at </span>
-                        <code>{'{origin}'}/openapi.json</code>
+                        <code>{"{origin}"}/openapi.json</code>
                       </>
                     ),
                   },
                   {
-                    error: 'Input/Output Schema Missing',
-                    cause: 'Operation has no input or output schema',
-                    fix: 'Add an input and output schema to the operation',
+                    error: "Input/Output Schema Missing",
+                    cause: "Operation has no input or output schema",
+                    fix: "Add an input and output schema to the operation",
                   },
                   {
-                    error: 'No Payment Modes Detected',
-                    cause: 'No payment modes detected in the response',
-                    fix: 'Add a valid payment mode to the response (x402)',
+                    error: "No Payment Modes Detected",
+                    cause: "No payment modes detected in the response",
+                    fix: "Add a valid payment mode to the response (x402)",
                   },
                   {
-                    error: 'Expected 402, got 400',
+                    error: "Expected 402, got 400",
                     cause:
-                      'Request validation rejected the unauthenticated probe before payment middleware ran',
+                      "Request validation rejected the unauthenticated probe before payment middleware ran",
                     fix: (
                       <>
                         <span>
@@ -511,7 +511,7 @@ export default function DiscoverySpecPage() {
                     ),
                   },
                   {
-                    error: 'Malformed Runtime Amount',
+                    error: "Malformed Runtime Amount",
                     cause: (
                       <>
                         <span>Runtime x402 </span>
@@ -526,7 +526,7 @@ export default function DiscoverySpecPage() {
                 ];
                 return (
                   <>
-                    <div className="hidden lg:block overflow-x-auto">
+                    <div className="hidden overflow-x-auto lg:block">
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -542,15 +542,15 @@ export default function DiscoverySpecPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {rows.map(row => (
+                          {rows.map((row) => (
                             <TableRow key={row.error}>
-                              <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
+                              <TableCell className="align-top font-mono text-xs break-words whitespace-normal">
                                 {row.error}
                               </TableCell>
-                              <TableCell className="whitespace-normal break-words align-top">
+                              <TableCell className="align-top break-words whitespace-normal">
                                 {row.cause}
                               </TableCell>
-                              <TableCell className="whitespace-normal break-words align-top">
+                              <TableCell className="align-top break-words whitespace-normal">
                                 {row.fix}
                               </TableCell>
                             </TableRow>
@@ -568,7 +568,7 @@ export default function DiscoverySpecPage() {
                         {rows.map((row, i, arr) => (
                           <div
                             key={row.error}
-                            className={`flex gap-3 py-3 ${i === arr.length - 1 ? 'pb-0' : ''}`}
+                            className={`flex gap-3 py-3 ${i === arr.length - 1 ? "pb-0" : ""}`}
                           >
                             <p className="w-[30%] font-mono text-xs break-words">
                               {row.error}
@@ -600,10 +600,10 @@ export default function DiscoverySpecPage() {
         </section>
 
         <p className="text-sm text-muted-foreground">
-          For further questions, contact us at{' '}
+          For further questions, contact us at{" "}
           <a
             href="mailto:merchants@merit.systems"
-            className="underline hover:no-underline font-medium text-foreground"
+            className="font-medium text-foreground underline hover:no-underline"
           >
             merchants@merit.systems
           </a>

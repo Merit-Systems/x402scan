@@ -1,13 +1,13 @@
-import z from 'zod';
+import z from "zod";
 
-import { scanDb, Prisma } from '@x402scan/scan-db';
+import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { firstTransfer } from '@/services/facilitator/constants';
+import { firstTransfer } from "@/services/facilitator/constants";
 
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
 
-import type { resourceBucketedQuerySchema } from './schemas';
+import type { resourceBucketedQuerySchema } from "./schemas";
 
 const bucketedCreationsResultSchema = z.array(
   z.object({
@@ -85,8 +85,8 @@ const getBucketedResourceCreationsUncached = async (
 
 export const getBucketedResourceCreations = createCachedArrayQuery({
   queryFn: getBucketedResourceCreationsUncached,
-  cacheKeyPrefix: 'bucketed-resource-creations',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
-  tags: ['resource-statistics', 'resources'],
+  cacheKeyPrefix: "bucketed-resource-creations",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
+  tags: ["resource-statistics", "resources"],
 });

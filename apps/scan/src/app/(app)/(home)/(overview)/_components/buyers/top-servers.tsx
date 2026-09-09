@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Favicons, LoadingFavicons } from '@/app/(app)/_components/favicon';
-import { ActivityTimeframe } from '@/types/timeframes';
-import { useQueries } from '@tanstack/react-query';
+} from "@/components/ui/tooltip";
+import { Favicons, LoadingFavicons } from "@/app/(app)/_components/favicon";
+import { ActivityTimeframe } from "@/types/timeframes";
+import { useQueries } from "@tanstack/react-query";
 
 interface Props {
   sender: string;
@@ -20,7 +20,7 @@ interface Props {
 export const BuyerTopServers: React.FC<Props> = ({ sender }) => {
   const { data: sellers, isLoading } = api.public.buyers.all.sellers.useQuery({
     sender,
-    sorting: { id: 'tx_count', desc: true },
+    sorting: { id: "tx_count", desc: true },
     pagination: {
       page_size: 3,
       page: 0,
@@ -37,7 +37,7 @@ export const BuyerTopServers: React.FC<Props> = ({ sender }) => {
   }
 
   return (
-    <TopServersFavicons recipients={sellers.items.map(s => s.recipient)} />
+    <TopServersFavicons recipients={sellers.items.map((s) => s.recipient)} />
   );
 };
 
@@ -47,22 +47,22 @@ const TopServersFavicons: React.FC<{ recipients: string[] }> = ({
   const utils = api.useUtils();
 
   const originQueries = useQueries({
-    queries: recipients.map(address => ({
-      queryKey: ['buyer-top-origins', address],
+    queries: recipients.map((address) => ({
+      queryKey: ["buyer-top-origins", address],
       queryFn: () => utils.public.origins.list.origins.fetch({ address }),
       staleTime: 60_000,
     })),
   });
 
-  const isLoading = originQueries.some(q => q.isLoading);
+  const isLoading = originQueries.some((q) => q.isLoading);
 
   const origins = useMemo(() => {
     if (isLoading) return [];
     return originQueries
-      .flatMap(q => q.data ?? [])
+      .flatMap((q) => q.data ?? [])
       .filter(
         (origin, index, self) =>
-          self.findIndex(o => o.id === origin.id) === index
+          self.findIndex((o) => o.id === origin.id) === index
       )
       .slice(0, 3);
   }, [originQueries, isLoading]);
@@ -75,8 +75,8 @@ const TopServersFavicons: React.FC<{ recipients: string[] }> = ({
     return <span className="text-xs text-muted-foreground">–</span>;
   }
 
-  const favicons = origins.map(o => o.favicon);
-  const hostnames = origins.map(o => new URL(o.origin).hostname);
+  const favicons = origins.map((o) => o.favicon);
+  const hostnames = origins.map((o) => new URL(o.origin).hostname);
 
   return (
     <Tooltip>
@@ -91,8 +91,8 @@ const TopServersFavicons: React.FC<{ recipients: string[] }> = ({
       </TooltipTrigger>
       <TooltipContent className="flex flex-col gap-1">
         <p className="text-xs font-medium">Top servers</p>
-        {hostnames.map(hostname => (
-          <p key={hostname} className="text-xs font-mono">
+        {hostnames.map((hostname) => (
+          <p key={hostname} className="font-mono text-xs">
             {hostname}
           </p>
         ))}

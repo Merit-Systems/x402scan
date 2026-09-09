@@ -1,4 +1,4 @@
-import type { TransferEventData } from '@/trigger/types';
+import type { TransferEventData } from "@/trigger/types";
 
 // Some facilitators don't settle payments directly from buyer to merchant.
 // Meridian, for example, routes every payment through a fee-proxy contract:
@@ -77,7 +77,7 @@ function collapseTx(legs: TransferEventData[]): TransferEventData[] {
     let terminal = origin;
     while (isPassThrough(terminal.recipient)) {
       const candidates = sorted.filter(
-        leg =>
+        (leg) =>
           !consumed.has(leg) &&
           leg.sender === terminal.recipient &&
           position.get(leg)! > position.get(terminal)!

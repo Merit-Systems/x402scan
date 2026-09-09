@@ -1,8 +1,8 @@
-import { SortingProvider } from '../base/provider';
-import { AgentsSortingContext } from './context';
+import { SortingProvider } from "../base/provider";
+import { AgentsSortingContext } from "./context";
 
-import type { AgentSortId } from '@/services/db/agent-config/list';
-import type { SortType } from '../base/types';
+import type { AgentSortId } from "@/services/db/agent-config/list";
+import type { SortType } from "../base/types";
 
 export const AgentsSortingProvider = ({
   children,

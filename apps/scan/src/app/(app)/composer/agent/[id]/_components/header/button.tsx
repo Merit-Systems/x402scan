@@ -1,17 +1,17 @@
-import React, { Suspense } from 'react';
+import React, { Suspense } from "react";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { auth } from '@/auth';
+import { auth } from "@/auth";
 
-import type { RouterOutputs } from '@/trpc/client';
-import { MessageSquare, Pencil } from 'lucide-react';
+import type { RouterOutputs } from "@/trpc/client";
+import { MessageSquare, Pencil } from "lucide-react";
 
 interface Props {
-  agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
+  agentConfiguration: NonNullable<RouterOutputs["public"]["agents"]["get"]>;
 }
 
 export const HeaderButtons: React.FC<Props> = ({ agentConfiguration }) => {
@@ -50,7 +50,7 @@ const EditButton: React.FC<Props> = async ({ agentConfiguration }) => {
 export const LoadingHeaderButtons = () => {
   return (
     <ButtonsContainer>
-      <Skeleton className="h-8 md:h-9 w-24" />
+      <Skeleton className="h-8 w-24 md:h-9" />
     </ButtonsContainer>
   );
 };

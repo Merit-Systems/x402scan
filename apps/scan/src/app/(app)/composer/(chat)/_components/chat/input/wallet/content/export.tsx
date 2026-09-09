@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Key } from 'lucide-react';
+import { Key } from "lucide-react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button';
-import { CopyCode } from '@/components/ui/copy-code';
+import { Button } from "@/components/ui/button";
+import { CopyCode } from "@/components/ui/copy-code";
 
-import { useWalletChain } from '@/app/(app)/_contexts/wallet-chain/hook';
+import { useWalletChain } from "@/app/(app)/_contexts/wallet-chain/hook";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
 export const WalletExport: React.FC = () => {
   const { chain } = useWalletChain();
@@ -27,7 +27,7 @@ export const WalletExport: React.FC = () => {
       },
       {
         onSuccess: () => {
-          toast.success('Wallet exported');
+          toast.success("Wallet exported");
         },
       }
     );
@@ -35,12 +35,12 @@ export const WalletExport: React.FC = () => {
 
   if (exportData) {
     return (
-      <div className="flex flex-col gap-4 items-center w-full overflow-hidden text-center">
+      <div className="flex w-full flex-col items-center gap-4 overflow-hidden text-center">
         <CopyCode
           code={exportData}
           toastMessage="Private key copied to clipboard"
         />
-        <p className="text-muted-foreground text-center text-xs font-mono">
+        <p className="text-center font-mono text-xs text-muted-foreground">
           Do not share your private key with anyone. Anyone with access to it
           can access this wallet&apos;s funds.
         </p>
@@ -49,7 +49,7 @@ export const WalletExport: React.FC = () => {
   }
 
   return (
-    <div className="w-full overflow-hidden flex flex-col items-center gap-4 text-center">
+    <div className="flex w-full flex-col items-center gap-4 overflow-hidden text-center">
       <p className="text-sm font-bold">
         This is a very sensitive operation. Do not export your wallet if someone
         asks you to.
@@ -63,7 +63,7 @@ export const WalletExport: React.FC = () => {
         <Key className="size-4" />
         Export Private Key
       </Button>
-      <div className="text-muted-foreground text-center flex flex-col gap-2 text-xs font-mono">
+      <div className="flex flex-col gap-2 text-center font-mono text-xs text-muted-foreground">
         <p>Exporting your wallet will reveal the private key to you.</p>
       </div>
     </div>

@@ -1,120 +1,120 @@
-import { Geist, Geist_Mono } from 'next/font/google';
-import { connection } from 'next/server';
+import { Geist, Geist_Mono } from "next/font/google";
+import { connection } from "next/server";
 
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider } from "next-themes";
 
-import { JsonLd } from '@/components/json-ld';
-import { Toaster } from '@/components/ui/sonner';
+import { JsonLd } from "@/components/json-ld";
+import { Toaster } from "@/components/ui/sonner";
 
-import { CDPHooksProvider } from './_contexts/cdp';
-import { WagmiProvider } from './_contexts/wagmi';
-import { PostHogProvider } from './_contexts/posthog';
+import { CDPHooksProvider } from "./_contexts/cdp";
+import { WagmiProvider } from "./_contexts/wagmi";
+import { PostHogProvider } from "./_contexts/posthog";
 
-import { TRPCReactProvider } from '@/trpc/client';
+import { TRPCReactProvider } from "@/trpc/client";
 
-import { env } from '@/env';
+import { env } from "@/env";
 
-import type { Metadata, Viewport } from 'next';
+import type { Metadata, Viewport } from "next";
 
-import { SessionProvider } from 'next-auth/react';
+import { SessionProvider } from "next-auth/react";
 
-import './globals.css';
-import { SolanaWalletProvider } from './_contexts/solana/provider';
+import "./globals.css";
+import { SolanaWalletProvider } from "./_contexts/solana/provider";
 
 const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 const siteDescription =
-  'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.';
+  "Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.";
 
 export const metadata: Metadata = {
   title: {
-    default: 'x402scan | x402 Ecosystem Explorer',
-    template: '%s | x402scan',
+    default: "x402scan | x402 Ecosystem Explorer",
+    template: "%s | x402scan",
   },
   description: siteDescription,
   keywords: [
-    'x402',
-    'blockchain',
-    'ecosystem',
-    'transactions',
-    'agentic commerce',
-    'crypto',
-    'web3',
-    'block explorer',
-    'analytics',
-    'sellers',
+    "x402",
+    "blockchain",
+    "ecosystem",
+    "transactions",
+    "agentic commerce",
+    "crypto",
+    "web3",
+    "block explorer",
+    "analytics",
+    "sellers",
   ],
-  authors: [{ name: 'x402scan' }],
-  creator: 'x402scan',
-  publisher: 'x402scan',
+  authors: [{ name: "x402scan" }],
+  creator: "x402scan",
+  publisher: "x402scan",
   robots: {
     index: true,
     follow: true,
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   appleWebApp: {
-    title: 'x402scan',
-    statusBarStyle: 'black-translucent',
+    title: "x402scan",
+    statusBarStyle: "black-translucent",
   },
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
 };
 
 export const viewport: Viewport = {
-  width: 'device-width',
-  height: 'device-height',
+  width: "device-width",
+  height: "device-height",
   initialScale: 1,
   minimumScale: 1,
   maximumScale: 1,
   userScalable: false,
   themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#090909' },
-    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: "(prefers-color-scheme: dark)", color: "#090909" },
+    { media: "(prefers-color-scheme: light)", color: "white" },
   ],
 };
 
-export default async function RootLayout({ children }: LayoutProps<'/'>) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   await connection();
-  const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+  const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   const jsonLd = [
     {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: 'x402scan',
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "x402scan",
       url: appUrl,
       description: siteDescription,
       potentialAction: {
-        '@type': 'SearchAction',
+        "@type": "SearchAction",
         target: `${appUrl}/?q={search_term_string}`,
-        'query-input': 'required name=search_term_string',
+        "query-input": "required name=search_term_string",
       },
     },
     {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: 'x402scan',
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "x402scan",
       url: appUrl,
       sameAs: [
-        'https://github.com/Merit-Systems/x402scan',
-        'https://x.com/x402scan',
+        "https://github.com/Merit-Systems/x402scan",
+        "https://x.com/x402scan",
       ],
     },
   ];
@@ -140,10 +140,10 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
                       storageKey="x402scan-theme"
                       enableSystem={true}
                     >
-                      <div className="min-h-screen flex flex-col relative">
+                      <div className="relative flex min-h-screen flex-col">
                         {children}
-                        {(env.NEXT_PUBLIC_NODE_ENV === 'development' ||
-                          env.NEXT_PUBLIC_VERCEL_ENV !== 'production') && (
+                        {(env.NEXT_PUBLIC_NODE_ENV === "development" ||
+                          env.NEXT_PUBLIC_VERCEL_ENV !== "production") && (
                           <ReactQueryDevtools />
                         )}
                       </div>

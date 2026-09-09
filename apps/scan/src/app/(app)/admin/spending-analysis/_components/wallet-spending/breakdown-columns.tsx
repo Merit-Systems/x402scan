@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { Wallet, Hash, DollarSign, Clock, Eye } from 'lucide-react';
-import { useState } from 'react';
+import { Wallet, Hash, DollarSign, Clock, Eye } from "lucide-react";
+import { useState } from "react";
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { Copyable } from '@/components/ui/copyable';
-import { Button } from '@/components/ui/button';
-import { api } from '@/trpc/client';
+import { Skeleton } from "@/components/ui/skeleton";
+import { Copyable } from "@/components/ui/copyable";
+import { Button } from "@/components/ui/button";
+import { api } from "@/trpc/client";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
 
 type WalletBreakdown =
-  RouterOutputs['admin']['spending']['walletBreakdown'][number];
+  RouterOutputs["admin"]["spending"]["walletBreakdown"][number];
 
 const formatAmount = (amount: string) => {
   const numericAmount = BigInt(amount);
@@ -21,13 +21,13 @@ const formatAmount = (amount: string) => {
 };
 
 const formatDate = (date: Date | null) => {
-  if (!date) return 'N/A';
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  if (!date) return "N/A";
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
@@ -52,7 +52,7 @@ const WalletCell = ({
         <Copyable
           value={address}
           toastMessage="Wallet address copied"
-          className="text-xs font-mono font-medium truncate max-w-[200px] block"
+          className="block max-w-[200px] truncate font-mono text-xs font-medium"
         >
           {address}
         </Copyable>
@@ -62,8 +62,8 @@ const WalletCell = ({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs font-medium truncate max-w-[150px]">
-        {isFreeTier ? 'Free Tier' : walletName}
+      <span className="max-w-[150px] truncate text-xs font-medium">
+        {isFreeTier ? "Free Tier" : walletName}
       </span>
       <Button
         size="sm"
@@ -83,7 +83,7 @@ export const createWalletBreakdownColumns = (
 ): ExtendedColumnDef<WalletBreakdown>[] => {
   return [
     {
-      accessorKey: 'walletName',
+      accessorKey: "walletName",
       header: () => (
         <HeaderCell Icon={Wallet} label="Wallet" className="justify-start" />
       ),
@@ -105,20 +105,20 @@ export const createWalletBreakdownColumns = (
       loading: () => <Skeleton className="h-4 w-full" />,
     },
     {
-      accessorKey: 'toolCalls',
+      accessorKey: "toolCalls",
       header: () => (
         <HeaderCell Icon={Hash} label="Calls" className="mx-auto" />
       ),
       cell: ({ row }) => (
-        <div className="text-center text-xs font-mono">
+        <div className="text-center font-mono text-xs">
           {row.original.toolCalls.toLocaleString()}
         </div>
       ),
       size: 100,
-      loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+      loading: () => <Skeleton className="mx-auto h-4 w-16" />,
     },
     {
-      accessorKey: 'maxAmountPerCall',
+      accessorKey: "maxAmountPerCall",
       header: () => (
         <HeaderCell
           Icon={DollarSign}
@@ -127,15 +127,15 @@ export const createWalletBreakdownColumns = (
         />
       ),
       cell: ({ row }) => (
-        <div className="text-center text-xs font-mono">
+        <div className="text-center font-mono text-xs">
           {formatAmount(row.original.maxAmountPerCall)}
         </div>
       ),
       size: 150,
-      loading: () => <Skeleton className="h-4 w-20 mx-auto" />,
+      loading: () => <Skeleton className="mx-auto h-4 w-20" />,
     },
     {
-      accessorKey: 'totalMaxAmount',
+      accessorKey: "totalMaxAmount",
       header: () => (
         <HeaderCell
           Icon={DollarSign}
@@ -144,15 +144,15 @@ export const createWalletBreakdownColumns = (
         />
       ),
       cell: ({ row }) => (
-        <div className="text-center text-xs font-mono font-medium">
+        <div className="text-center font-mono text-xs font-medium">
           {formatAmount(row.original.totalMaxAmount)}
         </div>
       ),
       size: 150,
-      loading: () => <Skeleton className="h-4 w-20 mx-auto" />,
+      loading: () => <Skeleton className="mx-auto h-4 w-20" />,
     },
     {
-      accessorKey: 'lastUsedAt',
+      accessorKey: "lastUsedAt",
       header: () => (
         <HeaderCell Icon={Clock} label="Last Used" className="mx-auto" />
       ),
@@ -162,7 +162,7 @@ export const createWalletBreakdownColumns = (
         </div>
       ),
       size: 150,
-      loading: () => <Skeleton className="h-4 w-24 mx-auto" />,
+      loading: () => <Skeleton className="mx-auto h-4 w-24" />,
     },
   ];
 };

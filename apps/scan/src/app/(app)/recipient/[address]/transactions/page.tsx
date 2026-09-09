@@ -1,19 +1,19 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { Body, Heading } from '@/app/_components/layout/page-utils';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
 
 import {
   LatestTransactionsTable,
   LoadingLatestTransactionsTable,
-} from '../_components/transactions/table';
+} from "../_components/transactions/table";
 
-import { HydrateClient } from '@/trpc/server';
-import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
-import { TransfersSortingProvider } from '@/app/(app)/_contexts/sorting/transfers/provider';
+import { HydrateClient } from "@/trpc/server";
+import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
+import { TransfersSortingProvider } from "@/app/(app)/_contexts/sorting/transfers/provider";
 
 export default async function TransactionsPage({
   params,
-}: PageProps<'/recipient/[address]/transactions'>) {
+}: PageProps<"/recipient/[address]/transactions">) {
   const { address } = await params;
 
   const pageSize = 10;

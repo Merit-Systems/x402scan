@@ -1,25 +1,25 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary } from "react-error-boundary";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { Section } from '@/app/_components/layout/page-utils';
+import { Section } from "@/app/_components/layout/page-utils";
 
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
-import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 
-import { columns } from './columns';
-import { AllBuyersTable } from './table';
+import { columns } from "./columns";
+import { AllBuyersTable } from "./table";
 
-import { BuyersSortingProvider } from '../../../../_contexts/sorting/buyers/provider';
-import { defaultBuyersSorting } from '../../../../_contexts/sorting/buyers/default';
+import { BuyersSortingProvider } from "../../../../_contexts/sorting/buyers/provider";
+import { defaultBuyersSorting } from "../../../../_contexts/sorting/buyers/default";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 interface Props {
   chain?: Chain;

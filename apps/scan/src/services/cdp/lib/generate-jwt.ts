@@ -1,10 +1,10 @@
-import 'server-only';
+import "server-only";
 
-import { generateJwt } from '@coinbase/cdp-sdk/auth';
+import { generateJwt } from "@coinbase/cdp-sdk/auth";
 
-import { env } from '@/env';
-import { cdpFetchSchema } from './schema';
-import z from 'zod';
+import { env } from "@/env";
+import { cdpFetchSchema } from "./schema";
+import z from "zod";
 
 const generateCdpJwtSchema = cdpFetchSchema.extend({
   expiresIn: z.number().default(120),

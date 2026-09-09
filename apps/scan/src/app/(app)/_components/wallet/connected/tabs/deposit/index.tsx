@@ -1,7 +1,7 @@
-import { TextSeparator } from '@/components/ui/text-separator';
+import { TextSeparator } from "@/components/ui/text-separator";
 
-import { Send } from './send';
-import { Onramp } from './onramp';
+import { Send } from "./send";
+import { Onramp } from "./onramp";
 
 interface Props {
   address: string;

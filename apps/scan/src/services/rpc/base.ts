@@ -1,7 +1,7 @@
-import { createPublicClient, http } from 'viem';
-import { base } from 'viem/chains';
+import { createPublicClient, http } from "viem";
+import { base } from "viem/chains";
 
-import { env } from '@/env';
+import { env } from "@/env";
 
 export const baseRpc = createPublicClient({
   chain: base,

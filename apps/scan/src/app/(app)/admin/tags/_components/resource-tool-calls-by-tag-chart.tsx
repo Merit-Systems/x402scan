@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { format } from 'date-fns';
+import { useMemo } from "react";
+import { format } from "date-fns";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import type { ChartData } from '@/components/ui/charts/chart/types';
+} from "@/components/ui/card";
+import type { ChartData } from "@/components/ui/charts/chart/types";
 import {
   BaseBarChart,
   LoadingBarChart,
-} from '@/components/ui/charts/chart/bar';
-import { api } from '@/trpc/client';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+} from "@/components/ui/charts/chart/bar";
+import { api } from "@/trpc/client";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
 type TagKey = `${string}-tool_calls`;
 
@@ -45,9 +45,9 @@ export const ResourceToolCallsByTagChart = () => {
   const chartData = useMemo<ChartData<Record<TagKey, number>>[]>(() => {
     if (!toolCallsByTagsData) return [];
 
-    const dateFormat = isLessThan7Days ? 'MMM d HH:mm' : 'MMM d';
+    const dateFormat = isLessThan7Days ? "MMM d HH:mm" : "MMM d";
 
-    return toolCallsByTagsData.map(item => {
+    return toolCallsByTagsData.map((item) => {
       const numericData: Record<string, number> = {};
 
       Object.entries(item.tags).forEach(([tagId, tag]) => {
@@ -67,14 +67,14 @@ export const ResourceToolCallsByTagChart = () => {
 
     // Get unique tag IDs from the data
     const tagIdsInData = new Set<string>();
-    toolCallsByTagsData.forEach(item => {
-      Object.keys(item.tags).forEach(tagId => tagIdsInData.add(tagId));
+    toolCallsByTagsData.forEach((item) => {
+      Object.keys(item.tags).forEach((tagId) => tagIdsInData.add(tagId));
     });
 
     // Filter and map tags to bars
     return allTags
-      .filter(tag => tagIdsInData.has(tag.id))
-      .map(tag => ({
+      .filter((tag) => tagIdsInData.has(tag.id))
+      .map((tag) => ({
         dataKey: createTagKey(tag.id),
         color: tag.color,
       }));
@@ -86,14 +86,14 @@ export const ResourceToolCallsByTagChart = () => {
 
     // Get unique tag IDs from the data
     const tagIdsInData = new Set<string>();
-    toolCallsByTagsData.forEach(item => {
-      Object.keys(item.tags).forEach(tagId => tagIdsInData.add(tagId));
+    toolCallsByTagsData.forEach((item) => {
+      Object.keys(item.tags).forEach((tagId) => tagIdsInData.add(tagId));
     });
 
     // Filter and map tags to tooltip rows
     return allTags
-      .filter(tag => tagIdsInData.has(tag.id))
-      .map(tag => ({
+      .filter((tag) => tagIdsInData.has(tag.id))
+      .map((tag) => ({
         key: createTagKey(tag.id),
         label: tag.name,
         getValue: (value: number) => value.toLocaleString(),
@@ -122,8 +122,8 @@ export const ResourceToolCallsByTagChart = () => {
         <CardTitle>Usage by Tag</CardTitle>
         <CardDescription>
           {bars.length > 0
-            ? 'Tool calls breakdown by tag category'
-            : 'No breakdown available - resources need to be tagged first'}
+            ? "Tool calls breakdown by tag category"
+            : "No breakdown available - resources need to be tagged first"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -141,7 +141,7 @@ export const ResourceToolCallsByTagChart = () => {
             tooltipRows={tooltipRows}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-[450px] text-center text-muted-foreground space-y-2">
+          <div className="flex h-[450px] flex-col items-center justify-center space-y-2 text-center text-muted-foreground">
             <p className="text-sm">
               Tag resources in the table below to see breakdown by category
             </p>
