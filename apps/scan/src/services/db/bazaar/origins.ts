@@ -1,10 +1,7 @@
 import { cacheLife, cacheTag } from "next/cache";
 
 import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
-import {
-  toPaginatedResponse,
-  type paginatedQuerySchema,
-} from "@/lib/pagination";
+import { toPaginatedResponse } from "@/lib/pagination";
 import { mixedAddressSchema } from "@/lib/schemas";
 import { getOriginTransactionSparklines } from "@/services/transfers/origins/stats/sparklines";
 import { listTopSellersMVUncached } from "@/services/transfers/sellers/list-mv";
@@ -13,6 +10,7 @@ import { getAcceptsAddresses } from "../resources/accepts";
 
 import type z from "zod";
 
+import type { paginatedQuerySchema } from "@/lib/pagination";
 import type { MixedAddress } from "@/types/address";
 import type { Chain } from "@/types/chain";
 

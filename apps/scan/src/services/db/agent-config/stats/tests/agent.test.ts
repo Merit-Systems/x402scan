@@ -1,5 +1,6 @@
-import type { queryRaw } from "@/services/db/query";
 import { describe, expect, it, vi } from "vitest";
+
+import type { queryRaw } from "@/services/db/query";
 
 vi.mock("@x402scan/scan-db", () => ({ scanDb: {}, Prisma: {} }));
 vi.mock("@/services/db/query", () => ({

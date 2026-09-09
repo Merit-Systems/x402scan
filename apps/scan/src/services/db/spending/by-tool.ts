@@ -4,10 +4,9 @@ import z from "zod";
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
 import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
-import {
-  toPaginatedResponse,
-  type PaginatedQueryParams,
-} from "@/lib/pagination";
+import { toPaginatedResponse } from "@/lib/pagination";
+
+import type { PaginatedQueryParams } from "@/lib/pagination";
 
 const toolSpendingResultSchema = z.array(
   z.object({
