@@ -2,9 +2,11 @@ import { Suspense } from "react";
 
 import { ErrorBoundary } from "react-error-boundary";
 
-import { OverallStats } from "../(overview)/_components/stats";
+import { OverallStatsContent } from "../(overview)/_components/stats";
 // import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
 import { DiscoverHeading } from "./_components/heading";
+import { ServiceViewToggle } from "./_components/service-view-toggle";
+import { UsageTimeframeSelect } from "./_components/usage-timeframe-select";
 
 import { api, HydrateClient } from "@/trpc/server";
 
@@ -15,8 +17,15 @@ import {
   LoadingDiscoverSellersTable,
 } from "./_components/discover-origins";
 import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
-import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
-import { ActivityTimeframe } from "@/types/timeframes";
+import { ChartModeProvider } from "@/app/(app)/_contexts/chart-mode/provider";
+import { UsageSection } from "@/components/usage-section";
+import { Separator } from "@/components/ui/separator";
+import {
+  parseDiscoverPage,
+  parseDiscoverTimeframe,
+  parseServiceView,
+  SERVICES_PAGE_SIZE,
+} from "@/lib/discover/filters";
 import { parseTableSorting } from "@/lib/table-state";
 import {
   DEFAULT_SELLERS_SORTING,
@@ -35,47 +44,65 @@ export default async function DiscoverPage({
     SELLERS_SORT_IDS,
     DEFAULT_SELLERS_SORTING
   );
+  const timeframe = parseDiscoverTimeframe(resolvedParams.d);
+  const view = parseServiceView(resolvedParams.v);
+  const page = parseDiscoverPage(resolvedParams.p);
 
-  void api.public.sellers.bazaar.featured.prefetch({
+  const sellersInputBase = {
     chain,
-    pagination: {
-      page_size: 400,
-    },
-    timeframe: ActivityTimeframe.ThirtyDays,
+    timeframe,
     sorting,
-  });
+  };
+
+  if (view === "featured") {
+    void api.public.sellers.bazaar.featured.prefetch({
+      ...sellersInputBase,
+      pagination: { page_size: 400 },
+    });
+  } else {
+    void api.public.sellers.bazaar.list.prefetch({
+      ...sellersInputBase,
+      pagination: { page, page_size: SERVICES_PAGE_SIZE },
+    });
+  }
 
   return (
     <HydrateClient>
-      <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
-        <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-12 px-4 pt-6 pb-8 md:pt-4">
-          <DiscoverHeading />
-          {/* <AgentCashAnnouncementBanner /> */}
-          <OverallStats
-            chain={chain}
-            initialTimeframe={ActivityTimeframe.ThirtyDays}
-          />
-          <section className="space-y-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div className="space-y-1">
-                <h2 className="type-section-title">Featured services</h2>
-                <p className="text-muted-foreground">
-                  Curated APIs with recent x402 activity.
-                </p>
-              </div>
-              <RangeSelector />
-            </div>
-            <ErrorBoundary
-              fallback={<p>There was an error loading the discover data</p>}
+      <TimeRangeProvider key={timeframe} initialTimeframe={timeframe}>
+        <ChartModeProvider>
+          <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-12 px-4 pt-6 pb-8 md:pt-4">
+            <DiscoverHeading />
+            {/* <AgentCashAnnouncementBanner /> */}
+            <UsageSection
+              controls={
+                <div className="flex flex-wrap items-center gap-0 sm:gap-2">
+                  <ServiceViewToggle view={view} />
+                  <Separator
+                    orientation="vertical"
+                    className="hidden sm:block"
+                  />
+                  <UsageTimeframeSelect timeframe={timeframe} />
+                </div>
+              }
             >
-              <Suspense
-                fallback={<LoadingDiscoverSellersTable sorting={sorting} />}
+              <OverallStatsContent chain={chain} initialTimeframe={timeframe} />
+              <ErrorBoundary
+                fallback={<p>There was an error loading the discover data</p>}
               >
-                <DiscoverSellersTable sorting={sorting} />
-              </Suspense>
-            </ErrorBoundary>
-          </section>
-        </main>
+                <Suspense
+                  key={`${view}:${timeframe}:${page}:${sorting.id}:${sorting.desc}`}
+                  fallback={<LoadingDiscoverSellersTable sorting={sorting} />}
+                >
+                  <DiscoverSellersTable
+                    page={page}
+                    sorting={sorting}
+                    view={view}
+                  />
+                </Suspense>
+              </ErrorBoundary>
+            </UsageSection>
+          </main>
+        </ChartModeProvider>
       </TimeRangeProvider>
     </HydrateClient>
   );

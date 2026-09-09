@@ -47,6 +47,7 @@ export const KnownSellerChart = ({ addresses }: Props) => {
         {
           dataKey: "value",
           color: "var(--color-primary)",
+          isAnimationActive: false,
         },
       ]}
       height={32}
