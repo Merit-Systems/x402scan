@@ -23,11 +23,13 @@ export const contentType = "image/png";
 export const size = openGraphImageSize;
 export const runtime = "nodejs";
 
+interface ServerOpenGraphImageProps {
+  params: Promise<{ id: string }>;
+}
+
 export default async function ServerOpenGraphImage({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+}: ServerOpenGraphImageProps) {
   const { id } = await params;
   const [origin, statistics] = await Promise.all([
     api.public.origins.get(id),
@@ -156,7 +158,12 @@ export default async function ServerOpenGraphImage({
   );
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+interface MetricProps {
+  label: string;
+  value: string;
+}
+
+function Metric({ label, value }: MetricProps) {
   return (
     <div
       style={{
