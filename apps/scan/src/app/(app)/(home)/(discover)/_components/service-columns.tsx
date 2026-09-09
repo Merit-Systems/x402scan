@@ -1,12 +1,16 @@
 "use client";
 
-import Link from "next/link";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import { DataTableColumnHeader } from "@/components/ui/data-table";
+import {
+  OriginSummary,
+  OriginSummaryAvatar,
+  OriginSummaryDescription,
+  OriginSummaryHeader,
+  OriginSummaryName,
+  OriginSummaryTrailing,
+} from "@/components/ui/origin-summary";
 import { Sparkline, SparklineLoading } from "@/components/ui/sparkline";
-
-import { Favicon } from "@/app/(app)/_components/favicon";
 
 import {
   cn,
@@ -17,6 +21,10 @@ import {
 import { formatTokenAmount } from "@/lib/token";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+import type {
+  OriginSummaryNameProps,
+  OriginSummaryProps,
+} from "@/components/ui/origin-summary";
 import type { RouterOutputs } from "@/trpc/client";
 import { Chains } from "@/app/(app)/_components/chains";
 
@@ -33,22 +41,18 @@ export const serviceColumns: DataTableColumnDef<ServiceItem>[] = [
       <DataTableColumnHeader
         column={column}
         title="Server"
-        className="flex justify-start type-caption"
+        className="justify-start"
       />
     ),
     enableSorting: false,
-    cell: ({ row }) => <ServiceSummary item={row.original} />,
-    size: 280,
+    cell: ({ row }) => (
+      <div className="flex h-13 items-center pr-4">
+        <ServiceSummary item={row.original} />
+      </div>
+    ),
+    size: 400,
     meta: {
-      loadingCell: (
-        <div className="flex items-start gap-2.5">
-          <Skeleton className="mt-0.5 size-6 shrink-0 rounded-full" />
-          <div className="flex-1 space-y-1.5 py-0.5">
-            <Skeleton className="h-3.5 w-32" />
-            <Skeleton className="h-3 w-44" />
-          </div>
-        </div>
-      ),
+      loadingCell: <LoadingServiceSummary className="h-13 pr-4" />,
     },
   },
   {
@@ -154,7 +158,7 @@ export const serviceColumns: DataTableColumnDef<ServiceItem>[] = [
       <DataTableColumnHeader
         column={column}
         title="Chain"
-        className="flex justify-center type-caption"
+        className="justify-center"
       />
     ),
     enableSorting: false,
@@ -182,14 +186,12 @@ const Cell = ({
   );
 };
 
-/**
- * Server cell — title (curated) + description on top, hostname tucked
- * underneath in mono. Falls back to hostname-as-title when no curated title
- * exists.
- */
 export const ServiceSummary: React.FC<{
   item: ServiceItem;
-}> = ({ item }) => {
+  className?: string;
+  descriptionPlacement?: OriginSummaryProps["descriptionPlacement"];
+  nameVariant?: OriginSummaryNameProps["variant"];
+}> = ({ item, className, descriptionPlacement, nameVariant }) => {
   const origin = item.origins[0];
   if (!origin) return null;
 
@@ -201,36 +203,47 @@ export const ServiceSummary: React.FC<{
   const description = rawDescription ? cleanExternalText(rawDescription) : null;
   const otherOrigins = item.origins.slice(1);
 
-  const innerContent = (
-    <>
-      <Favicon url={origin.favicon} className="mt-0.5 size-6 shrink-0" />
-      <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-center gap-1.5">
-          <span className="truncate type-label transition-colors group-hover:text-primary">
-            {title}
-          </span>
-          {otherOrigins.length > 0 ? (
-            <span className="shrink-0 type-caption text-muted-foreground">
+  return (
+    <OriginSummary
+      className={cn("max-w-full overflow-hidden", className)}
+      descriptionPlacement={descriptionPlacement}
+    >
+      <OriginSummaryAvatar origin={origin.origin} src={origin.favicon} />
+      <OriginSummaryHeader>
+        <OriginSummaryName variant={nameVariant}>{title}</OriginSummaryName>
+        {otherOrigins.length > 0 ? (
+          <OriginSummaryTrailing>
+            <span className="type-caption text-muted-foreground">
               +{otherOrigins.length}
             </span>
-          ) : null}
-        </div>
-        <div className="mt-0.5 truncate type-caption text-muted-foreground">
-          {description ?? "No description available."}
-        </div>
-        <span className="type-compact-code mt-0.5 block truncate text-muted-foreground/70">
-          {hostname}
-        </span>
-      </div>
-    </>
-  );
-
-  return (
-    <Link
-      href={`/server/${origin.id}`}
-      className="group flex min-w-0 items-start gap-2.5 py-0.5"
-    >
-      {innerContent}
-    </Link>
+          </OriginSummaryTrailing>
+        ) : null}
+      </OriginSummaryHeader>
+      {description ? (
+        <OriginSummaryDescription lines={2}>
+          {description}
+        </OriginSummaryDescription>
+      ) : null}
+    </OriginSummary>
   );
 };
+
+export function LoadingServiceSummary({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "flex max-w-full min-w-0 items-center gap-3 overflow-hidden",
+        className
+      )}
+    >
+      <Skeleton className="size-6 rounded-md" />
+      <div className="flex max-w-full min-w-0 flex-1 flex-col gap-0.5 overflow-hidden">
+        <Skeleton className="my-[3px] h-[14px] w-32" />
+        <div className="flex flex-col gap-px">
+          <Skeleton className="my-[2px] h-[10px] w-5/6" />
+          <Skeleton className="my-[2px] h-[10px] w-1/4" />
+        </div>
+      </div>
+    </div>
+  );
+}
