@@ -1,6 +1,5 @@
 "use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 
@@ -30,7 +29,6 @@ export const FacilitatorsTable: React.FC<Props> = ({
   sorting,
   facilitatorsData,
 }) => {
-  const router = useRouter();
   const tableSorting = useUrlTableSorting({
     sorting,
     sortIds: FACILITATORS_SORT_IDS,
@@ -40,13 +38,11 @@ export const FacilitatorsTable: React.FC<Props> = ({
     <DataTable
       columns={columns}
       data={facilitatorsData.items}
-      getRowHref={(facilitator) => `/facilitator/${facilitator.facilitator_id}`}
+      getRowHref={getFacilitatorHref}
       getRowLabel={(facilitator) => `Open ${facilitator.facilitator.name}`}
       pageSize={pageSize}
       manualSorting={true}
-      onRowMouseEnter={(facilitator) => {
-        router.prefetch(`/facilitator/${facilitator.facilitator_id}`);
-      }}
+      rowLinkComponent={Link}
       sorting={tableSorting.tableSorting}
       onSortingChange={tableSorting.onSortingChange}
     />
@@ -66,3 +62,9 @@ export const LoadingFacilitatorsTable: React.FC<LoadingProps> = ({
     />
   );
 };
+
+function getFacilitatorHref(
+  facilitator: Props["facilitatorsData"]["items"][number]
+) {
+  return `/facilitator/${facilitator.facilitator_id}` as const;
+}
