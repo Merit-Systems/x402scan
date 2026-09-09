@@ -206,7 +206,7 @@ export const DisplayStep: React.FC<Props> = ({
           Back
         </Button>
         <Button
-          variant="turbo"
+          variant="default"
           type="submit"
           disabled={!form.formState.isValid || isSubmitting}
         >

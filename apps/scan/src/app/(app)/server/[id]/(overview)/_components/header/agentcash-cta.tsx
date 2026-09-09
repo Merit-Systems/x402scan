@@ -101,13 +101,15 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
   return (
     <div className="flex w-fit items-center gap-2 text-sm">
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="shrink-0 gap-1.5 text-sm">
-            Try with
-            <img src={wallet.icon} alt="" className="size-4 rounded-sm" />
-            {wallet.label}
-            <ChevronDown className="size-3" />
-          </Button>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="outline" className="shrink-0 gap-1.5 text-sm" />
+          }
+        >
+          Try with
+          <img src={wallet.icon} alt="" className="size-4 rounded-sm" />
+          {wallet.label}
+          <ChevronDown className="size-3" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           {wallets.map((w) => (
@@ -123,21 +125,23 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
         </DropdownMenuContent>
       </DropdownMenu>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            className="size-fit shrink-0 p-2"
-            size="icon"
-            onClick={handleAction}
-          >
-            {walletUrl ? (
-              <ExternalLink className="size-3" />
-            ) : showCopied ? (
-              <Check className="size-3" />
-            ) : (
-              <Copy className="size-3" />
-            )}
-          </Button>
+        <TooltipTrigger
+          render={
+            <Button
+              variant="outline"
+              className="size-fit shrink-0 p-2"
+              size="icon"
+              onClick={handleAction}
+            />
+          }
+        >
+          {walletUrl ? (
+            <ExternalLink className="size-3" />
+          ) : showCopied ? (
+            <Check className="size-3" />
+          ) : (
+            <Copy className="size-3" />
+          )}
         </TooltipTrigger>
         <TooltipContent side="right">
           <p>

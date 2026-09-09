@@ -40,7 +40,7 @@ export const Address: React.FC<Props> = ({
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{addressComponent}</TooltipTrigger>
+      <TooltipTrigger render={addressComponent} />
       <TooltipContent side={side}>
         <p className="font-mono">{address}</p>
       </TooltipContent>

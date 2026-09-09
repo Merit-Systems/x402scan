@@ -5,7 +5,7 @@ import { BotMessageSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/image-avatar";
 
 import { AgentStats, LoadingAgentStats } from "./stats";
 

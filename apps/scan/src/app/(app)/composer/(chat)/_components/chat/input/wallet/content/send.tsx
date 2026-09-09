@@ -135,7 +135,7 @@ export const Send: React.FC = () => {
         />
       </div>
       <Button
-        variant="turbo"
+        variant="default"
         disabled={
           !amount ||
           !address ||

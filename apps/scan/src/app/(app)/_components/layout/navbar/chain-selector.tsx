@@ -28,7 +28,7 @@ export const ChainSelector = () => {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="navbar">
+        <Button variant="outline" size="default">
           {chain ? (
             <Image
               src={CHAIN_ICONS[chain]}

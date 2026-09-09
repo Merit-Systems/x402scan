@@ -105,7 +105,7 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
           onClick={() => void verifyOTP({ flowId, otp })}
           disabled={isVerifyingOTP || verifyOTPSuccess || otp.length !== 6}
           className="h-12 md:h-12"
-          variant="turbo"
+          variant="default"
         >
           {isVerifyingOTP || verifyOTPSuccess ? (
             <>

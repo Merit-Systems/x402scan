@@ -17,7 +17,7 @@ export const Tags: React.FC<Props> = ({ tags, className, badgeClassName }) => {
         <Badge
           key={tag.id}
           className={cn("text-[10px] size-fit px-2 py-0", badgeClassName)}
-          variant="primaryOutline"
+          variant="outline"
         >
           {tag.name}
         </Badge>

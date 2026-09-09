@@ -58,7 +58,7 @@ export const WalletExport: React.FC = () => {
         onClick={handleExport}
         disabled={isExporting}
         className="w-full"
-        variant="warning"
+        variant="outline"
       >
         <Key className="size-4" />
         Export Private Key

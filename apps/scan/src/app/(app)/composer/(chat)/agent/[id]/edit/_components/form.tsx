@@ -336,7 +336,7 @@ export const AgentForm: React.FC<Props> = ({
       <div className="sticky bottom-0 bg-background pb-2">
         <Button
           type="submit"
-          variant="turbo"
+          variant="default"
           disabled={!form.formState.isValid || isSubmitting}
           className="sticky bottom-0 h-12 w-full md:h-12"
         >
