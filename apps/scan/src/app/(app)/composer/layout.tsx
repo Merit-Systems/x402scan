@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import { LoadingAccess } from "../_components/loading-access";
-import { connection } from "next/server";
+
 import { SessionProvider } from "next-auth/react";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 
 import { CDPHooksProvider } from "@/app/_contexts/cdp";
 import { SolanaWalletProvider } from "@/app/_contexts/solana/provider";
@@ -11,6 +11,7 @@ import { auth } from "@/auth";
 import { env } from "@/env";
 
 import { Subnav } from "../_components/layout/subnav";
+import { LoadingAccess } from "../_components/loading-access";
 import { OnrampSessionDialog } from "./_components/wallet/onramp-session-dialog";
 
 import type { Metadata } from "next";

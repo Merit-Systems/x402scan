@@ -1,4 +1,3 @@
-import { LoadingDiscoverUsage } from "./_components/loading-usage";
 import { Suspense } from "react";
 
 import { ErrorBoundary } from "react-error-boundary";
@@ -26,6 +25,7 @@ import {
   LoadingDiscoverServices,
 } from "./_components/discover-origins";
 import { DiscoverHeading } from "./_components/heading";
+import { LoadingDiscoverUsage } from "./_components/loading-usage";
 import { ServiceViewToggle } from "./_components/service-view-toggle";
 import { OverallStatsContent } from "./_components/stats";
 
