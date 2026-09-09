@@ -3,10 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { transfersDb } from "@x402scan/transfers-db";
 
 import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
-import {
-  toPeekAheadResponse,
-  type paginatedQuerySchema,
-} from "@/lib/pagination";
+import { toPeekAheadResponse } from "@/lib/pagination";
 import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
 import {
   DEFAULT_TRANSFERS_SORTING,
@@ -17,6 +14,8 @@ import { transfersWhereObject } from "../query-utils";
 import { baseListQuerySchema } from "../schemas";
 
 import type z from "zod";
+
+import type { paginatedQuerySchema } from "@/lib/pagination";
 
 export const listFacilitatorTransfersInputSchema = baseListQuerySchema({
   sortIds: TRANSFERS_SORT_IDS,
