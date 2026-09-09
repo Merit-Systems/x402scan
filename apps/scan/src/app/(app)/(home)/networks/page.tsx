@@ -1,9 +1,7 @@
 import { Suspense } from "react";
 
-import { Card } from "@/components/ui/card";
 import { PageHeading } from "@/components/page-heading";
 import { TimeframeSelect } from "@/components/timeframe-select";
-import { UsageSection } from "@/components/usage-section";
 
 import { NetworksChart, LoadingNetworksChart } from "./_components/chart";
 import { NetworksTable, LoadingNetworksTable } from "./_components/networks";
@@ -43,10 +41,6 @@ export default async function NetworksPage({
     timeframe,
     chain,
   });
-  void api.public.stats.overall.prefetch({
-    timeframe,
-    chain,
-  });
   void api.networks.list.prefetch({
     sorting,
     timeframe,
@@ -59,16 +53,15 @@ export default async function NetworksPage({
         <PageHeading
           title="Networks"
           description="Top networks processing x402 transactions"
+          actions={<TimeframeSelect timeframe={timeframe} />}
         />
-        <UsageSection controls={<TimeframeSelect timeframe={timeframe} />}>
-          <Card className="overflow-hidden">
-            <Suspense
-              key={`chart:${chain ?? "all"}:${timeframe}`}
-              fallback={<LoadingNetworksChart />}
-            >
-              <NetworksChart chain={chain} timeframe={timeframe} />
-            </Suspense>
-          </Card>
+        <section className="space-y-4">
+          <Suspense
+            key={`chart:${chain ?? "all"}:${timeframe}`}
+            fallback={<LoadingNetworksChart />}
+          >
+            <NetworksChart chain={chain} timeframe={timeframe} />
+          </Suspense>
           <Suspense
             key={`table:${chain ?? "all"}:${timeframe}:${sorting.id}:${sorting.desc}`}
             fallback={<LoadingNetworksTable sorting={sorting} />}
@@ -79,7 +72,7 @@ export default async function NetworksPage({
               timeframe={timeframe}
             />
           </Suspense>
-        </UsageSection>
+        </section>
       </main>
     </HydrateClient>
   );
