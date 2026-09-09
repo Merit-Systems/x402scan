@@ -2,7 +2,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "next-themes";
-import { connection } from "next/server";
 
 import { JsonLd } from "@/components/json-ld";
 import { Toaster } from "@/components/ui/sonner";
@@ -69,8 +68,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  await connection();
+export default function RootLayout({ children }: LayoutProps<"/">) {
   const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   const jsonLd = [
     {

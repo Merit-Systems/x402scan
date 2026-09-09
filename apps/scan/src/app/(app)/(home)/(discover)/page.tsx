@@ -25,10 +25,24 @@ import {
   LoadingDiscoverServices,
 } from "./_components/discover-origins";
 import { DiscoverHeading } from "./_components/heading";
+import { LoadingDiscoverUsage } from "./_components/loading-usage";
 import { ServiceViewToggle } from "./_components/service-view-toggle";
 import { OverallStatsContent } from "./_components/stats";
 
-export default async function DiscoverPage({ searchParams }: PageProps<"/">) {
+export default function DiscoverPage({ searchParams }: PageProps<"/">) {
+  return (
+    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-12 px-4 pt-6 pb-8 md:pt-4">
+      <DiscoverHeading />
+      <Suspense fallback={<LoadingDiscoverUsage />}>
+        <DiscoverUsage searchParams={searchParams} />
+      </Suspense>
+    </main>
+  );
+}
+
+async function DiscoverUsage({
+  searchParams,
+}: Pick<PageProps<"/">, "searchParams">) {
   const resolvedParams = await searchParams;
   const chain = parseChain(resolvedParams.chain);
   const sorting = parseTableSorting(
@@ -60,36 +74,33 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/">) {
 
   return (
     <HydrateClient>
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-12 px-4 pt-6 pb-8 md:pt-4">
-        <DiscoverHeading />
-        <UsageSection
-          controls={
-            <div className="flex flex-wrap items-center gap-0 sm:gap-2">
-              <ServiceViewToggle view={view} />
-              <Separator orientation="vertical" className="hidden sm:block" />
-              <TimeframeSelect timeframe={timeframe} />
-            </div>
-          }
+      <UsageSection
+        controls={
+          <div className="flex flex-wrap items-center gap-0 sm:gap-2">
+            <ServiceViewToggle view={view} />
+            <Separator orientation="vertical" className="hidden sm:block" />
+            <TimeframeSelect timeframe={timeframe} />
+          </div>
+        }
+      >
+        <OverallStatsContent chain={chain} timeframe={timeframe} />
+        <ErrorBoundary
+          fallback={<p>There was an error loading the discover data</p>}
         >
-          <OverallStatsContent chain={chain} timeframe={timeframe} />
-          <ErrorBoundary
-            fallback={<p>There was an error loading the discover data</p>}
+          <Suspense
+            key={`${view}:${chain ?? "all"}:${String(timeframe)}:${String(page)}:${sorting.id}:${String(sorting.desc)}`}
+            fallback={<LoadingDiscoverServices sorting={sorting} />}
           >
-            <Suspense
-              key={`${view}:${chain ?? "all"}:${String(timeframe)}:${String(page)}:${sorting.id}:${String(sorting.desc)}`}
-              fallback={<LoadingDiscoverServices sorting={sorting} />}
-            >
-              <DiscoverServices
-                chain={chain}
-                page={page}
-                sorting={sorting}
-                timeframe={timeframe}
-                view={view}
-              />
-            </Suspense>
-          </ErrorBoundary>
-        </UsageSection>
-      </main>
+            <DiscoverServices
+              chain={chain}
+              page={page}
+              sorting={sorting}
+              timeframe={timeframe}
+              view={view}
+            />
+          </Suspense>
+        </ErrorBoundary>
+      </UsageSection>
     </HydrateClient>
   );
 }

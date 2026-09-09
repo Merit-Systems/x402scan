@@ -133,7 +133,7 @@ export const UnauthedNavChats = () => {
   );
 };
 
-const LoadingNavChats = () => {
+export const LoadingNavChats = () => {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Chats</SidebarGroupLabel>

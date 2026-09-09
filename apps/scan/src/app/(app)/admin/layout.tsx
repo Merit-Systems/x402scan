@@ -1,10 +1,23 @@
+import { Suspense } from "react";
+
 import { forbidden } from "next/navigation";
 
 import { auth } from "@/auth";
 
 import { Subnav } from "../_components/layout/subnav";
+import { LoadingAccess } from "../_components/loading-access";
 
-export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
+export default function AdminLayout({ children }: LayoutProps<"/admin">) {
+  return (
+    <Suspense fallback={<LoadingAccess />}>
+      <AdminAccess>{children}</AdminAccess>
+    </Suspense>
+  );
+}
+
+async function AdminAccess({
+  children,
+}: Pick<LayoutProps<"/admin">, "children">) {
   const session = await auth();
   if (session?.user.role !== "admin") {
     forbidden();

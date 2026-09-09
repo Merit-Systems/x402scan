@@ -17,6 +17,7 @@ const agentDiscoveryLinkHeader = [
 const nextConfig: NextConfig = {
   pageExtensions: ["tsx", "mdx", "ts"],
   typedRoutes: true,
+  cacheComponents: true,
   async headers() {
     return Promise.resolve([
       {

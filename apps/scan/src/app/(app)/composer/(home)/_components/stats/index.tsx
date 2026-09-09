@@ -1,16 +1,16 @@
 import React, { Suspense } from "react";
 
+import { connection } from "next/server";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
 import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
 import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
+import { api, HydrateClient } from "@/trpc/server";
 import { ActivityTimeframe } from "@/types/timeframes";
 
 import { OverallCharts, LoadingOverallCharts } from "./charts";
 
-// Note: No HydrateClient here - parent page.tsx provides it
-// Prefetch is done in page.tsx
 export const OverallStats = () => {
   return (
     <TimeRangeProvider initialTimeframe={ActivityTimeframe.SevenDays}>
@@ -19,19 +19,11 @@ export const OverallStats = () => {
           fallback={<p>There was an error loading the activity data</p>}
         >
           <Suspense fallback={<LoadingOverallCharts />}>
-            <OverallCharts />
+            <Data />
           </Suspense>
         </ErrorBoundary>
       </ActivityContainer>
     </TimeRangeProvider>
-  );
-};
-
-export const LoadingOverallStats = () => {
-  return (
-    <ActivityContainer>
-      <LoadingOverallCharts />
-    </ActivityContainer>
   );
 };
 
@@ -52,3 +44,19 @@ const ActivityContainer = ({ children }: ActivityContainerProps) => {
     </Section>
   );
 };
+
+async function Data() {
+  await connection();
+  void api.public.agents.activity.overall.prefetch({
+    timeframe: ActivityTimeframe.SevenDays,
+  });
+  void api.public.agents.activity.bucketed.prefetch({
+    timeframe: ActivityTimeframe.SevenDays,
+    numBuckets: 32,
+  });
+  return (
+    <HydrateClient>
+      <OverallCharts />
+    </HydrateClient>
+  );
+}
