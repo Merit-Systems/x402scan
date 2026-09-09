@@ -2,7 +2,7 @@
 
 import { Eye, Sparkles, File, Wrench } from "lucide-react";
 
-import { LanguageModelCapability } from "./types";
+import { LanguageModelCapability } from "../../../../_lib/language-models/types";
 
 export const capabilityIcons = {
   [LanguageModelCapability.Vision]: Eye,

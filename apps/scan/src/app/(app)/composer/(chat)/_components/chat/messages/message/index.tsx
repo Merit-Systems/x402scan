@@ -24,7 +24,7 @@ interface Props {
   status: ChatStatus;
   isLast: boolean;
   chatId: string;
-  addToolResult: UseChatHelpers<UIMessage>["addToolResult"];
+  addToolOutput: UseChatHelpers<UIMessage>["addToolOutput"];
 }
 
 export const Message: React.FC<Props> = ({
@@ -32,7 +32,7 @@ export const Message: React.FC<Props> = ({
   status,
   isLast,
   chatId,
-  addToolResult,
+  addToolOutput,
 }) => {
   if (message.parts.length === 0) {
     return null;
@@ -50,10 +50,10 @@ export const Message: React.FC<Props> = ({
         if (isToolUIPart(part)) {
           return (
             <ToolPart
-              key={`${part.toolCallId}-${i}`}
+              key={`${part.toolCallId}-${String(i)}`}
               part={part}
               chatId={chatId}
-              addToolResult={addToolResult}
+              addToolOutput={addToolOutput}
             />
           );
         } else {
@@ -61,7 +61,7 @@ export const Message: React.FC<Props> = ({
             case "text":
               return (
                 <TextPart
-                  key={`${part.type}-${i}`}
+                  key={`${part.type}-${String(i)}`}
                   part={part}
                   showActions={
                     message.role === "assistant" &&
@@ -72,7 +72,7 @@ export const Message: React.FC<Props> = ({
             case "reasoning":
               return (
                 <ReasoningPart
-                  key={`${part.type}-${i}`}
+                  key={`${part.type}-${String(i)}`}
                   part={part}
                   status={status}
                   isLastPart={i === message.parts.length - 1}

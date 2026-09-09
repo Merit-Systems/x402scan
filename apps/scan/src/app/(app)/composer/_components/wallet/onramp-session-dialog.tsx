@@ -18,7 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loading } from "@/components/ui/loading";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useEvmTokenBalance } from "@/app/(app)/composer/_hooks/balance/token/use-evm-token-balance";
@@ -35,10 +34,13 @@ import { Chain } from "@/types/chain";
 import { optionalSupportedChainSchema } from "@/lib/schemas";
 
 export const OnrampSessionDialog: React.FC = () => {
-  const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
-  const [sessionToken, setSessionToken] = useState<string | null>(null);
-
   const searchParams = useSearchParams();
+  const sessionToken = searchParams.get("onramp_token");
+  const [dismissedSessionToken, setDismissedSessionToken] = useState<
+    string | null
+  >(null);
+  const isSessionDialogOpen =
+    sessionToken !== null && sessionToken !== dismissedSessionToken;
 
   const networkParamResult = optionalSupportedChainSchema.safeParse(
     searchParams.get("network")
@@ -58,36 +60,23 @@ export const OnrampSessionDialog: React.FC = () => {
     enabled: false,
   });
 
-  useEffect(() => {
-    if (searchParams.get("onramp_token")) {
-      setSessionToken(searchParams.get("onramp_token") ?? null);
-      setIsSessionDialogOpen(true);
-    }
-  }, [searchParams]);
-
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [isError, setIsError] = useState(false);
-
   const {
     data: session,
     isLoading: isLoadingSession,
-    isError: isErrorSession,
     refetch: refetchSession,
   } = api.user.onrampSessions.get.useQuery(sessionToken ?? "", {
-    enabled: !!sessionToken && !isError,
-    refetchInterval: !isCompleted ? 1000 : false,
+    enabled: sessionToken !== null,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS ||
+        status === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
+        ? false
+        : 1000;
+    },
   });
 
   useEffect(() => {
-    if (isErrorSession) {
-      setIsError(true);
-    }
-  }, [isErrorSession]);
-
-  useEffect(() => {
     if (session && ["succeeded", "failed"].includes(session.status)) {
-      setIsCompleted(true);
-
       // Invalidate balance query when session is completed
       if (session.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS) {
         for (let i = 0; i < 3; i++) {
@@ -104,106 +93,90 @@ export const OnrampSessionDialog: React.FC = () => {
   }, [session, invalidateEvmBalance, invalidateSolanaBalance, networkParam]);
 
   const handleOnOpenChange = (open: boolean) => {
-    setIsSessionDialogOpen(open);
-    setTimeout(() => {
-      if (
-        session?.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS ||
-        session?.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
-      ) {
-        setSessionToken("");
-      }
-    }, 1000);
+    if (!open) {
+      setDismissedSessionToken(sessionToken);
+    }
   };
 
   return (
     <Dialog open={isSessionDialogOpen} onOpenChange={handleOnOpenChange}>
-      <DialogContent className="gap-8 rounded-xl border border-primary shadow-[0_0_16px] shadow-primary sm:max-w-sm">
+      <DialogContent className="gap-8 border sm:max-w-sm">
         <DialogHeader className="items-center">
-          <DialogTitle className="text-4xl font-bold text-primary">
-            <Loading
-              value={session}
-              isLoading={isLoadingSession}
-              component={(session) => formatCurrency(session.amount)}
-              loadingComponent={<Skeleton className="h-10 w-24" />}
-              errorComponent={"No Deposit Found"}
-            />
+          <DialogTitle>
+            {isLoadingSession ? (
+              <Skeleton className="h-10 w-24" />
+            ) : session ? (
+              formatCurrency(session.amount)
+            ) : (
+              "No Deposit Found"
+            )}
           </DialogTitle>
-          <DialogDescription className="text-center text-base font-semibold text-muted-foreground">
-            <Loading
-              value={session}
-              isLoading={isLoadingSession}
-              component={(session) => {
-                switch (session.status) {
-                  case SessionStatus.ONRAMP_TRANSACTION_STATUS_IN_PROGRESS:
-                    return "Waiting for Coinbase Response";
-                  case SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS:
-                    return "Your funds have arrived in your account!";
-                  case SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED:
-                    return "There was an error processing your payment.";
-                  default:
-                    return "Waiting for Coinbase Response";
-                }
-              }}
-              loadingComponent={<Skeleton className="h-5 w-48" />}
-              errorComponent={
-                "If you are trying to deposit funds, refresh or create a new deposit session."
-              }
-            />
+          <DialogDescription className="text-center">
+            {isLoadingSession ? (
+              <Skeleton className="h-5 w-48" />
+            ) : session ? (
+              session.status ===
+              SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS ? (
+                "Your funds have arrived in your account!"
+              ) : session.status ===
+                SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED ? (
+                "There was an error processing your payment."
+              ) : (
+                "Waiting for Coinbase Response"
+              )
+            ) : (
+              "If you are trying to deposit funds, refresh or create a new deposit session."
+            )}
           </DialogDescription>
         </DialogHeader>
         <SessionGraphic session={session} />
         <DialogFooter className="flex gap-4 sm:flex-col sm:space-x-0">
-          <Loading
-            value={session}
-            isLoading={isLoadingSession}
-            component={(session) => (
-              <>
-                <p className="text-center text-sm opacity-60">
-                  {session.status ===
-                  SessionStatus.ONRAMP_TRANSACTION_STATUS_IN_PROGRESS
-                    ? "Complete your checkout on Coinbase"
-                    : session.status ===
-                        SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS
-                      ? "You can close this safely"
-                      : session.status ===
-                          SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
-                        ? `Coinbase returned an error processing your payment: ${session.failureReason}`
-                        : ""}
-                </p>
-                <Button
-                  variant="ghost"
-                  onClick={() => handleOnOpenChange(false)}
-                  className="w-full bg-foreground/5 font-bold hover:bg-foreground/10"
-                >
-                  Close
-                </Button>
-              </>
-            )}
-            loadingComponent={
-              <>
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-9 w-full" />
-              </>
-            }
-            errorComponent={
-              <>
-                <Button
-                  variant="outline"
-                  className="w-full font-bold"
-                  onClick={() => void refetchSession()}
-                >
-                  Refresh
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => handleOnOpenChange(false)}
-                  className="w-full bg-foreground/5 font-bold hover:bg-foreground/10"
-                >
-                  Close
-                </Button>
-              </>
-            }
-          />
+          {isLoadingSession ? (
+            <>
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-9 w-full" />
+            </>
+          ) : session ? (
+            <>
+              <p className="type-supporting-body text-center opacity-60">
+                {session.status ===
+                SessionStatus.ONRAMP_TRANSACTION_STATUS_IN_PROGRESS
+                  ? "Complete your checkout on Coinbase"
+                  : session.status ===
+                      SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS
+                    ? "You can close this safely"
+                    : `Coinbase returned an error processing your payment: ${String(session.failureReason)}`}
+              </p>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  handleOnOpenChange(false);
+                }}
+                className="w-full"
+              >
+                Close
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => void refetchSession()}
+              >
+                Refresh
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  handleOnOpenChange(false);
+                }}
+                className="w-full"
+              >
+                Close
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -222,32 +195,9 @@ const SessionGraphic = ({
   const itemClassName =
     "rounded-full border size-16 md:size-24 bg-card flex justify-center items-center p-0 overflow-hidden";
 
-  const beamProps = (state: SessionStatus) => ({
-    containerRef,
-    delay: 0,
-    duration: 2,
-    endXOffset: 0,
-    endYOffset: 0,
-    startXOffset: 0,
-    startYOffset: 0,
-    pathWidth: 4,
-    isFull:
-      state === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS ||
-      state === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED,
-    pathColor:
-      state === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
-        ? "rgb(var(--destructive))"
-        : undefined,
-    gradientStartColor:
-      state === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
-        ? "rgb(var(--destructive))"
-        : undefined,
-    gradientStopColor:
-      state === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
-        ? "rgb(var(--destructive))"
-        : undefined,
-    isDisabled: state === SessionStatus.ONRAMP_TRANSACTION_STATUS_IN_PROGRESS,
-  });
+  const status =
+    session?.status ?? SessionStatus.ONRAMP_TRANSACTION_STATUS_IN_PROGRESS;
+  const isFailed = status === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED;
 
   return (
     <div className="relative" ref={containerRef}>
@@ -275,11 +225,22 @@ const SessionGraphic = ({
         </Circle>
       </div>
       <AnimatedBeam
+        containerRef={containerRef}
         fromRef={sourceRef}
         toRef={destinationRef}
-        {...beamProps(
-          session?.status ?? SessionStatus.ONRAMP_TRANSACTION_STATUS_IN_PROGRESS
-        )}
+        delay={0}
+        duration={2}
+        endXOffset={0}
+        endYOffset={0}
+        startXOffset={0}
+        startYOffset={0}
+        pathWidth={4}
+        isFull={
+          status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS || isFailed
+        }
+        pathColor={isFailed ? "rgb(var(--destructive))" : undefined}
+        gradientStartColor={isFailed ? "rgb(var(--destructive))" : undefined}
+        gradientStopColor={isFailed ? "rgb(var(--destructive))" : undefined}
       />
     </div>
   );

@@ -24,6 +24,8 @@ type Resource =
 
 const PAGE_SIZE = 25;
 
+const getInvocationCount = ({ _count: counts }: Resource) => counts.invocations;
+
 export const ResourceExcludesTable = () => {
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
     null
@@ -35,7 +37,7 @@ export const ResourceExcludesTable = () => {
 
   const { data: searchResults, isLoading: isSearching } =
     api.admin.resources.excludes.searchResources.useQuery({
-      search: searchQuery ?? undefined,
+      search: searchQuery,
     });
 
   const { data: existingExcludes, isLoading: isLoadingExcludes } =
@@ -67,7 +69,7 @@ export const ResourceExcludesTable = () => {
     });
 
   // Filter resources to show only those with existing excludes or search results
-  const resources = searchQuery
+  const resources: Resource[] = searchQuery
     ? (searchResults ?? [])
     : (existingExcludes?.map((exclude) => exclude.resource) ?? []);
 
@@ -105,24 +107,30 @@ export const ResourceExcludesTable = () => {
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <div className="relative max-w-sm flex-1">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
+          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 transform text-muted-foreground" />
           <Input
             placeholder="Search resources..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            className=""
           />
         </div>
-        <Button onClick={() => setSearchQuery("")} variant="outline" size="sm">
+        <Button
+          onClick={() => {
+            setSearchQuery("");
+          }}
+          variant="outline"
+          size="sm"
+        >
           Clear
         </Button>
       </div>
 
       <LoadableDataTable
         columns={columns}
-        data={
-          paginatedResources as RouterOutputs["admin"]["resources"]["excludes"]["searchResources"]
-        }
+        data={paginatedResources}
         pageSize={PAGE_SIZE}
         isLoading={isSearching || isLoadingExcludes}
         onRowClick={handleRowClick}
@@ -131,13 +139,17 @@ export const ResourceExcludesTable = () => {
           pageSize: PAGE_SIZE,
           pageCount: hasNextPage ? page + 2 : page + 1,
         }}
-        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
+        onPaginationChange={({ pageIndex }) => {
+          setPage(pageIndex);
+        }}
       />
 
       {selectedResource && (
         <Dialog
           open={!!selectedResource}
-          onOpenChange={(open) => !open && setSelectedResource(null)}
+          onOpenChange={(open) => {
+            if (!open) setSelectedResource(null);
+          }}
         >
           <DialogContent>
             <DialogHeader>
@@ -153,17 +165,19 @@ export const ResourceExcludesTable = () => {
 
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <div className="text-sm font-medium">Resource</div>
-                <div className="text-sm break-all text-muted-foreground">
+                <div className="type-supporting-body type-emphasis">
+                  Resource
+                </div>
+                <div className="type-supporting-body break-all text-muted-foreground">
                   {selectedResource.resource}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="text-sm font-medium">Origin</div>
+                <div className="type-supporting-body type-emphasis">Origin</div>
                 <div className="flex items-center gap-2">
                   <Favicon url={selectedResource.origin.favicon} />
-                  <span className="text-sm text-muted-foreground">
+                  <span className="type-supporting-body text-muted-foreground">
                     {selectedResource.origin.origin}
                   </span>
                 </div>
@@ -171,27 +185,33 @@ export const ResourceExcludesTable = () => {
 
               <div className="flex gap-2">
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Type</div>
+                  <div className="type-supporting-body type-emphasis">Type</div>
                   <Badge variant="secondary">{selectedResource.type}</Badge>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">X402 Version</div>
+                  <div className="type-supporting-body type-emphasis">
+                    X402 Version
+                  </div>
                   <Badge variant="outline">
                     v{selectedResource.x402Version}
                   </Badge>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Invocations</div>
+                  <div className="type-supporting-body type-emphasis">
+                    Invocations
+                  </div>
                   <Badge variant="outline">
-                    {selectedResource._count?.invocations ?? 0}
+                    {getInvocationCount(selectedResource)}
                   </Badge>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="text-sm font-medium">Current Status</div>
+                <div className="type-supporting-body type-emphasis">
+                  Current Status
+                </div>
                 <Badge
                   variant={
                     selectedResource.excluded ? "destructive" : "default"
@@ -200,12 +220,12 @@ export const ResourceExcludesTable = () => {
                 >
                   {selectedResource.excluded ? (
                     <>
-                      <Ban className="h-3 w-3" />
+                      <Ban className="size-3" />
                       Excluded
                     </>
                   ) : (
                     <>
-                      <CheckCircle className="h-3 w-3" />
+                      <CheckCircle className="size-3" />
                       Active
                     </>
                   )}
@@ -216,7 +236,9 @@ export const ResourceExcludesTable = () => {
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => setSelectedResource(null)}
+                onClick={() => {
+                  setSelectedResource(null);
+                }}
                 disabled={isLoading}
               >
                 Cancel
@@ -226,15 +248,15 @@ export const ResourceExcludesTable = () => {
                 onClick={handleToggleExclude}
                 disabled={isLoading}
               >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
                 {selectedResource.excluded ? (
                   <>
-                    <CheckCircle className="mr-2 h-4 w-4" />
+                    <CheckCircle className="mr-2 size-4" />
                     Include Resource
                   </>
                 ) : (
                   <>
-                    <Ban className="mr-2 h-4 w-4" />
+                    <Ban className="mr-2 size-4" />
                     Exclude Resource
                   </>
                 )}

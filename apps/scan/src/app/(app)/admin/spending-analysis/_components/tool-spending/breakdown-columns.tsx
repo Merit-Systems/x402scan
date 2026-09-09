@@ -23,7 +23,7 @@ export const createToolBreakdownColumns =
           <HeaderCell Icon={Globe} label="Tool" className="justify-start" />
         ),
         cell: ({ row }) => (
-          <div className="max-w-[400px] truncate text-xs font-medium">
+          <div className="type-emphasis max-w-[400px] truncate type-caption">
             {row.original.resourceUrl}
           </div>
         ),
@@ -36,7 +36,7 @@ export const createToolBreakdownColumns =
           <HeaderCell Icon={Hash} label="Calls" className="mx-auto" />
         ),
         cell: ({ row }) => (
-          <div className="text-center font-mono text-xs">
+          <div className="type-mono type-scale-caption text-center">
             {row.original.toolCalls.toLocaleString()}
           </div>
         ),
@@ -53,7 +53,7 @@ export const createToolBreakdownColumns =
           />
         ),
         cell: ({ row }) => (
-          <div className="text-center font-mono text-xs">
+          <div className="type-mono type-scale-caption text-center">
             {formatAmount(row.original.maxAmountPerCall)}
           </div>
         ),
@@ -70,7 +70,7 @@ export const createToolBreakdownColumns =
           />
         ),
         cell: ({ row }) => (
-          <div className="text-center font-mono text-xs font-medium">
+          <div className="type-mono type-emphasis type-scale-caption text-center">
             {formatAmount(row.original.totalMaxAmount)}
           </div>
         ),

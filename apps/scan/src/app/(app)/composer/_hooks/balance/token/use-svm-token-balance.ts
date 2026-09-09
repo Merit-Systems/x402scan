@@ -42,9 +42,9 @@ export const useSPLTokenBalance = (props?: Props): UseBalanceReturnType => {
   }, [addressToQuery, tokenMint, utils]);
 
   const result = api.public.solana.balance.useQuery(
-    isEnabled
+    isEnabled && addressToQuery
       ? {
-          ownerAddress: addressToQuery!,
+          ownerAddress: addressToQuery,
           tokenMint,
         }
       : skipToken,

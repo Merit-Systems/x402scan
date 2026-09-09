@@ -13,6 +13,7 @@ import { BarChart, LoadingBarChart } from "@/components/ui/chart";
 import type { ChartData } from "@/components/ui/chart";
 import { api } from "@/trpc/client";
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 type TagKey = `${string}-tool_calls`;
 
@@ -35,7 +36,7 @@ export const ResourceToolCallsByTagChart = () => {
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    return timeframe < 7;
+    return timeframe < ActivityTimeframe.SevenDays;
   }, [timeframe]);
 
   // Transform data for chart
@@ -139,7 +140,7 @@ export const ResourceToolCallsByTagChart = () => {
           />
         ) : (
           <div className="flex h-[450px] flex-col items-center justify-center space-y-2 text-center text-muted-foreground">
-            <p className="text-sm">
+            <p className="type-supporting-body">
               Tag resources in the table below to see breakdown by category
             </p>
           </div>

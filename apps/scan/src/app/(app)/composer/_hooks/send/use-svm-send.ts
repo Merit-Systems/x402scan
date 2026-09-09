@@ -39,6 +39,7 @@ export const useSvmSend = ({
     () => amountProp ?? amountState,
     [amountProp, amountState]
   );
+  const transferAmount = amount ?? 0;
 
   const toAddress = useMemo(
     () => addressProp ?? toAddressState,
@@ -61,7 +62,7 @@ export const useSvmSend = ({
   } = useSvmX402Fetch({
     account,
     targetUrl: `${window.location.origin}/api/x402/send`,
-    value: amount ? BigInt(amount * 10 ** token.decimals) : BigInt(0),
+    value: BigInt(transferAmount * 10 ** token.decimals),
     init: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -70,7 +71,9 @@ export const useSvmSend = ({
     options: {
       onSuccess: () => {
         toast.success(
-          toastMessage ? toastMessage(amountProp!) : `${amountProp} USDC sent`
+          toastMessage
+            ? toastMessage(transferAmount)
+            : `${String(transferAmount)} USDC sent`
         );
         // Invalidate balance 5 times, once every second
         for (let i = 0; i < 5; i++) {

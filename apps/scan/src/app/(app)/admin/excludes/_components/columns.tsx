@@ -67,12 +67,12 @@ export function createColumns(
           >
             {isExcluded ? (
               <>
-                <XCircle className="h-3 w-3" />
+                <XCircle className="size-3" />
                 Excluded
               </>
             ) : (
               <>
-                <CheckCircle className="h-3 w-3" />
+                <CheckCircle className="size-3" />
                 Active
               </>
             )}
@@ -84,8 +84,13 @@ export function createColumns(
       accessorKey: "_count",
       header: "Invocations",
       cell: ({ row }) => {
-        const count = row.original._count?.invocations ?? 0;
-        return <span className="text-sm text-muted-foreground">{count}</span>;
+        const { _count: counts } = row.original;
+        const count = counts.invocations;
+        return (
+          <span className="type-supporting-body text-muted-foreground">
+            {count}
+          </span>
+        );
       },
     },
     {
@@ -98,17 +103,19 @@ export function createColumns(
             type="button"
             variant={isExcluded ? "outline" : "destructive"}
             size="sm"
-            className="h-8 gap-2"
-            onClick={() => onAction(row.original)}
+            className="gap-2"
+            onClick={() => {
+              onAction(row.original);
+            }}
           >
             {isExcluded ? (
               <>
-                <CheckCircle className="h-4 w-4" />
+                <CheckCircle className="size-4" />
                 Include
               </>
             ) : (
               <>
-                <Ban className="h-4 w-4" />
+                <Ban className="size-4" />
                 Exclude
               </>
             )}

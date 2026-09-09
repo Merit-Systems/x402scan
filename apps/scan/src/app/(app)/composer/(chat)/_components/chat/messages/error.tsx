@@ -12,10 +12,8 @@ export const ErrorState: React.FC<Props> = ({ message, onRegenerate }) => {
       <div className="flex items-center gap-2">
         <AlertCircleIcon className="size-4 shrink-0 text-destructive" />
         <div>
-          <h3 className="text-sm font-bold text-destructive">Error</h3>
-          <p className="text-xs">
-            {message ?? "You need to regenerate the message to continue."}
-          </p>
+          <h3 className="type-card-title text-destructive">Error</h3>
+          <p className="type-caption">{message}</p>
         </div>
       </div>
       <Button variant="ghost" size="icon" onClick={onRegenerate}>

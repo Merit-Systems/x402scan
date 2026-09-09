@@ -4,6 +4,7 @@ import { memo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Database, Code2, Loader2, Filter, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { FilterQuestion } from "@/services/resource-search/types";
 
@@ -35,15 +36,15 @@ const SearchStatsComponent = ({
       className={cn(className, isLoading && "opacity-60 transition-opacity")}
     >
       <div className="space-y-3">
-        <div className="flex items-center gap-4 text-sm">
+        <div className="type-supporting-body flex items-center gap-4">
           <div className="flex items-center gap-2">
             {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              <Loader2 className="size-4 animate-spin text-primary" />
             ) : (
-              <Database className="h-4 w-4 text-muted-foreground" />
+              <Database className="size-4 text-muted-foreground" />
             )}
             <span>
-              <span className="font-semibold text-foreground">
+              <span className="type-emphasis type-label text-foreground">
                 {totalResults}
               </span>{" "}
               {totalResults === 1 ? "resource" : "resources"} found
@@ -52,35 +53,38 @@ const SearchStatsComponent = ({
 
           {explanation && (
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="">
                 {explanation}
               </Badge>
             </div>
           )}
 
           {isLoading && (
-            <Badge variant="default" className="text-xs">
+            <Badge variant="default" className="">
               Searching...
             </Badge>
           )}
         </div>
 
         {filterQuestions && filterQuestions.length > 0 && (
-          <Card className="bg-muted/50 p-3">
+          <Card className=" ">
             <div className="flex items-start gap-2">
-              <Filter className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+              <Filter className="mt-0.5 size-4 shrink-0 text-primary" />
               <div className="min-w-0 flex-1">
-                <div className="mb-2 text-xs font-medium text-muted-foreground">
+                <div className="type-emphasis mb-2 type-caption text-muted-foreground">
                   LLM Filter Questions:
                   {filterExplanation && (
-                    <span className="ml-2 font-normal text-muted-foreground/80">
+                    <span className="ml-2 type-label text-muted-foreground/80">
                       ({filterExplanation})
                     </span>
                   )}
                 </div>
                 <ol className="list-inside list-decimal space-y-1.5">
                   {filterQuestions.map((fq) => (
-                    <li key={fq.index} className="text-xs text-foreground">
+                    <li
+                      key={fq.index}
+                      className="type-supporting-body text-foreground"
+                    >
                       {fq.question}
                     </li>
                   ))}
@@ -91,16 +95,16 @@ const SearchStatsComponent = ({
         )}
 
         {keywords && keywords.length > 0 && (
-          <Card className="bg-muted/50 p-3">
+          <Card className=" ">
             <div className="flex items-start gap-2">
-              <Code2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+              <Code2 className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
               <div className="min-w-0 flex-1">
-                <div className="mb-2 text-xs font-medium text-muted-foreground">
+                <div className="type-emphasis mb-2 type-caption text-muted-foreground">
                   Search Keywords:
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {keywords.map((keyword, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
+                    <Badge key={index} variant="outline" className="">
                       {keyword}
                     </Badge>
                   ))}
@@ -111,27 +115,32 @@ const SearchStatsComponent = ({
         )}
 
         {sqlCondition && (
-          <Card className="bg-muted/50">
-            <button
-              onClick={() => setIsSqlExpanded(!isSqlExpanded)}
-              className="flex w-full items-start gap-2 p-3 transition-colors hover:bg-muted/70"
+          <Card className="">
+            <Button
+              type="button"
+              variant="plain"
+              size="surface"
+              onClick={() => {
+                setIsSqlExpanded(!isSqlExpanded);
+              }}
+              className="items-start"
             >
               <ChevronRight
                 className={cn(
-                  "h-4 w-4 text-primary mt-0.5 flex-shrink-0 transition-transform",
+                  "text-primary mt-0.5 shrink-0 transition-transform size-4",
                   isSqlExpanded && "rotate-90"
                 )}
               />
-              <Database className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+              <Database className="mt-0.5 size-4 shrink-0 text-primary" />
               <div className="min-w-0 flex-1 text-left">
-                <div className="text-xs font-medium text-muted-foreground">
+                <div className="type-emphasis type-caption text-muted-foreground">
                   SQL WHERE Clause
                 </div>
               </div>
-            </button>
+            </Button>
             {isSqlExpanded && (
               <div className="px-3 pb-3">
-                <pre className="overflow-x-auto rounded border bg-background/50 p-2 font-mono text-xs text-foreground">
+                <pre className="type-mono type-scale-caption overflow-x-auto rounded border bg-background/50 p-2 text-foreground">
                   {sqlCondition}
                 </pre>
               </div>

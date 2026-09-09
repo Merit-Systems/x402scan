@@ -32,10 +32,10 @@ export async function Sidebar({
     <HydrateClient>
       <BaseSidebar
         collapsible="icon"
-        className="relative h-full max-h-full min-h-full bg-card"
+        className="relative h-full max-h-full min-h-full"
         {...props}
       >
-        <SidebarHeader className="border-b border-sidebar-border p-3 group-data-[collapsible=icon]:p-2">
+        <SidebarHeader className=" ">
           <div className="group-data-[collapsible=icon]:mt-1">
             {session ? (
               <Suspense fallback={<LoadingAgentSelect />}>
@@ -46,7 +46,7 @@ export async function Sidebar({
             )}
           </div>
         </SidebarHeader>
-        <SidebarContent className="gap-0 pt-2">
+        <SidebarContent className="gap-0">
           <NavMain />
           {session ? <NavChats /> : <UnauthedNavChats />}
         </SidebarContent>

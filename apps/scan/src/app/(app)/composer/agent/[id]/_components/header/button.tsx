@@ -33,7 +33,7 @@ export const HeaderButtons: React.FC<Props> = ({ agentConfiguration }) => {
 const EditButton: React.FC<Props> = async ({ agentConfiguration }) => {
   const session = await auth();
 
-  if (session?.user?.id !== agentConfiguration.ownerId) {
+  if (session?.user.id !== agentConfiguration.ownerId) {
     return null;
   }
 

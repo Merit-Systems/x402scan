@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 import Link from "next/link";
+import Image from "next/image";
 
 import {
   Card,
@@ -21,28 +22,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 import type { LucideIcon } from "lucide-react";
-import type { Route } from "next";
-
-interface Props<T extends string> {
+interface Props {
   agentConfiguration: RouterOutputs["public"]["agents"]["list"]["items"][number];
-  href?: Route<T>;
+  href?: `/composer/agent/${string}` | `/composer/agent/${string}/chat`;
 }
 
-export const AgentCard = <T extends string>({
-  agentConfiguration,
-  href,
-}: Props<T>) => {
+export const AgentCard = ({ agentConfiguration, href }: Props) => {
+  const route = href ?? `/composer/agent/${agentConfiguration.id}`;
   return (
-    <Link
-      href={href ?? (`/composer/agent/${agentConfiguration.id}` as Route<T>)}
-    >
-      <Card className="flex h-full flex-col justify-between overflow-hidden transition-colors hover:border-primary">
-        <CardHeader className="flex-1 border-b">
+    <Link href={route}>
+      <Card className="flex h-full flex-col justify-between overflow-hidden">
+        <CardHeader className="flex-1">
           <div className="flex flex-row items-center gap-3">
             {agentConfiguration.image ? (
-              <img
+              <Image
                 src={agentConfiguration.image}
                 alt={agentConfiguration.name}
+                width={20}
+                height={20}
+                unoptimized
                 className="size-5 rounded-md bg-muted object-cover"
               />
             ) : (
@@ -50,7 +48,7 @@ export const AgentCard = <T extends string>({
             )}
             <CardTitle>{agentConfiguration.name || "Untitled"}</CardTitle>
           </div>
-          <CardDescription className="line-clamp-2 text-xs">
+          <CardDescription className="line-clamp-2">
             {agentConfiguration.description &&
             agentConfiguration.description.length > 0
               ? agentConfiguration.description
@@ -109,8 +107,8 @@ const BaseStatCard = ({
 }) => {
   return (
     <div className="flex flex-1 flex-row items-center justify-between px-2 py-1">
-      <p className="text-[10px] leading-none font-medium">{title}</p>
-      <div className="flex items-center justify-start gap-1 font-mono text-sm font-bold">
+      <span className="type-micro">{title}</span>
+      <div className="type-numeric type-emphasis flex items-center justify-start gap-1 type-label">
         {children}
       </div>
     </div>
@@ -120,7 +118,7 @@ const BaseStatCard = ({
 export const LoadingAgentCard = () => {
   return (
     <Card className="flex h-full flex-col justify-between overflow-hidden">
-      <CardHeader className="flex-1 border-b">
+      <CardHeader className="flex-1">
         <div className="flex flex-row items-center gap-3">
           <Skeleton className="size-5" />
           <Skeleton className="h-4 w-16" />

@@ -38,20 +38,26 @@ export const ToolSpendingTable = () => {
         data={tools}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        onRowClick={(tool) => setModalState({ type: "breakdown", tool })}
+        onRowClick={(tool) => {
+          setModalState({ type: "breakdown", tool });
+        }}
         pagination={{
           pageIndex: page,
           pageSize: PAGE_SIZE,
           pageCount: hasNextPage ? page + 2 : page + 1,
         }}
-        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
-        getRowId={(row, index) => row?.resourceId ?? `loading-${index}`}
+        onPaginationChange={({ pageIndex }) => {
+          setPage(pageIndex);
+        }}
+        getRowId={(row) => row.resourceId}
       />
 
       {modalState.type === "breakdown" && (
         <WalletBreakdownModal
           open={true}
-          onOpenChange={(open) => !open && setModalState({ type: "none" })}
+          onOpenChange={(open) => {
+            if (!open) setModalState({ type: "none" });
+          }}
           resourceId={modalState.tool.resourceId}
           resourceUrl={modalState.tool.resourceUrl}
         />

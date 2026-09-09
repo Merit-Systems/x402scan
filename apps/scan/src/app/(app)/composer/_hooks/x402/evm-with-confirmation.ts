@@ -10,14 +10,14 @@ import type { UseEvmX402FetchParams } from "./types";
  * Wraps useX402FetchWithPriceConfirmation with EVM wallet integration,
  * handling price increases gracefully by prompting for user confirmation.
  */
-export const useEvmX402FetchWithConfirmation = <TData = unknown>({
+export const useEvmX402FetchWithConfirmation = ({
   chain,
   isTool = false,
   ...params
-}: UseEvmX402FetchParams<TData>) => {
+}: UseEvmX402FetchParams) => {
   const { wrapperFn } = useEvmPaymentWrapper(chain);
 
-  return useX402FetchWithPriceConfirmation<TData>({
+  return useX402FetchWithPriceConfirmation({
     wrapperFn,
     fetchFn: isTool ? fetch : fetchWithProxy,
     initialMaxValue: params.value,

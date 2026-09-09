@@ -20,7 +20,7 @@ export default async function NewAgentPage() {
         className="md:max-w-2xl"
       />
       <Body className="max-w-2xl">
-        <CreateAgentForm initialStep={session ? 1 : 0} />
+        <CreateAgentForm initialStep={1} />
       </Body>
     </div>
   );

@@ -5,7 +5,7 @@ import { useMemo, useState, useCallback, memo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 
-import { ResourceExecutorModal } from "@/app/(app)/admin/tags/_components/resource-executor-modal";
+import { ResourceExecutorModal } from "@/app/(app)/admin/_components/resource-executor-modal";
 
 import { useResourceSearchSorting } from "@/app/(app)/admin/_contexts/sorting/resource-search/hook";
 
@@ -71,15 +71,15 @@ const ResultsTableComponent = ({
     }
   }, []);
 
-  const getRowId = useCallback((row: FilteredSearchResult, index: number) => {
-    return row?.id ?? `loading-${index}`;
+  const getRowId = useCallback((row: FilteredSearchResult) => {
+    return row.id;
   }, []);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold">
+          <h3 className="type-section-title">
             {results.length} {results.length === 1 ? "Result" : "Results"}
           </h3>
           {!isLoading && results.length > 0 && (
