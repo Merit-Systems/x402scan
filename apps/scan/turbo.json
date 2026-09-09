@@ -89,6 +89,7 @@
     },
     "types:generate": {
       "description": "Generate Next.js route types",
+      "env": ["SKIP_ENV_VALIDATION"],
       "outputs": [".next/types/**", ".next/package.json", "next-env.d.ts"]
     },
     "test": {
