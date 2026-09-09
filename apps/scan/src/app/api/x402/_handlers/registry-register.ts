@@ -1,10 +1,10 @@
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { jsonResponse } from "@/app/api/x402/_lib/utils";
 import { registerEndpoint } from "@/lib/discovery/register-endpoint";
 import { jsonObjectSchema } from "@/lib/json";
 import { urlMatchesDiscoveredResource } from "@/lib/url";
+import { revalidateResourceData } from "@/services/db/resources/revalidate";
 import { fetchDiscoveryDocument } from "@/services/discovery";
 
 import type { registryRegisterBodySchema } from "@/app/api/x402/_lib/schemas";
@@ -66,10 +66,10 @@ export async function handleRegistryRegister(
 
   try {
     if (result.success && result.resource.origin.id) {
-      revalidatePath(`/server/${result.resource.origin.id}`);
+      revalidateResourceData(result.resource.origin.id);
     }
   } catch (e) {
-    console.error("revalidatePath failed:", e);
+    console.error("Resource cache revalidation failed:", e);
   }
 
   if (!result.success) {
