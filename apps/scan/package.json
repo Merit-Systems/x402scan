@@ -10,7 +10,7 @@
     "build": "next build",
     "build:deploy": "pnpm build",
     "start": "next start",
-    "types:generate": "rm -rf .next/types && next typegen",
+    "types:generate": "SKIP_ENV_VALIDATION=1 next typegen",
     "types:check": "tsc --noEmit",
     "test": "vitest run",
     "ui:check": "merit ui check --root ../..",
