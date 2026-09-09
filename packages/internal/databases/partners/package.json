@@ -1,5 +1,6 @@
 {
   "name": "@x402scan/partners-db",
+  "type": "module",
   "version": "1.0.0",
   "private": true,
   "types": "./dist/index.d.ts",
@@ -14,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsdown",
     "dev": "tsc --watch",
     "types:check": "tsc --noEmit"
   },
@@ -23,7 +24,12 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@x402scan/typescript-config": "workspace:*",
+    "@merit-systems/tsdown-config": "catalog:foundation",
+    "@merit-systems/typescript-config": "catalog:foundation",
+    "tsdown": "catalog:bundling",
     "typescript": "catalog:"
+  },
+  "engines": {
+    "node": "^24.0.0"
   }
 }

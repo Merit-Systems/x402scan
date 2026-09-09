@@ -4,10 +4,13 @@
   "tasks": {
     "dev": {
       "description": "Start the Solana RPC worker locally",
+      "cache": false,
+      "persistent": true,
       "passThroughEnv": ["PORT"]
     },
     "deploy": {
       "description": "Deploy the Solana RPC worker",
+      "cache": false,
       "passThroughEnv": ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"]
     }
   }

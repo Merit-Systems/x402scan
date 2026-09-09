@@ -1,5 +1,5 @@
 {
-  "extends": "@x402scan/typescript-config/trigger.json",
+  "extends": "@merit-systems/typescript-config/base.json",
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "./dist",

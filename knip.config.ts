@@ -3,8 +3,17 @@ import type { KnipConfig } from "knip";
 const config: KnipConfig = {
   workspaces: {
     ".": {
-      entry: ["oxfmt.config.ts", "tools/oxlint/anti-slop/index.ts"],
+      entry: [
+        "foundation.config.ts",
+        "oxfmt.config.ts",
+        "taze.config.ts",
+        "tools/oxlint/anti-slop/index.ts",
+      ],
       project: ["tools/oxlint/**/*.ts"],
+      ignoreDependencies: [
+        "@merit-systems/oxlint-config",
+        "@merit-systems/typescript-config",
+      ],
     },
     "apps/scan": {
       entry: [
@@ -12,7 +21,14 @@ const config: KnipConfig = {
         "src/app/**/route.{js,jsx,ts,tsx}",
       ],
       project: ["src/**/*.{ts,tsx}", "*.{ts,tsx,js,mjs}"],
-      ignoreDependencies: ["postcss", "redis", "tailwindcss", "tw-animate-css"],
+      ignoreDependencies: [
+        "@merit-systems/brand",
+        "postcss",
+        "redis",
+        "shadcn",
+        "tailwindcss",
+        "tw-animate-css",
+      ],
       ignore: [
         "src/scripts/**",
         "src/components/ui/charts/chart/**",
