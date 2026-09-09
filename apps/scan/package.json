@@ -34,7 +34,7 @@
     "@lmnr-ai/lmnr": "^0.7.4",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
-    "@merit-systems/brand": "0.12.6",
+    "@merit-systems/brand": "0.12.7",
     "@next/mdx": "catalog:next",
     "@openrouter/ai-sdk-provider": "^2.10.0",
     "@opentelemetry/api-logs": "^0.211.0",
