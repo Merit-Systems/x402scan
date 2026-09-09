@@ -12,24 +12,16 @@ import {
 import { queryRaw } from "@/services/transfers/client";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { buildSellersOrderByColumn } from "./order-by";
+import {
+  DEFAULT_SELLERS_SORTING,
+  SELLERS_SORT_IDS,
+} from "@/lib/table-sort-options";
 
 import type { paginatedQuerySchema } from "@/lib/pagination";
 
-const SELLERS_SORT_IDS = [
-  "tx_count",
-  "total_amount",
-  "latest_block_timestamp",
-  "unique_buyers",
-  // Editorial order is materialized post-grouping in listBazaarOrigins;
-  // the MV emits a stable recipient-keyed order and the bazaar layer re-sorts.
-  "editorial",
-] as const;
-
-export type SellerSortId = (typeof SELLERS_SORT_IDS)[number];
-
 export const listTopSellersMVInputSchema = baseListQuerySchema({
   sortIds: SELLERS_SORT_IDS,
-  defaultSortId: "tx_count",
+  defaultSortId: DEFAULT_SELLERS_SORTING.id,
 });
 
 // Exported for use in listBazaarOrigins to avoid double-caching

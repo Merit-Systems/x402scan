@@ -3,11 +3,11 @@
 import { useMemo, useState, useCallback, memo } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { DataTable, type DataTableRow } from "@/components/ui/data-table";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 
 import { ResourceExecutorModal } from "@/app/(app)/admin/tags/_components/resource-executor-modal";
 
-import { useResourceSearchSorting } from "@/app/(app)/_contexts/sorting/resource-search/hook";
+import { useResourceSearchSorting } from "@/app/(app)/admin/_contexts/sorting/resource-search/hook";
 
 import { createColumns } from "./columns";
 
@@ -61,12 +61,9 @@ const ResultsTableComponent = ({
     return sorted;
   }, [results, sorting]);
 
-  const handleRowClick = useCallback(
-    (row: DataTableRow<FilteredSearchResult>) => {
-      setSelectedResourceId(row.original.id);
-    },
-    []
-  );
+  const handleRowClick = useCallback((row: FilteredSearchResult) => {
+    setSelectedResourceId(row.id);
+  }, []);
 
   const handleModalClose = useCallback((open: boolean) => {
     if (!open) {
@@ -91,7 +88,7 @@ const ResultsTableComponent = ({
         </div>
       </div>
 
-      <DataTable
+      <LoadableDataTable
         columns={columns}
         data={sortedResults}
         isLoading={isLoading}

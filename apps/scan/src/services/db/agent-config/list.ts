@@ -12,26 +12,16 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from "@/lib/cache";
-
-const agentsSortingIds = [
-  "score",
-  "message_count",
-  "tool_call_count",
-  "user_count",
-  "chat_count",
-  "createdAt",
-] as const;
-
-export type AgentSortId = (typeof agentsSortingIds)[number];
+import {
+  AGENTS_SORT_IDS,
+  DEFAULT_AGENTS_SORTING,
+} from "@/lib/table-sort-options";
 
 export const listTopAgentConfigurationsSchema = z.object({
   timeframe: timeframeSchema,
   userId: z.string().optional(),
   originId: z.string().optional(),
-  sorting: sortingSchema(agentsSortingIds).default({
-    id: "score",
-    desc: true,
-  }),
+  sorting: sortingSchema(AGENTS_SORT_IDS).default(DEFAULT_AGENTS_SORTING),
 });
 
 const listTopAgentConfigurationsUncached = async (

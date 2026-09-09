@@ -3,7 +3,7 @@
 import { Download, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 
 import { api } from "@/trpc/client";
 import { formatCurrency } from "@/lib/utils";
@@ -194,7 +194,7 @@ export const ComposerBalancesTable = () => {
         </div>
       </div>
 
-      <DataTable
+      <LoadableDataTable
         columns={columns}
         data={data?.rows ?? []}
         isLoading={isLoading}

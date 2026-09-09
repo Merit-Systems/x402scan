@@ -1,36 +1,25 @@
 "use client";
 
-import {
-  ArrowLeftRight,
-  Calendar,
-  DollarSign,
-  Globe,
-  Server,
-  User,
-} from "lucide-react";
-
 import Image from "next/image";
 
+import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
-
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
-
-import { NetworksSortingContext } from "@/app/(app)/_contexts/sorting/networks/context";
 
 import { formatCompactAgo } from "@/lib/utils";
 import { formatTokenAmount } from "@/lib/token";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 
 type ColumnType = RouterOutputs["networks"]["list"][number];
 
-export const columns: ExtendedColumnDef<ColumnType>[] = [
+export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "chain",
-    header: () => (
-      <HeaderCell Icon={Globe} label="Network" className="justify-start" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Network" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Image
@@ -44,25 +33,20 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 200,
-    loading: () => (
-      <div className="flex items-center gap-2">
-        <Skeleton className="size-4 rounded-md" />
-        <Skeleton className="h-4 w-20" />
-      </div>
-    ),
+    meta: {
+      loadingCell: (
+        <div className="flex items-center gap-2">
+          <Skeleton className="size-4 rounded-md" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+      ),
+    },
   },
   {
     accessorKey: "transactions",
-    header: () => (
-      <HeaderCell
-        Icon={ArrowLeftRight}
-        label="Transactions"
-        className="mx-auto"
-        sorting={{
-          sortContext: NetworksSortingContext,
-          sortKey: "tx_count",
-        }}
-      />
+    id: "tx_count",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Transactions" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -70,20 +54,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "volume",
-    header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Volume"
-        className="mx-auto"
-        sorting={{
-          sortContext: NetworksSortingContext,
-          sortKey: "total_amount",
-        }}
-      />
+    id: "total_amount",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Volume" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -91,20 +68,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "facilitators",
-    header: () => (
-      <HeaderCell
-        Icon={Server}
-        label="Facilitators"
-        className="mx-auto"
-        sorting={{
-          sortContext: NetworksSortingContext,
-          sortKey: "unique_facilitators",
-        }}
-      />
+    id: "unique_facilitators",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Facilitators" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -112,20 +82,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "sellers",
-    header: () => (
-      <HeaderCell
-        Icon={User}
-        label="Sellers"
-        className="mx-auto"
-        sorting={{
-          sortContext: NetworksSortingContext,
-          sortKey: "unique_sellers",
-        }}
-      />
+    id: "unique_sellers",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Sellers" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -133,20 +96,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "buyers",
-    header: () => (
-      <HeaderCell
-        Icon={User}
-        label="Buyers"
-        className="mx-auto"
-        sorting={{
-          sortContext: NetworksSortingContext,
-          sortKey: "unique_buyers",
-        }}
-      />
+    id: "unique_buyers",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Buyers" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -154,20 +110,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "latest_block_timestamp",
-    header: () => (
-      <HeaderCell
-        Icon={Calendar}
-        label="Latest"
-        className="ml-auto"
-        sorting={{
-          sortContext: NetworksSortingContext,
-          sortKey: "latest_block_timestamp",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Latest" />
     ),
     cell: ({ row }) => (
       <div className="text-right font-mono text-xs">
@@ -177,6 +125,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="ml-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="ml-auto h-4 w-16" /> },
   },
 ];

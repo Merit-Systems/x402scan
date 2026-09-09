@@ -20,20 +20,15 @@ import {
   type paginatedQuerySchema,
 } from "@/lib/pagination";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
-
-const FACILITATORS_SORT_IDS = [
-  "tx_count",
-  "total_amount",
-  "latest_block_timestamp",
-  "unique_buyers",
-  "unique_sellers",
-] as const;
-
-export type FacilitatorsSortId = (typeof FACILITATORS_SORT_IDS)[number];
+import {
+  DEFAULT_FACILITATORS_SORTING,
+  FACILITATORS_SORT_IDS,
+} from "@/lib/table-sort-options";
+import type { FacilitatorsSortId } from "@/lib/table-sort-options";
 
 export const listTopFacilitatorsInputSchema = baseListQuerySchema({
   sortIds: FACILITATORS_SORT_IDS,
-  defaultSortId: FACILITATORS_SORT_IDS[0],
+  defaultSortId: DEFAULT_FACILITATORS_SORTING.id,
 });
 
 const listTopFacilitatorsUncached = async (

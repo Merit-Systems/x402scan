@@ -11,7 +11,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
+import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatCompactAgo, formatCurrency } from "@/lib/utils";
 import { formatUnits } from "viem";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 
 type ColumnType = RouterOutputs["admin"]["inviteCodes"]["list"][number];
@@ -60,7 +60,7 @@ const truncateAddress = (address: string) =>
 
 export const createColumns = (
   handlers?: ColumnHandlers
-): ExtendedColumnDef<ColumnType>[] => [
+): DataTableColumnDef<ColumnType>[] => [
   {
     accessorKey: "code",
     header: () => (
@@ -84,7 +84,7 @@ export const createColumns = (
       );
     },
     size: 150,
-    loading: () => <Skeleton className="h-4 w-24" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-24" /> },
   },
   {
     accessorKey: "amount",
@@ -97,7 +97,7 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "redemptions",
@@ -113,7 +113,7 @@ export const createColumns = (
       return <div className="text-center font-mono text-xs">{text}</div>;
     },
     size: 120,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "redeemedBy",
@@ -130,26 +130,34 @@ export const createColumns = (
       const firstAddress = uniqueAddresses[0];
       if (uniqueAddresses.length === 1 && firstAddress) {
         return (
-          <code
-            className="cursor-pointer rounded px-1 font-mono text-xs hover:bg-muted"
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-auto px-1 font-mono"
             title={firstAddress}
+            aria-label={`Copy ${firstAddress}`}
             onClick={() => void navigator.clipboard.writeText(firstAddress)}
           >
             {truncateAddress(firstAddress)}
-          </code>
+          </Button>
         );
       }
       return (
         <div className="space-y-0.5 text-xs">
           {uniqueAddresses.slice(0, 2).map((addr) => (
-            <code
+            <Button
               key={addr}
-              className="block cursor-pointer rounded px-1 font-mono hover:bg-muted"
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="block h-auto px-1 font-mono"
               title={addr}
+              aria-label={`Copy ${addr}`}
               onClick={() => void navigator.clipboard.writeText(addr)}
             >
               {truncateAddress(addr)}
-            </code>
+            </Button>
           ))}
           {uniqueAddresses.length > 2 && (
             <span className="text-muted-foreground">
@@ -160,7 +168,7 @@ export const createColumns = (
       );
     },
     size: 140,
-    loading: () => <Skeleton className="h-4 w-24" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-24" /> },
   },
   {
     accessorKey: "status",
@@ -173,7 +181,7 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "uniqueRecipients",
@@ -186,7 +194,7 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-12" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-12" /> },
   },
   {
     accessorKey: "createdBy",
@@ -199,7 +207,7 @@ export const createColumns = (
       </div>
     ),
     size: 120,
-    loading: () => <Skeleton className="mx-auto h-4 w-20" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-20" /> },
   },
   {
     accessorKey: "expiresAt",
@@ -214,7 +222,7 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "createdAt",
@@ -227,7 +235,7 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     id: "actions",

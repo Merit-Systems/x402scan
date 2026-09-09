@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { Search } from "lucide-react";
-import { DataTable } from "@/components/ui/data-table";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -141,14 +141,17 @@ export const InviteCodesTable = () => {
           </SelectContent>
         </Select>
       </div>
-      <DataTable
+      <LoadableDataTable
         columns={columns}
         data={inviteCodes}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        page={page}
-        onPageChange={setPage}
-        hasNextPage={hasNextPage}
+        pagination={{
+          pageIndex: page,
+          pageSize: PAGE_SIZE,
+          pageCount: hasNextPage ? page + 2 : page + 1,
+        }}
+        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
         getRowId={(row, index) => row?.id ?? `loading-${index}`}
       />
     </div>

@@ -2,16 +2,19 @@
 
 import { useState } from "react";
 
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 
 import { columns } from "./columns";
 
 import { api } from "@/trpc/client";
 
-import { useAgentsSorting } from "@/app/(app)/_contexts/sorting/agents/hook";
-
 import type { RouterInputs } from "@/trpc/client";
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
+import { AGENTS_SORT_IDS } from "@/lib/table-sort-options";
+
+import type { AgentSortId } from "@/lib/table-sort-options";
+import type { TableSorting } from "@/lib/table-state";
 
 interface Props {
   input: Omit<
@@ -19,11 +22,19 @@ interface Props {
     "sorting" | "pagination"
   >;
   limit?: number;
+  sorting: TableSorting<AgentSortId>;
 }
 
-export const AgentsTable: React.FC<Props> = ({ input, limit = 10 }) => {
+export const AgentsTable: React.FC<Props> = ({
+  input,
+  limit = 10,
+  sorting,
+}) => {
   const { timeframe } = useTimeRangeContext();
-  const { sorting } = useAgentsSorting();
+  const tableSorting = useUrlTableSorting({
+    sorting,
+    sortIds: AGENTS_SORT_IDS,
+  });
 
   const [page, setPage] = useState(0);
   const [agents] = api.public.agents.list.useSuspenseQuery({
@@ -40,23 +51,35 @@ export const AgentsTable: React.FC<Props> = ({ input, limit = 10 }) => {
     <DataTable
       columns={columns}
       data={agents.items}
-      href={({ id }) => `/composer/agent/${id}`}
-      page={page}
-      onPageChange={setPage}
+      getRowHref={({ id }) => `/composer/agent/${id}`}
+      getRowLabel={({ name }) => `Open ${name}`}
       pageSize={10}
-      hasNextPage={agents.hasNextPage}
-      totalPages={agents.total_pages}
+      manualSorting={true}
+      sorting={tableSorting.tableSorting}
+      onSortingChange={tableSorting.onSortingChange}
+      pagination={{
+        pageIndex: page,
+        pageSize: limit,
+        pageCount: agents.total_pages,
+      }}
+      onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
     />
   );
 };
 
-export const LoadingAgentsTable = ({ limit = 10 }: { limit?: number }) => {
+export const LoadingAgentsTable = ({
+  limit = 10,
+  sorting,
+}: {
+  limit?: number;
+  sorting?: TableSorting<AgentSortId>;
+}) => {
   return (
-    <DataTable
+    <DataTableLoading
       columns={columns}
-      data={[]}
-      isLoading={true}
-      loadingRowCount={limit}
+      rowCount={limit}
+      manualSorting={true}
+      sorting={sorting ? [sorting] : []}
     />
   );
 };

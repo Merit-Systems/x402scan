@@ -13,13 +13,14 @@ import { transfersDb } from "@x402scan/transfers-db";
 import type { MixedAddress } from "@/types/address";
 import type { Chain } from "@/types/chain";
 import { transfersWhereObject } from "../query-utils";
-
-const TRANSFERS_SORT_IDS = ["block_timestamp", "amount"] as const;
-export type TransfersSortId = (typeof TRANSFERS_SORT_IDS)[number];
+import {
+  DEFAULT_TRANSFERS_SORTING,
+  TRANSFERS_SORT_IDS,
+} from "@/lib/table-sort-options";
 
 export const listFacilitatorTransfersInputSchema = baseListQuerySchema({
   sortIds: TRANSFERS_SORT_IDS,
-  defaultSortId: "block_timestamp",
+  defaultSortId: DEFAULT_TRANSFERS_SORTING.id,
 });
 
 const listFacilitatorTransfersUncached = async (

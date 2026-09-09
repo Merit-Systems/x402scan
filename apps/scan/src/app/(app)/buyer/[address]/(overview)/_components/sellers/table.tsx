@@ -9,14 +9,13 @@ import { useChain } from "@/app/(app)/_contexts/chain/hook";
 
 import { columns } from "./columns";
 import { api } from "@/trpc/client";
-import { useBuyerSellersSorting } from "./sorting-provider";
+import { DEFAULT_BUYER_SELLERS_SORTING } from "@/lib/table-sort-options";
 
 interface Props {
   address: string;
 }
 
 export const BuyerSellersTable: React.FC<Props> = ({ address }) => {
-  const { sorting } = useBuyerSellersSorting();
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
@@ -26,7 +25,7 @@ export const BuyerSellersTable: React.FC<Props> = ({ address }) => {
   const [sellers] = api.public.buyers.all.sellers.useSuspenseQuery({
     sender: address,
     chain,
-    sorting,
+    sorting: DEFAULT_BUYER_SELLERS_SORTING,
     pagination: {
       page_size: pageSize,
       page,
@@ -38,11 +37,13 @@ export const BuyerSellersTable: React.FC<Props> = ({ address }) => {
     <DataTable
       columns={columns}
       data={sellers.items}
-      page={page}
-      onPageChange={setPage}
       pageSize={pageSize}
-      totalPages={sellers.total_pages}
-      hasNextPage={sellers.hasNextPage}
+      pagination={{
+        pageIndex: page,
+        pageSize,
+        pageCount: sellers.total_pages,
+      }}
+      onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
     />
   );
 };

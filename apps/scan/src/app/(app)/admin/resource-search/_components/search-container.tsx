@@ -6,8 +6,8 @@ import { ResultsTable } from "./table/results-table";
 import { SearchStats } from "./search-stats";
 import { Card } from "@/components/ui/card";
 import { api } from "@/trpc/client";
-import { ResourceSearchSortingProvider } from "@/app/(app)/_contexts/sorting/resource-search/provider";
-import { defaultResourceSearchSorting } from "@/app/(app)/_contexts/sorting/resource-search/default";
+import { ResourceSearchSortingProvider } from "@/app/(app)/admin/_contexts/sorting/resource-search/provider";
+import { defaultResourceSearchSorting } from "@/app/(app)/admin/_contexts/sorting/resource-search/default";
 
 type RefinementMode = "none" | "llm" | "reranker" | "both";
 type QueryMode = "keywords" | "sql" | "sql-parallel";

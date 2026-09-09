@@ -1,33 +1,26 @@
 "use client";
 
-import {
-  Bot,
-  Calendar,
-  CircleDot,
-  MessageSquare,
-  Server,
-  Wrench,
-} from "lucide-react";
+import { Bot, MessageSquare, Wrench } from "lucide-react";
 
+import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { formatCompactAgo } from "@/lib/utils";
 
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
-
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 import { Favicon } from "@/app/(app)/_components/favicon";
 
 type ColumnType =
   RouterOutputs["public"]["agents"]["activity"]["feed"]["items"][number];
 
-export const columns: ExtendedColumnDef<ColumnType>[] = [
+export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "type",
-    header: () => (
-      <HeaderCell Icon={CircleDot} label="Event" className="mr-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Event" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
         {row.original.type === "message" ? (
@@ -44,13 +37,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mr-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mr-auto h-4 w-16" /> },
   },
   {
     accessorKey: "agentConfiguration",
-    header: () => (
-      <HeaderCell Icon={Bot} label="Agent" className="mr-auto px-2" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Agent" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="mr-auto flex items-center gap-2 overflow-hidden px-2 font-mono text-xs font-medium text-muted-foreground">
         {row.original.agentConfiguration ? (
@@ -73,13 +67,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 200,
-    loading: () => <Skeleton className="mr-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mr-auto h-4 w-16" /> },
   },
   {
     accessorKey: "resource",
-    header: () => (
-      <HeaderCell Icon={Server} label="Resource" className="mr-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Resource" />
     ),
+    enableSorting: false,
     cell: ({ row }) =>
       row.original.resource ? (
         <div className="flex items-center gap-2 overflow-hidden">
@@ -97,15 +92,16 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: "time",
-    header: () => (
-      <HeaderCell Icon={Calendar} label="Timestamp" className="ml-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Timestamp" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="text-right font-mono text-xs">
         {formatCompactAgo(row.original.createdAt)}
       </div>
     ),
     size: 200,
-    loading: () => <Skeleton className="ml-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="ml-auto h-4 w-16" /> },
   },
 ];
