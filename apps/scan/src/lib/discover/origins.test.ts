@@ -1,5 +1,6 @@
-import type { cacheLife, cacheTag } from "next/cache";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
+import type { cacheLife, cacheTag } from "next/cache";
 
 vi.mock("@/env", () => ({
   env: {
