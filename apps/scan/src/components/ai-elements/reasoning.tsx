@@ -1,18 +1,9 @@
 "use client";
 
-/* oxlint-disable typescript/no-confusing-void-expression -- Preserve the AI Elements controlled and uncontrolled disclosure API. */
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
-import { cjk } from "@streamdown/cjk";
-import { code } from "@streamdown/code";
-import { math } from "@streamdown/math";
-import { mermaid } from "@streamdown/mermaid";
+/* @merit-source-owned composition */
+
 import { BrainIcon, ChevronDownIcon } from "lucide-react";
-import type { ComponentProps, ReactNode } from "react";
+
 import {
   createContext,
   memo,
@@ -23,9 +14,25 @@ import {
   useRef,
   useState,
 } from "react";
+
+import { cjk } from "@streamdown/cjk";
+import { code } from "@streamdown/code";
+import { math } from "@streamdown/math";
+import { mermaid } from "@streamdown/mermaid";
 import { Streamdown } from "streamdown";
 
+/* oxlint-disable typescript/no-confusing-void-expression -- Preserve the AI Elements controlled and uncontrolled disclosure API. */
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
+import { cn } from "@/lib/utils";
+
 import { Shimmer } from "./shimmer";
+
+import type { ComponentProps, ReactNode } from "react";
 
 interface ReasoningContextValue {
   isStreaming: boolean;
