@@ -19,7 +19,6 @@ const config: KnipConfig = {
       ],
       project: ["src/**/*.{ts,tsx,mdx}", "*.{ts,tsx,js,mjs}"],
       ignoreDependencies: [
-        "@merit-systems/brand",
         "postcss",
         "redis",
         "shadcn",
