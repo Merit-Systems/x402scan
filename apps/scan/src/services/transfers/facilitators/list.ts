@@ -1,11 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import {
   facilitatorIdMap,
   MIN_FACILITATOR_TRANSACTIONS,
@@ -138,10 +136,11 @@ const listTopFacilitatorsUncached = async (
   });
 };
 
-export const listTopFacilitators = createCachedPaginatedQuery({
-  queryFn: listTopFacilitatorsUncached,
-  cacheKeyPrefix: "facilitators-list",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["latest_block_timestamp"],
-  tags: ["facilitators"],
-});
+export const listTopFacilitators = async (
+  ...args: Parameters<typeof listTopFacilitatorsUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("facilitators");
+  return listTopFacilitatorsUncached(...args);
+};

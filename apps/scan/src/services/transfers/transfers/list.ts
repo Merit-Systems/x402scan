@@ -1,9 +1,8 @@
+import { cacheLife, cacheTag } from "next/cache";
+
 import { transfersDb } from "@x402scan/transfers-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { toPeekAheadResponse } from "@/lib/pagination";
 import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
 import {
@@ -56,10 +55,11 @@ const listFacilitatorTransfersUncached = async (
   });
 };
 
-export const listFacilitatorTransfers = createCachedPaginatedQuery({
-  queryFn: listFacilitatorTransfersUncached,
-  cacheKeyPrefix: "transfers-list",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["block_timestamp"],
-  tags: ["transfers"],
-});
+export const listFacilitatorTransfers = async (
+  ...args: Parameters<typeof listFacilitatorTransfersUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("transfers");
+  return listFacilitatorTransfersUncached(...args);
+};

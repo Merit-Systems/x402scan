@@ -1,8 +1,9 @@
+import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
 import { chainSchema, sortingSchema } from "@/lib/schemas";
 import {
   DEFAULT_NETWORKS_SORTING,
@@ -114,11 +115,11 @@ const listTopNetworksUncached = async (
   }));
 };
 
-export const listTopNetworks = createCachedArrayQuery({
-  queryFn: listTopNetworksUncached,
-  cacheKeyPrefix: "networks-list",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["latest_block_timestamp"],
-
-  tags: ["networks"],
-});
+export const listTopNetworks = async (
+  ...args: Parameters<typeof listTopNetworksUncached>
+) => {
+  "use cache: remote";
+  cacheLife(QUERY_CACHE_LIFE);
+  cacheTag("networks");
+  return listTopNetworksUncached(...args);
+};
