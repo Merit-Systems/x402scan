@@ -11,7 +11,6 @@ import {
   LoadingServiceSummary,
   ServiceSummary,
 } from "@/components/service-summary";
-import { renderTableRowLink } from "@/components/table-row-link";
 import { Button } from "@/components/ui/button";
 
 import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
