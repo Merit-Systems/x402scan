@@ -2,8 +2,9 @@
 
 import { Plus } from "lucide-react";
 
-import Link from "next/link";
 import { Suspense } from "react";
+
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { buttonVariants } from "@/components/ui/button";

@@ -1,9 +1,10 @@
-import { ActivityTimeframe } from "@/types/timeframes";
-import { connection } from "next/server";
-import { api, HydrateClient } from "@/trpc/server";
 import { Suspense } from "react";
 
+import { connection } from "next/server";
+
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
+import { api, HydrateClient } from "@/trpc/server";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 import { LoadingAgentCard } from "../lib/agent-card";
 import { AgentsContent } from "./content";

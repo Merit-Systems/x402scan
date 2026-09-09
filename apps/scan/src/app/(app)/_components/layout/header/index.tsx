@@ -1,11 +1,16 @@
-import type { ReactNode } from "react";
 import { GlobalSearch } from "../navbar/search";
 import { HeaderBrand } from "./brand";
 import { PrimaryNavigation } from "./navigation";
 import { RegisterButton } from "./register-button";
 import { ThemeToggle } from "./theme-toggle";
 
-export function Header({ chainSelector }: { chainSelector: ReactNode }) {
+import type { ReactNode } from "react";
+
+interface HeaderProps {
+  chainSelector: ReactNode;
+}
+
+export function Header({ chainSelector }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
       <div className="flex h-14 w-full items-center gap-3 px-4">

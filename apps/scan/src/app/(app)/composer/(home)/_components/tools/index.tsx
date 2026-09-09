@@ -41,7 +41,11 @@ async function ToolsData({
   );
 }
 
-const ToolsContainer = ({ children }: { children: React.ReactNode }) => {
+interface ToolsContainerProps {
+  children: React.ReactNode;
+}
+
+const ToolsContainer = ({ children }: ToolsContainerProps) => {
   return (
     <Section title="Top Tools" description="Discover the most popular tools">
       {children}

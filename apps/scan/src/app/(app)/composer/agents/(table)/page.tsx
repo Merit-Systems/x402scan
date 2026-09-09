@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { LoadingAgentsTable } from "./_components/table/table";
+
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
 import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
@@ -10,6 +10,8 @@ import {
 } from "@/lib/table-sort-options";
 import { parseTableSorting } from "@/lib/table-state";
 import { ActivityTimeframe } from "@/types/timeframes";
+
+import { LoadingAgentsTable } from "./_components/table/table";
 
 import type { Metadata } from "next";
 
