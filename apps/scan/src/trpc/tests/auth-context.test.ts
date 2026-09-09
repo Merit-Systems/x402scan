@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { Session } from "next-auth";
 
 const { auth } = vi.hoisted(() => ({
