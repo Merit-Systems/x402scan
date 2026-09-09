@@ -1,6 +1,6 @@
 declare global {
   // Set once OTLP log export is wired up, so hot reloads don't re-initialize.
-  var __x402scanOtelLogsInitialized: boolean | undefined;
+  var x402scanOtelLogsInitialized: boolean | undefined;
 }
 
 export async function register() {
@@ -14,7 +14,7 @@ export async function register() {
     const signozIngestionKey = process.env.SIGNOZ_INGESTION_KEY?.trim();
 
     if (signozIngestionKey) {
-      if (!globalThis.__x402scanOtelLogsInitialized) {
+      if (!globalThis.x402scanOtelLogsInitialized) {
         const { LoggerProvider, BatchLogRecordProcessor } =
           await import("@opentelemetry/sdk-logs");
         const { OTLPLogExporter } =
@@ -44,7 +44,7 @@ export async function register() {
         });
 
         logs.setGlobalLoggerProvider(loggerProvider);
-        globalThis.__x402scanOtelLogsInitialized = true;
+        globalThis.x402scanOtelLogsInitialized = true;
       }
     }
 

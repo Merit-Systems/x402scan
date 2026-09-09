@@ -3,24 +3,34 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "x402scan-hide-agentcash-announcement";
+const DISMISSED_EVENT = "x402scan-agentcash-announcement-dismissed";
+
+const subscribeToDismissal = (onStoreChange: () => void) => {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(DISMISSED_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(DISMISSED_EVENT, onStoreChange);
+  };
+};
+
+const getDismissalSnapshot = () => localStorage.getItem(STORAGE_KEY) === "true";
 
 export const AgentCashAnnouncementBanner = () => {
-  const [isDismissed, setIsDismissed] = useState(true); // Default to true to avoid flash
-
-  useEffect(() => {
-    // Check localStorage on mount (effects only run in the browser)
-    const dismissed = localStorage.getItem(STORAGE_KEY);
-    setIsDismissed(dismissed === "true");
-  }, []);
+  const isDismissed = useSyncExternalStore(
+    subscribeToDismissal,
+    getDismissalSnapshot,
+    () => true
+  );
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     localStorage.setItem(STORAGE_KEY, "true");
-    setIsDismissed(true);
+    window.dispatchEvent(new Event(DISMISSED_EVENT));
   };
 
   if (isDismissed) {

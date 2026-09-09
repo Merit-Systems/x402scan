@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useCdpSolanaStandardWallet } from "@coinbase/cdp-solana-standard-wallet";
 import { useWallets } from "@wallet-standard/react";
@@ -9,10 +9,75 @@ import { SolanaWalletContext } from "./context";
 import { solanaWalletCookies } from "./cookies";
 
 import type { ReactNode } from "react";
+import type { UiWallet, UiWalletAccount } from "@wallet-standard/react";
 import type { ConnectedSolanaWallet } from "./context";
+import type { SolanaWalletCookie } from "./cookies";
 
 interface Props {
   children: ReactNode;
+}
+
+export function getAutomaticConnection<
+  TAccount extends { address: string },
+  TWallet extends {
+    name: string;
+    accounts: readonly TAccount[];
+    features: { includes: (feature: `${string}:${string}`) => boolean };
+  },
+>({
+  wallets,
+  savedWallet,
+  cdpWalletAddress,
+}: {
+  wallets: readonly TWallet[];
+  savedWallet: SolanaWalletCookie | null;
+  cdpWalletAddress: string | undefined;
+}) {
+  if (savedWallet) {
+    const matchingWallet = wallets.find(
+      (wallet) => wallet.name === savedWallet.walletName
+    );
+
+    if (matchingWallet && matchingWallet.accounts.length > 0) {
+      const matchingAccount = matchingWallet.accounts.find(
+        (account) => account.address === savedWallet.address
+      );
+
+      if (matchingAccount) {
+        return {
+          wallet: { account: matchingAccount, wallet: matchingWallet },
+          shouldPersist: false,
+        };
+      }
+
+      if (matchingWallet.accounts.length === 1) {
+        const [account] = matchingWallet.accounts;
+        if (account) {
+          return {
+            wallet: { account, wallet: matchingWallet },
+            shouldPersist: true,
+          };
+        }
+      }
+    }
+  }
+
+  if (cdpWalletAddress) {
+    const matchingWallet = wallets.find(
+      (wallet) =>
+        wallet.features.includes("cdp:") &&
+        wallet.accounts[0]?.address === cdpWalletAddress
+    );
+    const [account] = matchingWallet?.accounts ?? [];
+    if (matchingWallet && account) {
+      return {
+        wallet: { account, wallet: matchingWallet },
+        shouldPersist: false,
+      };
+    }
+  }
+
+  return null;
 }
 
 export function SolanaWalletProvider({ children }: Props) {
@@ -20,16 +85,17 @@ export function SolanaWalletProvider({ children }: Props) {
 
   const wallets = useWallets();
 
-  const [connectedWallet, setConnectedWallet] =
-    useState<ConnectedSolanaWallet | null>(null);
+  const [selectedWallet, setSelectedWallet] = useState<
+    ConnectedSolanaWallet | null | undefined
+  >(undefined);
 
   const disconnect = useCallback(() => {
-    setConnectedWallet(null);
+    setSelectedWallet(null);
     solanaWalletCookies.clear();
   }, []);
 
   const connectWallet = useCallback((wallet: ConnectedSolanaWallet | null) => {
-    setConnectedWallet(wallet);
+    setSelectedWallet(wallet);
     if (wallet) {
       solanaWalletCookies.set({
         walletName: wallet.wallet.name,
@@ -40,73 +106,40 @@ export function SolanaWalletProvider({ children }: Props) {
     }
   }, []);
 
-  useEffect(() => {
-    if (ready && cdpWallet) {
-      const matchingWallet = wallets.find(
-        (candidateWallet) =>
-          candidateWallet.features.includes("cdp:") &&
-          candidateWallet.accounts[0]?.address ===
-            cdpWallet.accounts[0]?.address
-      );
-      const [account] = matchingWallet?.accounts ?? [];
-      if (matchingWallet && account) {
-        setConnectedWallet({
-          account,
-          wallet: matchingWallet,
-        });
-      }
-    }
+  const automaticConnection = useMemo(() => {
+    return getAutomaticConnection<UiWalletAccount, UiWallet>({
+      wallets,
+      savedWallet: solanaWalletCookies.get(),
+      cdpWalletAddress: ready ? cdpWallet?.accounts[0]?.address : undefined,
+    });
   }, [ready, cdpWallet, wallets]);
 
   useEffect(() => {
-    if (connectedWallet) return;
-
-    const savedWallet = solanaWalletCookies.get();
-    if (!savedWallet) {
+    if (selectedWallet !== undefined || !automaticConnection?.shouldPersist) {
       return;
     }
+    solanaWalletCookies.set({
+      walletName: automaticConnection.wallet.wallet.name,
+      address: automaticConnection.wallet.account.address,
+    });
+  }, [automaticConnection, selectedWallet]);
 
-    // Try to find and reconnect to the saved wallet
-    const matchingWallet = wallets.find(
-      (w) => w.name === savedWallet.walletName
-    );
-
-    if (matchingWallet && matchingWallet.accounts.length > 0) {
-      // Check if wallet has matching account (some wallets auto-populate accounts)
-      const matchingAccount = matchingWallet.accounts.find(
-        (acc) => acc.address === savedWallet.address
-      );
-
-      if (matchingAccount) {
-        setConnectedWallet({
-          account: matchingAccount,
-          wallet: matchingWallet,
-        });
-      } else if (matchingWallet.accounts.length === 1) {
-        const [account] = matchingWallet.accounts;
-        if (!account) return;
-        // If there's only one account and it doesn't match, update the cookie with new address
-        setConnectedWallet({
-          account,
-          wallet: matchingWallet,
-        });
-        solanaWalletCookies.set({
-          walletName: matchingWallet.name,
-          address: account.address,
-        });
-      }
-    }
-  }, [wallets, connectedWallet]);
+  const connectedWallet =
+    selectedWallet === undefined
+      ? (automaticConnection?.wallet ?? null)
+      : selectedWallet;
+  const contextValue = useMemo(
+    () => ({
+      connectedWallet,
+      setConnectedWallet: connectWallet,
+      isConnected: Boolean(connectedWallet),
+      disconnect,
+    }),
+    [connectedWallet, connectWallet, disconnect]
+  );
 
   return (
-    <SolanaWalletContext.Provider
-      value={{
-        connectedWallet,
-        setConnectedWallet: connectWallet,
-        isConnected: !!connectedWallet,
-        disconnect,
-      }}
-    >
+    <SolanaWalletContext.Provider value={contextValue}>
       {children}
     </SolanaWalletContext.Provider>
   );

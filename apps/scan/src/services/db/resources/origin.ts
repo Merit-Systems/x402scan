@@ -151,7 +151,8 @@ export const getOriginResourceCount = async (origin: string) => {
     },
   });
 
-  return existingOrigin?._count.resources ?? 0;
+  const { _count: count } = existingOrigin ?? {};
+  return count?.resources ?? 0;
 };
 
 export const listOriginsSchema = z.object({

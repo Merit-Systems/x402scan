@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Loader2, SearchX, Search } from "lucide-react";
 
@@ -57,14 +57,21 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: resources, isLoading: isLoadingResources } =
     api.public.resources.search.useQuery(input, options);
 
-  const handleSelect = <T extends string>(route: Route<T>) => {
-    router.push(route);
-    setIsOpen(false);
-    setSearch("");
-  };
+  const handleSelect = useCallback(
+    <T extends string>(route: Route<T>) => {
+      router.push(route);
+      setIsOpen(false);
+      setSearch("");
+    },
+    [router]
+  );
+  const contextValue = useMemo(
+    () => ({ search, setSearch, isOpen, setIsOpen }),
+    [search, isOpen]
+  );
 
   return (
-    <SearchContext.Provider value={{ search, setSearch, isOpen, setIsOpen }}>
+    <SearchContext.Provider value={contextValue}>
       <CommandDialog
         open={isOpen}
         onOpenChange={setIsOpen}

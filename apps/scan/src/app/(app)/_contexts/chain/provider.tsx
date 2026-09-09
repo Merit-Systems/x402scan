@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ChainContext } from "./context";
 
 import type { Chain } from "@/types/chain";
@@ -23,13 +23,14 @@ export const ChainProvider: React.FC<Props> = ({ children }) => {
   );
   const chain = urlChain ?? storedChain;
 
-  const setChain = (selectedChain: Chain | undefined) => {
+  const setChain = useCallback((selectedChain: Chain | undefined) => {
     setDataChainCookieClient(selectedChain);
     setStoredChain(selectedChain);
-  };
+  }, []);
+  const contextValue = useMemo(() => ({ chain, setChain }), [chain, setChain]);
 
   return (
-    <ChainContext.Provider value={{ chain, setChain }}>
+    <ChainContext.Provider value={contextValue}>
       {children}
     </ChainContext.Provider>
   );
