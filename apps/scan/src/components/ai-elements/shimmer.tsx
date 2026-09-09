@@ -1,16 +1,16 @@
 "use client";
 
+/* @merit-source-owned composition */
+
 /* oxlint-disable hooks/static-components, typescript/no-unnecessary-condition, typescript/no-unsafe-type-assertion, typescript/restrict-template-expressions -- AI Elements supports a caller-selected intrinsic motion element. */
 
-import { cn } from "@/lib/utils";
+import { memo, useMemo } from "react";
+
 import { LazyMotion, domAnimation, m } from "motion/react";
-import {
-  type CSSProperties,
-  type ElementType,
-  type JSX,
-  memo,
-  useMemo,
-} from "react";
+
+import { cn } from "@/lib/utils";
+
+import type { CSSProperties, ElementType, JSX } from "react";
 
 interface TextShimmerProps {
   children: string;

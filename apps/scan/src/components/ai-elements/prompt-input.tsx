@@ -1,6 +1,33 @@
 "use client";
 
+/* @merit-source-owned composition */
+
 /* oxlint-disable eslint/no-empty-function, eslint/no-underscore-dangle, jsx-a11y/heading-has-content, merit-core/no-runtime-typeof, typescript/no-confusing-void-expression, typescript/no-deprecated, typescript/no-misused-promises, typescript/no-unnecessary-condition, typescript/no-unnecessary-type-assertion, typescript/no-unsafe-type-assertion, typescript/return-await, unicorn/prefer-add-event-listener -- Preserve the public AI Elements browser and form API for source-compatible consumer migration. */
+
+import {
+  CornerDownLeftIcon,
+  ImageIcon,
+  Monitor,
+  PlusIcon,
+  SquareIcon,
+  XIcon,
+} from "lucide-react";
+
+import {
+  Children,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
+import { nanoid } from "nanoid";
 
 import {
   Command,
@@ -41,18 +68,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 import { cn } from "@/lib/utils";
-import type { ChatStatus, FileUIPart, SourceDocumentUIPart } from "ai";
-import {
-  CornerDownLeftIcon,
-  ImageIcon,
-  Monitor,
-  PlusIcon,
-  SquareIcon,
-  XIcon,
-} from "lucide-react";
-import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
-import { nanoid } from "nanoid";
+
+import type { SyntheticEvent } from "react";
 import type {
   ChangeEvent,
   ChangeEventHandler,
@@ -66,19 +85,8 @@ import type {
   ReactNode,
   RefObject,
 } from "react";
-import {
-  Children,
-  createContext,
-  type SyntheticEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+
+import type { ChatStatus, FileUIPart, SourceDocumentUIPart } from "ai";
 
 // ============================================================================
 // Helpers

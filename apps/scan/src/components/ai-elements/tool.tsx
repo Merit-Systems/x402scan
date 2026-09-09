@@ -1,14 +1,9 @@
 "use client";
 
+/* @merit-source-owned composition */
+
 /* oxlint-disable merit-core/no-runtime-typeof -- Tool output is an intentionally runtime-neutral presentation boundary for consumer-owned values. */
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
-import type { DynamicToolUIPart } from "ai";
 import {
   CheckCircleIcon,
   ChevronRightIcon,
@@ -18,8 +13,20 @@ import {
   WrenchIcon,
   XIcon,
 } from "lucide-react";
-import type { ComponentProps, ReactNode } from "react";
+
 import { isValidElement } from "react";
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
+import { cn } from "@/lib/utils";
+
+import type { ComponentProps, ReactNode } from "react";
+
+import type { DynamicToolUIPart } from "ai";
 
 type ToolStatus = DynamicToolUIPart["state"];
 
