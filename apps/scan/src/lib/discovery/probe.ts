@@ -1,6 +1,8 @@
 import {
   checkEndpointSchema,
+  getOpenAPI,
   getWarningsForL3,
+  isOpenApiParseFailure,
   validatePaymentRequiredDetailed,
 } from '@agentcash/discovery';
 import type {
@@ -14,6 +16,7 @@ import {
   buildMinimalSampleFromInputSchema,
   buildMinimalQueryParamsFromInputSchema,
   hasPathParameters,
+  instantiateOpenApiPathParameterExamples,
   PROBE_TIMEOUT_MS,
 } from './utils';
 import { jsonValueSchema } from '@/lib/json';
@@ -186,11 +189,24 @@ export async function probeX402Endpoint(
   preferredMethod?: string,
   sampleBody?: JsonObject
 ): Promise<ProbeX402Result> {
+  const resolvedProbe = await resolveParameterizedProbeUrl(
+    url,
+    preferredMethod ?? 'GET'
+  );
+  if (!resolvedProbe.success) {
+    return {
+      success: false,
+      error: resolvedProbe.error,
+      skipped: true,
+    };
+  }
+
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     const result = await probeX402EndpointOnce(
-      url,
+      resolvedProbe.probeUrl,
       preferredMethod,
-      sampleBody
+      sampleBody,
+      url
     );
 
     // Retry on rate limiting (429/503) with exponential backoff.
@@ -214,7 +230,8 @@ export async function probeX402Endpoint(
 async function probeX402EndpointOnce(
   url: string,
   preferredMethod?: string,
-  sampleBody?: JsonObject
+  sampleBody?: JsonObject,
+  canonicalUrl = url
 ): Promise<ProbeX402Result> {
   const noBody = await checkEndpointSchema({
     url,
@@ -352,10 +369,62 @@ async function probeX402EndpointOnce(
 
   return {
     success: false,
-    error: probeErrorMessage(url, noBody, withBody),
+    error: probeErrorMessage(canonicalUrl, noBody, withBody),
     skipped: !isUnreachable,
     statusCode,
   };
+}
+
+async function resolveParameterizedProbeUrl(
+  url: string,
+  preferredMethod: string
+): Promise<
+  { success: true; probeUrl: string } | { success: false; error: string }
+> {
+  if (!hasPathParameters(url)) return { success: true, probeUrl: url };
+
+  let origin: string;
+  try {
+    origin = new URL(url).origin;
+  } catch {
+    return { success: false, error: `Invalid resource URL: ${url}` };
+  }
+
+  const openApiResult = await getOpenAPI(
+    origin,
+    undefined,
+    AbortSignal.timeout(PROBE_TIMEOUT_MS)
+  );
+  if (openApiResult.isErr()) {
+    return {
+      success: false,
+      error: `Cannot probe parameterized route: ${openApiResult.error.message}`,
+    };
+  }
+
+  const openApi = openApiResult.value;
+  if (!openApi || isOpenApiParseFailure(openApi)) {
+    return {
+      success: false,
+      error:
+        'Cannot probe parameterized route: no valid OpenAPI document containing path-parameter examples was found',
+    };
+  }
+
+  const document = jsonValueSchema.safeParse(openApi.raw);
+  if (!document.success) {
+    return {
+      success: false,
+      error:
+        'Cannot probe parameterized route: OpenAPI document is not valid JSON',
+    };
+  }
+
+  return instantiateOpenApiPathParameterExamples(
+    url,
+    document.data,
+    preferredMethod
+  );
 }
 
 function probeErrorMessage(
@@ -378,7 +447,7 @@ function probeErrorMessage(
     if (result.cause === 'not_found' && hasPathParameters(url)) {
       return (
         message +
-        '. This endpoint contains path parameters — ensure the x402 paywall runs before path parameter validation'
+        '. This endpoint contains path parameters — verify its documented example is valid and reaches the x402 paywall'
       );
     }
     return message;

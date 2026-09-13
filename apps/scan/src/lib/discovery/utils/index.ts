@@ -7,3 +7,7 @@ export {
   buildMinimalQueryParamsFromInputSchema,
 } from './build-minimal-sample';
 export { hasPathParameters } from './path-params';
+export {
+  instantiateOpenApiPathParameterExamples,
+  type OpenApiPathInstantiationResult,
+} from './openapi-path-params';
