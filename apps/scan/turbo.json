@@ -41,7 +41,8 @@
         "VERCEL",
         "VERCEL_ENV",
         "VERCEL_PROJECT_PRODUCTION_URL",
-        "VERCEL_BRANCH_URL"
+        "VERCEL_BRANCH_URL",
+        "CACHE_BENCHMARK_TOKEN"
       ]
     },
     "build:deploy": {
@@ -84,7 +85,8 @@
         "VERCEL",
         "VERCEL_ENV",
         "VERCEL_PROJECT_PRODUCTION_URL",
-        "VERCEL_BRANCH_URL"
+        "VERCEL_BRANCH_URL",
+        "CACHE_BENCHMARK_TOKEN"
       ]
     },
     "types:generate": {
@@ -206,6 +208,10 @@
         "VERCEL_PROJECT_PRODUCTION_URL",
         "VERCEL_BRANCH_URL"
       ]
+    },
+    "benchmark:cache": {
+      "cache": false,
+      "env": ["CACHE_BENCHMARK_TOKEN", "BENCHMARK_RUN_ID", "BENCHMARK_OUTPUT"]
     }
   }
 }
