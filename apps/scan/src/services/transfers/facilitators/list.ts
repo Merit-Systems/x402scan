@@ -2,10 +2,7 @@ import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import {
   facilitatorIdMap,
   MIN_FACILITATOR_TRANSACTIONS,
@@ -138,10 +135,7 @@ const listTopFacilitatorsUncached = async (
   });
 };
 
-export const listTopFacilitators = createCachedPaginatedQuery({
-  queryFn: listTopFacilitatorsUncached,
-  cacheKeyPrefix: "facilitators-list",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["latest_block_timestamp"],
-  tags: ["facilitators"],
-});
+export const listTopFacilitators = cachedQuery(
+  "listTopFacilitators",
+  listTopFacilitatorsUncached
+);

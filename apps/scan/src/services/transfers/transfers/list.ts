@@ -1,9 +1,6 @@
 import { transfersDb } from "@x402scan/transfers-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { toPeekAheadResponse } from "@/lib/pagination";
 import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
 import {
@@ -56,10 +53,7 @@ const listFacilitatorTransfersUncached = async (
   });
 };
 
-export const listFacilitatorTransfers = createCachedPaginatedQuery({
-  queryFn: listFacilitatorTransfersUncached,
-  cacheKeyPrefix: "transfers-list",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["block_timestamp"],
-  tags: ["transfers"],
-});
+export const listFacilitatorTransfers = cachedQuery(
+  "listFacilitatorTransfers",
+  listFacilitatorTransfersUncached
+);

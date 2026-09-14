@@ -2,7 +2,7 @@ import z from "zod";
 
 import { Prisma } from "@x402scan/scan-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
 import { Chain } from "@/types/chain";
@@ -111,11 +111,7 @@ const getBucketedNetworksStatisticsUncached = async (
   return rawResult;
 };
 
-export const getBucketedNetworksStatistics = createCachedArrayQuery({
-  queryFn: getBucketedNetworksStatisticsUncached,
-  cacheKeyPrefix: "bucketed-networks-statistics",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-
-  tags: ["networks-statistics"],
-});
+export const getBucketedNetworksStatistics = cachedQuery(
+  "getBucketedNetworksStatistics",
+  getBucketedNetworksStatisticsUncached
+);
