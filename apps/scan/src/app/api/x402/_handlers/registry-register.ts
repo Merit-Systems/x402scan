@@ -66,7 +66,7 @@ export async function handleRegistryRegister(
 
   try {
     if (result.success && result.resource.origin.id) {
-      revalidateResourceData(result.resource.origin.id);
+      await revalidateResourceData(result.resource.origin.id);
     }
   } catch (e) {
     console.error("Resource cache revalidation failed:", e);

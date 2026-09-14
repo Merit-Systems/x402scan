@@ -152,7 +152,7 @@ export const resourcesRouter = createTRPCRouter({
       const result = await registerEndpoint(input.url);
       try {
         if (result.success && result.resource.origin.id) {
-          revalidateResourceData(result.resource.origin.id);
+          await revalidateResourceData(result.resource.origin.id);
         }
       } catch (e) {
         console.error("Resource cache revalidation failed:", e);
@@ -215,7 +215,7 @@ export const resourcesRouter = createTRPCRouter({
 
       try {
         if (result.originId) {
-          revalidateResourceData(result.originId);
+          await revalidateResourceData(result.originId);
         }
       } catch (e) {
         console.error("Resource cache revalidation failed:", e);
