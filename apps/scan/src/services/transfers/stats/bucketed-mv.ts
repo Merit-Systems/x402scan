@@ -20,7 +20,7 @@ const bucketedResultSchema = z.array(
   })
 );
 
-const getBucketedStatisticsMVUncached = async (
+export const getBucketedStatisticsMVUncached = async (
   input: z.infer<typeof bucketedStatisticsMVInputSchema>
 ) => {
   const { timeframe, recipients } = input;
