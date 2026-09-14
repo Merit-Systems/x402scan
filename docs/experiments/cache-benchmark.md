@@ -138,18 +138,62 @@ Redis performance, costs, or freshness across a full cache lifecycle.
 
 The project has a Redis URL shared across production/preview/development and a
 preview-specific REDIS_DISABLE setting. The first all-mode run stopped when
-Redis was unavailable. That setting has not been overridden: the user is being
-asked whether to enable access only for this benchmark branch with isolated
-expiring keys or supply a separate test Redis. No Neon settings were changed.
+Redis was unavailable. After that initial run, the user authorized a branch-only
+override using isolated expiring keys; the three-mode result follows below.
+No Neon settings were changed.
 
 Aggregate measurements are checked in beside this document as
 `cache-benchmark-results-2026-09-14.json`; raw platform logs and credentials are
 not committed. The JSON records the exact tested deployment and the remaining
 limitations.
 
+## Three-mode result after authorized Redis enablement
+
+The user authorized use of the existing shared Redis instance. Only
+`json/cache-benchmark` received a `REDIS_DISABLE` override. Its value is an empty
+string because the current `z.coerce.boolean()` parser treats nonempty strings
+(including `"false"`) as true. The inherited preview setting and production
+settings were not changed. The benchmark was redeployed with the override.
+
+Tested commit `ed22008d`, deployment `dpl_J4MpEsAJaj32fWeTz4yTf2xTMcJu`,
+run `36fc2c53-99bf-4a3e-85ae-785b9149d90f`. All 300 benchmark requests succeeded.
+For each query, payload digests matched across all requests and all three modes.
+The complete log export confirmed every recorded origin/query start had a
+completion, with no failures or unreturned extra origin executions.
+
+| Query            | Redis cold executions / 20 | Next cold executions / 20 | Uncached cold executions / 20 | Redis warm HTTP median | Next warm HTTP median | Uncached warm HTTP median |
+| ---------------- | -------------------------: | ------------------------: | ----------------------------: | ---------------------: | --------------------: | ------------------------: |
+| Overall stats    |                          1 |                        18 |                            20 |                  49 ms |                 61 ms |                     60 ms |
+| Stats chart      |                          1 |                        19 |                            20 |                  47 ms |                 55 ms |                     55 ms |
+| Sellers          |                          1 |                        19 |                            20 |                  40 ms |                 57 ms |                     59 ms |
+| Recent transfers |                          1 |                        16 |                            20 |                  41 ms |                 51 ms |                     48 ms |
+
+Across each mode's 100 requests (four cold bursts plus five warm reads per
+query), Redis performed **5 database attempts**, Next **91**, and uncached
+reads **125**. Sellers account for two SQL attempts per execution. Both caches
+performed no additional query work for their five warm reads. Prisma counts
+operations, not hidden adapter-internal statements.
+
+Redis's cold-burst median HTTP times were 106–171 ms, versus 58–98 ms for Next.
+The old Redis wrapper waits in 100 ms polling intervals while one caller fills
+the key, which is a real latency-versus-duplicate-work tradeoff. Different
+instance warm-up and small samples prevent treating these times as a stable
+performance ranking. The uncached first bursts also include initialization.
+
+This run supports retaining Redis's cold-miss coordination if avoiding duplicate
+database work is a requirement: Next remote caching did not provide equivalent
+coalescing in this deployment. It does not prove that all these cheap queries
+need caching, establish costs, or cover refresh/expiry and slow-query behavior.
+The earlier local 11-second callback test showed the old Redis wrapper also
+falls back to duplicate work after its 10-second waiter limit.
+
+The full aggregate results are in
+`cache-benchmark-redis-results-2026-09-14.json`. This experiment has not changed
+the cache implementation in the main stack.
+
 ## Cleanup
 
-Drop this PR/branch, remove the branch-scoped `CACHE_BENCHMARK_TOKEN` variable,
+Drop this PR/branch, remove the branch-scoped `CACHE_BENCHMARK_TOKEN` and `REDIS_DISABLE` overrides,
 and remove its preview deployments to disable the endpoint. Redis benchmark
 keys expire on their own after 30 minutes; never flush the application database
 or Redis instance. All test artifacts and scripts are disposable.
