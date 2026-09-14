@@ -1,9 +1,8 @@
-import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/scan-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
 import { Chain } from "@/types/chain";
@@ -112,11 +111,7 @@ const getBucketedNetworksStatisticsUncached = async (
   return rawResult;
 };
 
-export const getBucketedNetworksStatistics = async (
-  ...args: Parameters<typeof getBucketedNetworksStatisticsUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("networks-statistics");
-  return getBucketedNetworksStatisticsUncached(...args);
-};
+export const getBucketedNetworksStatistics = cachedQuery(
+  "getBucketedNetworksStatistics",
+  getBucketedNetworksStatisticsUncached
+);

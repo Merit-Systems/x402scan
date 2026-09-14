@@ -1,9 +1,8 @@
-import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { chainSchema, mixedAddressSchema } from "@/lib/schemas";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
@@ -162,11 +161,7 @@ const listTopBuyersMVUncached = async (
   }
 };
 
-export const listTopBuyersMV = async (
-  ...args: Parameters<typeof listTopBuyersMVUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("buyers");
-  return listTopBuyersMVUncached(...args);
-};
+export const listTopBuyersMV = cachedQuery(
+  "listTopBuyersMV",
+  listTopBuyersMVUncached
+);

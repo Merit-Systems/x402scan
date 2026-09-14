@@ -1,9 +1,8 @@
-import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { chainSchema, sortingSchema } from "@/lib/schemas";
 import {
   DEFAULT_NETWORKS_SORTING,
@@ -115,11 +114,7 @@ const listTopNetworksUncached = async (
   }));
 };
 
-export const listTopNetworks = async (
-  ...args: Parameters<typeof listTopNetworksUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("networks");
-  return listTopNetworksUncached(...args);
-};
+export const listTopNetworks = cachedQuery(
+  "listTopNetworks",
+  listTopNetworksUncached
+);
