@@ -1,9 +1,8 @@
-import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
 import { firstTransfer } from "@/services/facilitator/constants";
 
@@ -83,11 +82,8 @@ const getBucketedResourceCreationsUncached = async (
   return bucketedCreationsResultSchema.parse(rawResult);
 };
 
-export const getBucketedResourceCreations = async (
-  ...args: Parameters<typeof getBucketedResourceCreationsUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("resource-statistics", "resources");
-  return getBucketedResourceCreationsUncached(...args);
-};
+export const getBucketedResourceCreations = cachedQuery(
+  "getBucketedResourceCreations",
+  getBucketedResourceCreationsUncached,
+  { tags: ["resources"] }
+);

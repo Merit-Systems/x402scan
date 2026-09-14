@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
+import type { cachedQuery } from "@/lib/cache/query";
 import type { queryRaw } from "@/services/db/query";
+
+vi.mock("@/lib/cache/query", () => ({
+  cachedQuery: vi.fn<typeof cachedQuery>(),
+}));
 
 vi.mock("@x402scan/scan-db", () => ({ scanDb: {}, Prisma: {} }));
 vi.mock("@/services/db/query", () => ({

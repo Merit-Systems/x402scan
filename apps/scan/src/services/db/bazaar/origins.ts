@@ -1,6 +1,4 @@
-import { cacheLife, cacheTag } from "next/cache";
-
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { mixedAddressSchema } from "@/lib/schemas";
 import { getOriginTransactionSparklines } from "@/services/transfers/origins/stats/sparklines";
@@ -182,14 +180,11 @@ const listBazaarOriginsUncached = async (
   return groupedItems;
 };
 
-const listAllBazaarOrigins = async (
-  ...args: Parameters<typeof listBazaarOriginsUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("transfers");
-  return listBazaarOriginsUncached(...args);
-};
+const listAllBazaarOrigins = cachedQuery(
+  "listAllBazaarOrigins",
+  listBazaarOriginsUncached,
+  { tags: ["resources"] }
+);
 
 export const listBazaarOriginSummaries = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,

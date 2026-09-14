@@ -1,11 +1,10 @@
 import { differenceInMilliseconds, getUnixTime } from "date-fns";
-import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 
 import { Prisma } from "@x402scan/scan-db";
 
 import { agentsRelease } from "@/lib/agents";
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { timeframeSchema, timePeriodSchema } from "@/lib/schemas";
 import {
   getTimeRangeFromTimeframe,
@@ -48,14 +47,10 @@ const getOverallActivityUncached = async (
   return result;
 };
 
-export const getOverallActivity = async (
-  ...args: Parameters<typeof getOverallActivityUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("agent-configuration", "activity");
-  return getOverallActivityUncached(...args);
-};
+export const getOverallActivity = cachedQuery(
+  "getOverallActivity",
+  getOverallActivityUncached
+);
 
 export const overallBucketedActivityInputSchema = z.object({
   timeframe: timePeriodSchema,
@@ -154,11 +149,7 @@ const getOverallBucketedActivityUncached = async (
   );
 };
 
-export const getOverallBucketedActivity = async (
-  ...args: Parameters<typeof getOverallBucketedActivityUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("agent-configuration", "activity");
-  return getOverallBucketedActivityUncached(...args);
-};
+export const getOverallBucketedActivity = cachedQuery(
+  "getOverallBucketedActivity",
+  getOverallBucketedActivityUncached
+);
