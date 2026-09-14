@@ -16,7 +16,10 @@
     "lint:fix": "oxlint --fix .",
     "test": "vitest run",
     "ui:check": "merit ui check --root ../..",
-    "ui:integrity": "merit ui integrity check --root ../.."
+    "ui:integrity": "merit ui integrity check --root ../..",
+    "benchmark:cache": "node scripts/cache-benchmark.mjs",
+    "benchmark:cache:logs": "node scripts/cache-benchmark-logs.mjs",
+    "benchmark:cache:export": "node scripts/cache-benchmark-export-logs.mjs"
   },
   "dependencies": {
     "@agentcash/discovery": "1.7.5",

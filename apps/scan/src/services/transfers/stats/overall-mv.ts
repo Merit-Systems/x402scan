@@ -10,7 +10,7 @@ import { baseQuerySchema } from "../schemas";
 
 export const overallStatisticsMVInputSchema = baseQuerySchema;
 
-const getOverallStatisticsMVUncached = async (
+export const getOverallStatisticsMVUncached = async (
   input: z.infer<typeof overallStatisticsMVInputSchema>
 ) => {
   const { timeframe, recipients } = input;
