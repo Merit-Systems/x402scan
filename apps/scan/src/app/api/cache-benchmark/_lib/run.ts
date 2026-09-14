@@ -3,6 +3,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { stringify } from "superjson";
 
 import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { readQueryCache } from "@/lib/cache/query";
 import { queryObservation } from "@/services/transfers/query-observation";
 import {
   listTopSellersMVUncached,
@@ -14,8 +15,6 @@ import {
   listFacilitatorTransfersUncached,
   listFacilitatorTransfersInputSchema,
 } from "@/services/transfers/transfers/list";
-
-import { withRedisCache } from "./redis";
 
 import type { z } from "zod";
 
@@ -121,11 +120,11 @@ export function runBenchmark(input: BenchmarkInput) {
     case "next":
       return nextRead(input.run, input.query);
     case "redis":
-      return withRedisCache(
-        `cache-benchmark:v1:${input.run}:${input.query}`,
-        () => execute(input),
-        QUERY_CACHE_LIFE.expire
-      );
+      return readQueryCache(input.query, [input.run], () => execute(input), {
+        namespace: "cache-benchmark:v2",
+        ttlSeconds: QUERY_CACHE_LIFE.expire,
+        fallbackToOrigin: false,
+      });
     case "uncached":
       return execute(input);
   }
