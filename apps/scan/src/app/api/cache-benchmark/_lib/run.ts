@@ -90,7 +90,9 @@ async function execute(input: BenchmarkInput) {
           sqlAttempts,
           originMs: result.originMs,
         });
-        return result;
+        // Cache the complete query payload so serialization/storage costs match
+        // application reads. Only metadata is exposed by the HTTP endpoint.
+        return { metadata: result, value };
       } catch (error) {
         log({
           event: "origin-end",
