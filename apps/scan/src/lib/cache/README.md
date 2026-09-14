@@ -7,7 +7,7 @@ Authorization stays in the route/procedure before invoking cached queries.
 
 Redis owns query freshness: most results expire after 30 minutes; the warming
 cron refreshes its configured public queries every 15 minutes. Unwarmed queries
-refresh on the first read after expiry. Tool-call activity uses a 30-second TTL.
+refresh on the first read after expiry. Tool-call activity uses a one-minute TTL.
 Default current times are resolved inside the query; explicit dates and all
 arguments participate in the key. Array order and exact dates are preserved.
 Query expiration does not refresh the underlying materialized views.
@@ -26,7 +26,7 @@ A miss takes a 30-second lease renewed every 10 seconds. Concurrent readers poll
 at 50ms intervals; after 55 seconds they throw rather than start duplicate origin
 queries. Crashed holders are retried through lock acquisition after lease expiry.
 Publication and release atomically verify ownership. Redis outages before the
-initial read fall back to the origin; failures after entering coordination fail
+initial read fall back to the origin for normal reads; warming fails so it can retry; failures after entering coordination fail
 the request. Successful origin results are returned even if publication fails.
 Lost connectivity or a paused process can still outlive a lease: this is cache
 coordination, not exactly-once execution for writes.
