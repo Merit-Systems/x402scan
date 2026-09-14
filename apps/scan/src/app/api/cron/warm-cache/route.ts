@@ -1,6 +1,7 @@
 import { connection, NextResponse } from "next/server";
 
 import { CACHE_DURATION_MINUTES } from "@/lib/cache/constants";
+import { refreshQueryCache } from "@/lib/cache/query";
 import { checkCronSecret } from "@/lib/cron";
 import { facilitatorAddresses } from "@/lib/facilitators";
 import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
@@ -196,8 +197,8 @@ export async function GET(request: NextRequest) {
   try {
     const startTime = Date.now();
 
-    // Normal reads populate missing entries and trigger native background
-    // revalidation for stale entries; no request context belongs in cache keys.
+    // Query inputs remain identical to public reads; the refresh scope below
+    // makes Redis refreshes explicit and waits for their publication.
     const ctx = await createTRPCContext(new Headers());
     const api = createCaller(ctx);
 
@@ -256,7 +257,9 @@ export async function GET(request: NextRequest) {
       `[Cache Warming] Collected ${String(allTasks.length)} tasks across all timeframes`
     );
 
-    await limitConcurrency(allTasks, MAX_CONCURRENT_REQUESTS);
+    await refreshQueryCache(() =>
+      limitConcurrency(allTasks, MAX_CONCURRENT_REQUESTS)
+    );
 
     const totalElapsed = Date.now() - startTime;
     const totalElapsedMinutes = totalElapsed / 1000 / 60;
