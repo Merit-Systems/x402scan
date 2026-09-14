@@ -1,9 +1,8 @@
-import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 
 import { scanDb } from "@x402scan/scan-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { jsonObjectSchema } from "@/lib/json";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { supportedChainSchema } from "@/lib/schemas";
@@ -190,14 +189,11 @@ export const listResourcesUncached = async (
   });
 };
 
-export const listResources = async (
-  ...args: Parameters<typeof listResourcesUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("resources");
-  return listResourcesUncached(...args);
-};
+export const listResources = cachedQuery(
+  "listResources",
+  listResourcesUncached,
+  { tags: ["resources"] }
+);
 
 export type ResourceSortId = "lastUpdated" | "toolCalls";
 
@@ -266,14 +262,11 @@ export const listResourcesWithPaginationUncached = async (
   });
 };
 
-export const listResourcesWithPagination = async (
-  ...args: Parameters<typeof listResourcesWithPaginationUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("resources");
-  return listResourcesWithPaginationUncached(...args);
-};
+export const listResourcesWithPagination = cachedQuery(
+  "listResourcesWithPagination",
+  listResourcesWithPaginationUncached,
+  { tags: ["resources"] }
+);
 
 export const searchResourcesSchema = z.object({
   search: z.string().optional(),
@@ -365,14 +358,11 @@ const searchResourcesUncached = async (
   });
 };
 
-export const searchResources = async (
-  ...args: Parameters<typeof searchResourcesUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("resources");
-  return searchResourcesUncached(...args);
-};
+export const searchResources = cachedQuery(
+  "searchResources",
+  searchResourcesUncached,
+  { tags: ["resources"] }
+);
 
 export const listResourcesForTools = async (resourceIds: string[]) => {
   return scanDb.resources.findMany({

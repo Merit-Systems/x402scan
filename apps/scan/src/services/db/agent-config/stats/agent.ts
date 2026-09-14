@@ -1,10 +1,9 @@
 import { subMonths, differenceInMilliseconds, getUnixTime } from "date-fns";
-import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 
 import { queryRaw } from "../../query";
 
@@ -104,11 +103,7 @@ const getAgentConfigBucketedActivityUncached = async (
   );
 };
 
-export const getAgentConfigBucketedActivity = async (
-  ...args: Parameters<typeof getAgentConfigBucketedActivityUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("agent-configuration", "activity");
-  return getAgentConfigBucketedActivityUncached(...args);
-};
+export const getAgentConfigBucketedActivity = cachedQuery(
+  "getAgentConfigBucketedActivity",
+  getAgentConfigBucketedActivityUncached
+);

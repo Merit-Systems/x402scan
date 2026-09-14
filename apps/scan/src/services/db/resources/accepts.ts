@@ -1,9 +1,8 @@
-import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 
 import { Prisma } from "@x402scan/scan-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { mixedAddressSchema } from "@/lib/schemas";
 import { queryRaw } from "@/services/db/query";
 
@@ -90,14 +89,11 @@ const listAcceptsOriginsUncached = async (input: GetAcceptsAddressesInput) => {
   return rows;
 };
 
-const listAcceptsOrigins = async (
-  ...args: Parameters<typeof listAcceptsOriginsUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("resources");
-  return listAcceptsOriginsUncached(...args);
-};
+const listAcceptsOrigins = cachedQuery(
+  "listAcceptsOrigins",
+  listAcceptsOriginsUncached,
+  { tags: ["resources"] }
+);
 
 export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
   const rows = await listAcceptsOrigins(input);
