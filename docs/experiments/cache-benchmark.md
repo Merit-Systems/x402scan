@@ -32,8 +32,10 @@ source timestamps help distinguish data changes from cache differences.
 
 Next uses `use cache: remote` with the application's 15-minute revalidation /
 30-minute expiry profile. Its function and UUID run arguments isolate entries
-from application caches. Redis uses `cache-benchmark:v1:<run>:<query>` keys with
-30-minute TTL and the pre-migration lock/poll/fallback implementation. Missing
+from application caches. Redis uses isolated `cache-benchmark:v2:*` keys with
+30-minute TTL and the same minimal query-cache helper as the application stack.
+The query name and hashed run arguments determine the key. No tag generation
+keys are created by this experiment. Missing
 Redis fails rather than silently becoming an uncached test. No shared keys are
 cleared. The first runner pass does not run the warming cron or force refreshes.
 
@@ -188,8 +190,26 @@ The earlier local 11-second callback test showed the old Redis wrapper also
 falls back to duplicate work after its 10-second waiter limit.
 
 The full aggregate results are in
-`cache-benchmark-redis-results-2026-09-14.json`. This experiment has not changed
-the cache implementation in the main stack.
+`cache-benchmark-redis-results-2026-09-14.json`. These historical results used
+the old Redis wrapper. The application stack now restores a minimal Redis helper;
+the current benchmark uses that helper directly rather than maintaining a copy.
+
+## Minimal Redis helper regression verification
+
+The shared helper renews a 30-second lease every 10 seconds, checks ownership
+atomically on publication/release, and bounds waiters at 55 seconds without the
+old duplicate-query fallback. Eleven unit tests cover slow concurrent reads,
+refresh waiters, expiration, resource invalidation races, lease loss, failed
+publication, origin errors, Redis outages, and orphan recovery.
+
+A fresh local Redis instance also served twenty concurrent 40-second reads with
+exactly one origin execution. The real Lua scripts renewed the lease beyond its
+initial lifetime, and Date/BigInt values survived cached round trips. No Neon or
+shared Redis configuration was involved in this local test.
+
+The recorded preview runs above predate this helper. A new preview run is needed
+to validate the current helper across Vercel instances; local results alone do
+not establish deployed behavior.
 
 ## Cleanup
 
