@@ -2,7 +2,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 import {
   ResponsiveCollection,
@@ -75,7 +74,6 @@ export function DiscoverServices({
   result,
   sorting,
 }: DiscoverServicesProps) {
-  const router = useRouter();
   const replaceSearchParams = useReplaceSearchParams();
   const tableSorting = useUrlTableSorting({
     sorting,
@@ -103,9 +101,7 @@ export function DiscoverServices({
           getRowHref: getServiceHref,
           getRowLabel: (item) => `Open ${getServiceName(item)}`,
           manualSorting: true,
-          onRowMouseEnter: (item) => {
-            router.prefetch(getServiceHref(item));
-          },
+          rowLinkComponent: Link,
           sorting: tableSorting.tableSorting,
           onSortingChange: tableSorting.onSortingChange,
           pageSize: PAGE_SIZE,
