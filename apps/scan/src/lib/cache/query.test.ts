@@ -225,4 +225,30 @@ describe("query cache", () => {
     fixture.redis.eval.mockRejectedValueOnce(new Error("write failed"));
     expect(await readQueryCache("write-error", [], async () => 4)).toBe(4);
   });
+  it("reports a failed warming publication instead of claiming completion", async () => {
+    fixture.redis.eval.mockRejectedValueOnce(new Error("write failed"));
+    await expect(
+      readQueryCache("warm-error", [], async () => 4, { refresh: true })
+    ).rejects.toThrow("write failed");
+  });
+
+  it("acquires an expired orphan's lease before retrying the origin", async () => {
+    await readQueryCache("orphan", [], async () => 1);
+    const key = [...fixture.entries.keys()].find((entry) =>
+      entry.includes(":orphan:")
+    );
+    if (!key) throw new Error("Expected cache entry");
+    fixture.entries.delete(key);
+    fixture.entries.set(`${key}:lock`, {
+      value: "crashed",
+      expires: Date.now() + 1000,
+    });
+    const origin = vi.fn<() => Promise<number>>(async () => 2);
+    const retry = readQueryCache("orphan", [], origin);
+    await vi.advanceTimersByTimeAsync(500);
+    expect(origin).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(600);
+    expect(await retry).toBe(2);
+    expect(origin).toHaveBeenCalledTimes(1);
+  });
 });

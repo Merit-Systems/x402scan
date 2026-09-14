@@ -38,6 +38,9 @@ interface QueryCacheOptions {
   ttlSeconds?: number;
   tags?: string[];
   refresh?: boolean;
+  /** Isolated experiments may supply a separate expiring namespace. */
+  namespace?: string;
+  fallbackToOrigin?: boolean;
 }
 
 /** Run warming reads in an explicit refresh scope, without changing query inputs. */
@@ -56,10 +59,19 @@ export async function readQueryCache<T>(
   name: string,
   args: unknown[],
   query: () => Promise<T>,
-  { ttlSeconds = 1800, tags = [], refresh = false }: QueryCacheOptions = {}
+  {
+    ttlSeconds = 1800,
+    tags = [],
+    refresh = false,
+    namespace = PREFIX,
+    fallbackToOrigin = true,
+  }: QueryCacheOptions = {}
 ): Promise<T> {
   const redis = getRedisClient();
-  if (!redis) return query();
+  if (!redis) {
+    if (!fallbackToOrigin) throw new Error("Query cache Redis is unavailable");
+    return query();
+  }
 
   let key: string;
   let initial: string | null;
@@ -75,10 +87,11 @@ export async function readQueryCache<T>(
     const digest = createHash("sha256")
       .update(stringify([args, generations]))
       .digest("hex");
-    key = `${PREFIX}:${name}:${digest}`;
+    key = `${namespace}:${name}:${digest}`;
     initial = await redis.get(key);
     if (initial && !refresh) return parse<{ value: T }>(initial).value;
   } catch (error) {
+    if (refresh || !fallbackToOrigin) throw error;
     console.warn("[Query cache] Read unavailable; querying origin", error);
     return query();
   }
@@ -113,7 +126,7 @@ export async function readQueryCache<T>(
           return parse<{ value: T }>(latest).value;
         const value = await query();
         try {
-          await redis.eval(
+          const published = await redis.eval(
             PUBLISH,
             2,
             lockKey,
@@ -122,7 +135,10 @@ export async function readQueryCache<T>(
             stringify({ value, revision: randomUUID() }),
             ttlSeconds
           );
+          if (refresh && published !== 1)
+            throw new Error("Query cache refresh lost its lease");
         } catch (error) {
+          if (refresh) throw error;
           // A successful origin read remains usable even when its cache write fails.
           console.warn("[Query cache] Publication failed", error);
         }
@@ -144,7 +160,10 @@ export async function readQueryCache<T>(
 export function cachedQuery<Args extends unknown[], Result>(
   name: string,
   query: (...args: Args) => Promise<Result>,
-  options: Omit<QueryCacheOptions, "refresh"> = {}
+  options: Omit<
+    QueryCacheOptions,
+    "refresh" | "namespace" | "fallbackToOrigin"
+  > = {}
 ) {
   return async (...args: Args): Promise<Result> => {
     await connection();
