@@ -1,9 +1,9 @@
-import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
 import { agentsRelease } from "@/lib/agents";
+import { cachedQuery } from "@/lib/cache/query";
 import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
 
 export const toolCallsOverTimeQuerySchema = z.object({
@@ -84,11 +84,8 @@ const getToolCallsOverTimeUncached = async (
   return bucketedToolCallsResultSchema.parse(rawResult);
 };
 
-export const getToolCallsOverTime = async (
-  ...args: Parameters<typeof getToolCallsOverTimeUncached>
-) => {
-  "use cache: remote";
-  cacheLife({ stale: 30, revalidate: 30, expire: 60 });
-  cacheTag("spending", "tool-calls");
-  return getToolCallsOverTimeUncached(...args);
-};
+export const getToolCallsOverTime = cachedQuery(
+  "getToolCallsOverTime",
+  getToolCallsOverTimeUncached,
+  { ttlSeconds: 30 }
+);

@@ -1,10 +1,9 @@
-import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { Prisma } from "@x402scan/scan-db";
 import { scanDb } from "@x402scan/scan-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { toPaginatedResponse } from "@/lib/pagination";
 
 import { queryRaw } from "../query";
@@ -157,11 +156,7 @@ const getAgentConfigFeedUncached = async (
   });
 };
 
-export const getAgentConfigFeed = async (
-  ...args: Parameters<typeof getAgentConfigFeedUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("agent-configuration", "feed");
-  return getAgentConfigFeedUncached(...args);
-};
+export const getAgentConfigFeed = cachedQuery(
+  "getAgentConfigFeed",
+  getAgentConfigFeedUncached
+);

@@ -1,9 +1,8 @@
-import { cacheLife, cacheTag } from "next/cache";
 import z from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { toPaginatedResponse } from "@/lib/pagination";
 
 import type { PaginatedQueryParams } from "@/lib/pagination";
@@ -112,14 +111,10 @@ const getSpendingByToolUncached = async (
   });
 };
 
-export const getSpendingByTool = async (
-  ...args: Parameters<typeof getSpendingByToolUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("spending", "tool");
-  return getSpendingByToolUncached(...args);
-};
+export const getSpendingByTool = cachedQuery(
+  "getSpendingByTool",
+  getSpendingByToolUncached
+);
 
 export type WalletBreakdownSortId =
   | "walletName"
@@ -184,11 +179,7 @@ const getWalletBreakdownByToolUncached = async (
   return toolWalletBreakdownResultSchema.parse(rawResult);
 };
 
-export const getWalletBreakdownByTool = async (
-  ...args: Parameters<typeof getWalletBreakdownByToolUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("spending", "tool", "wallet-breakdown");
-  return getWalletBreakdownByToolUncached(...args);
-};
+export const getWalletBreakdownByTool = cachedQuery(
+  "getWalletBreakdownByTool",
+  getWalletBreakdownByToolUncached
+);
