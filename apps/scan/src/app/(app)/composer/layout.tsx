@@ -1,5 +1,8 @@
+import { Suspense } from "react";
+
 import { SessionProvider } from "next-auth/react";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 
 import { CDPHooksProvider } from "@/app/_contexts/cdp";
 import { SolanaWalletProvider } from "@/app/_contexts/solana/provider";
@@ -8,6 +11,7 @@ import { auth } from "@/auth";
 import { env } from "@/env";
 
 import { Subnav } from "../_components/layout/subnav";
+import { LoadingAccess } from "../_components/loading-access";
 import { OnrampSessionDialog } from "./_components/wallet/onramp-session-dialog";
 
 import type { Metadata } from "next";
@@ -20,9 +24,19 @@ export const metadata: Metadata = {
   description: "Build and run x402 agents",
 };
 
-export default async function ComposerLayout({
+export default function ComposerLayout({ children }: LayoutProps<"/composer">) {
+  return (
+    <Suspense fallback={<LoadingAccess />}>
+      <ComposerAccess>{children}</ComposerAccess>
+    </Suspense>
+  );
+}
+
+async function ComposerAccess({
   children,
-}: LayoutProps<"/composer">) {
+}: Pick<LayoutProps<"/composer">, "children">) {
+  // Wallet providers and query hydration contain request-time state.
+  await connection();
   const isEnabled =
     env.NEXT_PUBLIC_ENABLE_COMPOSER === "true" ||
     (await auth())?.user.role === "admin";

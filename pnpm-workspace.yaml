@@ -40,7 +40,7 @@ catalogs:
     "@t3-oss/env-nextjs": ^0.13.10
     dotenv: ^17.2.3
   next:
-    next: &NEXT_VERSION ^16.1.5
+    next: &NEXT_VERSION 16.3.4
     "@next/mdx": *NEXT_VERSION
     next-themes: ^0.4.6
   prisma:
