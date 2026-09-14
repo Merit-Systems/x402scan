@@ -13,14 +13,16 @@ import { getResourceMetadataDescription } from "@/lib/resource-auth";
 import { serializeAccepts } from "@/lib/token";
 import { cleanExternalText, cn } from "@/lib/utils";
 import { getDescription } from "@/lib/x402";
-import { api } from "@/trpc/server";
+import {
+  listOriginsWithResources,
+  listOriginsWithResourcesSchema,
+} from "@/services/db/resources/origin";
 
 import { CopyRoute } from "./copy-route";
 
-import type { RouterOutputs } from "@/trpc/client";
-
-type Resource =
-  RouterOutputs["public"]["origins"]["list"]["withResources"][number]["resources"][number];
+type Resource = Awaited<
+  ReturnType<typeof listOriginsWithResources>
+>[number]["resources"][number];
 
 const pricingMetadataSchema = z.looseObject({
   pricingMode: z.string().optional().catch(undefined),
@@ -32,9 +34,11 @@ interface OriginResourcesProps {
 }
 
 export async function OriginResources({ originId }: OriginResourcesProps) {
-  const [origin] = await api.public.origins.list.withResources({
-    originIds: [originId],
-  });
+  const [origin] = await listOriginsWithResources(
+    listOriginsWithResourcesSchema.parse({
+      originIds: [originId],
+    })
+  );
   const resources = (origin?.resources ?? []).filter(
     (resource) => resource.success
   );

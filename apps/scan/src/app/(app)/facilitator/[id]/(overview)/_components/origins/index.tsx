@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -19,43 +18,25 @@ import {
   ServiceTransactionsMetric,
   ServiceVolumeMetric,
 } from "@/app/(app)/_components/service-collection";
-import { api } from "@/trpc/client";
 
 import { facilitatorServerColumns } from "./columns";
-import { FACILITATOR_SERVERS_SORTING } from "./config";
 
 import type { Route } from "next";
 
 import type { DataListItem } from "@/components/ui/data-list";
 
-import type { Chain } from "@/types/chain";
-import type { ActivityTimeframe } from "@/types/timeframes";
+import type { listBazaarOriginSummaries } from "@/services/db/bazaar/origins";
 
 import type { FacilitatorServer } from "./columns";
 
 const PAGE_SIZE = 10;
 
 interface FacilitatorOriginsProps {
-  chain?: Chain;
-  facilitatorId: string;
-  timeframe: ActivityTimeframe;
+  origins: Awaited<ReturnType<typeof listBazaarOriginSummaries>>;
 }
 
-export function FacilitatorOrigins({
-  chain,
-  facilitatorId,
-  timeframe,
-}: FacilitatorOriginsProps) {
+export function FacilitatorOrigins({ origins }: FacilitatorOriginsProps) {
   const router = useRouter();
-  const [origins] =
-    api.public.sellers.bazaar.featuredSummaries.useSuspenseQuery({
-      chain,
-      facilitatorIds: [facilitatorId],
-      pagination: { page: 0, page_size: PAGE_SIZE },
-      sorting: FACILITATOR_SERVERS_SORTING,
-      timeframe,
-    });
-
   return (
     <ResponsiveCollection
       data={origins.items}
