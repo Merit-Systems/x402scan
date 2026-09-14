@@ -87,5 +87,5 @@ const getToolCallsOverTimeUncached = async (
 export const getToolCallsOverTime = cachedQuery(
   "getToolCallsOverTime",
   getToolCallsOverTimeUncached,
-  { ttlSeconds: 30 }
+  { ttlSeconds: 60 }
 );
