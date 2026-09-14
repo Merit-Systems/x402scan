@@ -38,7 +38,7 @@ export async function handleRegistryRegisterOrigin(
 
   try {
     if (result.originId) {
-      revalidateResourceData(result.originId);
+      await revalidateResourceData(result.originId);
     }
   } catch (e) {
     console.error("Resource cache revalidation failed:", e);
