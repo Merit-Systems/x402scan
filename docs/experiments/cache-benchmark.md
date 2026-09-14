@@ -53,6 +53,10 @@ subsequent groups on failure. Each request runs one fixed query function;
 seller queries issue multiple SQL statements. This is a bounded experiment,
 not a statistically reliable performance/load study.
 
+Use `--modes=uncached,next` to test only the available modes when Redis is
+intentionally disabled. The default runs all three and fails closed if Redis
+is unavailable; never silently treat an uncached read as a Redis result.
+
 A new UUID creates cold benchmark keys. Set `BENCHMARK_RUN_ID` to reuse a run
 for refresh/expiration checks. Before calling an initial burst cold, confirm
 that run has not been used on this deployment. Reuse after 15 minutes to inspect
@@ -74,9 +78,14 @@ and is not a PostgreSQL execution-plan measurement.
 Export logs for the exact preview deployment and the full test interval:
 
 ```sh
-vercel logs DEPLOYMENT_ID --scope merit-systems --since 30m --limit 2000 --json > /tmp/cache-logs.jsonl
+node apps/scan/scripts/cache-benchmark-export-logs.mjs DEPLOYMENT_ID RUN_ID /tmp/cache-logs.jsonl 30m
 node apps/scan/scripts/cache-benchmark-logs.mjs RUN_ID /tmp/cache-logs.jsonl /tmp/cache-counts.json
 ```
+
+The exporter uses overlapping timestamp windows because the installed Vercel
+CLI repeated its first 50 records when asked for a larger limit. It preserves
+partial evidence, bounds pagination, and fails on ambiguous/no-progress pages.
+Use an explicit start timestamp instead of `30m` for older runs.
 
 The reducer deduplicates repeated Vercel log entries and counts execution and
 attempt IDs. Check the log limit/window and incomplete starts/ends before
@@ -96,6 +105,47 @@ Compare end-to-end latency, actual captured query attempts, slow-miss duplicatio
 errors and data age. Billing, real production traffic, seller/spending coverage
 beyond these fixtures and full refresh-cycle checks require further measurement.
 Do not claim the backend migration is proven from warm latency alone.
+
+## Recorded preview result — September 14, 2026
+
+Tested commit `dfa639d7`, deployment `dpl_7zEaaWKowb7LJpigcKekFpdL6AmD`,
+run `93be62ca-8f16-488f-864e-be899ad1dc8e`. All 200 requests in the
+Next-versus-uncached comparison succeeded. The complete timestamp-paginated
+export contained 166 distinct origin executions, all with completions and no
+query failures; these matched the execution IDs returned to the runner.
+
+Each mode received a 20-request initial burst followed by five serial reads.
+Next's origin executions all belonged to the initial burst; the five subsequent
+reads reused the cached result. Sellers issue two SQL queries per execution.
+
+| Query            | Next cold executions / 20 requests | Next query attempts, entire group | Uncached query attempts / 25 requests | Uncached warm HTTP median | Next warm HTTP median |
+| ---------------- | ---------------------------------: | --------------------------------: | ------------------------------------: | ------------------------: | --------------------: |
+| Overall stats    |                                 15 |                                15 |                                    25 |                     66 ms |                 53 ms |
+| Stats chart      |                                 19 |                                19 |                                    25 |                     49 ms |                 47 ms |
+| Sellers          |                                 13 |                                26 |                                    50 |                     60 ms |                 55 ms |
+| Recent transfers |                                 19 |                                19 |                                    25 |                     52 ms |                 43 ms |
+
+For the five warm uncached reads, median observed database-operation time was
+10.3 ms (overall), 5.8 ms (chart), 15.0 ms (sellers, both queries), and 7.0 ms
+(recent transfers). These include transport/adapter time and are not SQL
+execution-plan measurements. Small samples and differing instance warm-up mean
+the latency columns should not be treated as a causal speed ranking.
+
+This establishes that the tested Vercel remote cache reused warm results but
+did not collapse a cold burst to one execution. It also shows inexpensive warm
+reads for these particular inputs. It does not establish production load limits,
+Redis performance, costs, or freshness across a full cache lifecycle.
+
+The project has a Redis URL shared across production/preview/development and a
+preview-specific REDIS_DISABLE setting. The first all-mode run stopped when
+Redis was unavailable. That setting has not been overridden: the user is being
+asked whether to enable access only for this benchmark branch with isolated
+expiring keys or supply a separate test Redis. No Neon settings were changed.
+
+Aggregate measurements are checked in beside this document as
+`cache-benchmark-results-2026-09-14.json`; raw platform logs and credentials are
+not committed. The JSON records the exact tested deployment and the remaining
+limitations.
 
 ## Cleanup
 
