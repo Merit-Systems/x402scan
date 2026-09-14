@@ -32,6 +32,7 @@ export const env = createEnv({
     TRANSFERS_DB_URL_REPLICA_3: z.url().optional(),
     TRANSFERS_DB_URL_REPLICA_4: z.url().optional(),
     TRANSFERS_DB_URL_REPLICA_5: z.url().optional(),
+    CACHE_BENCHMARK_TOKEN: z.string().min(32).optional(),
     REDIS_URL: z.string().optional(),
     REDIS_DISABLE: z.coerce.boolean().optional().default(false),
     ECHO_APP_ID: z.string().default("7fed205e-3aa5-44af-83a3-f7ae5e49dba4"),

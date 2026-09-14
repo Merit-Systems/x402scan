@@ -3,6 +3,8 @@ import {
   transfersHttpReplicas,
 } from "@x402scan/transfers-db";
 
+import { observeQuery } from "./query-observation";
+
 import type z from "zod";
 
 import type { Prisma } from "@x402scan/transfers-db";
@@ -46,7 +48,7 @@ export const queryRaw = async <T>(
     if (!replica) throw new Error("Replica selection failed");
     try {
       rows = await withTimeout(
-        replica.query(query, params),
+        observeQuery("replica", () => replica.query(query, params)),
         REPLICA_TIMEOUT_MS
       );
     } catch (error) {
@@ -56,7 +58,9 @@ export const queryRaw = async <T>(
         error
       );
       rows = await withTimeout(
-        transfersHttpPrimary.query(query, params),
+        observeQuery("primary", () =>
+          transfersHttpPrimary.query(query, params)
+        ),
         PRIMARY_TIMEOUT_MS
       );
       console.log(
@@ -65,7 +69,7 @@ export const queryRaw = async <T>(
     }
   } else {
     rows = await withTimeout(
-      transfersHttpPrimary.query(query, params),
+      observeQuery("primary", () => transfersHttpPrimary.query(query, params)),
       PRIMARY_TIMEOUT_MS
     );
   }
