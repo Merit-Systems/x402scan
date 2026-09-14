@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+import type { cacheLife, cacheTag } from "next/cache";
+
 vi.mock("@/env", () => ({
   env: {
     AGENTCASH_URL: "https://agentcash.dev",
@@ -7,15 +9,12 @@ vi.mock("@/env", () => ({
   },
 }));
 
-vi.mock("@/lib/cache", () => ({
-  CACHE_TTL_SECONDS: 60,
+vi.mock("next/cache", () => ({
+  cacheLife: vi.fn<typeof cacheLife>(),
+  cacheTag: vi.fn<typeof cacheTag>(),
 }));
 
-vi.mock("@/lib/redis", () => ({
-  getRedisClient: () => null,
-}));
-
-import { fetchUsedOriginsFromAgentCash } from "./origins";
+import { fetchUsedOriginsFromAgentCash, getDiscoverOrigins } from "./origins";
 
 describe("fetchUsedOriginsFromAgentCash", () => {
   beforeEach(() => {
@@ -132,5 +131,37 @@ describe("fetchUsedOriginsFromAgentCash", () => {
     const result = await fetchUsedOriginsFromAgentCash("x402");
 
     expect(result).toBeNull();
+  });
+});
+
+describe("getDiscoverOrigins", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("preserves upstream ranking order", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        Response.json({
+          origins: ["https://z.example.com", "https://a.example.com"],
+        })
+      )
+    );
+    expect(await getDiscoverOrigins()).toEqual([
+      "https://z.example.com",
+      "https://a.example.com",
+    ]);
+  });
+
+  it("degrades to an empty list on a cold upstream failure", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
+    expect(await getDiscoverOrigins()).toEqual([]);
+  });
+
+  it("degrades to an empty list when the initial catalog is empty", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(Response.json({ origins: [] }))
+    );
+    expect(await getDiscoverOrigins()).toEqual([]);
   });
 });
