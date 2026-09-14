@@ -3,7 +3,7 @@ import z from "zod";
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
 import { agentsRelease } from "@/lib/agents";
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
 
 import type { resourceBucketedQuerySchema } from "./schemas";
@@ -109,10 +109,8 @@ const getBucketedToolCallsByResourcesUncached = async (
   return bucketedToolCallsByResourcesResultSchema.parse(rawResult);
 };
 
-export const getBucketedToolCallsByResources = createCachedArrayQuery({
-  queryFn: getBucketedToolCallsByResourcesUncached,
-  cacheKeyPrefix: "bucketed-tool-calls-by-resources",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-  tags: ["resource-statistics", "resources", "tool-calls"],
-});
+export const getBucketedToolCallsByResources = cachedQuery(
+  "getBucketedToolCallsByResources",
+  getBucketedToolCallsByResourcesUncached,
+  { tags: ["resources"] }
+);

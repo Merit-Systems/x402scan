@@ -2,10 +2,7 @@ import z from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { sortingSchema } from "@/lib/schemas";
 import { DEFAULT_TOOLS_SORTING, TOOL_SORT_IDS } from "@/lib/table-sort-options";
@@ -150,10 +147,4 @@ const listTopToolsUncached = async (
   });
 };
 
-export const listTopTools = createCachedPaginatedQuery({
-  queryFn: listTopToolsUncached,
-  cacheKeyPrefix: "composer:top-tools",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["latest_call_time"],
-  tags: ["composer", "tools"],
-});
+export const listTopTools = cachedQuery("listTopTools", listTopToolsUncached);

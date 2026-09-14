@@ -4,11 +4,7 @@ import z from "zod";
 import { Prisma } from "@x402scan/scan-db";
 
 import { agentsRelease } from "@/lib/agents";
-import {
-  createCachedQuery,
-  createCachedArrayQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { timeframeSchema, timePeriodSchema } from "@/lib/schemas";
 import {
   getTimeRangeFromTimeframe,
@@ -51,13 +47,10 @@ const getOverallActivityUncached = async (
   return result;
 };
 
-export const getOverallActivity = createCachedQuery({
-  queryFn: getOverallActivityUncached,
-  cacheKeyPrefix: "agent-config:overall-activity",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: [],
-  tags: ["agent-configuration", "activity"],
-});
+export const getOverallActivity = cachedQuery(
+  "getOverallActivity",
+  getOverallActivityUncached
+);
 
 export const overallBucketedActivityInputSchema = z.object({
   timeframe: timePeriodSchema,
@@ -156,10 +149,7 @@ const getOverallBucketedActivityUncached = async (
   );
 };
 
-export const getOverallBucketedActivity = createCachedArrayQuery({
-  queryFn: getOverallBucketedActivityUncached,
-  cacheKeyPrefix: "agent-config:overall-bucketed-activity",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-  tags: ["agent-configuration", "activity"],
-});
+export const getOverallBucketedActivity = cachedQuery(
+  "getOverallBucketedActivity",
+  getOverallBucketedActivityUncached
+);

@@ -3,7 +3,7 @@ import z from "zod";
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
 import { agentsRelease } from "@/lib/agents";
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
 
 export const toolCallsOverTimeQuerySchema = z.object({
@@ -84,11 +84,8 @@ const getToolCallsOverTimeUncached = async (
   return bucketedToolCallsResultSchema.parse(rawResult);
 };
 
-export const getToolCallsOverTime = createCachedArrayQuery({
-  queryFn: getToolCallsOverTimeUncached,
-  cacheKeyPrefix: "spending:tool-calls-over-time",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-  revalidate: 60,
-  tags: ["spending", "tool-calls"],
-});
+export const getToolCallsOverTime = cachedQuery(
+  "getToolCallsOverTime",
+  getToolCallsOverTimeUncached,
+  { ttlSeconds: 60 }
+);
