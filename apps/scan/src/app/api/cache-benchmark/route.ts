@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     );
   const started = performance.now();
   try {
-    const result = await runBenchmark(input.data);
+    const { metadata: result } = await runBenchmark(input.data);
     return Response.json(
       {
         ...result,
