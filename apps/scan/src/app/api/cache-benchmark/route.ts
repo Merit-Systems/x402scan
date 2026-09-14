@@ -25,6 +25,16 @@ export async function GET(request: Request) {
       { error: "Invalid benchmark input" },
       { status: 400, headers }
     );
+  if (input.data.mode === "redis" && (env.REDIS_DISABLE || !env.REDIS_URL)) {
+    return Response.json(
+      {
+        error: env.REDIS_DISABLE
+          ? "Redis is disabled for this preview"
+          : "Redis is not configured for this preview",
+      },
+      { status: 503, headers }
+    );
+  }
   const started = performance.now();
   try {
     const { metadata: result } = await runBenchmark(input.data);

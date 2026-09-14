@@ -21,7 +21,17 @@ const output = benchmarkEnv.BENCHMARK_OUTPUT ?? "cache-benchmark-results.json";
 const queries = ["overall", "bucketed", "sellers", "recent-transfers"];
 // Rotate order to reduce systematic first-mode advantage. This is still a
 // small smoke test, not a randomized production load study.
-const modes = ["uncached", "redis", "next"];
+const modes = z
+  .array(z.enum(["uncached", "redis", "next"]))
+  .min(1)
+  .max(3)
+  .transform((values) => [...new Set(values)])
+  .parse(
+    process.argv
+      .find((arg) => arg.startsWith("--modes="))
+      ?.slice(8)
+      .split(",") ?? ["uncached", "redis", "next"]
+  );
 const records = [];
 if (!dryRun && !token) throw new Error("CACHE_BENCHMARK_TOKEN is required");
 if (dryRun) {
@@ -31,7 +41,7 @@ if (dryRun) {
       run,
       queries,
       modes,
-      requests: 300,
+      requests: queries.length * modes.length * 25,
       maxConcurrency: 20,
     })
   );
