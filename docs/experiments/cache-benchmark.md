@@ -207,9 +207,30 @@ exactly one origin execution. The real Lua scripts renewed the lease beyond its
 initial lifetime, and Date/BigInt values survived cached round trips. No Neon or
 shared Redis configuration was involved in this local test.
 
-The recorded preview runs above predate this helper. A new preview run is needed
-to validate the current helper across Vercel instances; local results alone do
-not establish deployed behavior.
+A new preview run tested commit `ec58a8d6`, deployment
+`dpl_CZDmy7UvuH6URcC9FDZuBFCTHdFv`, run
+`9ecfdd72-8253-4204-b16b-f6af9962e483`. All 300 requests succeeded, with matching
+payload digests for every query across all modes. The complete paginated log
+export matched all 175 distinct returned origin executions, with no extra
+unreturned executions, missing completions, or query failures.
+
+| Query | Redis cold executions / 20 | Next cold executions / 20 | Redis warm median | Next warm median | Uncached warm median |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Overall stats | 1 | 18 | 45 ms | 49 ms | 69 ms |
+| Stats chart | 1 | 18 | 47 ms | 42 ms | 51 ms |
+| Sellers | 1 | 18 | 41 ms | 44 ms | 77 ms |
+| Recent transfers | 1 | 17 | 41 ms | 57 ms | 52 ms |
+
+Across 100 requests per mode, the new Redis helper made **5 database attempts**,
+Next **89**, and uncached reads **125**. Both caches avoided additional origin
+reads in their five-request warm phase. Redis cold medians ranged from 55–114 ms.
+The small sample and instance warm-up still prevent a stable latency ranking.
+
+This verifies the replacement's deployed cold-miss coordination for these four
+queries. Refresh/expiry, production capacity, billing, and cross-deployment
+persistence remain outside this run. Slow-query renewal was verified locally,
+not against a deliberately slowed hosted database. Aggregate results are in
+`cache-benchmark-minimal-redis-results-2026-09-14.json`.
 
 ## Cleanup
 

@@ -1,0 +1,380 @@
+{
+  "date": "2026-09-14",
+  "commit": "ec58a8d64cc53b3ccf2d407c4de664de4e8e74ff",
+  "deployment": "dpl_CZDmy7UvuH6URcC9FDZuBFCTHdFv",
+  "url": "https://x402scan-2k2ggzhae-merit-systems.vercel.app",
+  "run": "9ecfdd72-8253-4204-b16b-f6af9962e483",
+  "implementation": "minimal Redis helper with renewable leases and ownership-checked publication",
+  "requests": 300,
+  "errors": 0,
+  "distinctPayloadDigestsByQuery": {
+    "overall": 1,
+    "bucketed": 1,
+    "sellers": 1,
+    "recent-transfers": 1
+  },
+  "logVerification": {
+    "uniqueOriginExecutionIds": 175,
+    "unreturnedExecutions": 0,
+    "missingResponseExecutions": 0,
+    "originAndQueryCompletionsMatch": true
+  },
+  "http": [
+    {
+      "query": "overall",
+      "mode": "uncached",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 1221.6,
+      "p95Ms": 1398.7
+    },
+    {
+      "query": "overall",
+      "mode": "uncached",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 68.6,
+      "p95Ms": 81.7
+    },
+    {
+      "query": "overall",
+      "mode": "redis",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 114.4,
+      "p95Ms": 134.1
+    },
+    {
+      "query": "overall",
+      "mode": "redis",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 44.7,
+      "p95Ms": 49.0
+    },
+    {
+      "query": "overall",
+      "mode": "next",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 90.1,
+      "p95Ms": 207.2
+    },
+    {
+      "query": "overall",
+      "mode": "next",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 49.3,
+      "p95Ms": 63.6
+    },
+    {
+      "query": "bucketed",
+      "mode": "uncached",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 56.4,
+      "p95Ms": 63.4
+    },
+    {
+      "query": "bucketed",
+      "mode": "uncached",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 50.6,
+      "p95Ms": 60.8
+    },
+    {
+      "query": "bucketed",
+      "mode": "redis",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 105.8,
+      "p95Ms": 112.4
+    },
+    {
+      "query": "bucketed",
+      "mode": "redis",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 47.3,
+      "p95Ms": 55.7
+    },
+    {
+      "query": "bucketed",
+      "mode": "next",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 69.8,
+      "p95Ms": 104.8
+    },
+    {
+      "query": "bucketed",
+      "mode": "next",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 42.5,
+      "p95Ms": 48.8
+    },
+    {
+      "query": "sellers",
+      "mode": "uncached",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 93.7,
+      "p95Ms": 128.2
+    },
+    {
+      "query": "sellers",
+      "mode": "uncached",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 76.5,
+      "p95Ms": 107.6
+    },
+    {
+      "query": "sellers",
+      "mode": "redis",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 99.7,
+      "p95Ms": 112.2
+    },
+    {
+      "query": "sellers",
+      "mode": "redis",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 41.0,
+      "p95Ms": 127.9
+    },
+    {
+      "query": "sellers",
+      "mode": "next",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 84.2,
+      "p95Ms": 92.0
+    },
+    {
+      "query": "sellers",
+      "mode": "next",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 43.6,
+      "p95Ms": 49.3
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "uncached",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 689.2,
+      "p95Ms": 693.2
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "uncached",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 51.6,
+      "p95Ms": 64.1
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "redis",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 55.0,
+      "p95Ms": 89.1
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "redis",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 41.4,
+      "p95Ms": 52.0
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "next",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 63.8,
+      "p95Ms": 71.6
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "next",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 56.7,
+      "p95Ms": 96.7
+    }
+  ],
+  "executions": [
+    {
+      "query": "overall",
+      "mode": "next",
+      "originExecutions": 18,
+      "originCompletions": 18,
+      "originFailures": 0,
+      "queryAttempts": 18,
+      "queryCompletions": 18,
+      "queryFailures": 0,
+      "queryDurationMs": 211.7389629999991
+    },
+    {
+      "query": "overall",
+      "mode": "redis",
+      "originExecutions": 1,
+      "originCompletions": 1,
+      "originFailures": 0,
+      "queryAttempts": 1,
+      "queryCompletions": 1,
+      "queryFailures": 0,
+      "queryDurationMs": 8.607856999999967
+    },
+    {
+      "query": "overall",
+      "mode": "uncached",
+      "originExecutions": 25,
+      "originCompletions": 25,
+      "originFailures": 0,
+      "queryAttempts": 25,
+      "queryCompletions": 25,
+      "queryFailures": 0,
+      "queryDurationMs": 2506.5431339999996
+    },
+    {
+      "query": "bucketed",
+      "mode": "next",
+      "originExecutions": 18,
+      "originCompletions": 18,
+      "originFailures": 0,
+      "queryAttempts": 18,
+      "queryCompletions": 18,
+      "queryFailures": 0,
+      "queryDurationMs": 192.78312499999947
+    },
+    {
+      "query": "bucketed",
+      "mode": "redis",
+      "originExecutions": 1,
+      "originCompletions": 1,
+      "originFailures": 0,
+      "queryAttempts": 1,
+      "queryCompletions": 1,
+      "queryFailures": 0,
+      "queryDurationMs": 8.168828000000303
+    },
+    {
+      "query": "bucketed",
+      "mode": "uncached",
+      "originExecutions": 25,
+      "originCompletions": 25,
+      "originFailures": 0,
+      "queryAttempts": 25,
+      "queryCompletions": 25,
+      "queryFailures": 0,
+      "queryDurationMs": 205.34022099999902
+    },
+    {
+      "query": "sellers",
+      "mode": "next",
+      "originExecutions": 18,
+      "originCompletions": 18,
+      "originFailures": 0,
+      "queryAttempts": 36,
+      "queryCompletions": 36,
+      "queryFailures": 0,
+      "queryDurationMs": 448.9510739999987
+    },
+    {
+      "query": "sellers",
+      "mode": "redis",
+      "originExecutions": 1,
+      "originCompletions": 1,
+      "originFailures": 0,
+      "queryAttempts": 2,
+      "queryCompletions": 2,
+      "queryFailures": 0,
+      "queryDurationMs": 13.746404000000439
+    },
+    {
+      "query": "sellers",
+      "mode": "uncached",
+      "originExecutions": 25,
+      "originCompletions": 25,
+      "originFailures": 0,
+      "queryAttempts": 50,
+      "queryCompletions": 50,
+      "queryFailures": 0,
+      "queryDurationMs": 870.8303680000004
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "next",
+      "originExecutions": 17,
+      "originCompletions": 17,
+      "originFailures": 0,
+      "queryAttempts": 17,
+      "queryCompletions": 17,
+      "queryFailures": 0,
+      "queryDurationMs": 129.07210199999918
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "redis",
+      "originExecutions": 1,
+      "originCompletions": 1,
+      "originFailures": 0,
+      "queryAttempts": 1,
+      "queryCompletions": 1,
+      "queryFailures": 0,
+      "queryDurationMs": 6.3410210000001825
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "uncached",
+      "originExecutions": 25,
+      "originCompletions": 25,
+      "originFailures": 0,
+      "queryAttempts": 25,
+      "queryCompletions": 25,
+      "queryFailures": 0,
+      "queryDurationMs": 12370.273768000003
+    }
+  ],
+  "limitations": [
+    "One bounded three-mode run; instance and database initialization are not normalized.",
+    "Observed warm medians use five requests per query/mode, not a statistically reliable SLO estimate.",
+    "Refresh cycles, 30-minute expiry, deployment persistence, hosted slow-query lease renewal and billing were not tested in this run.",
+    "Raw query attempts include transport; Prisma measurements count operations rather than hidden driver statements."
+  ]
+}
