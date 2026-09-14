@@ -1,9 +1,8 @@
-import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { chainSchema, timeframeSchema } from "@/lib/schemas";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
@@ -25,20 +24,16 @@ type RecipientTransactionSparklinesInput = z.infer<
   typeof recipientTransactionSparklinesInputSchema
 >;
 
-const listRecipientTransactionSparklineRows = async (
-  input: RecipientTransactionSparklinesInput
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("statistics", "recipients");
+const listRecipientTransactionSparklineRows = cachedQuery(
+  "recipientTransactionSparklineRows",
+  async (input: RecipientTransactionSparklinesInput) => {
+    if (input.recipients.length === 0) return [];
 
-  if (input.recipients.length === 0) return [];
-
-  const tableName = `recipient_stats_bucketed_${getMaterializedViewSuffix(input.timeframe)}`;
-  const chainFilter = input.chain
-    ? Prisma.sql`AND chain = ${input.chain}`
-    : Prisma.empty;
-  const sql = Prisma.sql`
+    const tableName = `recipient_stats_bucketed_${getMaterializedViewSuffix(input.timeframe)}`;
+    const chainFilter = input.chain
+      ? Prisma.sql`AND chain = ${input.chain}`
+      : Prisma.empty;
+    const sql = Prisma.sql`
       SELECT
         recipient,
         bucket,
@@ -50,8 +45,9 @@ const listRecipientTransactionSparklineRows = async (
       ORDER BY recipient, bucket ASC
     `;
 
-  return queryRaw(sql, z.array(recipientTransactionSparklineRowSchema));
-};
+    return queryRaw(sql, z.array(recipientTransactionSparklineRowSchema));
+  }
+);
 
 export async function getOriginTransactionSparklines(input: {
   chain?: RecipientTransactionSparklinesInput["chain"];

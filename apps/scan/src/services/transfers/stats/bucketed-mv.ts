@@ -1,9 +1,8 @@
-import { cacheLife, cacheTag } from "next/cache";
 import { z } from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { QUERY_CACHE_LIFE } from "@/lib/cache/constants";
+import { cachedQuery } from "@/lib/cache/query";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
 
@@ -105,11 +104,7 @@ const getBucketedStatisticsMVUncached = async (
   return queryRaw(sql, bucketedResultSchema);
 };
 
-export const getBucketedStatisticsMV = async (
-  ...args: Parameters<typeof getBucketedStatisticsMVUncached>
-) => {
-  "use cache: remote";
-  cacheLife(QUERY_CACHE_LIFE);
-  cacheTag("statistics");
-  return getBucketedStatisticsMVUncached(...args);
-};
+export const getBucketedStatisticsMV = cachedQuery(
+  "getBucketedStatisticsMV",
+  getBucketedStatisticsMVUncached
+);
