@@ -732,10 +732,12 @@ export const RegisterResourceForm = () => {
   );
 };
 
-const CALENDAR_URL =
-  'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U';
+const MERCHANT_EMAIL = 'merchants@merit.systems';
+const MERCHANT_EMAIL_URL = `mailto:${MERCHANT_EMAIL}?subject=${encodeURIComponent(
+  'Feedback / questions about my API'
+)}`;
 
-const STEP_NAMES = ['review_api_page', 'test_endpoints', 'schedule_call'];
+const STEP_NAMES = ['review_api_page', 'test_endpoints', 'email_team'];
 
 function PostRegistrationDialog({
   originId,
@@ -761,7 +763,6 @@ function PostRegistrationDialog({
         hostname,
         app_surface: 'x402scan',
       });
-      window.open(CALENDAR_URL, '_blank');
     },
     onError: () => {
       toast.error('Failed to save email. Please try again.');
@@ -877,7 +878,7 @@ function PostRegistrationDialog({
             {/* Step 3 */}
             <ChecklistStep
               number={3}
-              label="Get free feedback from our team"
+              label="Send us feedback or questions"
               completed={emailSubmitted}
               current={currentStep === 3}
             >
@@ -926,11 +927,11 @@ function PostRegistrationDialog({
                   </Button>
                 </form>
               ) : (
-                contactEmail && (
-                  <Link href={CALENDAR_URL} target="_blank" className="flex-1">
-                    <Button className="w-full">Schedule a call &rarr;</Button>
-                  </Link>
-                )
+                <Link href={MERCHANT_EMAIL_URL} className="flex-1">
+                  <Button className="w-full">
+                    Email {MERCHANT_EMAIL} &rarr;
+                  </Button>
+                </Link>
               )}
             </ChecklistStep>
 
