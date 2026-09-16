@@ -241,6 +241,15 @@ export const RegisterResourceForm = () => {
     failedResourceByUrl.get(normalizedUrl) ??
     (failedResources.length === 1 ? failedResources[0] : undefined);
 
+  // Only asked for when endpoints failed: a spec served from one host that
+  // declares its API on another makes every probe a 404, and the generic
+  // failure copy would blame the merchant's paywall for our wrong-host probe.
+  const { data: serverHostMismatch } =
+    api.developer.serverHostMismatch.useQuery(
+      { origin: urlOrigin ?? '' },
+      { enabled: Boolean(urlOrigin) && failedResources.length > 0 }
+    );
+
   const activeBulkResult = manualResult ?? bulkData ?? null;
   const activeSummaryOrigin = manualResult?.origin ?? urlOrigin;
 
@@ -564,9 +573,11 @@ export const RegisterResourceForm = () => {
                   {failedResources.length === 1 ? '' : 's'} won&apos;t be
                   registered.
                 </strong>{' '}
-                {isV1Issue
-                  ? 'This endpoint returns an x402 v1 response. x402scan only supports v2 — update your paywall to return the v2 format.'
-                  : 'They need to return a 402 payment challenge — ensure the x402 paywall runs before request validation, or mark the required parameters in your OpenAPI spec so we can probe automatically. If these endpoints are free (not x402-paid), add "security": [] to their OpenAPI definition to exclude them from probing.'}
+                {serverHostMismatch
+                  ? `Your openapi.json is served from ${serverHostMismatch.documentOrigin} but declares its API on ${serverHostMismatch.declaredOrigin} in "servers". x402scan probed the host serving the document, so these 404s are the wrong host — not a problem with your paywall or schemas. Register ${serverHostMismatch.declaredOrigin} instead, or serve the spec and the API from the same host.`
+                  : isV1Issue
+                    ? 'This endpoint returns an x402 v1 response. x402scan only supports v2 — update your paywall to return the v2 format.'
+                    : 'They need to return a 402 payment challenge — ensure the x402 paywall runs before request validation, or mark the required parameters in your OpenAPI spec so we can probe automatically. If these endpoints are free (not x402-paid), add "security": [] to their OpenAPI definition to exclude them from probing.'}
               </p>
               <div className="space-y-2 max-h-[360px] overflow-y-auto">
                 {failedResources.map((failed, idx) => (
@@ -587,6 +598,7 @@ export const RegisterResourceForm = () => {
                   status: r.statusCode,
                 }))}
                 missingContactEmail={!contactEmail}
+                serverHostMismatch={serverHostMismatch}
               />
             </CollapsibleContent>
           </Collapsible>
@@ -1175,6 +1187,14 @@ function ProbeResult({
     testedKeys,
   ]);
 
+  // A favicon can resolve fine server-side and still be blocked in the
+  // visitor's browser by Cross-Origin-Resource-Policy, which otherwise shows
+  // up only as a silent fallback to the globe placeholder.
+  const { data: blockedFavicon } = api.developer.faviconBlocked.useQuery(
+    { url: preview?.favicon ?? '' },
+    { enabled: Boolean(preview?.favicon) }
+  );
+
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
     ? sortedResources
@@ -1236,6 +1256,31 @@ function ProbeResult({
           Serve a <code className="font-mono">/favicon.ico</code> at your API
           root to display an icon.
         </p>
+      )}
+      {blockedFavicon && (
+        <div className="text-xs text-yellow-600 dark:text-yellow-500 space-y-1.5">
+          <p className="flex items-start gap-1.5">
+            <TriangleAlert className="size-3 shrink-0 mt-0.5" />
+            <span>
+              Your favicon is served with{' '}
+              <code className="font-mono bg-muted px-1 rounded text-[11px]">
+                Cross-Origin-Resource-Policy: {blockedFavicon.policy}
+              </code>
+              , so browsers block it on other sites and your icon shows as a
+              placeholder here. Send{' '}
+              <code className="font-mono bg-muted px-1 rounded text-[11px]">
+                cross-origin
+              </code>{' '}
+              for this asset to display it.
+            </span>
+          </p>
+          <p className="pl-[18px] text-foreground">
+            <DiscoveryActions
+              label="Have your agent fix it with this prompt"
+              blockedFavicon={blockedFavicon}
+            />
+          </p>
+        </div>
       )}
       {!contactEmail && (
         <div className="text-xs text-yellow-600 dark:text-yellow-500 space-y-1.5">

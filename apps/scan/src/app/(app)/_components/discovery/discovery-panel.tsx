@@ -31,6 +31,8 @@ import { jsonObjectSchema } from '@/lib/json';
 import { cleanExternalText, cn } from '@/lib/utils';
 
 import { DiscoveryActions } from './discovery-actions';
+import type { ServerHostMismatch } from '@/lib/discovery/server-host-mismatch';
+import type { BlockedFavicon } from '@/lib/discovery/favicon-blocked';
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { ResourceCard } from '@/app/(app)/_components/resources/resource-card';
 import {
@@ -74,6 +76,8 @@ export function DiscoveryFixHint({
   noDiscovery,
   missingSchemaResources,
   missingContactEmail,
+  serverHostMismatch,
+  blockedFavicon,
 }: {
   className?: string;
   failedResources?: { url: string; error: string; status?: number }[];
@@ -81,6 +85,10 @@ export function DiscoveryFixHint({
   noDiscovery?: boolean;
   missingSchemaResources?: string[];
   missingContactEmail?: boolean;
+  /** Set when the spec declares its API on a host other than its own. */
+  serverHostMismatch?: ServerHostMismatch | null;
+  /** Set when the resolved favicon is blocked cross-origin by CORP. */
+  blockedFavicon?: BlockedFavicon | null;
 }) {
   const label = noDiscovery
     ? 'Have your agent create an OpenAPI spec for your resource'
@@ -94,6 +102,8 @@ export function DiscoveryFixHint({
         warnings={warnings}
         missingSchemaResources={missingSchemaResources}
         missingContactEmail={missingContactEmail}
+        serverHostMismatch={serverHostMismatch}
+        blockedFavicon={blockedFavicon}
         noDiscovery={noDiscovery}
       />{' '}
       or{' '}

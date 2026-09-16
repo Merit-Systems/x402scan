@@ -10,6 +10,8 @@ import { probeX402Endpoint } from '@/lib/discovery/probe';
 import { validateResource } from '@/lib/resources';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { deduplicateWarnings } from '@/lib/discovery/utils';
+import { detectServerHostMismatch } from '@/lib/discovery/server-host-mismatch';
+import { detectBlockedFavicon } from '@/lib/discovery/favicon-blocked';
 import {
   createProbeSession,
   cacheProbeResult,
@@ -148,6 +150,26 @@ export const developerRouter = createTRPCRouter({
           origin: scrapedOrigin,
         },
       };
+    }),
+
+  /** Whether an origin's OpenAPI document declares its API on a different
+   *  host than the one serving the document. Queried once when endpoints fail
+   *  so the UI can explain 404s that are our probing the wrong host rather
+   *  than anything wrong with the merchant's paywall. */
+  serverHostMismatch: publicProcedure
+    .input(z.object({ origin: z.string().url() }))
+    .query(async ({ input }) => {
+      return await detectServerHostMismatch(input.origin);
+    }),
+
+  /** Whether a resolved favicon is served with a Cross-Origin-Resource-Policy
+   *  that stops browsers rendering it on x402scan. Queried once a preview
+   *  favicon exists, so the merchant learns why their icon shows as a globe
+   *  instead of seeing it silently fall back. */
+  faviconBlocked: publicProcedure
+    .input(z.object({ url: z.string().url() }))
+    .query(async ({ input }) => {
+      return await detectBlockedFavicon(input.url);
     }),
 
   /** Batch test multiple resources to get their x402 responses.
