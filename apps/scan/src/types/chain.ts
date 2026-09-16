@@ -9,7 +9,11 @@ export enum Chain {
 
 export type EvmChain = Exclude<Chain, Chain.SOLANA>;
 
-export const SUPPORTED_CHAINS = [Chain.BASE, Chain.SOLANA] as const;
+export const SUPPORTED_CHAINS = [
+  Chain.BASE,
+  Chain.SOLANA,
+  Chain.POLYGON,
+] as const;
 
 export type SupportedChain = (typeof SUPPORTED_CHAINS)[number];
 

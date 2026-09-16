@@ -7,6 +7,7 @@ import type { EvmWallets, Wallets } from './types';
 
 const evmWallets = (name: string): EvmWallets => ({
   [Chain.BASE]: evmServerWallet(Chain.BASE)(name),
+  [Chain.POLYGON]: evmServerWallet(Chain.POLYGON)(name),
 });
 
 export const wallets = (name: string): Wallets => ({
