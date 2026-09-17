@@ -45,6 +45,10 @@ export async function registerEndpoint(
   // 2. Register the resource (includes HTTPS, v1, SIWX validation)
   const result = await registerResource(url, probeResult.advisory, {
     warnings: probeResult.warnings,
+    // The DB identity is METHOD::normalized-url.  Omitting the probed method
+    // creates a legacy empty-method row beside an existing GET/POST row when
+    // this single-endpoint path follows an origin-discovery registration.
+    method: probeResult.advisory.method,
     ...options,
   });
 
