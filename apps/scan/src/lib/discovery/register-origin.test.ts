@@ -74,6 +74,23 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
     vi.clearAllMocks();
   });
 
+  it('keeps a parameterized template as the registered resource identity', async () => {
+    const template = `${ORIGIN}/v1/entities/{entityId}`;
+
+    const result = await registerResourcesFromDiscovery(
+      [{ url: template, method: 'GET', authMode: 'paid' }],
+      'openapi'
+    );
+
+    expect(result.registered).toBe(1);
+    expect(probeX402Endpoint).toHaveBeenCalledWith(template, 'GET');
+    expect(registerResource).toHaveBeenCalledWith(
+      template,
+      expect.anything(),
+      expect.anything()
+    );
+  });
+
   it('registers openapi security:[] endpoints as public catalog rows', async () => {
     // Telemost shape: a paid endpoint plus /v1/catalog, which the discovery
     // package classified `unprotected` because the OpenAPI operation declares
