@@ -9,7 +9,27 @@ export enum Chain {
 
 export type EvmChain = Exclude<Chain, Chain.SOLANA>;
 
-export const SUPPORTED_CHAINS = [Chain.BASE, Chain.SOLANA] as const;
+/**
+ * Chains registration/indexing accepts, in addition to the ones backed by a
+ * server wallet (`Wallets`/`EvmWallets` in services/cdp/server-wallet/wallets).
+ * Kept separate on purpose: a chain with no wallet-backed signing on this stack
+ * can still publish compliant x402 v2 challenges that this app discovers,
+ * indexes and probes read-only. Chains that DO have a signing path are listed
+ * twice (here and in the wallet map) — see PR #1013.
+ */
+export const SUPPORTED_CHAINS = [
+  Chain.BASE,
+  Chain.SOLANA,
+  Chain.POLYGON,
+] as const;
+
+/**
+ * Chains this app can sign/broadcast on. Must stay a subset of
+ * SUPPORTED_CHAINS; it keys the CDP server-wallet map.
+ */
+export const WALLET_CHAINS = [Chain.BASE, Chain.SOLANA] as const;
+
+export type WalletChain = (typeof WALLET_CHAINS)[number];
 
 export type SupportedChain = (typeof SUPPORTED_CHAINS)[number];
 
