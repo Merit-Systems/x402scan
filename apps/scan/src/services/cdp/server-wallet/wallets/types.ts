@@ -1,4 +1,4 @@
-import type { Chain, SupportedChain, SupportedEVMChain } from '@/types/chain';
+import type { Chain, WalletChain } from '@/types/chain';
 import type z from 'zod';
 import type { getTokenBalanceSchema, sendTokensSchema } from './schemas';
 import type { SolanaAddress } from '@/types/address';
@@ -20,10 +20,12 @@ export type NetworkServerWallet<T extends Chain> = (name: string) => {
   ) => CdpResultAsync<string>;
 };
 
+type WalletEVMChain = Exclude<WalletChain, Chain.SOLANA>;
+
 export type EvmWallets = {
-  [K in SupportedEVMChain]: ReturnType<NetworkServerWallet<K>>;
+  [K in WalletEVMChain]: ReturnType<NetworkServerWallet<K>>;
 };
 
 export type Wallets = {
-  [K in SupportedChain]: ReturnType<NetworkServerWallet<K>>;
+  [K in WalletChain]: ReturnType<NetworkServerWallet<K>>;
 };
