@@ -126,6 +126,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
 | **three.ws**         | SOLANA        | ✅ Yes    | No                           |
+| **X Pay**             | BASE          | No        | No                           |
 
 ### Import Individual Facilitators
 
@@ -155,6 +156,7 @@ import {
   relai,
   bitrefill,
   cascade,
+  xpay,
 } from 'facilitators';
 
 // Facilitators requiring setup

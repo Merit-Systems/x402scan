@@ -19,7 +19,7 @@ export const xpayFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0x589a2314a2E05F45e40C4823Da3Ba58D421dB3d8',
+        address: '0x589a2314a2e05f45e40c4823da3ba58d421db3d8',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2026-09-22'),
       },
