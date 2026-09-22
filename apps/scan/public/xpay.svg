@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="X Pay">
+  <title>X Pay</title>
+  <rect width="400" height="400" fill="#000000"/>
+  <!-- White left chevron -->
+  <path
+    d="M120 115 L210 200 L120 285"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="48"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <!-- Lime top-right arm -->
+  <path
+    d="M238 162 L295 105"
+    fill="none"
+    stroke="#91D41E"
+    stroke-width="48"
+    stroke-linecap="round"
+  />
+  <!-- Lime bottom-right arm -->
+  <path
+    d="M238 238 L295 295"
+    fill="none"
+    stroke="#91D41E"
+    stroke-width="48"
+    stroke-linecap="round"
+  />
+</svg>
