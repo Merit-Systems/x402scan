@@ -401,4 +401,35 @@ describe('schema validation edge cases', () => {
       expect(parseResult.errors.length).toBeGreaterThan(0);
     }
   });
+
+  it('should accept a well-formed eip155 network id with no known chain name (e.g. Robinhood Chain 4663) instead of failing the whole accepts[] parse', () => {
+    const response = {
+      x402Version: 1,
+      error: 'PAYMENT_REQUIRED',
+      accepts: [
+        {
+          scheme: 'exact',
+          network: 'eip155:4663',
+          maxAmountRequired: '10000',
+          resource: 'https://gateway.tributex402.com/x402/api/alerts',
+          description: 'TRIBUTE whale alerts — USDG on Robinhood 4663',
+          mimeType: 'application/json',
+          payTo: '0xA59b92F48E2525C364F7F54663b69da68Cd26529',
+          maxTimeoutSeconds: 60,
+          asset: '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168',
+          extra: { name: 'TRIBUTE', version: '1' },
+        },
+      ],
+    };
+
+    const result = parseV1(response);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.accepts).toHaveLength(1);
+      // Unknown chain ids fall back to the raw CAIP-2 string, mirroring
+      // normalizeChainId's `ChainIdToNetwork[id] ?? chainId` behavior.
+      expect(result.data.accepts?.[0]?.network).toBe('eip155:4663');
+    }
+  });
 });
