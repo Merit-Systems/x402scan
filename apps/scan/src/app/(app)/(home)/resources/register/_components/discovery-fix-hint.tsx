@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils";
 
 import { DiscoveryActions } from "./discovery-actions";
 
+import type { BlockedFavicon } from "@/lib/discovery/favicon-blocked";
+import type { ServerHostMismatch } from "@/lib/discovery/server-host-mismatch";
+
 export function DiscoveryFixHint({
   className,
   failedResources,
@@ -11,6 +14,8 @@ export function DiscoveryFixHint({
   noDiscovery,
   missingSchemaResources,
   missingContactEmail,
+  serverHostMismatch,
+  blockedFavicon,
 }: {
   className?: string;
   failedResources?: { url: string; error: string; status?: number }[];
@@ -18,6 +23,8 @@ export function DiscoveryFixHint({
   noDiscovery?: boolean;
   missingSchemaResources?: string[];
   missingContactEmail?: boolean;
+  serverHostMismatch?: ServerHostMismatch | null;
+  blockedFavicon?: BlockedFavicon | null;
 }) {
   const label = noDiscovery
     ? "Have your agent create an OpenAPI spec for your resource"
@@ -31,6 +38,8 @@ export function DiscoveryFixHint({
         warnings={warnings}
         missingSchemaResources={missingSchemaResources}
         missingContactEmail={missingContactEmail}
+        serverHostMismatch={serverHostMismatch}
+        blockedFavicon={blockedFavicon}
         noDiscovery={noDiscovery}
       />{" "}
       or{" "}
