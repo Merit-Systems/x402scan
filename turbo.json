@@ -29,7 +29,7 @@
     },
     "lint": {
       "description": "Lint package-owned source with Oxlint",
-      "dependsOn": ["^db:generate", "types:generate", "^build", "db:generate"],
+      "dependsOn": ["^types:generate", "types:generate", "^build"],
       "outputs": []
     },
     "lint:fix": {
@@ -50,11 +50,12 @@
       "persistent": true
     },
     "types:generate": {
-      "description": "Generate TypeScript types from sources"
+      "description": "Generate ignored framework and Prisma types",
+      "outputs": [".next/types/**", "generated/prisma/**"]
     },
     "types:check": {
       "description": "Type-check code with TypeScript compiler",
-      "dependsOn": ["^db:generate", "types:generate", "^build", "db:generate"],
+      "dependsOn": ["^types:generate", "types:generate", "^build"],
       "outputs": []
     },
     "//#format:check": {
@@ -120,7 +121,8 @@
       "cache": false
     },
     "db:generate": {
-      "description": "Generate Prisma client from schema"
+      "description": "Generate ignored Prisma client from schema",
+      "outputs": ["generated/prisma/**"]
     },
     "db:migrate": {
       "description": "Create and apply database migrations",
@@ -142,7 +144,7 @@
     },
     "test": {
       "description": "Run package tests",
-      "dependsOn": ["^build", "^db:generate", "db:generate"],
+      "dependsOn": ["^types:generate", "types:generate", "^build"],
       "outputs": []
     },
     "deploy": {

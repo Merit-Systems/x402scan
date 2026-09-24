@@ -13,7 +13,8 @@
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
     "types:check": "tsc --noEmit",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "types:generate": "prisma generate"
   },
   "dependencies": {
     "@t3-oss/env-core": "catalog:env",

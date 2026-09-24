@@ -73,6 +73,7 @@ Thumbs.db
 .turbo
 
 # Agents
-.cursor
+.cursor/*
+!.cursor/environment.json
 .claude
 .env.local

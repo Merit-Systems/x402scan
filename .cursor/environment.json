@@ -1,0 +1,10 @@
+{
+  "install": "node .foundation/cursor-install.mjs",
+  "start": "pnpm exec merit dev setup",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "pnpm dev"
+    }
+  ]
+}

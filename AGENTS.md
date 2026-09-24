@@ -30,3 +30,21 @@ Before planning or changing product UI:
 
 `apps/scan` owns the UI contract. Facilitator, network, protocol, chart, and
 provider colors are product semantics and must remain explicit and centralized.
+
+<!-- foundation:test-seams:v1 -->
+
+## Test seams and dependency injection
+
+- Do not introduce a factory, dependency bag, interface, optional dependency,
+  mutable registry, or reset hook solely so tests can replace production code.
+- Before proposing dependency injection, identify the production callers that
+  select different implementations or scopes, or the state or lifecycle owned
+  by the created instance.
+- When no production requirement exists, use direct imports and test the stable
+  owning boundary. Use a narrow test-local module mock when an external effect
+  must be replaced.
+- When modifying an existing injected service, trace its production call sites.
+  If every caller supplies the same dependency and the instance owns no state or
+  lifecycle, remove the factory rather than extending it.
+
+<!-- /foundation:test-seams -->
