@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { ToolOutput } from "@/components/ai-elements/tool";
 import { Skeleton } from "@/components/ui/skeleton";

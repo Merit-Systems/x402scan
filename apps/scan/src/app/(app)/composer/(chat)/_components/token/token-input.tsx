@@ -137,7 +137,7 @@ export const TokenInput: React.FC<Props> = ({
     <div
       className={cn(
         "border-border bg-card/50 flex flex-col gap-3 rounded-xl border-2 p-3 transition-all duration-200",
-        "focus-within:border-primary focus-within:ring-primary/20 focus-within:ring-[3px]",
+        "focus-within:border-primary focus-within:ring-primary/20 focus-within:ring-3",
         className
       )}
     >

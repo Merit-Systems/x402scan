@@ -1,6 +1,6 @@
 import { isToolUIPart } from "ai";
 import { after, NextResponse } from "next/server";
-import z from "zod";
+import { z } from "zod";
 
 import { auth } from "@/auth";
 import { jsonValueSchema } from "@/lib/json";

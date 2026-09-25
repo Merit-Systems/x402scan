@@ -2,14 +2,14 @@
 
 import { createContext } from "react";
 
-interface SearchContext {
+interface SearchContextValue {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   search: string;
   setSearch: (search: string) => void;
 }
 
-export const SearchContext = createContext<SearchContext>({
+export const SearchContext = createContext<SearchContextValue>({
   isOpen: false,
   setIsOpen: () => {
     // do nothing

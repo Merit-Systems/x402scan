@@ -19,6 +19,7 @@ import { cjk } from "@streamdown/cjk";
 import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
 import { mermaid } from "@streamdown/mermaid";
+import { cn } from "cn";
 import { Streamdown } from "streamdown";
 
 /* oxlint-disable typescript/no-confusing-void-expression -- Preserve the AI Elements controlled and uncontrolled disclosure API. */
@@ -27,8 +28,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-
-import { cn } from "@/lib/utils";
 
 import { Shimmer } from "./shimmer";
 

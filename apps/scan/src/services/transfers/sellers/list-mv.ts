@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 

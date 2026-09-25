@@ -1,5 +1,5 @@
 import { formatUnits } from "viem";
-import z from "zod";
+import { z } from "zod";
 
 import { InviteCodeStatus, RedemptionStatus, scanDb } from "@x402scan/scan-db";
 

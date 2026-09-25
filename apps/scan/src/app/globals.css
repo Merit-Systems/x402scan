@@ -47,6 +47,52 @@
 }
 
 @layer utilities {
+  .otp-success-glow {
+    box-shadow: 0 0 8px var(--success);
+  }
+
+  .shiny-text-width {
+    background-size: var(--shimmer-width) 100%;
+    transition: background-position 1s cubic-bezier(0.6, 0.6, 0, 1);
+  }
+
+  .resource-list-height {
+    height: var(--resource-list-height);
+  }
+
+  .model-list-height {
+    height: var(--model-list-height);
+  }
+
+  .border-beam-frame {
+    border-radius: inherit;
+    mask-image:
+      linear-gradient(transparent, transparent),
+      linear-gradient(currentColor, currentColor);
+    mask-composite: intersect;
+    mask-clip: padding-box, border-box;
+  }
+
+  .border-beam-orbit {
+    width: var(--beam-size);
+    offset-path: rect(0 auto auto 0 round var(--beam-size));
+  }
+
+  .progress-indicator {
+    transform: translateX(var(--progress-offset));
+  }
+
+  .entity-color-swatch {
+    background-color: var(--entity-color);
+    border-color: var(--entity-color);
+  }
+
+  .entity-color-badge {
+    color: var(--entity-color);
+    border-color: var(--entity-color);
+    background-color: color-mix(in srgb, var(--entity-color) 12%, transparent);
+  }
+
   @keyframes shimmer {
     0%,
     100% {

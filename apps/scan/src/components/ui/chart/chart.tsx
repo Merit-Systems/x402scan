@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "cn";
 import {
   AreaChart,
   BarChart,
@@ -10,8 +11,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-import { cn } from "@/lib/utils";
 
 import { ChartTooltipContent } from "./tooltip";
 

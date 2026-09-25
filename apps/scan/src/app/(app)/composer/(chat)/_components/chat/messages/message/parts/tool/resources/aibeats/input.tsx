@@ -1,6 +1,6 @@
 import { Music } from "lucide-react";
 
-import z from "zod";
+import { z } from "zod";
 
 import type { InputComponent } from "../types";
 

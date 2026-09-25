@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { SUPPORTED_CHAINS } from "@/types/chain";
 

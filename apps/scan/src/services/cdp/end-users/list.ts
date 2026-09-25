@@ -1,7 +1,7 @@
 // oxfmt-ignore
 import "server-only";
 
-import z from "zod";
+import { z } from "zod";
 
 import { cdpFetch } from "../lib/fetch";
 

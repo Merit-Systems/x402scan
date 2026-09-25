@@ -18,6 +18,8 @@ import {
 
 import { api } from "@/trpc/client";
 
+import type { CSSProperties } from "react";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type Resource =
@@ -152,8 +154,11 @@ export const ControlMenu = ({
               <div className="flex items-center gap-2">
                 <span>Remove Sub-tags from</span>
                 <div
-                  className="size-2 rounded-full"
-                  style={{ backgroundColor: selectedTag.color }}
+                  className="entity-color-swatch size-2 rounded-full"
+                  style={
+                    { "--entity-color": selectedTag.color } as CSSProperties &
+                      Record<"--entity-color", string>
+                  }
                 />
                 <span className="type-emphasis type-label">
                   {selectedTag.name}

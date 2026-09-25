@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { revalidatePath } from "next/cache";
-import z from "zod";
+import { z } from "zod";
 
 import { scanDb } from "@x402scan/scan-db";
 

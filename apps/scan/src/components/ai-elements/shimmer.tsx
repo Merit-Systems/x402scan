@@ -6,9 +6,8 @@
 
 import { memo, useMemo } from "react";
 
+import { cn } from "cn";
 import { LazyMotion, domAnimation, m } from "motion/react";
-
-import { cn } from "@/lib/utils";
 
 import type { CSSProperties, ElementType, JSX } from "react";
 
@@ -39,7 +38,7 @@ const ShimmerComponent = ({
       <MotionComponent
         animate={{ backgroundPosition: "0% center" }}
         className={cn(
-          "relative inline-block bg-[length:250%_100%,auto] bg-clip-text text-transparent w-fit",
+          "relative inline-block bg-[length:250%_100%,auto] bg-clip-text text-transparent w-fit bg-[image:var(--bg),linear-gradient(color-mix(in_oklab,var(--color-muted-foreground)_60%,transparent),color-mix(in_oklab,var(--color-muted-foreground)_60%,transparent))]",
           "[--bg:linear-gradient(90deg,#0000_calc(50%-var(--spread)),var(--color-foreground),#0000_calc(50%+var(--spread)))] [background-repeat:no-repeat,padding-box]",
           className
         )}
@@ -47,8 +46,6 @@ const ShimmerComponent = ({
         style={
           {
             "--spread": `${dynamicSpread}px`,
-            backgroundImage:
-              "var(--bg), linear-gradient(color-mix(in oklab, var(--color-muted-foreground) 60%, transparent), color-mix(in oklab, var(--color-muted-foreground) 60%, transparent))",
           } as CSSProperties
         }
         transition={{

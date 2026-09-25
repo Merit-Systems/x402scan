@@ -940,7 +940,12 @@ function PostRegistrationDialog({
               ) : (
                 <Button
                   className="flex-1"
-                  render={<a href={MERCHANT_EMAIL_URL} />}
+                  render={
+                    <a
+                      href={MERCHANT_EMAIL_URL}
+                      aria-label={`Email ${MERCHANT_EMAIL}`}
+                    />
+                  }
                 >
                   Email {MERCHANT_EMAIL} &rarr;
                 </Button>
@@ -1299,23 +1304,23 @@ function ProbeResult({
         </p>
       )}
       {blockedFavicon && (
-        <div className="space-y-1.5 text-xs text-yellow-600 dark:text-yellow-500">
+        <div className="space-y-1.5 type-caption text-warning">
           <p className="flex items-start gap-1.5">
             <TriangleAlert className="mt-0.5 size-3 shrink-0" />
             <span>
               Your favicon is served with{" "}
-              <code className="rounded bg-muted px-1 font-mono text-[11px]">
+              <code className="type-compact-code rounded bg-muted px-1">
                 Cross-Origin-Resource-Policy: {blockedFavicon.policy}
               </code>
               , so browsers block it on other sites and your icon shows as a
               placeholder here. Send{" "}
-              <code className="rounded bg-muted px-1 font-mono text-[11px]">
+              <code className="type-compact-code rounded bg-muted px-1">
                 cross-origin
               </code>{" "}
               for this asset to display it.
             </span>
           </p>
-          <p className="pl-[18px] text-foreground">
+          <p className="pl-4.5 text-foreground">
             <DiscoveryActions
               label="Have your agent fix it with this prompt"
               blockedFavicon={blockedFavicon}
@@ -1336,7 +1341,7 @@ function ProbeResult({
               you.
             </span>
           </p>
-          <p className="pl-[18px] text-foreground">
+          <p className="pl-4.5 text-foreground">
             <DiscoveryActions
               label="Have your agent add it with this prompt"
               customPrompt={CONTACT_EMAIL_PROMPT}

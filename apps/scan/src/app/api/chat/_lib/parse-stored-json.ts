@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import type { Prisma } from "@x402scan/scan-db";
 

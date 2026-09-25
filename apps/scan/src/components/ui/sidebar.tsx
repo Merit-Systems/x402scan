@@ -7,6 +7,7 @@ import { PanelLeftIcon } from "lucide-react";
 import * as React from "react";
 
 import { cva } from "class-variance-authority";
+import { cn } from "cn";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,8 +27,6 @@ import {
 } from "@/components/ui/tooltip";
 
 import { useIsMobile } from "@/hooks/use-mobile";
-
-import { cn } from "@/lib/utils";
 
 import type { VariantProps } from "class-variance-authority";
 

@@ -4,7 +4,7 @@ import { Search, Loader2 } from "lucide-react";
 
 import { useState, memo } from "react";
 
-import z from "zod";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

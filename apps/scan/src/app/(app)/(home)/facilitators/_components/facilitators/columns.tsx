@@ -9,6 +9,8 @@ import { Chains } from "@/app/(app)/_components/chains";
 import { formatTokenAmount } from "@/lib/token";
 import { cn, formatCompactAgo } from "@/lib/utils";
 
+import type { CSSProperties } from "react";
+
 import type { DataTableColumnDef } from "@/components/ui/data-table";
 
 import type { RouterOutputs } from "@/trpc/client";
@@ -38,8 +40,12 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
         />
         <p className="type-label">{row.original.facilitator.name}</p>
         <div
-          className="size-2 rounded-full"
-          style={{ backgroundColor: row.original.facilitator.color }}
+          className="entity-color-swatch size-2 rounded-full"
+          style={
+            {
+              "--entity-color": row.original.facilitator.color,
+            } as CSSProperties & Record<"--entity-color", string>
+          }
         />
       </div>
     ),

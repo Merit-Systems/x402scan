@@ -51,10 +51,7 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
 
   const otpGroupProps = (isSuccess: boolean) => {
     return {
-      className: cn(
-        "flex-1 rounded-md",
-        isSuccess && "shadow-[0_0_8px_var(--color-green-600)]"
-      ),
+      className: cn("flex-1 rounded-md", isSuccess && "otp-success-glow"),
     };
   };
 

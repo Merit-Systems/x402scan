@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { mixedAddressSchema } from "@/lib/schemas";
 import { tokenSchema } from "@/types/token";

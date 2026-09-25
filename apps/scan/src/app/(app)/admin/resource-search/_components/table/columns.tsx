@@ -7,6 +7,8 @@ import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell
 import { ResourceSearchSortingContext } from "@/app/(app)/admin/_contexts/sorting/resource-search/context";
 import { cleanExternalText } from "@/lib/utils";
 
+import type { CSSProperties } from "react";
+
 import type { DataTableColumnDef } from "@/components/ui/data-table";
 
 import type { FilteredSearchResult } from "@/services/resource-search/types";
@@ -40,20 +42,21 @@ export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
       }
 
       const matchPercentage = (filterMatches / totalFilters) * 100;
-      const badgeColor =
-        matchPercentage === 100
-          ? "bg-green-500/10 text-green-500 border-green-500/20"
-          : matchPercentage >= 60
-            ? "bg-primary/10 text-primary border-primary/20"
-            : matchPercentage >= 40
-              ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
-              : "bg-red-500/10 text-red-500 border-red-500/20";
-
       return (
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <Filter className="size-3.5 text-primary" />
-            <Badge variant="outline" className={` ${badgeColor}`}>
+            <Badge
+              variant={
+                matchPercentage === 100
+                  ? "success"
+                  : matchPercentage >= 60
+                    ? "default"
+                    : matchPercentage >= 40
+                      ? "warning"
+                      : "destructive"
+              }
+            >
               {filterMatches}/{totalFilters}
             </Badge>
           </div>
@@ -136,11 +139,11 @@ export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
             <Badge
               key={tag.id}
               variant="outline"
-              className=""
-              style={{
-                borderColor: tag.color,
-                backgroundColor: tag.color + "10",
-              }}
+              className="entity-color-badge"
+              style={
+                { "--entity-color": tag.color } as CSSProperties &
+                  Record<"--entity-color", string>
+              }
             >
               {tag.name}
             </Badge>

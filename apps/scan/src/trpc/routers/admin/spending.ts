@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { paginatedQuerySchema } from "@/lib/pagination";
 import { getWalletAddressFromName } from "@/services/cdp/server-wallet/admin";

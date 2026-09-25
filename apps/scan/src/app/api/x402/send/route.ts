@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { handleSend } from "@/app/api/x402/_handlers/send";
 import { router, solanaRouter, withCors, OPTIONS } from "@/lib/router";

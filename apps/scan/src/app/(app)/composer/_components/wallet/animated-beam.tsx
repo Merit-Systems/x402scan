@@ -288,10 +288,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
           strokeWidth={pathWidth * 1.5}
           strokeLinecap="round"
           filter={`url(#${id}-glow)`}
-          style={{
-            animation: "beam-glow-pulse 1.5s ease-in-out infinite",
-            opacity: 0.7,
-          }}
+          className="opacity-70"
         />
       )}
       <defs>

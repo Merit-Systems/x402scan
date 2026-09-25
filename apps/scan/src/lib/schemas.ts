@@ -1,5 +1,5 @@
 import { isAddress } from "viem";
-import z from "zod";
+import { z } from "zod";
 
 import { Chain, SUPPORTED_CHAINS } from "@/types/chain";
 

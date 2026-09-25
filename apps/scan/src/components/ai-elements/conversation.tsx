@@ -7,9 +7,9 @@ import { ArrowDownIcon, DownloadIcon } from "lucide-react";
 import { useCallback } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 
-import { Button } from "@/components/ui/button";
+import { cn } from "cn";
 
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 import type { ComponentProps } from "react";
 

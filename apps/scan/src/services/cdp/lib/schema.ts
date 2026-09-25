@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 export const cdpFetchSchema = z.object({
   requestMethod: z.enum(["GET", "POST", "PUT", "DELETE"]),

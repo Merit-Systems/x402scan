@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { getOriginPayToAddresses } from "@/services/db/resources/origin";
 import {

@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import z from "zod";
+import { z } from "zod";
 
 import { SessionStatus } from "@x402scan/scan-db";
 

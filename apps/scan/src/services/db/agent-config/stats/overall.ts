@@ -1,5 +1,5 @@
 import { differenceInMilliseconds, getUnixTime } from "date-fns";
-import z from "zod";
+import { z } from "zod";
 
 import { Prisma } from "@x402scan/scan-db";
 

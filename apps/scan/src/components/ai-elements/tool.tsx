@@ -15,13 +15,13 @@ import {
 
 import { isValidElement } from "react";
 
+import { cn } from "cn";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-
-import { cn } from "@/lib/utils";
 
 import type { ComponentProps, ReactNode } from "react";
 

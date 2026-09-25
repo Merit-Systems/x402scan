@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { detectBlockedFavicon } from "@/lib/discovery/favicon-blocked";
 import { probeX402Endpoint } from "@/lib/discovery/probe";
@@ -17,7 +17,7 @@ import { scrapeOriginData } from "@/services/scraper";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 import type { JsonObject } from "@/lib/json";
-import type { FailedResource, TestedResource } from "@/types/batch-test";
+import type { FailedResource } from "@/types/batch-test";
 
 const testedMethodSchema = z.enum(["DELETE", "GET", "PATCH", "POST", "PUT"]);
 
@@ -161,7 +161,7 @@ export const developerRouter = createTRPCRouter({
    *  so the UI can explain 404s that are our probing the wrong host rather
    *  than anything wrong with the merchant's paywall. */
   serverHostMismatch: publicProcedure
-    .input(z.object({ origin: z.string().url() }))
+    .input(z.object({ origin: z.url() }))
     .query(async ({ input }) => {
       return await detectServerHostMismatch(input.origin);
     }),
@@ -171,7 +171,7 @@ export const developerRouter = createTRPCRouter({
    *  favicon exists, so the merchant learns why their icon shows as a globe
    *  instead of seeing it silently fall back. */
   faviconBlocked: publicProcedure
-    .input(z.object({ url: z.string().url() }))
+    .input(z.object({ url: z.url() }))
     .query(async ({ input }) => {
       return await detectBlockedFavicon(input.url);
     }),

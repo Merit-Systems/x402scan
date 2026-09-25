@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { jsonObjectSchema } from "@/lib/json";
 import { Methods } from "@/types/x402";

@@ -1,16 +1,16 @@
 "use client";
 
+import { cn } from "cn";
+
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-
-import { cn } from "@/lib/utils";
 
 import { AreaChart, LoadingAreaChart } from "./chart/area";
 import { BarChart, LoadingBarChart } from "./chart/bar";
 import { ComposedChart, LoadingComposedChart } from "./chart/composed";
 import { LineChart, LoadingLineChart } from "./chart/line";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import type {
   BaseChartProps,
@@ -156,8 +156,19 @@ function StatsChartFrame({
   return (
     <div
       data-slot="stats-card-chart"
-      className={cn("w-full", height === undefined && "h-16 md:h-25")}
-      style={height === undefined ? undefined : { height }}
+      className={cn(
+        "w-full",
+        height === undefined ? "h-16 md:h-25" : "h-(--chart-height)"
+      )}
+      style={
+        height === undefined
+          ? undefined
+          : ({
+              "--chart-height": String(height).endsWith("%")
+                ? String(height)
+                : `${String(height)}px`,
+            } as CSSProperties & Record<"--chart-height", string>)
+      }
     >
       {children}
     </div>

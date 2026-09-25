@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 
 import { useMemo, useState } from "react";
 
-import z from "zod";
+import { z } from "zod";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";

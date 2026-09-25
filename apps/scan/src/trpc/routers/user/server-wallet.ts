@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import z from "zod";
+import { z } from "zod";
 
 import { env } from "@/env";
 import { mixedAddressSchema, supportedChainSchema } from "@/lib/schemas";

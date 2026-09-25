@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import z from "zod";
+import { z } from "zod";
 
 import { useRegisterFromOrigin } from "@/hooks/use-register-from-origin";
 

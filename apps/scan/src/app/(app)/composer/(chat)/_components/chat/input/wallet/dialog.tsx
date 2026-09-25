@@ -2,7 +2,7 @@ import { ArrowUp, Key } from "lucide-react";
 
 import { useState } from "react";
 
-import z from "zod";
+import { z } from "zod";
 
 import {
   Dialog,

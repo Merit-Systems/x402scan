@@ -90,15 +90,20 @@ export const ResourceList: React.FC<Props> = ({
         )}
       />
       <CommandList
-        style={{
-          height: `${String(toolItemHeight * (numToolsToShow + 0.5))}px`,
-        }}
+        className="resource-list-height"
+        style={
+          {
+            "--resource-list-height": `${String(toolItemHeight * (numToolsToShow + 0.5))}px`,
+          } as React.CSSProperties & Record<"--resource-list-height", string>
+        }
       >
         <CommandEmpty
-          className="flex flex-col items-center justify-center gap-4 text-center"
-          style={{
-            height: `${String(toolItemHeight * numToolsToShow)}px`,
-          }}
+          className="resource-list-height flex flex-col items-center justify-center gap-4 text-center"
+          style={
+            {
+              "--resource-list-height": `${String(toolItemHeight * numToolsToShow)}px`,
+            } as React.CSSProperties & Record<"--resource-list-height", string>
+          }
         >
           {isLoading ? (
             <Loader2 className="size-10 animate-spin" />

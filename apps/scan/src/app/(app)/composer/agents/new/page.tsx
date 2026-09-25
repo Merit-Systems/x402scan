@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 import { auth } from "@/auth";

@@ -10,6 +10,8 @@ import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell
 import { ResourcesSortingContext } from "@/app/(app)/admin/_contexts/sorting/resource-tags/context";
 import { cleanExternalText, formatCompactAgo } from "@/lib/utils";
 
+import type { CSSProperties } from "react";
+
 import type { DataTableColumnDef } from "@/components/ui/data-table";
 
 import type { RouterOutputs } from "@/trpc/client";
@@ -163,12 +165,12 @@ export const createColumns = (
                 }) => (
                   <span
                     key={resourceTag.id}
-                    className="type-emphasis inline-flex items-center rounded-full border px-2 py-0.5 type-caption"
-                    style={{
-                      backgroundColor: `${resourceTag.tag.color}20`,
-                      borderColor: resourceTag.tag.color,
-                      color: resourceTag.tag.color,
-                    }}
+                    className="entity-color-badge type-emphasis inline-flex items-center rounded-full border px-2 py-0.5 type-caption"
+                    style={
+                      {
+                        "--entity-color": resourceTag.tag.color,
+                      } as CSSProperties & Record<"--entity-color", string>
+                    }
                   >
                     {resourceTag.tag.name}
                   </span>

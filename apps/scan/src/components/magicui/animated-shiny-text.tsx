@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-import type { ComponentPropsWithoutRef, FC } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, FC } from "react";
 
 type AnimatedShinyTextProps = {
   shimmerWidth?: number;
@@ -15,12 +15,17 @@ export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
 }) => {
   return (
     <span
-      style={{ ...style, backgroundSize: `${String(shimmerWidth)}px 100%` }}
+      style={
+        {
+          ...style,
+          "--shimmer-width": `${String(shimmerWidth)}px`,
+        } as CSSProperties & Record<"--shimmer-width", string>
+      }
       className={cn(
         "text-muted-foreground",
 
         // Shine effect
-        "animate-shiny-text bg-clip-text [background-position:0_0] bg-no-repeat [transition:background-position_1s_cubic-bezier(.6,.6,0,1)_infinite]",
+        "animate-shiny-text shiny-text-width bg-clip-text bg-no-repeat",
 
         // Shine gradient
         "bg-linear-to-r from-transparent via-foreground/80 via-50% to-transparent",

@@ -24,6 +24,8 @@ import { Label } from "@/components/ui/label";
 
 import { api } from "@/trpc/client";
 
+import type { CSSProperties } from "react";
+
 import type { PaginatedQueryParams } from "@/lib/pagination";
 import type { RouterInputs } from "@/trpc/client";
 
@@ -221,8 +223,13 @@ export function EditTagModal({
                         <div className="flex items-center justify-between rounded-md border p-2 transition-colors hover:bg-accent">
                           <div className="flex min-w-0 flex-1 items-center gap-2">
                             <div
-                              className="size-4 shrink-0 rounded-sm"
-                              style={{ backgroundColor: tag.color }}
+                              className="entity-color-swatch size-4 shrink-0 rounded-sm"
+                              style={
+                                {
+                                  "--entity-color": tag.color,
+                                } as CSSProperties &
+                                  Record<"--entity-color", string>
+                              }
                             />
                             <span className="type-supporting-body type-emphasis break-all">
                               {tag.name}

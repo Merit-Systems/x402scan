@@ -2,7 +2,7 @@
 
 import { Check, Filter, X } from "lucide-react";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,8 @@ import {
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/client";
 
+import type { CSSProperties } from "react";
+
 import type { Tag } from "@x402scan/scan-db";
 
 interface TagFilterProps {
@@ -35,11 +37,7 @@ export const TagFilter: React.FC<TagFilterProps> = ({
   onSelectedTagIdsChange,
 }) => {
   const [open, setOpen] = useState(false);
-  const {
-    data: tags,
-    isLoading,
-    refetch,
-  } = api.public.resources.tags.list.useQuery();
+  const { data: tags, isLoading } = api.public.resources.tags.list.useQuery();
 
   const selectedTags =
     tags?.filter((tag: Tag) => selectedTagIds.includes(tag.id)) ?? [];
@@ -55,10 +53,6 @@ export const TagFilter: React.FC<TagFilterProps> = ({
   const handleClearAll = () => {
     onSelectedTagIdsChange([]);
   };
-
-  useEffect(() => {
-    void refetch();
-  }, [selectedTagIds, refetch]);
 
   return (
     <div className="flex items-center gap-2">
@@ -105,11 +99,11 @@ export const TagFilter: React.FC<TagFilterProps> = ({
                       </div>
                       <div className="flex flex-1 items-center gap-2">
                         <div
-                          className="size-3 rounded-full border"
-                          style={{
-                            backgroundColor: tag.color,
-                            borderColor: tag.color,
-                          }}
+                          className="entity-color-swatch size-3 rounded-full border"
+                          style={
+                            { "--entity-color": tag.color } as CSSProperties &
+                              Record<"--entity-color", string>
+                          }
                         />
                         <span className="type-supporting-body">{tag.name}</span>
                       </div>
@@ -131,8 +125,11 @@ export const TagFilter: React.FC<TagFilterProps> = ({
             {selectedTags.map((tag: Tag) => (
               <Badge key={tag.id} variant="secondary" className="gap-1">
                 <div
-                  className="size-2 rounded-full"
-                  style={{ backgroundColor: tag.color }}
+                  className="entity-color-swatch size-2 rounded-full"
+                  style={
+                    { "--entity-color": tag.color } as CSSProperties &
+                      Record<"--entity-color", string>
+                  }
                 />
                 {tag.name}
                 <Button

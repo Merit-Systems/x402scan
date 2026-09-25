@@ -33,6 +33,8 @@ import { useModelSelect } from "./use-model-select";
 import { languageModels } from "../../../../_lib/language-models/models";
 import { capabilityColors, capabilityIcons, modelProviderNames } from "./utils";
 
+import type { CSSProperties } from "react";
+
 import type { LanguageModelCapability } from "../../../../_lib/language-models/types";
 import type { LanguageModel } from "../../../../_lib/language-models/types";
 
@@ -132,10 +134,14 @@ const ModelSelectContent: React.FC<{
       </div>
     </div> */}
     <CommandList
-      className={cn("w-full max-w-full overflow-x-hidden overflow-y-auto ")}
-      style={{
-        height: `${String(MODEL_HEIGHT * (NUM_MODELS_TO_SHOW + 0.5))}px`,
-      }}
+      className={cn(
+        "model-list-height w-full max-w-full overflow-x-hidden overflow-y-auto"
+      )}
+      style={
+        {
+          "--model-list-height": `${String(MODEL_HEIGHT * (NUM_MODELS_TO_SHOW + 0.5))}px`,
+        } as CSSProperties & Record<"--model-list-height", string>
+      }
     >
       <CommandEmpty>No models found.</CommandEmpty>
       <CommandGroup className="">

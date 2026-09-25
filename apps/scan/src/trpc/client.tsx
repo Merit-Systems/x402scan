@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
-import SuperJSON from "superjson";
+import { SuperJSON } from "superjson";
 
 import { env } from "@/env";
 import { isBrowser, isServer } from "@/lib/runtime-env";

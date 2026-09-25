@@ -3,7 +3,7 @@ import {
   TOKEN_PROGRAM_ADDRESS,
 } from "@solana-program/token";
 import { address } from "@solana/kit";
-import z from "zod";
+import { z } from "zod";
 
 import { solanaAddressSchema } from "@/lib/schemas";
 import { convertTokenAmount } from "@/lib/token";

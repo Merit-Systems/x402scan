@@ -11,7 +11,7 @@ import {
 
 import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
 
-export interface RegistrationResult {
+interface RegistrationResultData {
   registered: number;
   siwx?: number;
   publicCount?: number;
@@ -88,7 +88,7 @@ function ResourceIssue({ error, status, url }: ResourceIssueProps) {
 }
 
 interface RegistrationResultProps {
-  result: RegistrationResult;
+  result: RegistrationResultData;
 }
 
 export function RegistrationResult({ result }: RegistrationResultProps) {

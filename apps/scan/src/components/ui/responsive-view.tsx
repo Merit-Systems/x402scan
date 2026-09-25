@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useSyncExternalStore } from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 interface ResponsiveViewProps {
   desktop: React.ReactNode;

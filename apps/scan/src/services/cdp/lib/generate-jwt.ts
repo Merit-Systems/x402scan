@@ -2,7 +2,7 @@
 import "server-only";
 
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
-import z from "zod";
+import { z } from "zod";
 
 import { env } from "@/env";
 
