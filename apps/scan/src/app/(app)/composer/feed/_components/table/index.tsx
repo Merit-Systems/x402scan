@@ -1,5 +1,8 @@
 import { api, HydrateClient } from "@/trpc/server";
-import { FeedTableContent, LoadingFeedTableContent } from "./table";
+import {
+  FeedTableContent,
+  LoadingFeedTableContent,
+} from "@/app/(app)/composer/_components/feed-table/table";
 import { Suspense } from "react";
 
 interface Props {

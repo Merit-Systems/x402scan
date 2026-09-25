@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { SortingContext } from "./context";
 import type { SortType } from "./types";
@@ -15,10 +15,7 @@ export const SortingProvider = <SortKey extends string>({
   initialSorting: SortType<SortKey>;
 }) => {
   const [sorting, setSorting] = useState<SortType<SortKey>>(initialSorting);
+  const value = useMemo(() => ({ sorting, setSorting }), [sorting]);
 
-  return (
-    <context.Provider value={{ sorting, setSorting }}>
-      {children}
-    </context.Provider>
-  );
+  return <context.Provider value={value}>{children}</context.Provider>;
 };

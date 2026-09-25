@@ -6,24 +6,26 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import {
   PromptInput,
+  PromptInputFooter,
   PromptInputSubmit,
   PromptInputTextarea,
-  PromptInputToolbar,
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
+
+import type { PromptInputProps } from "@/components/ai-elements/prompt-input";
 
 import { ModelSelect } from "./model-select";
 import { ResourcesSelect } from "./resources-select";
 import { WalletButton } from "./wallet";
 
 import type { ChatStatus } from "ai";
-import type { SelectedResource } from "../../../_types/chat-config";
-import type { LanguageModel } from "./model-select/types";
+import type { SelectedResource } from "../../../../_types/chat-config";
+import type { LanguageModel } from "../../../_lib/language-models/types";
 
 interface Props {
   input: string;
   setInput: (value: string) => void;
-  handleSubmit: (e: React.FormEvent) => void;
+  handleSubmit: PromptInputProps["onSubmit"];
   model: LanguageModel;
   setModel: (value: LanguageModel) => void;
   selectedResources: SelectedResource[];
@@ -48,9 +50,9 @@ export const PromptInputSection: React.FC<Props> = ({
   return (
     <PromptInput onSubmit={handleSubmit}>
       <PromptInputTextarea
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-          setInput(e.target.value)
-        }
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+          setInput(e.target.value);
+        }}
         value={input}
         placeholder={
           sessionStatus !== "loading" && !session
@@ -58,7 +60,7 @@ export const PromptInputSection: React.FC<Props> = ({
             : undefined
         }
       />
-      <PromptInputToolbar>
+      <PromptInputFooter>
         <PromptInputTools>
           <ModelSelect model={model} setModel={setModel} />
           <ResourcesSelect
@@ -71,22 +73,22 @@ export const PromptInputSection: React.FC<Props> = ({
           disabled={!input || status !== "ready" || !!errorMessage}
           className="size-8 md:size-8"
         />
-      </PromptInputToolbar>
+      </PromptInputFooter>
     </PromptInput>
   );
 };
 
 export const LoadingPromptInputSection = () => {
   return (
-    <PromptInput>
+    <PromptInput onSubmit={() => undefined}>
       <PromptInputTextarea disabled />
-      <PromptInputToolbar>
+      <PromptInputFooter>
         <PromptInputTools>
           <Skeleton className="h-8 w-24" />
           <Skeleton className="h-8 w-32" />
         </PromptInputTools>
         <Skeleton className="size-8" />
-      </PromptInputToolbar>
+      </PromptInputFooter>
     </PromptInput>
   );
 };

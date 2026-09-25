@@ -78,8 +78,12 @@ export const InviteCodesTable = () => {
   const columns = useMemo(
     () =>
       createColumns({
-        onDisable: (id) => disableMutation.mutate({ id }),
-        onReactivate: (id) => reactivateMutation.mutate({ id }),
+        onDisable: (id) => {
+          disableMutation.mutate({ id });
+        },
+        onReactivate: (id) => {
+          reactivateMutation.mutate({ id });
+        },
         onEditMaxRedemptions: handleEditMaxRedemptions,
       }),
     [disableMutation, reactivateMutation, handleEditMaxRedemptions]
@@ -105,17 +109,21 @@ export const InviteCodesTable = () => {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-4">
         <div className="relative max-w-sm min-w-[200px] flex-1">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by code or note..."
             value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-9"
+            onChange={(e) => {
+              handleSearchChange(e.target.value);
+            }}
+            className=""
           />
         </div>
         <Select
           value={statusFilter}
-          onValueChange={(value) => value && handleStatusFilterChange(value)}
+          onValueChange={(value) => {
+            if (value) handleStatusFilterChange(value);
+          }}
         >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Filter status" />
@@ -130,7 +138,9 @@ export const InviteCodesTable = () => {
         </Select>
         <Select
           value={orderBy}
-          onValueChange={(value) => value && handleOrderByChange(value)}
+          onValueChange={(value) => {
+            if (value) handleOrderByChange(value);
+          }}
         >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Order by" />
@@ -151,8 +161,10 @@ export const InviteCodesTable = () => {
           pageSize: PAGE_SIZE,
           pageCount: hasNextPage ? page + 2 : page + 1,
         }}
-        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
-        getRowId={(row, index) => row?.id ?? `loading-${index}`}
+        onPaginationChange={({ pageIndex }) => {
+          setPage(pageIndex);
+        }}
+        getRowId={(row) => row.id}
       />
     </div>
   );

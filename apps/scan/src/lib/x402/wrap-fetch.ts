@@ -15,8 +15,6 @@ import { ExactSvmSchemeV1 } from "@x402/svm/exact/v1/client";
 
 export { x402Client, wrapFetchWithPayment };
 export { registerExactEvmScheme };
-export type { ClientEvmSigner };
-
 /** The EIP-712 payload @x402 clients hand to a signer. */
 type TypedDataPayload = Parameters<ClientEvmSigner["signTypedData"]>[0];
 

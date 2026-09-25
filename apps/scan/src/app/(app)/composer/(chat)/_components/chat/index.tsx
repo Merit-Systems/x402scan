@@ -2,7 +2,7 @@ import { ChatContent } from "./content";
 import { ConnectDialog } from "./auth";
 import { Onboarding } from "./onboarding";
 
-import { serverCookieUtils } from "../../chat/_lib/cookies/server";
+import { serverCookieUtils } from "../../_lib/cookies/server";
 
 import { auth } from "@/auth";
 

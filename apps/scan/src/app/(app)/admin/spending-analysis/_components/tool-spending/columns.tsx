@@ -44,7 +44,7 @@ export const createToolSpendingColumns =
         />
       ),
       cell: ({ row }) => (
-        <div className="max-w-[300px] truncate text-xs font-medium">
+        <div className="type-emphasis max-w-[300px] truncate type-caption">
           {row.original.resourceUrl}
         </div>
       ),
@@ -65,7 +65,7 @@ export const createToolSpendingColumns =
         />
       ),
       cell: ({ row }) => (
-        <div className="text-center font-mono text-xs">
+        <div className="type-mono type-scale-caption text-center">
           {row.original.totalToolCalls.toLocaleString()}
         </div>
       ),
@@ -86,7 +86,7 @@ export const createToolSpendingColumns =
         />
       ),
       cell: ({ row }) => (
-        <div className="text-center font-mono text-xs">
+        <div className="type-mono type-scale-caption text-center">
           {row.original.uniqueWallets}
         </div>
       ),
@@ -107,7 +107,7 @@ export const createToolSpendingColumns =
         />
       ),
       cell: ({ row }) => (
-        <div className="text-center font-mono text-xs font-medium">
+        <div className="type-mono type-emphasis type-scale-caption text-center">
           {formatAmount(row.original.totalMaxAmount)}
         </div>
       ),
@@ -128,7 +128,7 @@ export const createToolSpendingColumns =
         />
       ),
       cell: ({ row }) => (
-        <div className="text-center text-xs text-muted-foreground">
+        <div className="text-center type-caption text-muted-foreground">
           {formatDate(row.original.lastUsedAt)}
         </div>
       ),

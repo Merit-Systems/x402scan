@@ -30,7 +30,7 @@ export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
       if (totalFilters === 0) {
         return (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">N/A</span>
+            <span className="type-caption text-muted-foreground">N/A</span>
           </div>
         );
       }
@@ -48,15 +48,12 @@ export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
       return (
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
-            <Filter className="h-3.5 w-3.5 text-primary" />
-            <Badge
-              variant="outline"
-              className={`text-xs font-semibold ${badgeColor}`}
-            >
+            <Filter className="size-3.5 text-primary" />
+            <Badge variant="outline" className={` ${badgeColor}`}>
               {filterMatches}/{totalFilters}
             </Badge>
           </div>
-          <div className="text-xs text-muted-foreground">
+          <div className="type-caption text-muted-foreground">
             {matchPercentage.toFixed(0)}% match
           </div>
         </div>
@@ -88,10 +85,10 @@ export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
         <div className="flex items-center gap-3">
           <Avatar
             src={favicon ?? undefined}
-            fallback={<Globe className="h-4 w-4 text-muted-foreground" />}
-            className="h-10 w-10 shrink-0"
+            fallback={<Globe className="size-4 text-muted-foreground" />}
+            className="size-10 shrink-0"
           />
-          <span className="truncate font-medium">{title}</span>
+          <span className="type-emphasis truncate type-label">{title}</span>
         </div>
       );
     },
@@ -109,7 +106,9 @@ export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
 
       return (
         <div className="min-h-[100px] py-2">
-          <span className="text-sm whitespace-normal">{description}</span>
+          <span className="type-supporting-body whitespace-normal">
+            {description}
+          </span>
         </div>
       );
     },
@@ -122,7 +121,9 @@ export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
       const tags = row.original.tags;
 
       if (tags.length === 0) {
-        return <span className="text-xs text-muted-foreground">No tags</span>;
+        return (
+          <span className="type-caption text-muted-foreground">No tags</span>
+        );
       }
 
       return (
@@ -131,7 +132,7 @@ export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
             <Badge
               key={tag.id}
               variant="outline"
-              className="text-xs"
+              className=""
               style={{
                 borderColor: tag.color,
                 backgroundColor: tag.color + "10",
@@ -141,7 +142,7 @@ export const createColumns = (): DataTableColumnDef<FilteredSearchResult>[] => [
             </Badge>
           ))}
           {tags.length > 3 && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="">
               +{tags.length - 3}
             </Badge>
           )}

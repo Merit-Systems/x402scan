@@ -46,17 +46,17 @@ export const DisplayStep: React.FC<Props> = ({
 
   return (
     <div>
-      <FieldGroup className="p-4">
+      <FieldGroup className="">
         <FieldGroup className="flex flex-col md:flex-row">
           <Controller
             control={form.control}
             name="image"
             render={({ field }) => (
-              <Field className="h-[156px] w-[136px] shrink-0">
+              <Field className="w-[136px] shrink-0">
                 <FieldLabel htmlFor="image">
                   <span>
                     Image{" "}
-                    <span className="text-xs text-muted-foreground">
+                    <span className="type-caption text-muted-foreground">
                       (optional)
                     </span>
                   </span>
@@ -72,12 +72,13 @@ export const DisplayStep: React.FC<Props> = ({
                       toast.error("No file selected");
                       return;
                     }
-                    uploadImage(files[0]!);
+                    const file = files.at(0);
+                    if (file) uploadImage(file);
                   }}
                   disabled={isUploading}
                   className={cn(
-                    "flex-1 p-0 flex flex-col items-center justify-center gap-1 overflow-hidden bg-transparent",
-                    field.value && "border-none shadow-none"
+                    "flex-1 flex flex-col items-center justify-center gap-1 overflow-hidden ",
+                    field.value && " "
                   )}
                 >
                   {field.value ? (
@@ -105,7 +106,7 @@ export const DisplayStep: React.FC<Props> = ({
                   <FieldLabel htmlFor="name">
                     <span>
                       Name{" "}
-                      <span className="text-xs text-muted-foreground">
+                      <span className="type-caption text-muted-foreground">
                         (optional)
                       </span>
                     </span>
@@ -128,7 +129,7 @@ export const DisplayStep: React.FC<Props> = ({
                   <FieldLabel htmlFor="description">
                     <span>
                       Description{" "}
-                      <span className="text-xs text-muted-foreground">
+                      <span className="type-caption text-muted-foreground">
                         (optional)
                       </span>
                     </span>

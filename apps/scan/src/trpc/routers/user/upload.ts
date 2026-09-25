@@ -16,17 +16,23 @@ export const uploadRouter = createTRPCRouter({
         });
       }
 
-      const fileName = `${ctx.session.user.id}-${Date.now()}`;
+      const fileName = `${ctx.session.user.id}-${String(Date.now())}`;
 
       // Convert ReadableStream to Uint8Array
       const chunks: Uint8Array[] = [];
       const reader = input.getReader();
 
       try {
-        while (true) {
+        for (;;) {
           const value = await reader.read();
           if (value.done) break;
-          chunks.push(value.value as Uint8Array);
+          if (!(value.value instanceof Uint8Array)) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Upload stream contained an invalid chunk",
+            });
+          }
+          chunks.push(value.value);
         }
       } finally {
         reader.releaseLock();

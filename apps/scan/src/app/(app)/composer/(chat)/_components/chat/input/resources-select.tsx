@@ -17,13 +17,13 @@ import {
 } from "@/components/ui/popover";
 import { Favicons } from "@/app/(app)/_components/favicon";
 
-import { ResourceList } from "../../resource-list";
+import { ResourceList } from "@/app/(app)/composer/_components/resource-list";
 
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
 import { cn } from "@/lib/utils";
 
-import type { SelectedResource } from "../../../_types/chat-config";
+import type { SelectedResource } from "../../../../_types/chat-config";
 
 interface Props {
   resources: SelectedResource[];
@@ -42,9 +42,9 @@ export const ResourcesSelect: React.FC<Props> = ({
         favicons={resources.map((resource) => resource.favicon)}
         iconContainerClassName="size-5"
       />
-      <span className="text-xs">
+      <span className="type-caption">
         {resources.length > 0
-          ? `${resources.length} Tool${resources.length > 1 ? "s" : ""}`
+          ? `${String(resources.length)} Tool${resources.length > 1 ? "s" : ""}`
           : "Select Tools"}
       </span>
     </Button>
@@ -63,9 +63,9 @@ export const ResourcesSelect: React.FC<Props> = ({
     return (
       <Drawer>
         <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-        <DrawerContent className="p-0">
-          <DrawerHeader className="items-start px-3 pb-3">
-            <DrawerTitle className="text-lg">Tools Selector</DrawerTitle>
+        <DrawerContent className="">
+          <DrawerHeader className="items-start">
+            <DrawerTitle className="">Tools Selector</DrawerTitle>
             <DrawerDescription>
               Add x402 tools to give your agent more capabilities
             </DrawerDescription>
@@ -80,7 +80,7 @@ export const ResourcesSelect: React.FC<Props> = ({
     <Popover>
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
       <PopoverContent
-        className="w-xs overflow-hidden p-0 md:w-lg"
+        className="w-xs overflow-hidden md:w-lg"
         align="start"
         sideOffset={8}
       >

@@ -35,6 +35,11 @@ interface AnimatedBeamProps {
   isFull?: boolean;
 }
 
+const percentage = (value: number) => `${String(value)}%`;
+
+const svgCommand = (...parts: (number | string)[]) =>
+  parts.map(String).join(" ");
+
 export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   className,
   containerRef,
@@ -96,25 +101,25 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
               ? {
                   x1: ["0%", "0%"],
                   x2: ["0%", "0%"],
-                  y1: [`100%`, `-${beamWidth}%`],
-                  y2: [`${100 + beamWidth}%`, `0%`],
+                  y1: ["100%", percentage(-beamWidth)],
+                  y2: [percentage(100 + beamWidth), "0%"],
                 }
               : {
                   x1: ["0%", "0%"],
                   x2: ["0%", "0%"],
-                  y1: [`0%`, `${100 + beamWidth}%`],
-                  y2: [`-${beamWidth}%`, `100%`],
+                  y1: ["0%", percentage(100 + beamWidth)],
+                  y2: [percentage(-beamWidth), "100%"],
                 }
             : reverse
               ? {
-                  x1: [`100%`, `-${beamWidth}%`],
-                  x2: [`${100 + beamWidth}%`, `0%`],
+                  x1: ["100%", percentage(-beamWidth)],
+                  x2: [percentage(100 + beamWidth), "0%"],
                   y1: ["0%", "0%"],
                   y2: ["0%", "0%"],
                 }
               : {
-                  x1: [`0%`, `${100 + beamWidth}%`],
-                  x2: [`-${beamWidth}%`, `100%`],
+                  x1: ["0%", percentage(100 + beamWidth)],
+                  x2: [percentage(-beamWidth), "100%"],
                   y1: ["0%", "0%"],
                   y2: ["0%", "0%"],
                 }
@@ -128,7 +133,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
 
           if (Math.abs(startX - endX) < 5) {
             // Nearly straight vertical line - use curved path to avoid stem overlap
-            d = `M ${startX},${startY} L ${endX},${endY}`;
+            d = svgCommand("M", startX, startY, "L", endX, endY);
           } else {
             // L-shaped path with rounded corner
             const verticalEnd = controlPointY - cornerRadius;
@@ -138,7 +143,30 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
               endX - (endX > startX ? cornerRadius : -cornerRadius);
             const verticalStart = controlPointY + cornerRadius;
 
-            d = `M ${startX},${startY} L ${startX},${verticalEnd} Q ${startX},${controlPointY} ${horizontalStart},${controlPointY} L ${horizontalEnd},${controlPointY} Q ${endX},${controlPointY} ${endX},${verticalStart} L ${endX},${endY}`;
+            d = svgCommand(
+              "M",
+              startX,
+              startY,
+              "L",
+              startX,
+              verticalEnd,
+              "Q",
+              startX,
+              controlPointY,
+              horizontalStart,
+              controlPointY,
+              "L",
+              horizontalEnd,
+              controlPointY,
+              "Q",
+              endX,
+              controlPointY,
+              endX,
+              verticalStart,
+              "L",
+              endX,
+              endY
+            );
           }
         } else if (isVertical) {
           // Vertical S-curve: vertical at ends, horizontal at midpoint
@@ -148,7 +176,18 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
           const cp2x = endX - curvature;
           const cp2y = startY + (endY - startY) * 0.5;
 
-          d = `M ${startX},${startY} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`;
+          d = svgCommand(
+            "M",
+            startX,
+            startY,
+            "C",
+            cp1x,
+            cp1y,
+            cp2x,
+            cp2y,
+            endX,
+            endY
+          );
         } else {
           // Horizontal S-curve: horizontal at ends, vertical at midpoint
           // Single cubic bezier with control points at same Y as their respective endpoints
@@ -157,7 +196,18 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
           const cp2x = startX + (endX - startX) * 0.5;
           const cp2y = endY - curvature;
 
-          d = `M ${startX},${startY} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`;
+          d = svgCommand(
+            "M",
+            startX,
+            startY,
+            "C",
+            cp1x,
+            cp1y,
+            cp2x,
+            cp2y,
+            endX,
+            endY
+          );
         }
         setPathD(d);
       }
@@ -208,7 +258,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         "pointer-events-none absolute top-0 left-0 transform-gpu stroke-2",
         className
       )}
-      viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}
+      viewBox={svgCommand(0, 0, svgDimensions.width, svgDimensions.height)}
     >
       <motion.path
         d={pathD}
@@ -322,10 +372,7 @@ export const Circle = forwardRef<
   return (
     <Card
       ref={ref}
-      className={cn(
-        "bg-card z-10 flex items-center justify-center rounded-full border-2 p-2",
-        className
-      )}
+      className={cn(" z-10 flex items-center justify-center ", className)}
     >
       {children}
     </Card>

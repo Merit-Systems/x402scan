@@ -156,7 +156,7 @@ export function EditTagModal({
             <Tag className="size-4" />
             Edit Tags
           </DialogTitle>
-          <DialogDescription className="text-xs break-all">
+          <DialogDescription className="break-all">
             {resourceName}
           </DialogDescription>
         </DialogHeader>
@@ -164,13 +164,15 @@ export function EditTagModal({
         <div className="space-y-4">
           {/* Create new tag section */}
           <div className="space-y-3 border-b pb-4">
-            <Label className="text-sm font-medium">Create New Tag</Label>
+            <Label className=" ">Create New Tag</Label>
             <div className="flex gap-2">
               <div className="flex-1">
                 <Input
                   placeholder="Tag name"
                   value={newTagName}
-                  onChange={(e) => setNewTagName(e.target.value)}
+                  onChange={(e) => {
+                    setNewTagName(e.target.value);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleCreateTag();
@@ -181,7 +183,9 @@ export function EditTagModal({
               <Input
                 type="color"
                 value={newTagColor}
-                onChange={(e) => setNewTagColor(e.target.value)}
+                onChange={(e) => {
+                  setNewTagColor(e.target.value);
+                }}
                 className="w-20 cursor-pointer"
               />
               <Button
@@ -196,35 +200,38 @@ export function EditTagModal({
 
           {/* Available tags */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Available Tags</Label>
+            <Label className=" ">Available Tags</Label>
             {allTags.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
+              <p className="type-supporting-body text-muted-foreground">
                 No tags available. Create one above.
               </p>
             ) : (
               <div className="max-h-[300px] space-y-2 overflow-y-auto">
                 {allTags.map((tag) => {
                   const isAssigned = assignedTagIds.has(tag.id);
+                  const { _count: counts } = tag;
                   return (
                     <ContextMenu key={tag.id}>
                       <ContextMenuTrigger asChild>
                         <div className="flex items-center justify-between rounded-md border p-2 transition-colors hover:bg-accent">
                           <div className="flex min-w-0 flex-1 items-center gap-2">
                             <div
-                              className="size-4 flex-shrink-0 rounded-sm"
+                              className="size-4 shrink-0 rounded-sm"
                               style={{ backgroundColor: tag.color }}
                             />
-                            <span className="text-sm font-medium break-all">
+                            <span className="type-supporting-body type-emphasis break-all">
                               {tag.name}
                             </span>
-                            <span className="flex-shrink-0 text-xs text-muted-foreground">
-                              ({tag._count.resourcesTags})
+                            <span className="shrink-0 type-caption text-muted-foreground">
+                              ({counts.resourcesTags})
                             </span>
                           </div>
                           <Button
                             size="xs"
                             variant={isAssigned ? "destructive" : "default"}
-                            onClick={() => handleToggleTag(tag.id)}
+                            onClick={() => {
+                              handleToggleTag(tag.id);
+                            }}
                             disabled={
                               assignTag.isPending || unassignTag.isPending
                             }
@@ -246,7 +253,9 @@ export function EditTagModal({
                       <ContextMenuContent>
                         <ContextMenuItem
                           variant="destructive"
-                          onClick={() => handleDeleteClick(tag)}
+                          onClick={() => {
+                            handleDeleteClick(tag);
+                          }}
                           disabled={deleteTag.isPending}
                         >
                           <Trash2 className="size-4" />

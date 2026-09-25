@@ -92,8 +92,8 @@ export const EndUsersTable = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          {endUsers ? `${endUsers.length} end users` : "Loading..."}
+        <div className="type-supporting-body text-muted-foreground">
+          {endUsers ? `${String(endUsers.length)} end users` : "Loading..."}
         </div>
         <Button
           onClick={handleDownloadCSV}
@@ -110,7 +110,7 @@ export const EndUsersTable = () => {
         columns={columns}
         data={endUsers ?? []}
         isLoading={isLoading}
-        getRowId={(row, index) => row?.userId ?? `loading-${index}`}
+        getRowId={(row) => row.userId}
       />
     </div>
   );

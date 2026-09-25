@@ -71,8 +71,13 @@ export function createColumns(
       accessorKey: "_count",
       header: "Invocations",
       cell: ({ row }) => {
-        const count = row.original._count?.invocations ?? 0;
-        return <span className="text-sm text-muted-foreground">{count}</span>;
+        const { _count: counts } = row.original;
+        const count = counts.invocations;
+        return (
+          <span className="type-supporting-body text-muted-foreground">
+            {count}
+          </span>
+        );
       },
     },
     {
@@ -86,12 +91,14 @@ export function createColumns(
             variant="outline"
             size="icon-sm"
             aria-label={hasMetadata ? "Edit metadata" : "Add metadata"}
-            onClick={() => onAction(row.original)}
+            onClick={() => {
+              onAction(row.original);
+            }}
           >
             {hasMetadata ? (
-              <Edit className="h-4 w-4" />
+              <Edit className="size-4" />
             ) : (
-              <Plus className="h-4 w-4" />
+              <Plus className="size-4" />
             )}
           </Button>
         );

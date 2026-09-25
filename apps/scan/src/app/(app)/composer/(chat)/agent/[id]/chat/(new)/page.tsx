@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export default async function AgentPage({
   params,
-}: PageProps<"/composer/agent/[id]">) {
+}: PageProps<"/composer/agent/[id]/chat">) {
   const { id } = await params;
 
   const agentConfiguration = await api.public.agents.get(id);

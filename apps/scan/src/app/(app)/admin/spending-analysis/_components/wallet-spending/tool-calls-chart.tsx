@@ -13,10 +13,11 @@ import { BarChart, LoadingBarChart } from "@/components/ui/chart";
 import type { ChartData } from "@/components/ui/chart";
 import { api } from "@/trpc/client";
 import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { ActivityTimeframe } from "@/types/timeframes";
 
-type ToolCallData = {
+interface ToolCallData {
   total_tool_calls: number;
-};
+}
 
 interface ToolCallsChartProps {
   resourceId: string;
@@ -37,7 +38,7 @@ export const ToolCallsChart = ({
     });
 
   const isLessThan7Days = useMemo(() => {
-    return timeframe < 7;
+    return timeframe < ActivityTimeframe.SevenDays;
   }, [timeframe]);
 
   const toolCallsChartData = useMemo<ChartData<ToolCallData>[]>(() => {

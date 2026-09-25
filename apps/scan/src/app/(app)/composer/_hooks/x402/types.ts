@@ -5,8 +5,8 @@ import type { UseMutationOptions } from "@tanstack/react-query";
 import type { Chain } from "@/types/chain";
 import type { Connection } from "wagmi";
 
-export interface X402FetchResponse<TData = unknown> {
-  data: TData | string;
+export interface X402FetchResponse {
+  data: unknown;
   type: "json" | "text" | "unknown";
   paymentResponse: z.infer<typeof paymentResponseHeaderSchema> | null;
 }
@@ -15,12 +15,12 @@ export type FetchWithPaymentWrapper = (
   baseFetch: typeof fetch
 ) => (url: string, init?: RequestInit) => Promise<Response>;
 
-export interface UseEvmX402FetchParams<TData = unknown> {
+export interface UseEvmX402FetchParams {
   targetUrl: string;
   value: bigint;
   chain: Chain;
   init?: RequestInit;
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
+  options?: Omit<UseMutationOptions<X402FetchResponse>, "mutationFn">;
   isTool?: boolean;
   connection?: Connection;
 }
