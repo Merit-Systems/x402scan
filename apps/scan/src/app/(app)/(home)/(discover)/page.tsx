@@ -5,7 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Body, Section } from '@/app/_components/layout/page-utils';
 
 import { OverallStats } from '../(overview)/_components/stats';
-// import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
+import { PonchoBanner } from '../_components/poncho-banner';
 import { DiscoverHeading } from './_components/heading';
 
 import { api, HydrateClient } from '@/trpc/server';
@@ -48,10 +48,10 @@ export default async function DiscoverPage({
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
           <div>
+            <PonchoBanner />
             <DiscoverHeading />
             <Body>
               <DiscoverPageContent>
-                {/* <AgentCashAnnouncementBanner /> */}
                 <OverallStats
                   chain={chain}
                   initialTimeframe={ActivityTimeframe.ThirtyDays}
