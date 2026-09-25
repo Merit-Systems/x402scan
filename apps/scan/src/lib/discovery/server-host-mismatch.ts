@@ -1,6 +1,6 @@
-import z from 'zod';
+import z from "zod";
 
-import { PROBE_TIMEOUT_MS } from './utils';
+import { PROBE_TIMEOUT_MS } from "./utils";
 
 /** The only part of an OpenAPI document this check reads. */
 const serversSchema = z.object({
@@ -37,7 +37,7 @@ export async function detectServerHostMismatch(
   try {
     const documentOrigin = new URL(origin).origin;
     const response = await fetch(`${documentOrigin}/openapi.json`, {
-      headers: { Accept: 'application/json' },
+      headers: { Accept: "application/json" },
       signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
     });
     if (!response.ok) return null;
@@ -47,7 +47,7 @@ export async function detectServerHostMismatch(
     if (!serverUrl) return null;
 
     const declared = new URL(serverUrl);
-    if (declared.protocol !== 'http:' && declared.protocol !== 'https:') {
+    if (declared.protocol !== "http:" && declared.protocol !== "https:") {
       return null;
     }
     if (declared.origin === documentOrigin) return null;
