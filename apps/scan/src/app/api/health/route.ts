@@ -1,3 +1,5 @@
+import { connection } from "next/server";
+
 /**
  * Public liveness endpoint for the x402scan API.
  *
@@ -6,9 +8,9 @@
  * API is reachable. Intentionally dependency-free (no DB / network calls) so it
  * reflects process liveness and can't be made to fail by a slow downstream.
  */
-export const dynamic = "force-dynamic";
 
-export function GET() {
+export async function GET() {
+  await connection();
   return Response.json(
     {
       status: "ok",

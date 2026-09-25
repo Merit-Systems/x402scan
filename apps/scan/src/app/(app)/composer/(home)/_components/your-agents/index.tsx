@@ -1,30 +1,40 @@
 import { Suspense } from "react";
 
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
+import { api, HydrateClient } from "@/trpc/server";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 import { LoadingAgentCard } from "../lib/agent-card";
 import { YourAgentsContent } from "./content";
 
-interface Props {
+interface YourAgentsProps {
   userId: string;
 }
 
-// Note: No HydrateClient here - parent page.tsx provides it
-export const YourAgents: React.FC<Props> = ({ userId }) => {
-  return (
-    <Suspense fallback={<LoadingYourAgents />}>
-      <YourAgentsWrapper userId={userId} />
-    </Suspense>
-  );
-};
+export const YourAgents = ({ userId }: YourAgentsProps) => (
+  <Suspense fallback={<LoadingYourAgents />}>
+    <YourAgentsData userId={userId} />
+  </Suspense>
+);
 
-const YourAgentsWrapper: React.FC<Props> = ({ userId }) => {
+interface YourAgentsDataProps {
+  userId: string;
+}
+
+async function YourAgentsData({ userId }: YourAgentsDataProps) {
+  void api.public.agents.list.prefetch({
+    timeframe: ActivityTimeframe.ThirtyDays,
+    pagination: { page: 0, page_size: 100 },
+    userId,
+  });
   return (
-    <AgentsContainer>
-      <YourAgentsContent userId={userId} />
-    </AgentsContainer>
+    <HydrateClient>
+      <AgentsContainer>
+        <YourAgentsContent userId={userId} />
+      </AgentsContainer>
+    </HydrateClient>
   );
-};
+}
 
 const LoadingYourAgents = () => {
   return (

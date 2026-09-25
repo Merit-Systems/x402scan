@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -42,15 +44,34 @@ interface PrimaryNavigationProps {
 }
 
 export function PrimaryNavigation({ className }: PrimaryNavigationProps) {
-  const pathname = usePathname();
+  return (
+    <Suspense fallback={<NavigationLinks className={className} />}>
+      <ActiveNavigation className={className} />
+    </Suspense>
+  );
+}
 
+interface ActiveNavigationProps {
+  className?: string;
+}
+
+function ActiveNavigation({ className }: ActiveNavigationProps) {
+  return <NavigationLinks className={className} pathname={usePathname()} />;
+}
+
+interface NavigationLinksProps {
+  className?: string;
+  pathname?: string;
+}
+
+function NavigationLinks({ className, pathname }: NavigationLinksProps) {
   return (
     <nav aria-label="Primary navigation" className={className}>
       <ul className="flex min-w-max items-center gap-1">
         {navigationItems.map((item) => {
           const isCurrent =
             pathname === item.href ||
-            item.relatedRoutes?.some((route) => pathname.startsWith(route));
+            item.relatedRoutes?.some((route) => pathname?.startsWith(route));
 
           return (
             <li key={item.href}>
