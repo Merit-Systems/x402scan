@@ -65,7 +65,7 @@ export default async function FacilitatorPage({
         />
         <FacilitatorUsageErrorBoundary>
           <Suspense
-            key={`usage:${chain ?? "all"}:${timeframe}`}
+            key={`usage:${chain ?? "all"}:${String(timeframe)}`}
             fallback={<LoadingFacilitatorStatCards />}
           >
             <FacilitatorStatCards
@@ -77,7 +77,7 @@ export default async function FacilitatorPage({
         </FacilitatorUsageErrorBoundary>
         <FacilitatorServersErrorBoundary>
           <Suspense
-            key={`servers:${chain ?? "all"}:${timeframe}`}
+            key={`servers:${chain ?? "all"}:${String(timeframe)}`}
             fallback={<LoadingFacilitatorOrigins />}
           >
             <FacilitatorOrigins

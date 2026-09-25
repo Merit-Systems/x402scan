@@ -9,6 +9,7 @@ import { USDC_MULTIPLIER, USDC_SOLANA } from "@/trigger/lib/constants";
 import { getAccount } from "@solana/spl-token";
 import { Connection, PublicKey } from "@solana/web3.js";
 import Bottleneck from "bottleneck";
+import { env } from "@/trigger/env";
 
 export function buildQuery(
   config: SyncConfig,
@@ -75,7 +76,7 @@ export function buildQuery(
         AND t.value IS NOT NULL 
         AND t.decimals IS NOT NULL
         ORDER BY t.block_timestamp DESC
-        LIMIT ${config.limit}`;
+        LIMIT ${String(config.limit)}`;
 }
 
 /**
@@ -89,7 +90,7 @@ export async function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): Promise<TransferEventData[]> {
-  const rpcUrl = process.env.SOLANA_RPC_URL;
+  const rpcUrl = env.SOLANA_RPC_URL;
   if (!rpcUrl) throw new Error("SOLANA_RPC_URL is required");
   const connection = new Connection(rpcUrl);
 

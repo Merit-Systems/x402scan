@@ -3,6 +3,7 @@ import type { KnipConfig } from "knip";
 const config: KnipConfig = {
   workspaces: {
     ".": {
+      oxlint: { config: [".oxlintrc.jsonc"] },
       entry: ["foundation.config.ts", "oxfmt.config.ts", "taze.config.ts"],
       ignoreDependencies: [
         "@merit-systems/oxlint-config",

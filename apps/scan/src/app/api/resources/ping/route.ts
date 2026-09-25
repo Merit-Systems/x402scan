@@ -135,7 +135,7 @@ export const GET = async (request: NextRequest) => {
     for (let i = 0; i < resources.length; i += BATCH_SIZE) {
       const batch = resources.slice(i, i + BATCH_SIZE);
       console.info(
-        `Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(resources.length / BATCH_SIZE)}`,
+        `Processing batch ${String(Math.floor(i / BATCH_SIZE) + 1)}/${String(Math.ceil(resources.length / BATCH_SIZE))}`,
         {
           batchSize: batch.length,
           totalProcessed: i,

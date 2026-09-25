@@ -69,13 +69,13 @@ export default async function FacilitatorsPage({
         <section className="space-y-4">
           {/* <FacilitatorPackageBanner /> */}
           <Suspense
-            key={`chart:${chain ?? "all"}:${timeframe}`}
+            key={`chart:${chain ?? "all"}:${String(timeframe)}`}
             fallback={<LoadingFacilitatorsChart />}
           >
             <FacilitatorsChart chain={chain} timeframe={timeframe} />
           </Suspense>
           <Suspense
-            key={`table:${chain ?? "all"}:${timeframe}:${sorting.id}:${sorting.desc}`}
+            key={`table:${chain ?? "all"}:${String(timeframe)}:${sorting.id}:${String(sorting.desc)}`}
             fallback={
               <LoadingFacilitatorsTable
                 pageSize={PAGE_SIZE}

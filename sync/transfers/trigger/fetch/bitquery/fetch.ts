@@ -1,5 +1,6 @@
 import { logger } from "@trigger.dev/sdk/v3";
 import { z } from "zod";
+import { env } from "@/trigger/env";
 import type {
   SyncConfig,
   Facilitator,
@@ -25,7 +26,7 @@ export async function fetchWithOffsetPagination(
   let hasMore = true;
 
   while (hasMore) {
-    logger.log(`[${config.chain}] Fetching with offset: ${offset}`);
+    logger.log(`[${config.chain}] Fetching with offset: ${String(offset)}`);
 
     const query = config.buildQuery(
       config,
@@ -74,7 +75,7 @@ async function executeBitqueryRequest(
   facilitatorConfig: FacilitatorConfig,
   query: string
 ): Promise<TransferEventData[]> {
-  const apiKey = process.env.BITQUERY_API_KEY;
+  const apiKey = env.BITQUERY_API_KEY;
   if (!apiKey) throw new Error("BITQUERY_API_KEY is required");
   if (!config.apiUrl) throw new Error("Bitquery apiUrl is required");
   const headers = new Headers();
@@ -93,10 +94,15 @@ async function executeBitqueryRequest(
 
   if (!response.ok) {
     const errorText = await response.text();
-    logger.error(`[${config.chain}] Bitquery API error (${response.status}):`, {
-      error: errorText,
-    });
-    throw new Error(`Bitquery API returned ${response.status}: ${errorText}`);
+    logger.error(
+      `[${config.chain}] Bitquery API error (${String(response.status)}):`,
+      {
+        error: errorText,
+      }
+    );
+    throw new Error(
+      `Bitquery API returned ${String(response.status)}: ${errorText}`
+    );
   }
 
   const result = bitqueryGraphqlResponseSchema.parse(await response.json());
