@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChainContext } from "./context";
 
 import type { Chain } from "@/types/chain";
@@ -17,16 +17,15 @@ interface Props {
 
 export const ChainProvider: React.FC<Props> = ({ children }) => {
   const searchParams = useSearchParams();
-  const [chain, setChainState] = useState<Chain | undefined>(
-    parseChain(searchParams.get("chain")) ?? getDataChainCookieClient()
+  const urlChain = parseChain(searchParams.get("chain"));
+  const [storedChain, setStoredChain] = useState<Chain | undefined>(() =>
+    getDataChainCookieClient()
   );
-
-  useEffect(() => {
-    setDataChainCookieClient(chain);
-  }, [chain]);
+  const chain = urlChain ?? storedChain;
 
   const setChain = (chain: Chain | undefined) => {
-    setChainState(chain);
+    setDataChainCookieClient(chain);
+    setStoredChain(chain);
   };
 
   return (
