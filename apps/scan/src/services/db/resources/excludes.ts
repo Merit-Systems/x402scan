@@ -9,7 +9,7 @@ export const createExcludedResource = async (
   input: z.input<typeof createExcludedResourceSchema>
 ) => {
   const data = createExcludedResourceSchema.parse(input);
-  return await scanDb.excludedResource.create({
+  return scanDb.excludedResource.create({
     data,
     include: {
       resource: {
@@ -22,7 +22,7 @@ export const createExcludedResource = async (
 };
 
 export const getAllExcludedResources = async () => {
-  return await scanDb.excludedResource.findMany({
+  return scanDb.excludedResource.findMany({
     include: {
       resource: {
         include: {
@@ -46,13 +46,13 @@ export const getAllExcludedResources = async () => {
 export const deleteExcludedResourceByResourceId = async (
   resourceId: string
 ) => {
-  return await scanDb.excludedResource.delete({
+  return scanDb.excludedResource.delete({
     where: { resourceId },
   });
 };
 
 export const searchResourcesForExcludes = async (search?: string) => {
-  return await scanDb.resources.findMany({
+  return scanDb.resources.findMany({
     where: {
       ...(search
         ? {

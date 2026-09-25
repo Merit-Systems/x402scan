@@ -244,7 +244,7 @@ export const redeemInviteCode = async ({
   const walletAddressResult = await wallet.address();
 
   if (walletAddressResult.isErr()) {
-    return await handleRedemptionFailure({
+    return handleRedemptionFailure({
       redemptionId: redemption.id,
       inviteCodeId: inviteCode.id,
       error: walletAddressResult,
@@ -254,7 +254,7 @@ export const redeemInviteCode = async ({
   const walletBalanceResult = await wallet.getTokenBalance({ token });
 
   if (walletBalanceResult.isErr()) {
-    return await handleRedemptionFailure({
+    return handleRedemptionFailure({
       redemptionId: redemption.id,
       inviteCodeId: inviteCode.id,
       error: walletBalanceResult,
@@ -272,7 +272,7 @@ export const redeemInviteCode = async ({
   });
 
   if (sendTokensResult.isErr()) {
-    return await handleRedemptionFailure({
+    return handleRedemptionFailure({
       redemptionId: redemption.id,
       inviteCodeId: inviteCode.id,
       error: sendTokensResult,

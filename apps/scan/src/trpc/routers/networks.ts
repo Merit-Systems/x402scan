@@ -12,12 +12,12 @@ export const networksRouter = createTRPCRouter({
   list: publicProcedure
     .input(listTopNetworksInputSchema)
     .query(async ({ input }) => {
-      return await listTopNetworks(input);
+      return listTopNetworks(input);
     }),
 
   bucketedStatistics: publicProcedure
     .input(bucketedNetworksStatisticsInputSchema)
     .query(async ({ input }) => {
-      return await getBucketedNetworksStatistics(input);
+      return getBucketedNetworksStatistics(input);
     }),
 });

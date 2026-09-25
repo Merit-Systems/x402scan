@@ -114,7 +114,7 @@ export async function rerankSearchResults(
   );
 
   // Sort by reranker score (highest first), then put unranked items at the end
-  return rerankedResults.sort((a, b) => {
+  return rerankedResults.toSorted((a, b) => {
     // Items with reranker scores come first
     if (a.rerankerScore !== null && b.rerankerScore === null) return -1;
     if (a.rerankerScore === null && b.rerankerScore !== null) return 1;

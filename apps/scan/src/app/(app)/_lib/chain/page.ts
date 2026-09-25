@@ -14,5 +14,5 @@ export const getChainForPage = async (
       return parsedChain;
     }
   }
-  return await getDataChainCookieServer();
+  return getDataChainCookieServer();
 };

@@ -62,9 +62,9 @@ const ToolHeader = ({
         <Loading
           value={resource}
           isLoading={isResourceLoading ?? state === "input-streaming"}
-          component={(resource) => (
+          component={(loadedResource) => (
             <Favicon
-              url={resource.origin.favicon ?? null}
+              url={loadedResource.origin.favicon ?? null}
               className="size-6 rounded-md md:size-8"
             />
           )}
@@ -74,10 +74,10 @@ const ToolHeader = ({
           <Loading
             value={resource}
             isLoading={isResourceLoading ?? state === "input-streaming"}
-            component={(resource) => (
+            component={(loadedResource) => (
               <div className="flex w-full items-center gap-2 overflow-hidden">
                 <span className="truncate text-left font-mono text-xs font-semibold md:text-sm">
-                  {resource.resource}
+                  {loadedResource.resource}
                 </span>
                 {state === "input-streaming" ? (
                   <Loader2 className="size-3 shrink-0 animate-spin" />
@@ -96,10 +96,10 @@ const ToolHeader = ({
           <Loading
             value={resource}
             isLoading={isResourceLoading ?? state === "input-streaming"}
-            component={(resource) => (
+            component={(loadedResource) => (
               <span className="text-left text-[10px] text-muted-foreground md:text-xs">
                 {cleanExternalText(
-                  resource.accepts.find((accept) => accept.description)
+                  loadedResource.accepts.find((accept) => accept.description)
                     ?.description ?? ""
                 )}
               </span>
@@ -166,22 +166,22 @@ const ToolOutput = ({
     return null;
   }
 
-  const parseOutput = (output: ReactNode) => {
-    const text = z.string().safeParse(output);
+  const parseOutput = (value: ReactNode) => {
+    const text = z.string().safeParse(value);
     if (!text.success) {
-      return { raw: output, parsed: null };
+      return { raw: value, parsed: null };
     }
 
     const trimmed = text.data.trim();
     if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
       try {
-        return { raw: output, parsed: JSON.parse(trimmed) as JsonValue };
+        return { raw: value, parsed: JSON.parse(trimmed) as JsonValue };
       } catch {
-        return { raw: output, parsed: null };
+        return { raw: value, parsed: null };
       }
     }
 
-    return { raw: output, parsed: null };
+    return { raw: value, parsed: null };
   };
 
   const result = output ? parseOutput(output) : { raw: null, parsed: null };

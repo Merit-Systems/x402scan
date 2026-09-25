@@ -85,7 +85,7 @@ export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
-  return await scanDb.$transaction(async (tx) => {
+  return scanDb.$transaction(async (tx) => {
     const upsertedOrigin = await tx.resourceOrigin.upsert({
       where: { origin: origin.origin },
       update: {
@@ -281,7 +281,7 @@ export const searchOrigins = async (
 ) => {
   const { search, limit } = searchOriginsSchema.parse(input);
   const acceptsWhere = getDisplayableAcceptsWhere({});
-  return await scanDb.resourceOrigin.findMany({
+  return scanDb.resourceOrigin.findMany({
     where: {
       origin: {
         contains: search,
@@ -371,5 +371,5 @@ export const getOriginPayToAddresses = async (
     .filter((parsed) => parsed.success)
     .map((parsed) => parsed.data);
 
-  return [...new Set(addresses)].sort((a, b) => a.localeCompare(b));
+  return [...new Set(addresses)].toSorted((a, b) => a.localeCompare(b));
 };

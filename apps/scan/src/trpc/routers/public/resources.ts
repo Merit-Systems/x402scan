@@ -61,7 +61,7 @@ export const resourcesRouter = createTRPCRouter({
   }),
   list: {
     all: publicProcedure.query(async () => {
-      return await listResources({});
+      return listResources({});
     }),
     paginated: paginatedProcedure
       .input(
@@ -80,7 +80,7 @@ export const resourcesRouter = createTRPCRouter({
         })
       )
       .query(async ({ input, ctx: { pagination } }) => {
-        return await listResourcesWithPagination(
+        return listResourcesWithPagination(
           {
             where: input.where,
             sorting: input.sorting,
@@ -91,7 +91,7 @@ export const resourcesRouter = createTRPCRouter({
       }),
   },
   getById: publicProcedure.input(z.string()).query(async ({ input }) => {
-    return await scanDb.resources.findUnique({
+    return scanDb.resources.findUnique({
       where: { id: input },
       include: {
         accepts: true,
@@ -108,7 +108,7 @@ export const resourcesRouter = createTRPCRouter({
   search: publicProcedure
     .input(searchResourcesSchema)
     .query(async ({ input }) => {
-      return await searchResources(input);
+      return searchResources(input);
     }),
 
   register: publicProcedure
@@ -274,7 +274,7 @@ export const resourcesRouter = createTRPCRouter({
     .query(async ({ input }) => {
       // Return origin-level verification if originId provided
       if (input.originId) {
-        return await getOriginVerificationStatus(input.originId);
+        return getOriginVerificationStatus(input.originId);
       }
 
       // Return resource-level verification if resourceIds provided
@@ -298,11 +298,11 @@ export const resourcesRouter = createTRPCRouter({
     list: publicProcedure
       .input(listTagsSchema.optional())
       .query(async ({ input }) => {
-        return await listTags(input ?? { filterTags: [] });
+        return listTags(input ?? { filterTags: [] });
       }),
 
     getByResource: publicProcedure.input(z.uuid()).query(async ({ input }) => {
-      return await listResourceTags(input);
+      return listResourceTags(input);
     }),
   },
 });

@@ -30,7 +30,7 @@ export const BaseLineChart = <
       {lines.map(({ dataKey, color, ...lineProps }, index) => {
         return (
           <Line<ChartData<T>, number>
-            key={dataKey as string}
+            key={dataKey}
             isAnimationActive={index === lines.length - 1}
             dataKey={dataKey}
             fill={`color-mix(in oklab, ${color} 40%, transparent)`}

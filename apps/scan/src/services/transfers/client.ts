@@ -12,9 +12,11 @@ const PRIMARY_TIMEOUT_MS = 15_000;
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return Promise.race([
     promise,
-    new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error(`QUERY_TIMEOUT after ${ms}ms`)), ms)
-    ),
+    new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`QUERY_TIMEOUT after ${ms}ms`));
+      }, ms);
+    }),
   ]);
 }
 

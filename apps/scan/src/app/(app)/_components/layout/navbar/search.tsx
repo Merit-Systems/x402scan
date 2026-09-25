@@ -16,7 +16,9 @@ export const NavbarSearchButton = () => {
       variant="outline"
       aria-label="Search x402scan"
       className="text-muted-foreground lg:w-48 lg:justify-between lg:px-2 lg:pr-1"
-      onClick={() => setIsOpen(true)}
+      onClick={() => {
+        setIsOpen(true);
+      }}
     >
       <div className="flex items-center gap-2">
         <Search className="size-4" />

@@ -21,7 +21,9 @@ export function QuickstartPromptCard() {
         "overflow-hidden cursor-pointer transition-colors hover:border-foreground/20",
         expanded && "border-foreground/20"
       )}
-      onClick={() => setExpanded(!expanded)}
+      onClick={() => {
+        setExpanded(!expanded);
+      }}
     >
       <div className="flex items-center justify-between gap-4 p-4">
         <div className="type-supporting-body flex items-center gap-2.5 text-muted-foreground">
