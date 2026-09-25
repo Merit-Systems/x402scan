@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { api } from "@/trpc/client";
 
 import { DataTable, DataTableLoading } from "@/components/ui/data-table";
@@ -31,6 +33,7 @@ export const FacilitatorsTable: React.FC<Props> = ({
   sorting,
   timeframe,
 }) => {
+  const router = useRouter();
   const tableSorting = useUrlTableSorting({
     sorting,
     sortIds: FACILITATORS_SORT_IDS,
@@ -49,8 +52,13 @@ export const FacilitatorsTable: React.FC<Props> = ({
     <DataTable
       columns={columns}
       data={facilitatorsData.items}
+      getRowHref={(facilitator) => `/facilitator/${facilitator.facilitator_id}`}
+      getRowLabel={(facilitator) => `Open ${facilitator.facilitator.name}`}
       pageSize={pageSize}
       manualSorting={true}
+      onRowMouseEnter={(facilitator) => {
+        router.prefetch(`/facilitator/${facilitator.facilitator_id}`);
+      }}
       sorting={tableSorting.tableSorting}
       onSortingChange={tableSorting.onSortingChange}
     />
