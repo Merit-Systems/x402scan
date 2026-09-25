@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
-import { env } from "@/env";
 import { CACHE_DURATION_MINUTES } from "@/lib/cache/constants";
+import { refreshQueryCache } from "@/lib/cache/query";
 import { checkCronSecret } from "@/lib/cron";
 import { facilitatorAddresses } from "@/lib/facilitators";
 import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
@@ -108,7 +108,7 @@ function getHomePageTasks(
 
     // Discover page variant — bazaar.featured resolves the AgentCash catalog
     // origin set server-side, so the cache key omits the 305-element URL list.
-    // Warms both getDiscoverOrigins() (its own Redis cache) and the
+    // Warms both getDiscoverOrigins() (native remote cache) and the
     // bazaar.list cache for the resulting input shape.
     () =>
       api.public.sellers.bazaar.featured({
@@ -192,15 +192,14 @@ export async function GET(request: NextRequest) {
     return cronCheck;
   }
 
+  await connection();
+
   try {
     const startTime = Date.now();
 
-    // Create cache warming API with authenticated headers
-    const warmingHeaders = new Headers();
-    warmingHeaders.set("x-cache-warming", "true");
-    warmingHeaders.set("authorization", `Bearer ${env.CRON_SECRET ?? ""}`);
-
-    const ctx = await createTRPCContext(warmingHeaders);
+    // Query inputs remain identical to public reads; the refresh scope below
+    // makes Redis refreshes explicit and waits for their publication.
+    const ctx = await createTRPCContext(new Headers());
     const api = createCaller(ctx);
 
     // Optional query params
@@ -258,7 +257,9 @@ export async function GET(request: NextRequest) {
       `[Cache Warming] Collected ${String(allTasks.length)} tasks across all timeframes`
     );
 
-    await limitConcurrency(allTasks, MAX_CONCURRENT_REQUESTS);
+    await refreshQueryCache(() =>
+      limitConcurrency(allTasks, MAX_CONCURRENT_REQUESTS)
+    );
 
     const totalElapsed = Date.now() - startTime;
     const totalElapsedMinutes = totalElapsed / 1000 / 60;
