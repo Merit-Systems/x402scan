@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-
 import { Loader2 } from "lucide-react";
 
-import { useVerifyEmailOTP } from "@coinbase/cdp-hooks";
-
 import { useMutation } from "@tanstack/react-query";
+import React, { useState } from "react";
 
+import { useVerifyEmailOTP } from "@coinbase/cdp-hooks";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -53,10 +51,7 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
 
   const otpGroupProps = (isSuccess: boolean) => {
     return {
-      className: cn(
-        "flex-1 rounded-md",
-        isSuccess && "shadow-[0_0_8px_var(--color-green-600)]"
-      ),
+      className: cn("flex-1 rounded-md", isSuccess && "otp-success-glow"),
     };
   };
 

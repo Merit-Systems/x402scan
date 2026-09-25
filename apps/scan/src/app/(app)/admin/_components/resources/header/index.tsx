@@ -1,15 +1,17 @@
 "use client";
 
-import { Method } from "./method";
-
 import { Tags } from "@/app/(app)/admin/_components/tags";
-
-import type { Resources, Tag } from "@x402scan/scan-db/types";
-import type { BazaarMethod } from "@/types/x402";
-import { getDescription, type ParsedX402Response } from "@/lib/x402";
+import { X402V2Badge } from "@/app/(app)/admin/_components/x402/v2-badge";
 import { getResourceMetadataDescription } from "@/lib/resource-auth";
 import { cleanExternalText } from "@/lib/utils";
-import { X402V2Badge } from "@/app/(app)/admin/_components/x402/v2-badge";
+import { getDescription } from "@/lib/x402";
+
+import { Method } from "./method";
+
+import type { Resources, Tag } from "@x402scan/scan-db/types";
+
+import type { ParsedX402Response } from "@/lib/x402";
+import type { BazaarMethod } from "@/types/x402";
 
 interface Props {
   resource: Resources;

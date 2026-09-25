@@ -1,0 +1,7 @@
+{
+  "extends": "@merit-systems/typescript-config/node.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["oxlint.config.ts"]
+}

@@ -1,18 +1,21 @@
 import { TabsContent } from "@/components/ui/tabs";
 
 import { Deposit } from "./tabs/deposit";
-import { Withdraw } from "./tabs/withdraw";
-import { ExportWallet } from "./tabs/export";
 import { WalletContent } from "./tabs/display";
+import { ExportWallet } from "./tabs/export";
+import { Withdraw } from "./tabs/withdraw";
 
 import type { User } from "@coinbase/cdp-hooks";
 
-interface Props {
+interface ConnectedWalletTabsContentProps {
   user?: User;
   address: string;
 }
 
-export const ConnectedWalletTabsContent = ({ user, address }: Props) => {
+export const ConnectedWalletTabsContent = ({
+  user,
+  address,
+}: ConnectedWalletTabsContentProps) => {
   return (
     <>
       <TabsContent value="wallet" className="mt-0 w-full overflow-hidden">

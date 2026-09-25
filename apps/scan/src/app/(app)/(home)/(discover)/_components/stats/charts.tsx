@@ -1,22 +1,22 @@
 "use client";
 
-import { api } from "@/trpc/client";
-
 import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
+
 import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 import { formatChartTimestamp } from "@/lib/utils";
+import { api } from "@/trpc/client";
 
 import type { ChartData } from "@/components/ui/chart";
+
 import type { Chain } from "@/types/chain";
 import type { ActivityTimeframe } from "@/types/timeframes";
 
-export const OverallCharts = ({
-  chain,
-  timeframe,
-}: {
+interface OverallChartsProps {
   chain?: Chain;
   timeframe: ActivityTimeframe;
-}) => {
+}
+
+export const OverallCharts = ({ chain, timeframe }: OverallChartsProps) => {
   const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
     timeframe,

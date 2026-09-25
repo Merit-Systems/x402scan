@@ -1,18 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { Tag, Plus, X, Trash2 } from "lucide-react";
-import { api, type RouterInputs } from "@/trpc/client";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   ContextMenu,
@@ -20,7 +12,22 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { api } from "@/trpc/client";
+
+import type { CSSProperties } from "react";
+
 import type { PaginatedQueryParams } from "@/lib/pagination";
+import type { RouterInputs } from "@/trpc/client";
 
 interface EditTagModalProps {
   open: boolean;
@@ -216,8 +223,13 @@ export function EditTagModal({
                         <div className="flex items-center justify-between rounded-md border p-2 transition-colors hover:bg-accent">
                           <div className="flex min-w-0 flex-1 items-center gap-2">
                             <div
-                              className="size-4 shrink-0 rounded-sm"
-                              style={{ backgroundColor: tag.color }}
+                              className="entity-color-swatch size-4 shrink-0 rounded-sm"
+                              style={
+                                {
+                                  "--entity-color": tag.color,
+                                } as CSSProperties &
+                                  Record<"--entity-color", string>
+                              }
                             />
                             <span className="type-supporting-body type-emphasis break-all">
                               {tag.name}

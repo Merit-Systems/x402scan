@@ -1,9 +1,9 @@
+import { redirect } from "next/navigation";
+
 import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
+import { auth } from "@/auth";
 
 import { CreateAgentForm } from "../../../_components/new-agent/form";
-
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 
 export default async function NewAgentPage() {
   const session = await auth();

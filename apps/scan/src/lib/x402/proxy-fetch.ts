@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 import { env } from "@/env";
 import { jsonObjectSchema, jsonValueSchema } from "@/lib/json";

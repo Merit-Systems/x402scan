@@ -1,8 +1,9 @@
-import { createTRPCRouter, paginatedProcedure } from "../../trpc";
 import {
   listFacilitatorTransfersInputSchema,
   listFacilitatorTransfers,
 } from "@/services/transfers/transfers/list";
+
+import { createTRPCRouter, paginatedProcedure } from "../../trpc";
 
 export const transfersRouter = createTRPCRouter({
   list: paginatedProcedure

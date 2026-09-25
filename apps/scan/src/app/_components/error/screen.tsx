@@ -1,6 +1,6 @@
-import { ForbiddenCard, NotFoundCard } from "./card";
-
 import { cn } from "@/lib/utils";
+
+import { ForbiddenCard, NotFoundCard } from "./card";
 
 import type { ErrorComponentProps } from "./types";
 
@@ -24,13 +24,15 @@ export const ForbiddenScreen: React.FC<Props> = ({ className, ...props }) => {
   );
 };
 
+interface ErrorScreenContainerProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
 const ErrorScreenContainer = ({
   children,
   className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
+}: ErrorScreenContainerProps) => {
   return (
     <div
       className={cn(

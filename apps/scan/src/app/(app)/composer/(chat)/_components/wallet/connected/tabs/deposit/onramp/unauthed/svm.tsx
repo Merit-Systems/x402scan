@@ -1,11 +1,11 @@
-import { NoSessionContent } from "./component";
-
 import { useSiws } from "@/app/(app)/composer/_hooks/sign-in/use-siws";
 
 import { useSolanaWallet } from "@/app/_contexts/solana/hook";
+import { Chain } from "@/types/chain";
+
+import { NoSessionContent } from "./component";
 
 import type { UiWalletAccount } from "@wallet-standard/react";
-import { Chain } from "@/types/chain";
 
 export const NoSVMSessionContent = () => {
   const { connectedWallet } = useSolanaWallet();
@@ -17,7 +17,11 @@ export const NoSVMSessionContent = () => {
   return <SVMSignInContent account={connectedWallet.account} />;
 };
 
-const SVMSignInContent = ({ account }: { account: UiWalletAccount }) => {
+interface SVMSignInContentProps {
+  account: UiWalletAccount;
+}
+
+const SVMSignInContent = ({ account }: SVMSignInContentProps) => {
   const { signIn, isPending } = useSiws({
     account,
     redirectParams: {

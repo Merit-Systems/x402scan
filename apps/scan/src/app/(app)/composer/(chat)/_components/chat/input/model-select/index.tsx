@@ -1,7 +1,7 @@
 "use client";
 
+import { PromptInputButton } from "@/components/ai-elements/prompt-input";
 import { Badge } from "@/components/ui/badge";
-import { ModelProviderIcon } from "@/app/(app)/composer/(chat)/_components/model-icon";
 import {
   Command,
   CommandEmpty,
@@ -11,28 +11,32 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-import { capabilityColors, capabilityIcons, modelProviderNames } from "./utils";
-import type { LanguageModelCapability } from "../../../../_lib/language-models/types";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+
+import { ModelProviderIcon } from "@/app/(app)/composer/(chat)/_components/model-icon";
+import { cn } from "@/lib/utils";
 
 import { useModelSelect } from "./use-model-select";
 
-import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-is-mobile";
-import type { LanguageModel } from "../../../../_lib/language-models/types";
 import { languageModels } from "../../../../_lib/language-models/models";
-import { PromptInputButton } from "@/components/ai-elements/prompt-input";
+import { capabilityColors, capabilityIcons, modelProviderNames } from "./utils";
+
+import type { CSSProperties } from "react";
+
+import type { LanguageModelCapability } from "../../../../_lib/language-models/types";
+import type { LanguageModel } from "../../../../_lib/language-models/types";
 
 const MODEL_HEIGHT = 36;
 const NUM_MODELS_TO_SHOW = 5;
@@ -130,10 +134,14 @@ const ModelSelectContent: React.FC<{
       </div>
     </div> */}
     <CommandList
-      className={cn("w-full max-w-full overflow-x-hidden overflow-y-auto ")}
-      style={{
-        height: `${String(MODEL_HEIGHT * (NUM_MODELS_TO_SHOW + 0.5))}px`,
-      }}
+      className={cn(
+        "model-list-height w-full max-w-full overflow-x-hidden overflow-y-auto"
+      )}
+      style={
+        {
+          "--model-list-height": `${String(MODEL_HEIGHT * (NUM_MODELS_TO_SHOW + 0.5))}px`,
+        } as CSSProperties & Record<"--model-list-height", string>
+      }
     >
       <CommandEmpty>No models found.</CommandEmpty>
       <CommandGroup className="">

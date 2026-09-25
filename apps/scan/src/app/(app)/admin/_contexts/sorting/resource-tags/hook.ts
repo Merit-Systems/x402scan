@@ -1,6 +1,5 @@
-import { ResourcesSortingContext } from "./context";
-
 import { useSorting } from "../base/hook";
+import { ResourcesSortingContext } from "./context";
 
 export const useResourcesSorting = () => {
   const context = useSorting(ResourcesSortingContext);

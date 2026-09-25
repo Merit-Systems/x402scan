@@ -9,6 +9,7 @@
  *     pnpm probe:channels <signature> [facilitator-address]
  */
 import { Connection, PublicKey } from "@solana/web3.js";
+
 import { env } from "@/trigger/env";
 
 import { extractPayouts } from "../trigger/chains/solana/bitquery-channels/query";
@@ -16,12 +17,13 @@ import {
   PAYMENT_CHANNELS_PROGRAM_ID,
   USDC_SOLANA,
 } from "../trigger/lib/constants";
+import { QueryProvider } from "../trigger/types";
+
 import type {
   Facilitator,
   FacilitatorConfig,
   SyncConfig,
 } from "../trigger/types";
-import { QueryProvider } from "../trigger/types";
 
 async function main() {
   const [signature, facilitatorAddress] = process.argv.slice(2);

@@ -1,6 +1,8 @@
-import type { BalanceCheckResult } from "./types";
-import { CURRENCY_CONFIG } from "./constants";
 import { env } from "@/trigger/env";
+
+import { CURRENCY_CONFIG } from "./constants";
+
+import type { BalanceCheckResult } from "./types";
 
 export async function sendDiscordAlert(
   balanceResult: BalanceCheckResult

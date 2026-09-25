@@ -1,7 +1,7 @@
+import { cn } from "@/lib/utils";
+
 import { CopyButton } from "./copy-button";
 import { Skeleton } from "./skeleton";
-
-import { cn } from "@/lib/utils";
 
 interface Props {
   className?: string;

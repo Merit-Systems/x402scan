@@ -1,28 +1,24 @@
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
 import { connection } from "next/server";
-
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
-
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-import { ThemeProvider } from "next-themes";
 
 import { JsonLd } from "@/components/json-ld";
 import { Toaster } from "@/components/ui/sonner";
 
-import { CDPHooksProvider } from "./_contexts/cdp";
-import { WagmiProvider } from "./_contexts/wagmi";
-import { PostHogProvider } from "./_contexts/posthog";
-
+import { env } from "@/env";
 import { TRPCReactProvider } from "@/trpc/client";
 
-import { env } from "@/env";
+import { CDPHooksProvider } from "./_contexts/cdp";
+import { PostHogProvider } from "./_contexts/posthog";
+import { WagmiProvider } from "./_contexts/wagmi";
 
 import type { Metadata, Viewport } from "next";
 
-import { SessionProvider } from "next-auth/react";
-
+// oxfmt-ignore
 import "./globals.css";
 import { SolanaWalletProvider } from "./_contexts/solana/provider";
 

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { Plus } from "lucide-react";
 
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -14,11 +16,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
 import { api } from "@/trpc/client";
-import { PartnerCollapsible, type PartnerData } from "./partner-collapsible";
+
+import { PartnerCollapsible } from "./partner-collapsible";
+
+import type { PartnerData } from "./partner-collapsible";
 
 export const CreateInviteCodeButton = () => {
   const [open, setOpen] = useState(false);

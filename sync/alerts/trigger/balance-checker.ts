@@ -1,10 +1,15 @@
-import { createPublicClient, http, formatUnits, type Address } from "viem";
+import { createPublicClient, http, formatUnits } from "viem";
 import { base } from "viem/chains";
-import { USDC_ADDRESS, ERC20_ABI, CURRENCY_CONFIG } from "./constants";
-import type { BalanceCheckResult } from "./types";
-import { Currency } from "./types";
 import { z } from "zod";
+
 import { env } from "@/trigger/env";
+
+import { USDC_ADDRESS, ERC20_ABI, CURRENCY_CONFIG } from "./constants";
+import { Currency } from "./types";
+
+import type { Address } from "viem";
+
+import type { BalanceCheckResult } from "./types";
 
 export async function checkUSDCBalance(
   address: Address,

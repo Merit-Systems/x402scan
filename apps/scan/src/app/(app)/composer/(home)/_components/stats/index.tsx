@@ -3,14 +3,11 @@ import React, { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 import { OverallCharts, LoadingOverallCharts } from "./charts";
-
-import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
-
-import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
-
-import { ActivityTimeframe } from "@/types/timeframes";
 
 // Note: No HydrateClient here - parent page.tsx provides it
 // Prefetch is done in page.tsx
@@ -38,7 +35,11 @@ export const LoadingOverallStats = () => {
   );
 };
 
-const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
+interface ActivityContainerProps {
+  children: React.ReactNode;
+}
+
+const ActivityContainer = ({ children }: ActivityContainerProps) => {
   return (
     <Section
       title="Overall Stats"

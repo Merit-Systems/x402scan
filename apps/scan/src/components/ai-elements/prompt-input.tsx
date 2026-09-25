@@ -26,6 +26,7 @@ import {
   useState,
 } from "react";
 
+import { cn } from "cn";
 import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
 import { nanoid } from "nanoid";
 
@@ -68,8 +69,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-import { cn } from "@/lib/utils";
 
 import type { SyntheticEvent } from "react";
 import type {

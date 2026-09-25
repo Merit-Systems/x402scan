@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import { EmbeddedWalletOTP } from "./otp";
 import { EmbeddedWalletEmail } from "./email";
+import { EmbeddedWalletOTP } from "./otp";
 
 export const ConnectEmbeddedWalletEmail = () => {
   const [flowId, setFlowId] = useState("");

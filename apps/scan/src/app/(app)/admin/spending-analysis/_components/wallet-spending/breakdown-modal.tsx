@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -8,10 +9,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
 import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
+import { api } from "@/trpc/client";
+
 import { createWalletBreakdownColumns } from "./breakdown-columns";
 import { ToolCallsChart } from "./tool-calls-chart";
-import { api } from "@/trpc/client";
 
 interface WalletBreakdownModalProps {
   open: boolean;

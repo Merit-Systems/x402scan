@@ -1,10 +1,14 @@
 import { Suspense } from "react";
-import { Section } from "@/app/(app)/_components/deferred/page-utils";
-import type { RouterOutputs } from "@/trpc/client";
-import { LoadingActivityCharts } from "./charts";
+
 import { Card } from "@/components/ui/card";
+
+import { Section } from "@/app/(app)/_components/deferred/page-utils";
 import { HydrateClient } from "@/trpc/server";
+
+import { LoadingActivityCharts } from "./charts";
 import { ActivityContent } from "./content";
+
+import type { RouterOutputs } from "@/trpc/client";
 
 interface Props {
   agentConfiguration: NonNullable<RouterOutputs["public"]["agents"]["get"]>;
@@ -30,7 +34,11 @@ export const LoadingActivity = () => {
   );
 };
 
-const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
+interface ActivityContainerProps {
+  children: React.ReactNode;
+}
+
+const ActivityContainer = ({ children }: ActivityContainerProps) => {
   return (
     <Section title="Usage">
       <Card className="overflow-hidden">{children}</Card>

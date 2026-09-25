@@ -1,5 +1,6 @@
 import { getOriginFromUrl, normalizeUrl } from "@/lib/url";
 import { fetchDiscoveryDocument } from "@/services/discovery";
+
 import type { DiscoveryInfo } from "@/types/discovery";
 
 /**

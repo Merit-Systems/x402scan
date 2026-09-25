@@ -1,16 +1,18 @@
 import { SortingProvider } from "../base/provider";
 import { ToolSpendingSortingContext } from "./context";
 
-import type { ToolSpendingSortId } from "./context";
 import type { SortType } from "../base/types";
+import type { ToolSpendingSortId } from "./context";
+
+interface ToolSpendingSortingProviderProps {
+  children: React.ReactNode;
+  initialSorting: SortType<ToolSpendingSortId>;
+}
 
 export const ToolSpendingSortingProvider = ({
   children,
   initialSorting,
-}: {
-  children: React.ReactNode;
-  initialSorting: SortType<ToolSpendingSortId>;
-}) => {
+}: ToolSpendingSortingProviderProps) => {
   return (
     <SortingProvider
       context={ToolSpendingSortingContext}

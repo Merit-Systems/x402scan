@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Props<T> {
+interface FiltersProps<T> {
   title: string;
   items: T[];
   isLoading: boolean;
@@ -19,7 +19,7 @@ export const Filters = <T,>({
   isSelected,
   itemKey,
   renderItem,
-}: Props<T>) => {
+}: FiltersProps<T>) => {
   return (
     <div className="my-2">
       <div className="type-emphasis mb-1.5 px-2 type-caption text-muted-foreground">

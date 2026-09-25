@@ -1,8 +1,9 @@
-import type { buyersListQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { paginatedResponse, asChain } from "@/app/api/x402/_lib/utils";
 import { listTopBuyersMV } from "@/services/transfers/buyers/list-mv";
 
 import type { z } from "zod";
+
+import type { buyersListQuerySchema } from "@/app/api/x402/_lib/schemas";
 
 const SORT_MAP = {
   volume: "total_amount",

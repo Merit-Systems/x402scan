@@ -1,4 +1,5 @@
 import { USDC_MULTIPLIER } from "@/trigger/lib/constants";
+
 import type {
   Facilitator,
   FacilitatorConfig,

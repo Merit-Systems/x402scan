@@ -1,5 +1,4 @@
 import { headers } from "next/headers";
-
 import { cookieToInitialState } from "wagmi";
 
 import { WagmiProviderClient } from "./client";

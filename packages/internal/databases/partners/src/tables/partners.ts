@@ -1,6 +1,7 @@
-import type { InsertDataFunction } from "./types";
-import { Tables } from "./types";
 import { createTable, insertData } from "../utils";
+import { Tables } from "./types";
+
+import type { InsertDataFunction } from "./types";
 
 const partnersTable = `
     CREATE TABLE IF NOT EXISTS ${Tables.Partners} (

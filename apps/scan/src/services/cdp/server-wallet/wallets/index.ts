@@ -1,7 +1,7 @@
-import { svmServerWallet } from "./svm";
-import { evmServerWallet } from "./evm";
-
 import { Chain } from "@/types/chain";
+
+import { evmServerWallet } from "./evm";
+import { svmServerWallet } from "./svm";
 
 import type { EvmWallets, Wallets } from "./types";
 

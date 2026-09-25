@@ -6,8 +6,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { createContext, useContext } from "react";
 
 import { cva } from "class-variance-authority";
-
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 import type { VariantProps } from "class-variance-authority";
 

@@ -1,4 +1,5 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+
 import { Sidebar } from "./_components/sidebar";
 
 export default function ChatLayout({ children }: LayoutProps<"/composer">) {

@@ -1,11 +1,11 @@
 "use client";
 
+import { cn } from "cn";
+
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-import { cn } from "@/lib/utils";
-
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import type { ChartData, ChartTooltipRow, ChartValues } from "./types";
 
@@ -49,8 +49,11 @@ function ChartTooltipContent<T extends ChartValues>({
               {row.color ? (
                 <span
                   aria-hidden="true"
-                  className="size-2 rounded-full"
-                  style={{ backgroundColor: row.color }}
+                  className="size-2 rounded-full bg-(--chart-indicator)"
+                  style={
+                    { "--chart-indicator": row.color } as CSSProperties &
+                      Record<"--chart-indicator", string>
+                  }
                 />
               ) : null}
               <span className={cn("text-muted-foreground", row.labelClassName)}>

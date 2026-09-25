@@ -1,10 +1,10 @@
-import z from "zod";
+import { z } from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
+import { agentsRelease } from "@/lib/agents";
 import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
 import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
-import { agentsRelease } from "@/lib/agents";
 
 import type { resourceBucketedQuerySchema } from "./schemas";
 

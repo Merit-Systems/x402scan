@@ -1,9 +1,12 @@
-import { generateText, Output } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { generateText, Output } from "ai";
 import { z } from "zod";
+
 import { Prisma } from "@x402scan/scan-db";
-import type { SearchResult } from "./types";
+
 import { queryRaw } from "../db/query";
+
+import type { SearchResult } from "./types";
 
 const keywordExpansionSchema = z.object({
   keywords: z

@@ -1,6 +1,8 @@
 import { parseUnits } from "@coinbase/cdp-sdk";
+import { z } from "zod";
+
 import { scanDb } from "@x402scan/scan-db";
-import z from "zod";
+
 import { addInviteCodeToPartner, findOrCreatePartner } from "../partners";
 
 // Characters that avoid confusion (no 0/O, 1/I/L)

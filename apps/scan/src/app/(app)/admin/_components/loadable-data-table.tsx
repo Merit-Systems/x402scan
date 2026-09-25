@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
+
+import { DataTable, DataTableLoading } from "@/components/ui/data-table";
+
 import type { RowData } from "@tanstack/react-table";
 
-import {
-  DataTable,
-  DataTableLoading,
-  type DataTableProps,
-} from "@/components/ui/data-table";
+import type { DataTableProps } from "@/components/ui/data-table";
 
 type LoadableDataTableProps<TData extends RowData> = DataTableProps<TData> & {
   isLoading: boolean;

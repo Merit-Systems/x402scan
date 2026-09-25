@@ -1,6 +1,6 @@
-import { router, withCors, OPTIONS } from "@/lib/router";
-import { buyersListQuerySchema } from "@/app/api/x402/_lib/schemas";
 import { handleBuyers } from "@/app/api/x402/_handlers/buyers";
+import { buyersListQuerySchema } from "@/app/api/x402/_lib/schemas";
+import { router, withCors, OPTIONS } from "@/lib/router";
 
 export { OPTIONS };
 

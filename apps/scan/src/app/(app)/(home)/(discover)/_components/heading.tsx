@@ -1,6 +1,6 @@
-import Link from "next/link";
-
 import { BookOpen, Plus } from "lucide-react";
+
+import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";

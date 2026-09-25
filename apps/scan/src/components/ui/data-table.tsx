@@ -41,6 +41,7 @@ import {
   tableFeatures,
   useTable,
 } from "@tanstack/react-table";
+import { cn } from "cn";
 
 import { Button } from "@/components/ui/button";
 import { interactiveTableRowClassName } from "@/components/ui/interactive-row";
@@ -53,8 +54,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import { cn } from "@/lib/utils";
 
 import type {
   Column,
@@ -475,7 +474,12 @@ function DataTableColGroup<TData extends RowData>({
       {columns.map((column) => (
         <col
           key={column.id}
-          style={{ width: `${String((column.getSize() / totalSize) * 100)}%` }}
+          className="w-(--column-width)"
+          style={
+            {
+              "--column-width": `${String((column.getSize() / totalSize) * 100)}%`,
+            } as React.CSSProperties & Record<"--column-width", string>
+          }
         />
       ))}
     </colgroup>

@@ -2,8 +2,9 @@
 
 import * as React from "react";
 
-import type { SortType } from "./types";
 import type { Context } from "react";
+
+import type { SortType } from "./types";
 
 interface SortingContextValue<SortKey extends string> {
   sorting: SortType<SortKey>;

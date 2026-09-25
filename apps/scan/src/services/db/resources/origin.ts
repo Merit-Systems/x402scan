@@ -2,11 +2,12 @@ import { z } from "zod";
 
 import { AcceptsNetwork, scanDb } from "@x402scan/scan-db";
 
-import { parseX402Response } from "@/lib/x402";
-import { mixedAddressSchema, optionalChainSchema } from "@/lib/schemas";
 import { FREE_AUTH_MODES, isFreeResource } from "@/lib/resource-auth";
+import { mixedAddressSchema, optionalChainSchema } from "@/lib/schemas";
+import { parseX402Response } from "@/lib/x402";
 
 import type { Prisma } from "@x402scan/scan-db";
+
 import type { MixedAddress } from "@/types/address";
 
 /** OR-able filters matching free resources (siwx/unprotected/apiKey). */

@@ -1,12 +1,11 @@
 import { createTRPCRouter } from "../../trpc";
-
-import { adminResourcesRouter } from "./resources";
-import { adminSpendingRouter } from "./spending";
-import { adminFreeTierRouter } from "./free-tier";
+import { adminComposerBalancesRouter } from "./composer-balances";
 import { adminEndUsersRouter } from "./end-users";
+import { adminFreeTierRouter } from "./free-tier";
 import { adminInviteCodesRouter } from "./invite-codes";
 import { adminPartnersRouter } from "./partners";
-import { adminComposerBalancesRouter } from "./composer-balances";
+import { adminResourcesRouter } from "./resources";
+import { adminSpendingRouter } from "./spending";
 
 export const adminRouter = createTRPCRouter({
   resources: adminResourcesRouter,

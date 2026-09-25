@@ -1,3 +1,5 @@
+import { TRANSFER_EVENT_SIG } from "@/trigger/lib/constants";
+
 import type {
   SyncConfig,
   Facilitator,
@@ -5,7 +7,6 @@ import type {
   CdpTransferRow,
   FacilitatorConfig,
 } from "@/trigger/types";
-import { TRANSFER_EVENT_SIG } from "@/trigger/lib/constants";
 
 export function buildQuery(
   config: SyncConfig,

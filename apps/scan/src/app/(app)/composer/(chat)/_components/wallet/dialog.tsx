@@ -1,19 +1,17 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-
 import { useCurrentUser } from "@coinbase/cdp-hooks";
+import { useSearchParams } from "next/navigation";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-import { DisplayWalletDialogContent } from "./connected";
-import { ConnectWalletDialogContent } from "./connect";
-
 import { useConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
 
+import { parseChain } from "@/app/(app)/_lib/chain/parse";
 import { WalletChainProvider } from "@/app/(app)/composer/_contexts/wallet-chain/provider";
 
-import { parseChain } from "@/app/(app)/_lib/chain/parse";
+import { ConnectWalletDialogContent } from "./connect";
+import { DisplayWalletDialogContent } from "./connected";
 
 import type { SupportedChain } from "@/types/chain";
 

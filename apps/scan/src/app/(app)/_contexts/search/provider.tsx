@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-
 import { Loader2, SearchX, Search } from "lucide-react";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -16,13 +16,17 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 
-import { SearchContext } from "./context";
-import { Origin } from "./_components/origins";
-import { Resource } from "./_components/resource";
-
 import { api } from "@/trpc/client";
 
-export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
+import { Origin } from "./_components/origins";
+import { Resource } from "./_components/resource";
+import { SearchContext } from "./context";
+
+interface SearchProviderProps {
+  children: React.ReactNode;
+}
+
+export const SearchProvider = ({ children }: SearchProviderProps) => {
   const router = useRouter();
 
   const [search, setSearch] = useState("");

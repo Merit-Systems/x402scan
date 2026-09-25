@@ -3,8 +3,7 @@
 import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
 
 import { cva } from "class-variance-authority";
-
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 import type { VariantProps } from "class-variance-authority";
 

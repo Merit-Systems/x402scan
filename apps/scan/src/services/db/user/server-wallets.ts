@@ -1,6 +1,6 @@
-import { scanDb } from "@x402scan/scan-db";
-
 import { v4 as uuid } from "uuid";
+
+import { scanDb } from "@x402scan/scan-db";
 
 export const getWalletForUserId = async (userId: string) => {
   const wallet = await scanDb.serverWallet.findFirst({

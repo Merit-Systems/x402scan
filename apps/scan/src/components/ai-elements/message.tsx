@@ -20,6 +20,7 @@ import { cjk } from "@streamdown/cjk";
 import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
 import { mermaid } from "@streamdown/mermaid";
+import { cn } from "cn";
 import { Streamdown } from "streamdown";
 
 import { Button } from "@/components/ui/button";
@@ -30,8 +31,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-import { cn } from "@/lib/utils";
 
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
 

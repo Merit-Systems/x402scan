@@ -1,9 +1,10 @@
 import { Body } from "@/app/(app)/_components/deferred/page-utils";
-import { ComposerHomeHeading } from "./_components/heading";
+
 import { LoadingAgents } from "./_components/agents";
-import { LoadingTools } from "./_components/tools";
-import { LoadingOverallStats } from "./_components/stats";
 import { LoadingFeed } from "./_components/feed";
+import { ComposerHomeHeading } from "./_components/heading";
+import { LoadingOverallStats } from "./_components/stats";
+import { LoadingTools } from "./_components/tools";
 
 export default function ComposerLoading() {
   return (

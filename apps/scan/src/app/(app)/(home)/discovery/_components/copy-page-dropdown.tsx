@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ChevronDown, Copy, ExternalLink, FileText } from "lucide-react";
+
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -11,17 +12,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+
+interface CopyPageDropdownProps {
+  markdown: string;
+  pageUrl: string;
+  markdownPath: string;
+}
 
 export function CopyPageDropdown({
   markdown,
   pageUrl,
   markdownPath,
-}: {
-  markdown: string;
-  pageUrl: string;
-  markdownPath: string;
-}) {
+}: CopyPageDropdownProps) {
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
     toast.success("Copied page as Markdown");
   });

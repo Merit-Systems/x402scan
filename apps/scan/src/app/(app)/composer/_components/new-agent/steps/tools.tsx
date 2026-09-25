@@ -1,12 +1,13 @@
+import { ArrowRight } from "lucide-react";
+
 import { Controller } from "react-hook-form";
 
+import { Button } from "@/components/ui/button";
 import { Field, FieldGroup } from "@/components/ui/field";
 
 import { ResourceList } from "@/app/(app)/composer/_components/resource-list";
 
 import type { NewAgentForm } from "./types";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 
 interface Props {
   form: NewAgentForm;

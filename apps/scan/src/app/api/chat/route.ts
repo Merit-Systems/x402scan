@@ -1,7 +1,4 @@
-import { after, NextResponse } from "next/server";
-
-import { z } from "zod";
-
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import {
   APICallError,
   convertToModelMessages,
@@ -11,26 +8,22 @@ import {
   generateId,
   createIdGenerator,
 } from "ai";
-
+import { after, NextResponse } from "next/server";
 import { createResumableStreamContext } from "resumable-stream";
-
-import { createChat, getChat, updateChat } from "@/services/db/composer/chat";
+import { z } from "zod";
 
 import { auth } from "@/auth";
-
-import { createX402AITools } from "@/services/agent/create-tools";
-
 import { ChatError } from "@/lib/errors";
 import { messageSchema } from "@/lib/message-schema";
-
+import { createX402AITools } from "@/services/agent/create-tools";
 import { getAgentConfigurationDetails } from "@/services/db/agent-config/get";
-import { agentSystemPrompt, baseSystemPrompt } from "./system-prompt";
+import { createChat, getChat, updateChat } from "@/services/db/composer/chat";
+
 import { parseStoredJson } from "./_lib/parse-stored-json";
+import { agentSystemPrompt, baseSystemPrompt } from "./_lib/system-prompt";
 
-import type { NextRequest } from "next/server";
 import type { LanguageModel, UIMessage } from "ai";
-
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import type { NextRequest } from "next/server";
 
 const openrouter = createOpenRouter({
   headers: {

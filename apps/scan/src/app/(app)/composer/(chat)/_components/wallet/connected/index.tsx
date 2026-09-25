@@ -11,15 +11,15 @@ import {
 import { Logo } from "@/components/ui/logo";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { ConnectedWalletTabsContent } from "./content";
-import { ChainNotConnected } from "./chain-not-connected";
-
 import { WalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/component";
-
 import { useWalletChain } from "@/app/(app)/composer/_contexts/wallet-chain/hook";
 import { Chain } from "@/types/chain";
 
+import { ChainNotConnected } from "./chain-not-connected";
+import { ConnectedWalletTabsContent } from "./content";
+
 import type { User } from "@coinbase/cdp-hooks";
+
 import type { ConnectedWallets } from "@/app/(app)/composer/_hooks/use-connected-wallets";
 
 interface Props {

@@ -4,6 +4,6 @@
     "outDir": "dist",
     "rootDir": "./"
   },
-  "include": ["src/**/*", "prisma.config.ts"],
+  "include": ["src/**/*", "prisma.config.ts", "oxlint.config.ts"],
   "exclude": ["node_modules", "generated"]
 }

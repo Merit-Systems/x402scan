@@ -1,7 +1,7 @@
 "use client";
 
-import { ResourceToolCallsByTagChart } from "./resource-tool-calls-by-tag-chart";
 import { ResourceToolCallsByResourceChart } from "./resource-tool-calls-by-resource-chart";
+import { ResourceToolCallsByTagChart } from "./resource-tool-calls-by-tag-chart";
 
 interface ResourceToolCallsChartProps {
   selectedTagIds: string[];

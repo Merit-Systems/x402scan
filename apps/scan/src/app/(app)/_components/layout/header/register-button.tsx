@@ -1,8 +1,9 @@
 "use client";
 
+import { Plus } from "lucide-react";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 

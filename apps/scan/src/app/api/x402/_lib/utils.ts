@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-
 import { z } from "zod";
 
 import { mixedAddressSchema } from "@/lib/schemas";
+import { Chain } from "@/types/chain";
 
 import type { MixedAddress } from "@/types/address";
-import { Chain } from "@/types/chain";
 
 export function parseAddress(
   address: string

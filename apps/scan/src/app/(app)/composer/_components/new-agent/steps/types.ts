@@ -1,7 +1,9 @@
-import type { StepType } from "../stepper";
-import type { agentConfigurationSchema } from "@/services/db/agent-config/mutate/schema";
 import type { UseFormReturn } from "react-hook-form";
 import type z from "zod";
+
+import type { agentConfigurationSchema } from "@/services/db/agent-config/mutate/schema";
+
+import type { StepType } from "../stepper";
 
 export type CreateAgentStep = StepType & {
   component: React.ReactNode;

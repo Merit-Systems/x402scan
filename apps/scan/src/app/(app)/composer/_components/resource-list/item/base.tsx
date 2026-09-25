@@ -5,10 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { Chains, Chain } from "@/app/(app)/_components/chains";
 import { Favicon } from "@/app/(app)/_components/favicon";
-
 import { cn, formatCurrency } from "@/lib/utils";
 
 import type { RouterOutputs } from "@/trpc/client";
+
 import type { SelectedResource } from "../../../_types/chat-config";
 
 interface Props {
@@ -92,7 +92,11 @@ export const LoadingBaseResourceItem: React.FC = () => {
   );
 };
 
-const ToolAmount = ({ amount }: { amount: number }) => {
+interface ToolAmountProps {
+  amount: number;
+}
+
+const ToolAmount = ({ amount }: ToolAmountProps) => {
   return (
     <span className="type-mono type-emphasis type-scale-caption text-primary">
       {formatCurrency(amount)}
@@ -100,11 +104,11 @@ const ToolAmount = ({ amount }: { amount: number }) => {
   );
 };
 
-const ToolAccepts = ({
-  accepts,
-}: {
+interface ToolAcceptsProps {
   accepts: RouterOutputs["public"]["tools"]["search"][number]["accepts"];
-}) => {
+}
+
+const ToolAccepts = ({ accepts }: ToolAcceptsProps) => {
   const firstAccept = accepts.at(0);
   if (!firstAccept) return null;
 

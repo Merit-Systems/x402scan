@@ -1,5 +1,6 @@
-import { withPostHogConfig } from "@posthog/nextjs-config";
 import createMDX from "@next/mdx";
+import { withPostHogConfig } from "@posthog/nextjs-config";
+
 import { env } from "./src/env";
 
 import type { NextConfig } from "next";

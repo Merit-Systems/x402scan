@@ -2,12 +2,11 @@
 
 import { createContext, forwardRef, useContext, useId, useMemo } from "react";
 
+import { cn } from "cn";
 import { LayoutGroup, motion, useReducedMotion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { cn } from "@/lib/utils";
 
 import type { ComponentProps, ComponentRef, ReactNode } from "react";
 

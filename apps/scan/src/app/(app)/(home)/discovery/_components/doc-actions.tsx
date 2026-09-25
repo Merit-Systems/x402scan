@@ -1,9 +1,15 @@
-import Link from "next/link";
 import { Plus } from "lucide-react";
+
+import Link from "next/link";
+
+import { buttonVariants } from "@/components/ui/button";
 
 import type { Route } from "next";
 
-import { buttonVariants } from "@/components/ui/button";
+interface DiscoveryDocActionsProps {
+  secondaryHref: Route;
+  secondaryLabel: string;
+}
 
 export function DiscoveryDocActions({
   secondaryHref,
@@ -33,9 +39,4 @@ export function DiscoveryDocActions({
       </p>
     </>
   );
-}
-
-interface DiscoveryDocActionsProps {
-  secondaryHref: Route;
-  secondaryLabel: string;
 }

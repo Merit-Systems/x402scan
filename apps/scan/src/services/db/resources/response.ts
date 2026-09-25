@@ -1,8 +1,10 @@
 import { scanDb } from "@x402scan/scan-db";
 
-import type { Prisma } from "@x402scan/scan-db";
-import type { ParsedX402Response } from "@/lib/x402";
 import { jsonObjectSchema } from "@/lib/json";
+
+import type { Prisma } from "@x402scan/scan-db";
+
+import type { ParsedX402Response } from "@/lib/x402";
 
 const toPrismaJson = (response: ParsedX402Response): Prisma.InputJsonValue => {
   const serialized = JSON.stringify(response);

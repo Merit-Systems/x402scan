@@ -31,8 +31,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
   InputGroup,
   InputGroupAddon,
@@ -45,10 +45,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { useDiscovery } from "@/app/(app)/(home)/resources/register/_components/use-discovery";
+
 import { DiscoveryActions } from "@/app/(app)/(home)/resources/register/_components/discovery-actions";
 import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
 import { RegistrationResult } from "@/app/(app)/(home)/resources/register/_components/registration-result";
-import { useDiscovery } from "@/app/(app)/(home)/resources/register/_components/use-discovery";
 import { Favicon } from "@/app/(app)/_components/favicon";
 import {
   isOpenApiDeclaredFree,
@@ -740,15 +741,17 @@ const MERCHANT_EMAIL_URL = `mailto:${MERCHANT_EMAIL}?subject=${encodeURIComponen
 
 const STEP_NAMES = ["review_api_page", "test_endpoints", "email_team"];
 
+interface PostRegistrationDialogProps {
+  originId: string;
+  origin: string;
+  contactEmail?: string;
+}
+
 function PostRegistrationDialog({
   originId,
   origin,
   contactEmail,
-}: {
-  originId: string;
-  origin: string;
-  contactEmail?: string;
-}) {
+}: PostRegistrationDialogProps) {
   const [open, setOpen] = useState(true);
   const [clickedSteps, setClickedSteps] = useState<Set<number>>(new Set());
   const [email, setEmail] = useState(contactEmail ?? "");
@@ -937,7 +940,12 @@ function PostRegistrationDialog({
               ) : (
                 <Button
                   className="flex-1"
-                  render={<a href={MERCHANT_EMAIL_URL} />}
+                  render={
+                    <a
+                      href={MERCHANT_EMAIL_URL}
+                      aria-label={`Email ${MERCHANT_EMAIL}`}
+                    />
+                  }
                 >
                   Email {MERCHANT_EMAIL} &rarr;
                 </Button>
@@ -984,19 +992,21 @@ function PostRegistrationDialog({
   );
 }
 
+interface ChecklistStepProps {
+  number: number;
+  label?: string;
+  completed: boolean;
+  current: boolean;
+  children: React.ReactNode;
+}
+
 function ChecklistStep({
   number,
   label,
   completed,
   current,
   children,
-}: {
-  number: number;
-  label?: string;
-  completed: boolean;
-  current: boolean;
-  children: React.ReactNode;
-}) {
+}: ChecklistStepProps) {
   return (
     <div
       className={`flex ${label ? "items-start" : "items-center"} -mx-3 gap-3 rounded-lg px-3 py-2.5 transition-colors ${
@@ -1026,17 +1036,19 @@ function ChecklistStep({
   );
 }
 
+interface FailedResourceRowProps {
+  url: string;
+  error: string;
+  statusCode?: number;
+  issues?: { code: string; message: string }[];
+}
+
 function FailedResourceRow({
   url,
   error,
   statusCode,
   issues,
-}: {
-  url: string;
-  error: string;
-  statusCode?: number;
-  issues?: { code: string; message: string }[];
-}) {
+}: FailedResourceRowProps) {
   const pathname = (() => {
     try {
       return decodeURIComponent(new URL(url).pathname);
@@ -1092,18 +1104,7 @@ const EMPTY_INVALID_RESOURCES_MAP: Record<
   { invalid: boolean; reason?: string }
 > = {};
 
-function ProbeResult({
-  preview,
-  urlOrigin,
-  resources,
-  testedResources = EMPTY_TESTED_RESOURCES,
-  failedResources = EMPTY_FAILED_RESOURCES,
-  isBatchTestLoading = false,
-  authModeMap = EMPTY_AUTH_MODE_MAP,
-  invalidResourcesMap = EMPTY_INVALID_RESOURCES_MAP,
-  contactEmail,
-  discoverySource,
-}: {
+interface ProbeResultProps {
   preview: {
     favicon: string | null;
     title?: string | null;
@@ -1122,7 +1123,20 @@ function ProbeResult({
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
   contactEmail?: string | null;
   discoverySource?: string;
-}) {
+}
+
+function ProbeResult({
+  preview,
+  urlOrigin,
+  resources,
+  testedResources = EMPTY_TESTED_RESOURCES,
+  failedResources = EMPTY_FAILED_RESOURCES,
+  isBatchTestLoading = false,
+  authModeMap = EMPTY_AUTH_MODE_MAP,
+  invalidResourcesMap = EMPTY_INVALID_RESOURCES_MAP,
+  contactEmail,
+  discoverySource,
+}: ProbeResultProps) {
   const testedKeys = useMemo(
     () => new Set(testedResources.map(rk)),
     [testedResources]
@@ -1290,23 +1304,23 @@ function ProbeResult({
         </p>
       )}
       {blockedFavicon && (
-        <div className="space-y-1.5 text-xs text-yellow-600 dark:text-yellow-500">
+        <div className="space-y-1.5 type-caption text-warning">
           <p className="flex items-start gap-1.5">
             <TriangleAlert className="mt-0.5 size-3 shrink-0" />
             <span>
               Your favicon is served with{" "}
-              <code className="rounded bg-muted px-1 font-mono text-[11px]">
+              <code className="type-compact-code rounded bg-muted px-1">
                 Cross-Origin-Resource-Policy: {blockedFavicon.policy}
               </code>
               , so browsers block it on other sites and your icon shows as a
               placeholder here. Send{" "}
-              <code className="rounded bg-muted px-1 font-mono text-[11px]">
+              <code className="type-compact-code rounded bg-muted px-1">
                 cross-origin
               </code>{" "}
               for this asset to display it.
             </span>
           </p>
-          <p className="pl-[18px] text-foreground">
+          <p className="pl-4.5 text-foreground">
             <DiscoveryActions
               label="Have your agent fix it with this prompt"
               blockedFavicon={blockedFavicon}
@@ -1327,7 +1341,7 @@ function ProbeResult({
               you.
             </span>
           </p>
-          <p className="pl-[18px] text-foreground">
+          <p className="pl-4.5 text-foreground">
             <DiscoveryActions
               label="Have your agent add it with this prompt"
               customPrompt={CONTACT_EMAIL_PROMPT}

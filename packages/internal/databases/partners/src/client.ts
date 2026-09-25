@@ -1,4 +1,5 @@
 import { createClient } from "@clickhouse/client";
+
 import { env } from "./env";
 
 export const partnersDb = createClient({

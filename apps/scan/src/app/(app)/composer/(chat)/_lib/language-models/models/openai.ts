@@ -1,4 +1,6 @@
-import { LanguageModelCapability, type LanguageModel } from "../types";
+import { LanguageModelCapability } from "../types";
+
+import type { LanguageModel } from "../types";
 
 const openAiLanguageModelsData: Omit<LanguageModel, "provider">[] = [
   {

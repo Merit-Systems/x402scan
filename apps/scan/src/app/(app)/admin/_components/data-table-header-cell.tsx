@@ -1,11 +1,15 @@
 "use client";
 
-import { ArrowDown, ArrowUp, type LucideIcon } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
-import type { SortingContext } from "@/app/(app)/admin/_contexts/sorting/base/context";
+import { Button } from "@/components/ui/button";
+
 import { useSorting } from "@/app/(app)/admin/_contexts/sorting/base/hook";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+
+import type { LucideIcon } from "lucide-react";
+
+import type { SortingContext } from "@/app/(app)/admin/_contexts/sorting/base/context";
 
 interface BaseProps {
   Icon: LucideIcon;
@@ -13,21 +17,21 @@ interface BaseProps {
   className?: string;
 }
 
-type Props<SortKey extends string> = {
-  sorting?: SortingProps<SortKey>;
-} & BaseProps;
-
 interface SortingProps<SortKey extends string> {
   sortContext: SortingContext<SortKey>;
   sortKey: SortKey;
 }
+
+type HeaderCellProps<SortKey extends string> = {
+  sorting?: SortingProps<SortKey>;
+} & BaseProps;
 
 export function HeaderCell<SortKey extends string>({
   Icon,
   label,
   className,
   sorting,
-}: Props<SortKey>) {
+}: HeaderCellProps<SortKey>) {
   if (sorting) {
     return (
       <SortableHeaderCell

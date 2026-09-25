@@ -11,15 +11,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { useReplaceSearchParams } from "@/hooks/use-replace-search-params";
-import { DEFAULT_SERVICE_VIEW, type ServiceView } from "@/lib/discover/filters";
+
+import { DEFAULT_SERVICE_VIEW } from "@/lib/discover/filters";
+
+import type { ServiceView } from "@/lib/discover/filters";
 
 const OPTIONS: { label: string; value: ServiceView }[] = [
   { label: "Featured", value: "featured" },
   { label: "All", value: "all" },
 ];
 
-export function ServiceViewToggle({ view }: { view: ServiceView }) {
+interface ServiceViewToggleProps {
+  view: ServiceView;
+}
+
+export function ServiceViewToggle({ view }: ServiceViewToggleProps) {
   const replaceSearchParams = useReplaceSearchParams();
 
   const setView = (nextView: ServiceView) => {

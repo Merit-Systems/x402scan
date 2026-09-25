@@ -1,8 +1,7 @@
 import { cva } from "class-variance-authority";
+import { cn } from "cn";
 
 import { OriginAvatar } from "@/components/ui/origin-avatar";
-
-import { cn } from "@/lib/utils";
 
 import type { ComponentProps, ReactNode } from "react";
 

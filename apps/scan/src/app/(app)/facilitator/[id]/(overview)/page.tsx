@@ -2,26 +2,28 @@ import { Suspense } from "react";
 
 import { notFound } from "next/navigation";
 
-import { FacilitatorOverview } from "./_components/overview";
+import { TimeframeSelect } from "@/components/timeframe-select";
+
+import { getChainForPage } from "@/app/(app)/_lib/chain/page";
+import { facilitatorIdMap } from "@/lib/facilitators";
+import { parseUsageTimeframe } from "@/lib/timeframe";
+import { api, HydrateClient } from "@/trpc/server";
+
 import {
-  FacilitatorStatCards,
-  LoadingFacilitatorStatCards,
-} from "./_components/stat-cards";
+  FacilitatorServersErrorBoundary,
+  FacilitatorUsageErrorBoundary,
+} from "./_components/error-boundaries";
 import {
   FacilitatorOrigins,
   LoadingFacilitatorOrigins,
 } from "./_components/origins";
 import { FACILITATOR_SERVERS_SORTING } from "./_components/origins/config";
+import { FacilitatorOverview } from "./_components/overview";
 import {
-  FacilitatorServersErrorBoundary,
-  FacilitatorUsageErrorBoundary,
-} from "./_components/error-boundaries";
+  FacilitatorStatCards,
+  LoadingFacilitatorStatCards,
+} from "./_components/stat-cards";
 
-import { getChainForPage } from "@/app/(app)/_lib/chain/page";
-import { TimeframeSelect } from "@/components/timeframe-select";
-import { facilitatorIdMap } from "@/lib/facilitators";
-import { parseUsageTimeframe } from "@/lib/timeframe";
-import { api, HydrateClient } from "@/trpc/server";
 import type { Metadata } from "next";
 
 export default async function FacilitatorPage({

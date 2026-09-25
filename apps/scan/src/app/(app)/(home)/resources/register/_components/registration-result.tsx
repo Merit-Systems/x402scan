@@ -2,7 +2,6 @@
 
 import { CircleAlert, CircleCheck, ChevronDown, X } from "lucide-react";
 
-import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -10,7 +9,9 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-export interface RegistrationResult {
+import { DiscoveryFixHint } from "@/app/(app)/(home)/resources/register/_components/discovery-fix-hint";
+
+interface RegistrationResultData {
   registered: number;
   siwx?: number;
   publicCount?: number;
@@ -36,15 +37,17 @@ function getPath(resourceUrl: string) {
   }
 }
 
+interface ResultDisclosureProps {
+  children: React.ReactNode;
+  label: React.ReactNode;
+  defaultOpen?: boolean;
+}
+
 function ResultDisclosure({
   children,
   label,
   defaultOpen = false,
-}: {
-  children: React.ReactNode;
-  label: React.ReactNode;
-  defaultOpen?: boolean;
-}) {
+}: ResultDisclosureProps) {
   return (
     <Collapsible defaultOpen={defaultOpen}>
       <CollapsibleTrigger render={<Button variant="quiet" size="none" />}>
@@ -58,15 +61,13 @@ function ResultDisclosure({
   );
 }
 
-function ResourceIssue({
-  error,
-  status,
-  url,
-}: {
+interface ResourceIssueProps {
   error: string;
   status?: number;
   url: string;
-}) {
+}
+
+function ResourceIssue({ error, status, url }: ResourceIssueProps) {
   return (
     <div className="space-y-1 rounded-lg bg-muted/50 p-3 type-caption">
       <div>
@@ -86,7 +87,11 @@ function ResourceIssue({
   );
 }
 
-export function RegistrationResult({ result }: { result: RegistrationResult }) {
+interface RegistrationResultProps {
+  result: RegistrationResultData;
+}
+
+export function RegistrationResult({ result }: RegistrationResultProps) {
   const freeCount =
     (result.siwx ?? 0) + (result.publicCount ?? 0) + (result.apiKeyCount ?? 0);
   const registeredCount = result.registered + freeCount;

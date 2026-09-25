@@ -1,20 +1,20 @@
 import { tool } from "ai";
 
-import { listResourcesForTools } from "@/services/db/resources/resource";
-
-import { inputSchemaToZodSchema } from "./utils";
-
 import { jsonObjectSchema } from "@/lib/json";
-
 import {
   paymentRequirementsSchemaV1,
   outputSchemaV1,
   coerceAcceptForV1Schema,
-  type OutputSchemaV1,
 } from "@/lib/x402";
+import { listResourcesForTools } from "@/services/db/resources/resource";
+
+import { inputSchemaToZodSchema } from "./utils";
+
+import type { Tool } from "ai";
 
 import type { ResourceRequestMetadata } from "@x402scan/scan-db";
-import type { Tool } from "ai";
+
+import type { OutputSchemaV1 } from "@/lib/x402";
 
 export async function createX402AITools(
   resourceIds: string[]

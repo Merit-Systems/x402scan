@@ -1,6 +1,6 @@
-import { NoSessionContent } from "./component";
-
 import { useSiwe } from "@/app/(app)/composer/_hooks/sign-in/use-siwe";
+
+import { NoSessionContent } from "./component";
 
 import type { Chain } from "@/types/chain";
 

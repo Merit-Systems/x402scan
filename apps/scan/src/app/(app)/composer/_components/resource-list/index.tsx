@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-
 import { Loader2, SearchX } from "lucide-react";
+
+import React, { useState } from "react";
 
 import {
   Command,
@@ -11,19 +11,14 @@ import {
 } from "@/components/ui/command";
 
 import { Chain } from "@/app/(app)/_components/chains";
+import { api } from "@/trpc/client";
+import { CHAIN_LABELS, SUPPORTED_CHAINS } from "@/types/chain";
 
 import { Filters } from "./filters";
-
 import { SelectedResourceItem } from "./item/selected";
 import { UnselectedResourceItem } from "./item/unselected";
 
-import { api } from "@/trpc/client";
-
-import {
-  CHAIN_LABELS,
-  SUPPORTED_CHAINS,
-  type SupportedChain,
-} from "@/types/chain";
+import type { SupportedChain } from "@/types/chain";
 
 import type { SelectedResource } from "../../_types/chat-config";
 
@@ -95,15 +90,20 @@ export const ResourceList: React.FC<Props> = ({
         )}
       />
       <CommandList
-        style={{
-          height: `${String(toolItemHeight * (numToolsToShow + 0.5))}px`,
-        }}
+        className="resource-list-height"
+        style={
+          {
+            "--resource-list-height": `${String(toolItemHeight * (numToolsToShow + 0.5))}px`,
+          } as React.CSSProperties & Record<"--resource-list-height", string>
+        }
       >
         <CommandEmpty
-          className="flex flex-col items-center justify-center gap-4 text-center"
-          style={{
-            height: `${String(toolItemHeight * numToolsToShow)}px`,
-          }}
+          className="resource-list-height flex flex-col items-center justify-center gap-4 text-center"
+          style={
+            {
+              "--resource-list-height": `${String(toolItemHeight * numToolsToShow)}px`,
+            } as React.CSSProperties & Record<"--resource-list-height", string>
+          }
         >
           {isLoading ? (
             <Loader2 className="size-10 animate-spin" />

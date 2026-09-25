@@ -20,19 +20,20 @@ catalog:
   "@signinwithethereum/siwe": ^4.1.0
   vitest: ^4.0.16
   rimraf: ^5.0.5
+  cn: 0.3.0
   oxfmt: ^0.64.0
-  oxlint: 1.78.0
+  oxlint: 1.85.0
   oxlint-tsgolint: 7.0.2001
   portless: 0.15.6
 
 catalogs:
   foundation:
-    "@merit-systems/foundation": 0.20.2
-    "@merit-systems/oxfmt-config": 0.20.2
-    "@merit-systems/oxlint-config": 0.20.2
-    "@merit-systems/taze-config": 0.20.2
-    "@merit-systems/tsdown-config": 0.20.2
-    "@merit-systems/typescript-config": 0.20.2
+    "@merit-systems/foundation": 0.31.0
+    "@merit-systems/oxfmt-config": 0.31.0
+    "@merit-systems/oxlint-config": 0.31.0
+    "@merit-systems/taze-config": 0.31.0
+    "@merit-systems/tsdown-config": 0.31.0
+    "@merit-systems/typescript-config": 0.31.0
   bundling:
     tsdown: 0.22.14
   env:

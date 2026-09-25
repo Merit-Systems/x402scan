@@ -4,13 +4,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-export function ExpandableLink({
-  label,
-  children,
-}: {
+interface ExpandableLinkProps {
   label: string;
   children: React.ReactNode;
-}) {
+}
+
+export function ExpandableLink({ label, children }: ExpandableLinkProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
 

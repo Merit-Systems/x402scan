@@ -1,7 +1,8 @@
 import React from "react";
 
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+
 import { cn } from "@/lib/utils";
 
 export interface StepType {
@@ -128,7 +129,7 @@ const Step: React.FC<StepProps> = ({
       {title && (
         <span
           className={cn(
-            "type-label max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,padding] duration-50 ease-in-out md:block hidden",
+            "type-label max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-50 ease-in-out md:block hidden",
             isActive &&
               "max-w-[200px] opacity-100 pl-2 duration-300 delay-50 text-primary"
           )}

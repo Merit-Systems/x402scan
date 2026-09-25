@@ -1,7 +1,9 @@
-import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
-import { ResourceExcludesTable } from "./_components/resource-excludes-table";
-import { auth } from "@/auth";
 import { forbidden } from "next/navigation";
+
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
+import { auth } from "@/auth";
+
+import { ResourceExcludesTable } from "./_components/resource-excludes-table";
 
 export default async function ExcludesPage() {
   const session = await auth();

@@ -2,6 +2,7 @@ import { NotFoundCard } from "./_components/error/card";
 
 import type { Metadata } from "next";
 
+// oxfmt-ignore
 import "@/app/globals.css";
 
 export const metadata: Metadata = {

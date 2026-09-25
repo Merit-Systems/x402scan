@@ -13,29 +13,28 @@
       "cache": false
     },
     "//#lint:repo": {
-      "description": "Run oxlint (type-aware) across the whole repo",
-      "dependsOn": [
-        "@x402scan/scan-db#db:generate",
-        "@x402scan/transfers-db#db:generate",
-        "@x402scan/app#types:generate",
-        "@x402scan/neverthrow#build",
-        "facilitators#build",
-        "@x402scan/partners-db#build"
-      ],
+      "description": "Lint root-owned TypeScript configuration",
       "inputs": [
-        "**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}",
-        "**/tsconfig*.json",
-        ".oxlintrc.jsonc",
-        "!**/node_modules/**",
-        "!**/.turbo/**",
-        "!**/.next/**",
-        "!**/dist/**",
-        "!**/generated/**"
+        "foundation.config.ts",
+        "knip.config.ts",
+        "oxfmt.config.ts",
+        "oxlint.config.ts",
+        "taze.config.ts"
       ],
       "outputs": []
     },
     "//#lint:fix:repo": {
-      "description": "Run oxlint and automatically fix issues",
+      "description": "Fix lint issues in root-owned TypeScript configuration",
+      "cache": false
+    },
+    "lint": {
+      "description": "Lint package-owned source with Oxlint",
+      "dependsOn": ["^types:generate", "types:generate", "^build"],
+      "outputs": []
+    },
+    "lint:fix": {
+      "description": "Fix lint issues in package-owned source",
+      "dependsOn": ["^db:generate", "types:generate", "^build", "db:generate"],
       "cache": false
     },
     "dev": {
@@ -51,11 +50,12 @@
       "persistent": true
     },
     "types:generate": {
-      "description": "Generate TypeScript types from sources"
+      "description": "Generate ignored framework and Prisma types",
+      "outputs": [".next/types/**", "generated/prisma/**"]
     },
     "types:check": {
       "description": "Type-check code with TypeScript compiler",
-      "dependsOn": ["^db:generate", "types:generate", "^build", "db:generate"],
+      "dependsOn": ["^types:generate", "types:generate", "^build"],
       "outputs": []
     },
     "//#format:check": {
@@ -99,7 +99,7 @@
         ".github/workflows/**",
         "**/package.json",
         "**/tsconfig*.json",
-        "**/.oxlintrc.jsonc",
+        "**/oxlint.config.{ts,mts}",
         "!**/node_modules/**",
         "!**/.next/**",
         "!**/.turbo/**",
@@ -121,7 +121,8 @@
       "cache": false
     },
     "db:generate": {
-      "description": "Generate Prisma client from schema"
+      "description": "Generate ignored Prisma client from schema",
+      "outputs": ["generated/prisma/**"]
     },
     "db:migrate": {
       "description": "Create and apply database migrations",
@@ -143,7 +144,7 @@
     },
     "test": {
       "description": "Run package tests",
-      "dependsOn": ["^build", "^db:generate", "db:generate"],
+      "dependsOn": ["^types:generate", "types:generate", "^build"],
       "outputs": []
     },
     "deploy": {

@@ -5,10 +5,11 @@ import { Mail, Wallet, Coins, KeyRound } from "lucide-react";
 import { Copyable } from "@/components/ui/copyable";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { CHAIN_LABELS } from "@/types/chain";
 import { formatCurrency } from "@/lib/utils";
+import { CHAIN_LABELS } from "@/types/chain";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
+
 import type { RouterOutputs } from "@/trpc/client";
 
 type BalanceRow =

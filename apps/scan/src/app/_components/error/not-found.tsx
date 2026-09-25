@@ -1,6 +1,5 @@
-import { NotFoundScreen } from "./screen";
-
 import { ErrorPageContainer } from "./container";
+import { NotFoundScreen } from "./screen";
 
 import type { ErrorComponentProps } from "./types";
 

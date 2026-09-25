@@ -1,9 +1,3 @@
-import { z } from "zod";
-
-import Credentials, {
-  type CredentialsConfig,
-} from "next-auth/providers/credentials";
-
 import {
   address as toAddress,
   getBase58Encoder,
@@ -11,12 +5,16 @@ import {
   signatureBytes,
   verifySignature,
 } from "@solana/kit";
+import Credentials from "next-auth/providers/credentials";
+import { z } from "zod";
 
 import { scanDb } from "@x402scan/scan-db";
 
+import { solanaAddressSchema } from "@/lib/schemas";
+
 import { SIWS_PROVIDER_ID, SIWS_PROVIDER_NAME } from "./constants";
 
-import { solanaAddressSchema } from "@/lib/schemas";
+import type { CredentialsConfig } from "next-auth/providers/credentials";
 
 const siwsCredentialsSchema = z.object({
   address: solanaAddressSchema,

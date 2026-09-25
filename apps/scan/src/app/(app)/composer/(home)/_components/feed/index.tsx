@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 
 import { Section } from "@/app/(app)/_components/deferred/page-utils";
-
 import {
   FeedTableContent,
   LoadingFeedTableContent,
@@ -25,7 +24,11 @@ export const LoadingFeed = () => {
   );
 };
 
-const FeedContainer = ({ children }: { children: React.ReactNode }) => {
+interface FeedContainerProps {
+  children: React.ReactNode;
+}
+
+const FeedContainer = ({ children }: FeedContainerProps) => {
   return (
     <Section
       title="Feed"

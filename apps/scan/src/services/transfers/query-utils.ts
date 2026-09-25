@@ -1,7 +1,9 @@
 import { getTimeRangeFromTimeframe } from "@/lib/time-range";
 
-import type { Prisma } from "@x402scan/transfers-db";
 import type z from "zod";
+
+import type { Prisma } from "@x402scan/transfers-db";
+
 import type { baseQuerySchema } from "./schemas";
 
 export const transfersWhereObject = (

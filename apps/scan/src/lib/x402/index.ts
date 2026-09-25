@@ -5,29 +5,25 @@ export * from "./v2";
 export * from "./schema";
 export type { FieldDef } from "./shared";
 
-import {
-  x402ResponseSchemaV1,
-  outputSchemaV1,
-  type X402ResponseV1,
-  type OutputSchemaV1,
-} from "./v1";
-import {
-  x402ResponseSchemaV2,
-  type X402ResponseV2,
-  type BazaarDiscovery,
-  type BazaarInputStructure,
-  type BazaarJsonSchema,
-} from "./v2";
 import { decodePaymentRequiredHeader } from "@x402/core/http";
-import { ChainIdToNetwork } from "./chain-mapping";
-import {
-  jsonObjectSchema3,
-  jsonValueSchema3,
-  type ParseResult,
-} from "./shared";
+
 import { cleanExternalText } from "@/lib/utils";
 
+import { ChainIdToNetwork } from "./chain-mapping";
+import { jsonObjectSchema3, jsonValueSchema3 } from "./shared";
+import { x402ResponseSchemaV1, outputSchemaV1 } from "./v1";
+import { x402ResponseSchemaV2 } from "./v2";
+
 import type { JsonObject, JsonValue } from "@/lib/json";
+
+import type { ParseResult } from "./shared";
+import type { X402ResponseV1, OutputSchemaV1 } from "./v1";
+import type {
+  X402ResponseV2,
+  BazaarDiscovery,
+  BazaarInputStructure,
+  BazaarJsonSchema,
+} from "./v2";
 
 /**
  * The input structure of a bazaar-derived output schema: the raw bazaar

@@ -1,26 +1,26 @@
 import { NextResponse } from "next/server";
 
-import { scrapeOriginData } from "@/services/scraper";
+import {
+  discoverableFacilitators,
+  listAllFacilitatorResources,
+} from "facilitators";
+
+import { checkCronSecret } from "@/lib/cron";
+import { notifyNewServer } from "@/lib/discord-notifications";
+import { isVercelPreviewDeployment } from "@/lib/discovery/vercel-preview";
+import { getOriginFromUrl } from "@/lib/url";
 import {
   getOriginResourceCount,
   upsertOrigin,
 } from "@/services/db/resources/origin";
 import { upsertResource } from "@/services/db/resources/resource";
-
-import { checkCronSecret } from "@/lib/cron";
-import { notifyNewServer } from "@/lib/discord-notifications";
-import { getOriginFromUrl } from "@/lib/url";
-import { isVercelPreviewDeployment } from "@/lib/discovery/vercel-preview";
 import {
   normalizeKnownAcceptNetworks,
   upsertResourceSchema,
 } from "@/services/db/resources/resource/schema";
+import { scrapeOriginData } from "@/services/scraper";
 
 import type { NextRequest } from "next/server";
-import {
-  discoverableFacilitators,
-  listAllFacilitatorResources,
-} from "facilitators";
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);

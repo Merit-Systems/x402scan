@@ -1,10 +1,9 @@
-import { describe, it, expect } from "vitest";
-
 import { SiweMessage } from "@signinwithethereum/siwe";
 import { privateKeyToAccount } from "viem/accounts";
+import { describe, it, expect } from "vitest";
 
-import { buildSiweMessage } from "./sign-in";
 import { SIWE_STATEMENT } from "./constants";
+import { buildSiweMessage } from "./sign-in";
 
 const account = privateKeyToAccount(
   "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"

@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { fetchWithProxy } from "@/lib/x402/proxy-fetch";
+import { paymentResponseHeaderSchema } from "@/lib/x402/schema";
 
 import type { UseMutationOptions } from "@tanstack/react-query";
+
 import type { X402FetchResponse, FetchWithPaymentWrapper } from "./types";
-import { paymentResponseHeaderSchema } from "@/lib/x402/schema";
 
 interface UseX402FetchParams {
   wrapperFn: FetchWithPaymentWrapper;

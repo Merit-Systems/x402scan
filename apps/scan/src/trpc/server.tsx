@@ -1,12 +1,16 @@
+// oxfmt-ignore
 import "server-only";
 
-import { createHydrationHelpers } from "@trpc/react-query/rsc";
 import { cache } from "react";
 
-import { createCaller, type AppRouter } from "./routers";
-import { createTRPCContext } from "./trpc";
-import { createQueryClient } from "./query-client";
+import { createHydrationHelpers } from "@trpc/react-query/rsc";
 import { headers } from "next/headers";
+
+import { createQueryClient } from "./query-client";
+import { createCaller } from "./routers";
+import { createTRPCContext } from "./trpc";
+
+import type { AppRouter } from "./routers";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when

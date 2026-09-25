@@ -1,7 +1,11 @@
+import { ArrowLeft, Bot, Loader2, Plus } from "lucide-react";
+
 import Image from "next/image";
-
 import { Controller } from "react-hook-form";
+import { toast } from "sonner";
 
+import { Button } from "@/components/ui/button";
+import { Dropzone } from "@/components/ui/dropzone";
 import {
   Field,
   FieldContent,
@@ -11,16 +15,14 @@ import {
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field";
-import type { NewAgentForm } from "./types";
-import { Dropzone } from "@/components/ui/dropzone";
-import { toast } from "sonner";
-import { api } from "@/trpc/client";
-import { cn } from "@/lib/utils";
-import { ArrowLeft, Bot, Loader2, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+
+import { cn } from "@/lib/utils";
+import { api } from "@/trpc/client";
+
+import type { NewAgentForm } from "./types";
 
 interface Props {
   form: NewAgentForm;

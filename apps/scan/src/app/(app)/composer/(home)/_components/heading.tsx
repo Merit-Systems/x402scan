@@ -1,9 +1,10 @@
-import Link from "next/link";
-
 import { Bot, Edit } from "lucide-react";
 
-import { Heading } from "@/app/(app)/_components/deferred/page-utils";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
+
+import { Heading } from "@/app/(app)/_components/deferred/page-utils";
 
 export const ComposerHomeHeading = () => {
   return (

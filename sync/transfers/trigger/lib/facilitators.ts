@@ -1,12 +1,15 @@
 import { allFacilitators } from "facilitators";
+import { Network as FacilitatorsNetwork } from "facilitators";
+
+import { Network } from "../types";
+
 import type {
   Facilitator as RawFacilitator,
   FacilitatorAddress,
   Token,
 } from "facilitators";
-import { Network as FacilitatorsNetwork } from "facilitators";
+
 import type { Facilitator, FacilitatorConfig } from "../types";
-import { Network } from "../types";
 
 const chainMap = {
   [FacilitatorsNetwork.BASE]: Network.BASE,

@@ -12,13 +12,6 @@ import type {
 type UsageChartKey = `${string}-transactions`;
 type UsageChartValues = Record<UsageChartKey, number>;
 
-interface UsageBarChartProps {
-  bars: BarSeries<UsageChartValues>[];
-  chartData: ChartData<UsageChartValues>[];
-  height?: ChartDimension;
-  tooltipRows: ChartTooltipRow<UsageChartValues>[];
-}
-
 interface UsageBarChartItem {
   color: string;
   name: string;
@@ -42,6 +35,13 @@ function formatTimestamp(timestamp: string) {
     minute: "2-digit",
     month: "short",
   });
+}
+
+interface UsageBarChartProps {
+  bars: BarSeries<UsageChartValues>[];
+  chartData: ChartData<UsageChartValues>[];
+  height?: ChartDimension;
+  tooltipRows: ChartTooltipRow<UsageChartValues>[];
 }
 
 function UsageBarChart({
@@ -121,7 +121,11 @@ function createUsageBarChartModel<TItem extends UsageBarChartItem>(
   };
 }
 
-function LoadingUsageBarChart({ height = 210 }: { height?: ChartDimension }) {
+interface LoadingUsageBarChartProps {
+  height?: ChartDimension;
+}
+
+function LoadingUsageBarChart({ height = 210 }: LoadingUsageBarChartProps) {
   return <LoadingBarChart height={height} />;
 }
 

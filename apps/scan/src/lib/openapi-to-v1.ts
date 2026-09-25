@@ -1,6 +1,8 @@
 import { openApiInputAdvisorySchema } from "@/lib/discovery/utils/json-schema";
 import { outputSchemaV1 } from "@/lib/x402/v1";
 
+import type { EndpointMethodAdvisory } from "@agentcash/discovery";
+
 import type {
   JsonSchemaNode,
   OpenApiInputAdvisory,
@@ -8,7 +10,6 @@ import type {
 } from "@/lib/discovery/utils/json-schema";
 import type { JsonValue } from "@/lib/json";
 import type { OutputSchemaV1 } from "@/lib/x402/v1";
-import type { EndpointMethodAdvisory } from "@agentcash/discovery";
 
 // ─── Field definition builder (matches x402scan's FieldDef shape) ────────────
 

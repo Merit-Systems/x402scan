@@ -1,20 +1,23 @@
 "use client";
 
-import Image from "next/image";
-
 import { Bot } from "lucide-react";
 
-import { Card } from "@/components/ui/card";
+import Image from "next/image";
 
-import { EmptyMessages, LoadingMessages, Messages } from "./messages";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import { Card } from "@/components/ui/card";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+
+import { useChat } from "../../_hooks/use-chat";
+
 import { LoadingPromptInputSection, PromptInputSection } from "./input";
+import { EmptyMessages, LoadingMessages, Messages } from "./messages";
 
 import type { Message } from "@x402scan/scan-db/types";
-import type { ChatConfig } from "../../../_types/chat-config";
+
 import type { RouterOutputs } from "@/trpc/client";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
-import { useChat } from "../../_hooks/use-chat";
+
+import type { ChatConfig } from "../../../_types/chat-config";
 
 interface Props {
   id: string;

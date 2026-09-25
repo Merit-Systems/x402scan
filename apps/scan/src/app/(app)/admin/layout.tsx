@@ -1,6 +1,8 @@
-import { auth } from "@/auth";
-import { Subnav } from "../_components/layout/subnav";
 import { forbidden } from "next/navigation";
+
+import { auth } from "@/auth";
+
+import { Subnav } from "../_components/layout/subnav";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const session = await auth();
