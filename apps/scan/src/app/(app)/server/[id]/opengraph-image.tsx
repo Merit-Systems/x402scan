@@ -55,12 +55,10 @@ export default async function ServerOpenGraphImage({
     <OpenGraphImage
       style={{
         // Satori does not resolve the browser CSS variables used by Brand.
-        // oxlint-disable-next-line merit-brand/no-raw-theme-colors
         backgroundColor: "#0d3474",
         backgroundImage:
           "linear-gradient(112deg, #1c56ad 0%, #103875 50%, #071b42 100%)",
         // Satori does not resolve the browser CSS variables used by Brand.
-        // oxlint-disable-next-line merit-brand/no-raw-theme-colors
         color: "#ffffff",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -86,7 +84,6 @@ export default async function ServerOpenGraphImage({
             style={{
               alignItems: "center",
               // Satori does not resolve the browser CSS variables used by Brand.
-              // oxlint-disable-next-line merit-brand/no-raw-theme-colors
               backgroundColor: "#ffffff",
               borderRadius: 28,
               display: "flex",
@@ -108,7 +105,6 @@ export default async function ServerOpenGraphImage({
           <div
             style={{
               // Satori does not resolve the browser CSS variables used by Brand.
-              // oxlint-disable-next-line merit-brand/no-raw-theme-colors
               backgroundColor: "rgba(255, 255, 255, 0.12)",
               borderRadius: 28,
               height: 192,
