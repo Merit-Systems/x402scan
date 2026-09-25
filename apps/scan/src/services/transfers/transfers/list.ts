@@ -8,6 +8,7 @@ import {
   TRANSFERS_SORT_IDS,
 } from "@/lib/table-sort-options";
 
+import { observeQuery } from "../query-observation";
 import { transfersWhereObject } from "../query-utils";
 import { baseListQuerySchema } from "../schemas";
 
@@ -20,7 +21,7 @@ export const listFacilitatorTransfersInputSchema = baseListQuerySchema({
   defaultSortId: DEFAULT_TRANSFERS_SORTING.id,
 });
 
-const listFacilitatorTransfersUncached = async (
+export const listFacilitatorTransfersUncached = async (
   input: z.infer<typeof listFacilitatorTransfersInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
@@ -28,14 +29,16 @@ const listFacilitatorTransfersUncached = async (
   const { page_size, page } = pagination;
 
   const where = transfersWhereObject(input);
-  const transfers = await transfersDb.transferEvent.findMany({
-    where,
-    orderBy: {
-      [sorting.id]: sorting.desc ? "desc" : "asc",
-    },
-    take: page_size + 1,
-    skip: page * page_size,
-  });
+  const transfers = await observeQuery("prisma-transfers", () =>
+    transfersDb.transferEvent.findMany({
+      where,
+      orderBy: {
+        [sorting.id]: sorting.desc ? "desc" : "asc",
+      },
+      take: page_size + 1,
+      skip: page * page_size,
+    })
+  );
 
   // Map to expected output format
   const items = transfers.map((transfer) => ({

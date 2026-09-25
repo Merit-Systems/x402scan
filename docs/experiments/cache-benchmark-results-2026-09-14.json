@@ -1,0 +1,251 @@
+{
+  "date": "2026-09-14",
+  "commit": "dfa639d7651154010775621536d57a44fdf0d5a0",
+  "deployment": "dpl_7zEaaWKowb7LJpigcKekFpdL6AmD",
+  "url": "https://x402scan-g69gjshyk-merit-systems.vercel.app",
+  "run": "93be62ca-8f16-488f-864e-be899ad1dc8e",
+  "requests": 200,
+  "errors": 0,
+  "http": [
+    {
+      "query": "overall",
+      "mode": "uncached",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 170.7,
+      "p95Ms": 777.2
+    },
+    {
+      "query": "overall",
+      "mode": "uncached",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 66.4,
+      "p95Ms": 76.4
+    },
+    {
+      "query": "overall",
+      "mode": "next",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 99.2,
+      "p95Ms": 146.6
+    },
+    {
+      "query": "overall",
+      "mode": "next",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 52.5,
+      "p95Ms": 54.7
+    },
+    {
+      "query": "bucketed",
+      "mode": "uncached",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 65.9,
+      "p95Ms": 109.8
+    },
+    {
+      "query": "bucketed",
+      "mode": "uncached",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 49.2,
+      "p95Ms": 60.6
+    },
+    {
+      "query": "bucketed",
+      "mode": "next",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 89.7,
+      "p95Ms": 105.8
+    },
+    {
+      "query": "bucketed",
+      "mode": "next",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 46.7,
+      "p95Ms": 74.5
+    },
+    {
+      "query": "sellers",
+      "mode": "uncached",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 83.7,
+      "p95Ms": 91.2
+    },
+    {
+      "query": "sellers",
+      "mode": "uncached",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 60.1,
+      "p95Ms": 104.1
+    },
+    {
+      "query": "sellers",
+      "mode": "next",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 78.7,
+      "p95Ms": 104.0
+    },
+    {
+      "query": "sellers",
+      "mode": "next",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 54.7,
+      "p95Ms": 69.8
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "uncached",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 60.9,
+      "p95Ms": 138.9
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "uncached",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 52.3,
+      "p95Ms": 98.1
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "next",
+      "phase": "initial-burst",
+      "requests": 20,
+      "errors": 0,
+      "medianMs": 371.6,
+      "p95Ms": 472.2
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "next",
+      "phase": "warm-serial",
+      "requests": 5,
+      "errors": 0,
+      "medianMs": 43.0,
+      "p95Ms": 68.2
+    }
+  ],
+  "executions": [
+    {
+      "query": "overall",
+      "mode": "next",
+      "originExecutions": 15,
+      "originCompletions": 15,
+      "originFailures": 0,
+      "queryAttempts": 15,
+      "queryCompletions": 15,
+      "queryFailures": 0,
+      "queryDurationMs": 273.17311000000336
+    },
+    {
+      "query": "overall",
+      "mode": "uncached",
+      "originExecutions": 25,
+      "originCompletions": 25,
+      "originFailures": 0,
+      "queryAttempts": 25,
+      "queryCompletions": 25,
+      "queryFailures": 0,
+      "queryDurationMs": 4993.162235000011
+    },
+    {
+      "query": "bucketed",
+      "mode": "next",
+      "originExecutions": 19,
+      "originCompletions": 19,
+      "originFailures": 0,
+      "queryAttempts": 19,
+      "queryCompletions": 19,
+      "queryFailures": 0,
+      "queryDurationMs": 271.4172610000096
+    },
+    {
+      "query": "bucketed",
+      "mode": "uncached",
+      "originExecutions": 25,
+      "originCompletions": 25,
+      "originFailures": 0,
+      "queryAttempts": 25,
+      "queryCompletions": 25,
+      "queryFailures": 0,
+      "queryDurationMs": 232.75546899998153
+    },
+    {
+      "query": "sellers",
+      "mode": "next",
+      "originExecutions": 13,
+      "originCompletions": 13,
+      "originFailures": 0,
+      "queryAttempts": 26,
+      "queryCompletions": 26,
+      "queryFailures": 0,
+      "queryDurationMs": 236.6264780000347
+    },
+    {
+      "query": "sellers",
+      "mode": "uncached",
+      "originExecutions": 25,
+      "originCompletions": 25,
+      "originFailures": 0,
+      "queryAttempts": 50,
+      "queryCompletions": 50,
+      "queryFailures": 0,
+      "queryDurationMs": 684.1700819999824
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "next",
+      "originExecutions": 19,
+      "originCompletions": 19,
+      "originFailures": 0,
+      "queryAttempts": 19,
+      "queryCompletions": 19,
+      "queryFailures": 0,
+      "queryDurationMs": 6074.769060000006
+    },
+    {
+      "query": "recent-transfers",
+      "mode": "uncached",
+      "originExecutions": 25,
+      "originCompletions": 25,
+      "originFailures": 0,
+      "queryAttempts": 25,
+      "queryCompletions": 25,
+      "queryFailures": 0,
+      "queryDurationMs": 509.863378000013
+    }
+  ],
+  "limitations": [
+    "Redis mode was unavailable under the inherited preview settings and is awaiting a user choice about using the shared Redis instance.",
+    "Small initial-burst and warm samples; instance and database initialization are not normalized.",
+    "15-minute revalidation, 30-minute expiry, deployment persistence, and billing were not tested.",
+    "Raw query attempts include transport; Prisma measurements count operations rather than internal statements."
+  ]
+}
