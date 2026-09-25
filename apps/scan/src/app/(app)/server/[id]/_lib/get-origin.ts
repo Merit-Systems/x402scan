@@ -1,9 +1,11 @@
 import "server-only";
 import { cache } from "react";
 
-import { api } from "@/trpc/server";
+import { z } from "zod";
+
+import { getOrigin } from "@/services/db/resources/origin";
 
 // Share the validated lookup between metadata and the page within one render.
 export const getServerOrigin = cache((id: string) =>
-  api.public.origins.get(id)
+  getOrigin(z.uuid().parse(id))
 );

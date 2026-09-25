@@ -1,39 +1,24 @@
 "use client";
-
 import { StatsCardGrid } from "@/components/stats-card-grid";
 import { LoadingStatsCard, StatsCard } from "@/components/ui/stats-card";
 
 import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 import { formatChartTimestamp, formatNumber } from "@/lib/utils";
-import { api } from "@/trpc/client";
 
 import type { ChartData } from "@/components/ui/chart";
 
-import type { Chain } from "@/types/chain";
-import type { ActivityTimeframe } from "@/types/timeframes";
+import type { getBucketedStatisticsMV } from "@/services/transfers/stats/bucketed-mv";
+import type { getOverallStatisticsMV } from "@/services/transfers/stats/overall-mv";
 
 interface FacilitatorStatCardsProps {
-  chain?: Chain;
-  facilitatorId: string;
-  timeframe: ActivityTimeframe;
+  overall: Awaited<ReturnType<typeof getOverallStatisticsMV>>;
+  timeSeries: Awaited<ReturnType<typeof getBucketedStatisticsMV>>;
 }
 
-export function FacilitatorStatCards({
-  chain,
-  facilitatorId,
-  timeframe,
-}: FacilitatorStatCardsProps) {
-  const input = {
-    chain,
-    facilitatorIds: [facilitatorId],
-    timeframe,
-  };
-  const [overall] = api.public.stats.overall.useSuspenseQuery(input);
-  const [timeSeries] = api.public.stats.bucketed.useSuspenseQuery({
-    ...input,
-    numBuckets: 48,
-  });
-
+export const FacilitatorStatCards = ({
+  overall,
+  timeSeries,
+}: FacilitatorStatCardsProps) => {
   const chartData: ChartData<{
     transactions: number;
     volume: number;
@@ -104,7 +89,7 @@ export function FacilitatorStatCards({
       />
     </StatsCardGrid>
   );
-}
+};
 
 export function LoadingFacilitatorStatCards() {
   return (
