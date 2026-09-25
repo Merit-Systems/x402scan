@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { Body } from "@/app/(app)/_components/layout/page-utils";
+import { Body } from "@/app/(app)/_components/deferred/page-utils";
 
 import { HeaderCard } from "./_components/header";
 import { Tools } from "./_components/tools";

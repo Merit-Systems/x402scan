@@ -55,10 +55,10 @@ export const AgentCashAnnouncementBanner = () => {
           className="hidden shrink-0 dark:block"
         />
         <div className="flex flex-col">
-          <h2 className="text-base font-bold text-primary md:text-lg">
+          <h2 className="type-card-title text-primary">
             Introducing AgentCash
           </h2>
-          <p className="text-xs text-muted-foreground md:text-sm">
+          <p className="type-supporting-body text-muted-foreground">
             The x402 wallet for your AI agent. One balance for any x402 API. We
             are giving away $100k in sign up bonuses.
           </p>

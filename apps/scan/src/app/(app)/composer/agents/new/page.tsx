@@ -1,4 +1,4 @@
-import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
+import { Body, Heading } from "@/app/(app)/_components/deferred/page-utils";
 
 import { CreateAgentForm } from "../../_components/new-agent/form";
 import { auth } from "@/auth";
