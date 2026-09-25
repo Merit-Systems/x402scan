@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 
-import { env } from "@/env";
 import { cleanExternalText } from "@/lib/utils";
 import { api } from "@/trpc/server";
 
@@ -35,26 +34,11 @@ export async function generateMetadata({
     ? cleanExternalText(origin.description)
     : `Explore ${title} on x402scan`;
 
-  const imageUrl = origin.ogImages[0]?.url
-    ? new URL(origin.ogImages[0].url, env.NEXT_PUBLIC_APP_URL).toString()
-    : `${env.NEXT_PUBLIC_APP_URL}/opengraph-image.png`;
-
   return {
     title,
     description,
     alternates: {
       canonical: `/server/${id}`,
-    },
-    openGraph: {
-      title,
-      description,
-      url: `${env.NEXT_PUBLIC_APP_URL}/server/${id}`,
-      images: [imageUrl],
-    },
-    twitter: {
-      title,
-      description,
-      images: [imageUrl],
     },
   };
 }
