@@ -13,10 +13,6 @@
       "schedule": "*/15 * * * *"
     },
     {
-      "path": "/api/cron/warm-cache?pages=buyers",
-      "schedule": "*/15 * * * *"
-    },
-    {
       "path": "/api/cron/warm-cache?pages=networks",
       "schedule": "*/15 * * * *"
     },
