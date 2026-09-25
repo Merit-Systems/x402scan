@@ -1,15 +1,15 @@
-import Link from 'next/link';
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { Button } from '@/components/ui/button';
-import { TryDiscovery } from '../../integration-spec/try-discovery';
-import { QuickstartPromptCard } from './_components/prompt-card';
+import Link from "next/link";
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { Button } from "@/components/ui/button";
+import { TryDiscovery } from "../../integration-spec/try-discovery";
+import { QuickstartPromptCard } from "./_components/prompt-card";
 
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Quickstart',
+  title: "Quickstart",
   description:
-    'Use an AI coding agent to make your API discoverable and payable.',
+    "Use an AI coding agent to make your API discoverable and payable.",
 };
 
 export default function QuickstartPage() {
@@ -24,13 +24,13 @@ export default function QuickstartPage() {
 
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">When the agent finishes</h2>
-          <ol className="list-decimal pl-5 space-y-2 text-sm text-muted-foreground">
+          <ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
             <li>
               Your <code>/openapi.json</code> should describe each payable route
               with <code>x-payment-info</code> and a <code>402</code> response.
             </li>
             <li>
-              The runtime should challenge unpaid requests with a valid{' '}
+              The runtime should challenge unpaid requests with a valid{" "}
               <code>WWW-Authenticate</code> header.
             </li>
             <li>

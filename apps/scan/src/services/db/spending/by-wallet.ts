@@ -1,14 +1,14 @@
-import z from 'zod';
-import { scanDb, Prisma } from '@x402scan/scan-db';
+import z from "zod";
+import { scanDb, Prisma } from "@x402scan/scan-db";
 import {
   toPaginatedResponse,
   type PaginatedQueryParams,
-} from '@/lib/pagination';
+} from "@/lib/pagination";
 import {
   createCachedPaginatedQuery,
   createCachedArrayQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
+} from "@/lib/cache";
 
 const walletSpendingResultSchema = z.array(
   z.object({
@@ -33,22 +33,22 @@ const walletToolBreakdownResultSchema = z.array(
 );
 
 export type WalletSpendingSortId =
-  | 'walletName'
-  | 'totalToolCalls'
-  | 'uniqueResources'
-  | 'totalMaxAmount';
+  | "walletName"
+  | "totalToolCalls"
+  | "uniqueResources"
+  | "totalMaxAmount";
 
 const getSpendingByWalletUncached = async (
   input: { sorting?: { id: WalletSpendingSortId; desc: boolean } },
   pagination: PaginatedQueryParams
 ) => {
   const { sorting } = input;
-  const orderByColumn = sorting?.id ?? 'totalMaxAmount';
-  const orderDirection = (sorting?.desc ?? true) ? 'DESC' : 'ASC';
+  const orderByColumn = sorting?.id ?? "totalMaxAmount";
+  const orderDirection = (sorting?.desc ?? true) ? "DESC" : "ASC";
 
   const orderByMap = {
     walletName: 'sw."walletName"',
-    totalToolCalls: 'COUNT(DISTINCT tc.id)',
+    totalToolCalls: "COUNT(DISTINCT tc.id)",
     uniqueResources: 'COUNT(DISTINCT tc."resourceId")',
     totalMaxAmount: 'COALESCE(SUM(a."maxAmountRequired"), 0)',
   } satisfies Record<WalletSpendingSortId, string>;
@@ -109,28 +109,28 @@ const getSpendingByWalletUncached = async (
 
 export const getSpendingByWallet = createCachedPaginatedQuery({
   queryFn: getSpendingByWalletUncached,
-  cacheKeyPrefix: 'spending:by-wallet',
-  createCacheKey: input => createStandardCacheKey(input),
+  cacheKeyPrefix: "spending:by-wallet",
+  createCacheKey: (input) => createStandardCacheKey(input),
   dateFields: [],
-  tags: ['spending', 'wallet'],
+  tags: ["spending", "wallet"],
 });
 
 export type ToolBreakdownSortId =
-  | 'resourceUrl'
-  | 'toolCalls'
-  | 'maxAmountPerCall'
-  | 'totalMaxAmount';
+  | "resourceUrl"
+  | "toolCalls"
+  | "maxAmountPerCall"
+  | "totalMaxAmount";
 
 const getToolBreakdownByWalletUncached = async (
   walletId: string,
   sorting?: { id: ToolBreakdownSortId; desc: boolean }
 ) => {
-  const orderByColumn = sorting?.id ?? 'totalMaxAmount';
-  const orderDirection = (sorting?.desc ?? true) ? 'DESC' : 'ASC';
+  const orderByColumn = sorting?.id ?? "totalMaxAmount";
+  const orderDirection = (sorting?.desc ?? true) ? "DESC" : "ASC";
 
   const orderByMap = {
-    resourceUrl: 'r.resource',
-    toolCalls: 'COUNT(tc.id)',
+    resourceUrl: "r.resource",
+    toolCalls: "COUNT(tc.id)",
     maxAmountPerCall: 'MAX(a."maxAmountRequired")',
     totalMaxAmount: 'COALESCE(SUM(a."maxAmountRequired"), 0)',
   } satisfies Record<ToolBreakdownSortId, string>;
@@ -176,9 +176,9 @@ const getToolBreakdownByWalletUncached = async (
 
 export const getToolBreakdownByWallet = createCachedArrayQuery({
   queryFn: getToolBreakdownByWalletUncached,
-  cacheKeyPrefix: 'spending:tool-breakdown-by-wallet',
+  cacheKeyPrefix: "spending:tool-breakdown-by-wallet",
   createCacheKey: (walletId, sorting) =>
     createStandardCacheKey({ walletId, sorting }),
   dateFields: [],
-  tags: ['spending', 'wallet', 'tool-breakdown'],
+  tags: ["spending", "wallet", "tool-breakdown"],
 });

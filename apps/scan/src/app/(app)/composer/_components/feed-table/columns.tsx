@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Bot,
@@ -7,30 +7,30 @@ import {
   MessageSquare,
   Server,
   Wrench,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { formatCompactAgo } from '@/lib/utils';
+import { formatCompactAgo } from "@/lib/utils";
 
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
-import { Favicon } from '@/app/(app)/_components/favicon';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
+import { Favicon } from "@/app/(app)/_components/favicon";
 
 type ColumnType =
-  RouterOutputs['public']['agents']['activity']['feed']['items'][number];
+  RouterOutputs["public"]["agents"]["activity"]["feed"]["items"][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
-    accessorKey: 'type',
+    accessorKey: "type",
     header: () => (
       <HeaderCell Icon={CircleDot} label="Event" className="mr-auto" />
     ),
     cell: ({ row }) => (
-      <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
-        {row.original.type === 'message' ? (
+      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+        {row.original.type === "message" ? (
           <>
             <MessageSquare className="size-3" />
             <span>Message</span>
@@ -44,15 +44,15 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+    loading: () => <Skeleton className="mr-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'agentConfiguration',
+    accessorKey: "agentConfiguration",
     header: () => (
       <HeaderCell Icon={Bot} label="Agent" className="mr-auto px-2" />
     ),
     cell: ({ row }) => (
-      <div className="flex items-center gap-2 mr-auto px-2 text-muted-foreground text-xs font-mono font-medium overflow-hidden">
+      <div className="mr-auto flex items-center gap-2 overflow-hidden px-2 font-mono text-xs font-medium text-muted-foreground">
         {row.original.agentConfiguration ? (
           <>
             <Favicon
@@ -61,7 +61,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
               Fallback={Bot}
             />
             <span className="truncate">
-              {row.original.agentConfiguration.name || 'Untitled Agent'}
+              {row.original.agentConfiguration.name || "Untitled Agent"}
             </span>
           </>
         ) : (
@@ -73,10 +73,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 200,
-    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+    loading: () => <Skeleton className="mr-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'resource',
+    accessorKey: "resource",
     header: () => (
       <HeaderCell Icon={Server} label="Resource" className="mr-auto" />
     ),
@@ -88,7 +88,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
             className="size-3"
             Fallback={Wrench}
           />
-          <span className="text-muted-foreground font-mono text-xs font-medium flex-1 truncate">
+          <span className="flex-1 truncate font-mono text-xs font-medium text-muted-foreground">
             {row.original.resource.resource}
           </span>
         </div>
@@ -96,7 +96,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     size: 250,
   },
   {
-    accessorKey: 'time',
+    accessorKey: "time",
     header: () => (
       <HeaderCell Icon={Calendar} label="Timestamp" className="ml-auto" />
     ),
@@ -106,6 +106,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 200,
-    loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
+    loading: () => <Skeleton className="ml-auto h-4 w-16" />,
   },
 ];

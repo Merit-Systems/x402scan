@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { Mail, Wallet, Coins, KeyRound } from 'lucide-react';
+import { Mail, Wallet, Coins, KeyRound } from "lucide-react";
 
-import { Copyable } from '@/components/ui/copyable';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Copyable } from "@/components/ui/copyable";
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { CHAIN_LABELS } from '@/types/chain';
-import { formatCurrency } from '@/lib/utils';
+import { CHAIN_LABELS } from "@/types/chain";
+import { formatCurrency } from "@/lib/utils";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
 
 type BalanceRow =
-  RouterOutputs['admin']['composerBalances']['report']['rows'][number];
+  RouterOutputs["admin"]["composerBalances"]["report"]["rows"][number];
 
 const truncateAddress = (address: string) =>
   `${address.slice(0, 6)}…${address.slice(-4)}`;
 
 export const columns: ExtendedColumnDef<BalanceRow>[] = [
   {
-    accessorKey: 'usdc',
+    accessorKey: "usdc",
     header: () => (
       <div className="flex items-center gap-2">
         <Coins className="size-4" />
@@ -27,7 +27,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <span className="text-xs font-mono font-medium tabular-nums">
+      <span className="font-mono text-xs font-medium tabular-nums">
         {formatCurrency(row.original.usdc)}
       </span>
     ),
@@ -35,10 +35,10 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'chain',
+    accessorKey: "chain",
     header: () => <span className="text-xs font-medium">Chain</span>,
     cell: ({ row }) => (
-      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-primary/10 text-primary text-xs">
+      <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs text-primary">
         {CHAIN_LABELS[row.original.chain]}
       </span>
     ),
@@ -46,19 +46,19 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'source',
+    accessorKey: "source",
     header: () => <span className="text-xs font-medium">Wallet Type</span>,
     cell: ({ row }) =>
-      row.original.source === 'server' ? (
+      row.original.source === "server" ? (
         <span
-          className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 text-xs"
+          className="inline-flex items-center rounded-md bg-blue-500/10 px-2 py-0.5 text-xs text-blue-600"
           title="CDP server wallet — we hold the keys and can sweep it"
         >
           Server
         </span>
       ) : (
         <span
-          className="inline-flex items-center px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-600 text-xs"
+          className="inline-flex items-center rounded-md bg-purple-500/10 px-2 py-0.5 text-xs text-purple-600"
           title="CDP embedded wallet — non-custodial, only the user can withdraw"
         >
           Embedded
@@ -68,7 +68,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'email',
+    accessorKey: "email",
     header: () => (
       <div className="flex items-center gap-2">
         <Mail className="size-4" />
@@ -84,7 +84,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
         <Copyable
           value={email}
           toastMessage="Email copied"
-          className="text-xs truncate max-w-[220px] block"
+          className="block max-w-[220px] truncate text-xs"
         >
           {email}
         </Copyable>
@@ -94,7 +94,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'loginAddresses',
+    accessorKey: "loginAddresses",
     header: () => (
       <div className="flex items-center gap-2">
         <KeyRound className="size-4" />
@@ -108,12 +108,12 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
       }
       return (
         <div className="flex flex-col gap-1">
-          {loginAddresses.map(loginAddress => (
+          {loginAddresses.map((loginAddress) => (
             <Copyable
               key={loginAddress}
               value={loginAddress}
               toastMessage="Address copied"
-              className="text-xs font-mono block"
+              className="block font-mono text-xs"
             >
               {truncateAddress(loginAddress)}
             </Copyable>
@@ -125,7 +125,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'address',
+    accessorKey: "address",
     header: () => (
       <div className="flex items-center gap-2">
         <Wallet className="size-4" />
@@ -136,7 +136,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
       <Copyable
         value={row.original.address}
         toastMessage="Address copied"
-        className="text-xs font-mono block"
+        className="block font-mono text-xs"
       >
         {truncateAddress(row.original.address)}
       </Copyable>
@@ -145,13 +145,13 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'userId',
+    accessorKey: "userId",
     header: () => <span className="text-xs font-medium">User</span>,
     cell: ({ row }) => {
       const { userId } = row.original;
       if (!userId) {
         return (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 text-xs">
+          <span className="inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-xs text-amber-600">
             Orphaned
           </span>
         );
@@ -160,7 +160,7 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
         <Copyable
           value={userId}
           toastMessage="User ID copied"
-          className="text-xs font-mono truncate max-w-[160px] block"
+          className="block max-w-[160px] truncate font-mono text-xs"
         >
           {userId}
         </Copyable>

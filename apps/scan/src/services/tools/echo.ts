@@ -1,4 +1,4 @@
-import z from 'zod';
+import z from "zod";
 
 export const getSoraVideoInputSchema = z.string();
 
@@ -9,20 +9,20 @@ const getSoraVideoOutputSchema = z.object({
   expires_at: z.number().int().nullable(),
   id: z.string(),
   model: z.string(),
-  object: z.literal('video'),
+  object: z.literal("video"),
   progress: z.number().int(),
   remixed_from_video_id: z.string().nullable(),
   seconds: z.string(),
   size: z.string(),
   status: z.enum([
-    'queued',
-    'in_progress',
-    'completed',
-    'failed',
-    'cancelled',
-    'cancelling',
-    'expired',
-    'requires_action',
+    "queued",
+    "in_progress",
+    "completed",
+    "failed",
+    "cancelled",
+    "cancelling",
+    "expired",
+    "requires_action",
   ]),
 });
 

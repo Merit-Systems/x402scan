@@ -1,6 +1,6 @@
-import { getWalletForUserId as getWalletForUserIdDb } from '@/services/db/user/server-wallets';
+import { getWalletForUserId as getWalletForUserIdDb } from "@/services/db/user/server-wallets";
 
-import { wallets } from './wallets';
+import { wallets } from "./wallets";
 
 export const getUserWallets = async (userId: string) => {
   const dbWallet = await getWalletForUserIdDb(userId);

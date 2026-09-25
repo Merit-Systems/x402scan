@@ -1,5 +1,5 @@
-import type { BalanceCheckResult } from './types';
-import { CURRENCY_CONFIG } from './constants';
+import type { BalanceCheckResult } from "./types";
+import { CURRENCY_CONFIG } from "./constants";
 
 export async function sendDiscordAlert(
   balanceResult: BalanceCheckResult
@@ -8,10 +8,10 @@ export async function sendDiscordAlert(
   const currencyName = balanceResult.currency;
 
   const response = await fetch(process.env.DISCORD_WEBHOOK_URL!, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: 'x402scan Balance Monitor',
+      username: "x402scan Balance Monitor",
       embeds: [
         {
           title: `🚨 Low ${currencyName} Balance Alert`,
@@ -19,23 +19,23 @@ export async function sendDiscordAlert(
           color: 0xff0000,
           fields: [
             {
-              name: 'Address',
+              name: "Address",
               value: `\`${balanceResult.address}\``,
               inline: false,
             },
             {
-              name: 'Current Balance',
+              name: "Current Balance",
               value: `${symbol}${parseFloat(balanceResult.balance).toFixed(decimalsExternal)} ${currencyName}`,
               inline: true,
             },
             {
-              name: 'Threshold',
+              name: "Threshold",
               value: `${symbol}${balanceResult.threshold.toFixed(decimalsExternal)} ${currencyName}`,
               inline: true,
             },
           ],
           timestamp: new Date().toISOString(),
-          footer: { text: 'x402scan Balance Monitor' },
+          footer: { text: "x402scan Balance Monitor" },
         },
       ],
     }),

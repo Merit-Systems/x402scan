@@ -1,6 +1,6 @@
-import z from 'zod';
-import { createTRPCRouter, publicProcedure } from '../../trpc';
-import { searchDiscover } from '@/lib/discover/search';
+import z from "zod";
+import { createTRPCRouter, publicProcedure } from "../../trpc";
+import { searchDiscover } from "@/lib/discover/search";
 
 export const discoverRouter = createTRPCRouter({
   search: publicProcedure

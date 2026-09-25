@@ -29,8 +29,8 @@ export const fetchHtml = async (url: string): Promise<string | null> => {
   try {
     const res = await fetchWithTimeout(url, {
       headers: {
-        'User-Agent':
-          'Mozilla/5.0 (compatible; x402scan/1.0; +https://x402.org)',
+        "User-Agent":
+          "Mozilla/5.0 (compatible; x402scan/1.0; +https://x402.org)",
       },
     });
 

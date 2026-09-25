@@ -1,8 +1,8 @@
-import type { AgentSortId } from '@/services/db/agent-config/list';
+import type { AgentSortId } from "@/services/db/agent-config/list";
 
-import type { SortType } from '../base/types';
+import type { SortType } from "../base/types";
 
 export const defaultAgentsSorting: SortType<AgentSortId> = {
-  id: 'score',
+  id: "score",
   desc: true,
 };

@@ -3,23 +3,23 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   BaseAreaChart,
   LoadingAreaChart,
-} from '@/components/ui/charts/chart/area';
+} from "@/components/ui/charts/chart/area";
 import {
   BaseBarChart,
   LoadingBarChart,
-} from '@/components/ui/charts/chart/bar';
+} from "@/components/ui/charts/chart/bar";
 import type {
   ChartData,
   ChartItems,
   TooltipRowProps,
-} from '@/components/ui/charts/chart/types';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
-import { TrendingDown, TrendingUp } from 'lucide-react';
+} from "@/components/ui/charts/chart/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { TrendingDown, TrendingUp } from "lucide-react";
 
 interface Props<T extends Record<string, number>> {
   title: string;
@@ -47,16 +47,16 @@ export const OverallStatsCard = <T extends Record<string, number>>({
           {percentageChange !== undefined && (
             <div
               className={cn(
-                'flex items-center gap-1 px-1 rounded-md text-xs font-mono',
+                "flex items-center gap-1 px-1 rounded-md text-xs font-mono",
                 percentageChange > 0
-                  ? 'bg-green-600/10 text-green-600'
+                  ? "bg-green-600/10 text-green-600"
                   : percentageChange === 0
-                    ? 'bg-neutral-600/10 text-neutral-600'
-                    : 'bg-red-600/10 text-red-500'
+                    ? "bg-neutral-600/10 text-neutral-600"
+                    : "bg-red-600/10 text-red-500"
               )}
             >
               <p>
-                {percentageChange >= 0 ? '+' : ''}
+                {percentageChange >= 0 ? "+" : ""}
                 {percentageChange.toFixed(2)}%
               </p>
 
@@ -70,7 +70,7 @@ export const OverallStatsCard = <T extends Record<string, number>>({
         </div>
       }
     >
-      {items.type === 'bar' ? (
+      {items.type === "bar" ? (
         <BaseBarChart
           data={data}
           bars={items.bars}
@@ -95,15 +95,15 @@ export const LoadingOverallStatsCard = ({
   type,
   title,
 }: {
-  type: 'bar' | 'area';
+  type: "bar" | "area";
   title: string;
 }) => {
   return (
     <OverallStatsCardContainer
       title={title}
-      value={<Skeleton className="h-6 my-1 w-20" />}
+      value={<Skeleton className="my-1 h-6 w-20" />}
     >
-      {type === 'bar' ? (
+      {type === "bar" ? (
         <LoadingBarChart height={100} />
       ) : (
         <LoadingAreaChart height={100} />
@@ -122,8 +122,8 @@ const OverallStatsCardContainer = ({
   value: React.ReactNode;
 }) => {
   return (
-    <Card className="overflow-hidden flex flex-col gap-2">
-      <CardHeader className="space-y-0 bg-muted border-b">
+    <Card className="flex flex-col gap-2 overflow-hidden">
+      <CardHeader className="space-y-0 border-b bg-muted">
         <CardDescription>{title}</CardDescription>
         {value}
       </CardHeader>

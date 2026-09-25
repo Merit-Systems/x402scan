@@ -1,13 +1,13 @@
-import { Chain, CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
+import { Chain, CHAIN_LABELS, CHAIN_ICONS } from "@/types/chain";
 
 const NETWORK_COLORS = {
-  [Chain.BASE]: 'hsl(221, 83%, 53%)',
-  [Chain.SOLANA]: 'hsl(271, 100%, 71%)',
-  [Chain.POLYGON]: 'hsl(272, 55%, 50%)',
-  [Chain.OPTIMISM]: 'hsl(0, 91%, 71%)',
+  [Chain.BASE]: "hsl(221, 83%, 53%)",
+  [Chain.SOLANA]: "hsl(271, 100%, 71%)",
+  [Chain.POLYGON]: "hsl(272, 55%, 50%)",
+  [Chain.OPTIMISM]: "hsl(0, 91%, 71%)",
 } satisfies Record<Chain, string>;
 
-export const networks = Object.values(Chain).map(chain => ({
+export const networks = Object.values(Chain).map((chain) => ({
   chain,
   name: CHAIN_LABELS[chain],
   icon: CHAIN_ICONS[chain],
@@ -21,14 +21,14 @@ interface TabConfig<T extends Record<string, number>> {
     amount: string;
   };
   items: {
-    type: 'bar';
+    type: "bar";
     bars: {
       dataKey: keyof T;
       name: string;
       color: string;
     }[];
     solid?: boolean;
-    stackOffset?: 'expand' | 'none';
+    stackOffset?: "expand" | "none";
   };
   tooltipRows: {
     key: keyof T;
@@ -50,7 +50,7 @@ interface CreateTabOptions<
   TItem extends Item,
 > {
   label: string;
-  stackOffset?: 'expand' | 'none';
+  stackOffset?: "expand" | "none";
   amount: string;
   items: TItem[];
   getKey: (item: TItem) => string;
@@ -70,11 +70,11 @@ export function createTab<T extends Record<string, number>, TItem extends Item>(
       amount: options.amount,
     },
     items: {
-      type: 'bar',
+      type: "bar",
       // Copy-then-reverse: toReversed() needs lib es2023, above this repo's
       // es2022 target, and the spread already protects the original array.
       // oxlint-disable-next-line unicorn/no-array-reverse
-      bars: [...options.items].reverse().map(item => ({
+      bars: [...options.items].reverse().map((item) => ({
         dataKey: `${getKey(item)}-${dataType}` as keyof T,
         name: item.name,
         color: item.color,
@@ -82,13 +82,13 @@ export function createTab<T extends Record<string, number>, TItem extends Item>(
       solid: true,
       stackOffset: options.stackOffset,
     },
-    tooltipRows: options.items.map(item => ({
+    tooltipRows: options.items.map((item) => ({
       key: `${getKey(item)}-${dataType}` as keyof T,
       label: item.name,
       getValue: (data: number, allData: T) =>
         options.getValue(data, dataType, allData),
-      labelClassName: 'text-xs font-mono',
-      valueClassName: 'text-xs font-mono',
+      labelClassName: "text-xs font-mono",
+      valueClassName: "text-xs font-mono",
       dotColor: item.color,
     })),
   };

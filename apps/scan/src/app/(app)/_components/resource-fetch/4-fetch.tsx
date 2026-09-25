@@ -1,12 +1,12 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { Chains } from '@/app/(app)/_components/chains';
+import { Chains } from "@/app/(app)/_components/chains";
 
-import { formatTokenAmount } from '@/lib/token';
+import { formatTokenAmount } from "@/lib/token";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 interface Props {
   isPending: boolean;
@@ -25,7 +25,7 @@ export const FetchState: React.FC<Props> = ({
   isLoading,
   chains,
   maxAmountRequired,
-  text = 'Fetch',
+  text = "Fetch",
 }) => {
   return (
     <Button

@@ -1,7 +1,7 @@
-import { Suspense } from 'react';
-import { Section } from '@/app/_components/layout/page-utils';
-import { YourAgentsContent } from './content';
-import { LoadingAgentCard } from '../lib/agent-card';
+import { Suspense } from "react";
+import { Section } from "@/app/_components/layout/page-utils";
+import { YourAgentsContent } from "./content";
+import { LoadingAgentCard } from "../lib/agent-card";
 
 interface Props {
   userId: string;
@@ -37,7 +37,7 @@ const LoadingYourAgents = () => {
 const AgentsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section title="Your Agents" description="Agents you have created or used">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
         {children}
       </div>
     </Section>

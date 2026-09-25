@@ -2,8 +2,8 @@ import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
-} from '@/components/ai-elements/reasoning';
-import type { ChatStatus, ReasoningUIPart } from 'ai';
+} from "@/components/ai-elements/reasoning";
+import type { ChatStatus, ReasoningUIPart } from "ai";
 
 interface Props {
   part: ReasoningUIPart;
@@ -21,7 +21,7 @@ export const ReasoningPart: React.FC<Props> = ({
   return (
     <Reasoning
       className="w-full"
-      isStreaming={status === 'streaming' && isLastPart && isLastMessage}
+      isStreaming={status === "streaming" && isLastPart && isLastMessage}
     >
       <ReasoningTrigger />
       <ReasoningContent>{part.text}</ReasoningContent>

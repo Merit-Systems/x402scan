@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Eye, Sparkles, File, Wrench } from 'lucide-react';
+import { Eye, Sparkles, File, Wrench } from "lucide-react";
 
-import { LanguageModelCapability } from './types';
+import { LanguageModelCapability } from "./types";
 
 export const capabilityIcons = {
   [LanguageModelCapability.Vision]: Eye,
@@ -15,25 +15,25 @@ export const capabilityIcons = {
 >;
 
 export const capabilityColors = {
-  [LanguageModelCapability.Vision]: 'bg-green-100 text-green-800',
-  [LanguageModelCapability.Reasoning]: 'bg-orange-100 text-orange-800',
-  [LanguageModelCapability.Pdf]: 'bg-gray-200 text-gray-800',
-  [LanguageModelCapability.ToolCalling]: 'bg-yellow-100 text-yellow-800',
+  [LanguageModelCapability.Vision]: "bg-green-100 text-green-800",
+  [LanguageModelCapability.Reasoning]: "bg-orange-100 text-orange-800",
+  [LanguageModelCapability.Pdf]: "bg-gray-200 text-gray-800",
+  [LanguageModelCapability.ToolCalling]: "bg-yellow-100 text-yellow-800",
 } satisfies Record<LanguageModelCapability, string>;
 
 /** Display names for known model providers, keyed by provider slug. */
 export const modelProviderNames = new Map<string, string>([
-  ['openai', 'OpenAI'],
-  ['google', 'Google'],
-  ['anthropic', 'Anthropic'],
-  ['perplexity', 'Perplexity'],
-  ['x-ai', 'xAI'],
-  ['meta-llama', 'Llama'],
-  ['qwen', 'Qwen'],
-  ['deepseek', 'DeepSeek'],
-  ['fireworks', 'Fireworks AI'],
-  ['azure', 'Azure (DALL-E)'],
-  ['vertex', 'Google Vertex AI'],
-  ['xai', 'xAI'],
-  ['openrouter', 'OpenRouter'],
+  ["openai", "OpenAI"],
+  ["google", "Google"],
+  ["anthropic", "Anthropic"],
+  ["perplexity", "Perplexity"],
+  ["x-ai", "xAI"],
+  ["meta-llama", "Llama"],
+  ["qwen", "Qwen"],
+  ["deepseek", "DeepSeek"],
+  ["fireworks", "Fireworks AI"],
+  ["azure", "Azure (DALL-E)"],
+  ["vertex", "Google Vertex AI"],
+  ["xai", "xAI"],
+  ["openrouter", "OpenRouter"],
 ]);

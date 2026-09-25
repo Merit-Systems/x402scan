@@ -1,15 +1,15 @@
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import { Badge } from '@/components/ui/badge';
-import { Avatar } from '@/components/ui/avatar';
-import { Globe, Filter } from 'lucide-react';
-import type { FilteredSearchResult } from '@/services/resource-search/types';
-import { cleanExternalText } from '@/lib/utils';
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
-import { ResourceSearchSortingContext } from '@/app/(app)/_contexts/sorting/resource-search/context';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
+import { Globe, Filter } from "lucide-react";
+import type { FilteredSearchResult } from "@/services/resource-search/types";
+import { cleanExternalText } from "@/lib/utils";
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
+import { ResourceSearchSortingContext } from "@/app/(app)/_contexts/sorting/resource-search/context";
 
 export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
   {
-    accessorKey: 'filterMatches',
+    accessorKey: "filterMatches",
     header: () => (
       <HeaderCell
         Icon={Filter}
@@ -17,7 +17,7 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
         className="justify-start"
         sorting={{
           sortContext: ResourceSearchSortingContext,
-          sortKey: 'filterMatches',
+          sortKey: "filterMatches",
         }}
       />
     ),
@@ -38,12 +38,12 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
       const matchPercentage = (filterMatches / totalFilters) * 100;
       const badgeColor =
         matchPercentage === 100
-          ? 'bg-green-500/10 text-green-500 border-green-500/20'
+          ? "bg-green-500/10 text-green-500 border-green-500/20"
           : matchPercentage >= 60
-            ? 'bg-primary/10 text-primary border-primary/20'
+            ? "bg-primary/10 text-primary border-primary/20"
             : matchPercentage >= 40
-              ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-              : 'bg-red-500/10 text-red-500 border-red-500/20';
+              ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+              : "bg-red-500/10 text-red-500 border-red-500/20";
 
       return (
         <div className="flex flex-col gap-1.5">
@@ -64,7 +64,7 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
     },
   },
   {
-    accessorKey: 'title',
+    accessorKey: "title",
     header: () => (
       <HeaderCell
         Icon={Globe}
@@ -72,7 +72,7 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
         className="justify-start"
         sorting={{
           sortContext: ResourceSearchSortingContext,
-          sortKey: 'title',
+          sortKey: "title",
         }}
       />
     ),
@@ -91,20 +91,20 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
             fallback={<Globe className="h-4 w-4 text-muted-foreground" />}
             className="h-10 w-10 shrink-0"
           />
-          <span className="font-medium truncate">{title}</span>
+          <span className="truncate font-medium">{title}</span>
         </div>
       );
     },
   },
   {
-    accessorKey: 'description',
-    header: 'Description',
+    accessorKey: "description",
+    header: "Description",
     size: 55,
     cell: ({ row }) => {
       const accepts = row.original.accepts;
       const description = cleanExternalText(
-        accepts.find(accept => accept.description)?.description ??
-          'No description available'
+        accepts.find((accept) => accept.description)?.description ??
+          "No description available"
       );
 
       return (
@@ -115,8 +115,8 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
     },
   },
   {
-    accessorKey: 'tags',
-    header: 'Tag',
+    accessorKey: "tags",
+    header: "Tag",
     size: 10,
     cell: ({ row }) => {
       const tags = row.original.tags;
@@ -126,15 +126,15 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
       }
 
       return (
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {tags.slice(0, 3).map(tag => (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {tags.slice(0, 3).map((tag) => (
             <Badge
               key={tag.id}
               variant="outline"
               className="text-xs"
               style={{
                 borderColor: tag.color,
-                backgroundColor: tag.color + '10',
+                backgroundColor: tag.color + "10",
               }}
             >
               {tag.name}

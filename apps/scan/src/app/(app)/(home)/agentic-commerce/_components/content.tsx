@@ -1,77 +1,77 @@
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Body, Heading, Section } from '@/app/_components/layout/page-utils';
-import { JsonLd } from '@/components/json-ld';
-import { Button } from '@/components/ui/button';
-import { env } from '@/env';
+import { Body, Heading, Section } from "@/app/_components/layout/page-utils";
+import { JsonLd } from "@/components/json-ld";
+import { Button } from "@/components/ui/button";
+import { env } from "@/env";
 
 const description =
-  'Learn how AI agents discover, pay for, and use APIs through x402 payments, discovery specs, and x402scan listings.';
+  "Learn how AI agents discover, pay for, and use APIs through x402 payments, discovery specs, and x402scan listings.";
 
-const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
 
 const faqs = [
   {
-    question: 'What is agentic commerce?',
+    question: "What is agentic commerce?",
     answer:
-      'Agentic commerce is the market where AI agents discover, pay for, and use digital services directly on behalf of users or businesses.',
+      "Agentic commerce is the market where AI agents discover, pay for, and use digital services directly on behalf of users or businesses.",
   },
   {
-    question: 'How do agents pay for APIs?',
+    question: "How do agents pay for APIs?",
     answer:
-      'Agents can use open payment standards such as x402 to receive a 402 Payment Required challenge, pay per request, and retry the API call automatically.',
+      "Agents can use open payment standards such as x402 to receive a 402 Payment Required challenge, pay per request, and retry the API call automatically.",
   },
   {
-    question: 'What role does x402scan play?',
+    question: "What role does x402scan play?",
     answer:
-      'x402scan is the marketplace, explorer, and analytics layer where x402 services can be listed, discovered, and measured.',
+      "x402scan is the marketplace, explorer, and analytics layer where x402 services can be listed, discovered, and measured.",
   },
   {
-    question: 'What role does AgentCash play?',
+    question: "What role does AgentCash play?",
     answer:
-      'AgentCash is an MCP that helps agents discover premium APIs, pay with stablecoin micropayments, and execute requests.',
+      "AgentCash is an MCP that helps agents discover premium APIs, pay with stablecoin micropayments, and execute requests.",
   },
 ];
 
 const jsonLd = [
   {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: 'Agentic Commerce',
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Agentic Commerce",
     url: `${appUrl}/agentic-commerce`,
     description,
     isPartOf: {
-      '@type': 'WebSite',
-      name: 'x402scan',
+      "@type": "WebSite",
+      name: "x402scan",
       url: appUrl,
     },
   },
   {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: [
       {
-        '@type': 'ListItem',
+        "@type": "ListItem",
         position: 1,
-        name: 'Home',
+        name: "Home",
         item: `${appUrl}/`,
       },
       {
-        '@type': 'ListItem',
+        "@type": "ListItem",
         position: 2,
-        name: 'Agentic Commerce',
+        name: "Agentic Commerce",
         item: `${appUrl}/agentic-commerce`,
       },
     ],
   },
   {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map(faq => ({
-      '@type': 'Question',
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
-        '@type': 'Answer',
+        "@type": "Answer",
         text: faq.answer,
       },
     })),
@@ -86,7 +86,7 @@ export function AgenticCommerceContent() {
         title="Agentic Commerce"
         description="AI agents discover, pay for, and use digital services directly."
         actions={
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Button asChild size="sm">
               <Link href="/resources/register">Register API</Link>
             </Button>
@@ -122,21 +122,21 @@ export function AgenticCommerceContent() {
             <li>
               <span className="font-medium text-foreground">
                 1. Add pay-per-call:
-              </span>{' '}
+              </span>{" "}
               enable per-request pricing so agents can pay without subscriptions
               or invoices.
             </li>
             <li>
               <span className="font-medium text-foreground">
                 2. Publish discovery:
-              </span>{' '}
+              </span>{" "}
               describe what the API does, what it costs, and how an agent should
               call it.
             </li>
             <li>
               <span className="font-medium text-foreground">
                 3. Reach agents:
-              </span>{' '}
+              </span>{" "}
               let agents inspect schemas and pricing, pay, and execute the
               request.
             </li>

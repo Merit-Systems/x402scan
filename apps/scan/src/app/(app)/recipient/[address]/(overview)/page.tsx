@@ -1,17 +1,17 @@
-import { Body } from '@/app/_components/layout/page-utils';
-import { Suspense } from 'react';
-import { HeaderCard, LoadingHeaderCard } from './_components/header';
-import { Activity, LoadingActivity } from './_components/activity';
+import { Body } from "@/app/_components/layout/page-utils";
+import { Suspense } from "react";
+import { HeaderCard, LoadingHeaderCard } from "./_components/header";
+import { Activity, LoadingActivity } from "./_components/activity";
 import {
   LatestTransactions,
   LoadingLatestTransactions,
-} from './_components/transactions';
-import { api } from '@/trpc/server';
-import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
+} from "./_components/transactions";
+import { api } from "@/trpc/server";
+import { ALL_TIME_TIMEFRAME } from "@/types/timeframes";
 
 export default async function RecipientPage({
   params,
-}: PageProps<'/recipient/[address]'>) {
+}: PageProps<"/recipient/[address]">) {
   const { address } = await params;
 
   // Prefetch data for hydration

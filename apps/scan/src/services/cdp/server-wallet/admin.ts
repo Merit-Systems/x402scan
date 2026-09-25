@@ -1,4 +1,4 @@
-import { cdpClient } from './client';
+import { cdpClient } from "./client";
 
 export const getWalletAddressFromName = async (walletName: string) => {
   const wallet = await cdpClient.evm.getOrCreateAccount({

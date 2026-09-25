@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { api } from '@/trpc/client';
-import { toast } from 'sonner';
+import { api } from "@/trpc/client";
+import { toast } from "sonner";
 
 interface RegisterFromOriginSuccessData {
   registered: number;
@@ -45,12 +45,12 @@ export function useRegisterFromOrigin(
     onMutate: () => {
       onMutate?.();
     },
-    onSuccess: data => {
+    onSuccess: (data) => {
       if (!data.success) {
         const errorMessage =
-          'error' in data ? data.error.message : 'Discovery failed';
+          "error" in data ? data.error.message : "Discovery failed";
         if (showToasts) {
-          toast.error('Refresh failed', { description: errorMessage });
+          toast.error("Refresh failed", { description: errorMessage });
         }
         onError?.();
         return;
@@ -70,8 +70,8 @@ export function useRegisterFromOrigin(
         if (data.skipped > 0) parts.push(`${data.skipped} skipped`);
         if (data.failed > 0) parts.push(`${data.failed} failed`);
         const description =
-          parts.length > 0 ? parts.join(', ') : 'Server is up to date';
-        toast.success('Server refreshed', { description });
+          parts.length > 0 ? parts.join(", ") : "Server is up to date";
+        toast.success("Server refreshed", { description });
       }
 
       onSuccess?.({
@@ -92,13 +92,13 @@ export function useRegisterFromOrigin(
         originId: data.originId,
       });
     },
-    onError: error => {
+    onError: (error) => {
       if (showToasts) {
-        toast.error('Refresh failed', {
-          description: error instanceof Error ? error.message : 'Unknown error',
+        toast.error("Refresh failed", {
+          description: error instanceof Error ? error.message : "Unknown error",
         });
       }
-      onError?.(error instanceof Error ? error : new Error('Unknown error'));
+      onError?.(error instanceof Error ? error : new Error("Unknown error"));
     },
   });
 
@@ -107,13 +107,13 @@ export function useRegisterFromOrigin(
 
   const error =
     mutation.data && !mutation.data.success
-      ? 'error' in mutation.data
+      ? "error" in mutation.data
         ? mutation.data.error.message
-        : 'Discovery failed'
+        : "Discovery failed"
       : mutation.error
         ? mutation.error instanceof Error
           ? mutation.error.message
-          : 'Failed to register resources'
+          : "Failed to register resources"
         : null;
 
   return {

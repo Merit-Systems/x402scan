@@ -1,19 +1,19 @@
-import { Globe } from 'lucide-react';
+import { Globe } from "lucide-react";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Address, Addresses } from '@/components/ui/address';
+} from "@/components/ui/tooltip";
+import { Address, Addresses } from "@/components/ui/address";
 
-import { Favicon } from '@/app/(app)/_components/favicon';
-import { cleanExternalText } from '@/lib/utils';
+import { Favicon } from "@/app/(app)/_components/favicon";
+import { cleanExternalText } from "@/lib/utils";
 
-import type { ResourceOrigin } from '@x402scan/scan-db/types';
-import type { MixedAddress } from '@/types/address';
+import type { ResourceOrigin } from "@x402scan/scan-db/types";
+import type { MixedAddress } from "@/types/address";
 
 interface Props {
   addresses: MixedAddress[];
@@ -63,7 +63,7 @@ export const Origins: React.FC<Props> = ({
     <OriginsContainer
       Icon={({ className }) => (
         <Favicon
-          url={origins.find(origin => origin.favicon)?.favicon ?? null}
+          url={origins.find((origin) => origin.favicon)?.favicon ?? null}
           className={className}
           Fallback={Globe}
         />
@@ -76,17 +76,17 @@ export const Origins: React.FC<Props> = ({
             </span>
           </Link>
           <Tooltip>
-            <TooltipTrigger className="cursor-pointer hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-colors text-xs font-mono shrink-0">
+            <TooltipTrigger className="shrink-0 cursor-pointer rounded-md font-mono text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
               +{origins.length - 1} more
             </TooltipTrigger>
-            <TooltipContent className="max-w-sm flex flex-col gap-1">
+            <TooltipContent className="flex max-w-sm flex-col gap-1">
               <p>
                 Addresses can be associated with multiple servers.
                 <br />
                 This address is associated with the following servers:
               </p>
-              <ul className="list-disc list-inside">
-                {origins.slice(1).map(origin => (
+              <ul className="list-inside list-disc">
+                {origins.slice(1).map((origin) => (
                   <li key={origin.id}>
                     {origin.title
                       ? cleanExternalText(origin.title)
@@ -146,10 +146,10 @@ interface OriginsContainerProps {
 
 const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
   return (
-    <div className="flex items-center gap-2 w-full overflow-hidden">
+    <div className="flex w-full items-center gap-2 overflow-hidden">
       <Icon className="size-6" />
       <div className="flex-1 overflow-hidden">
-        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex items-center gap-2">
+        <div className="flex w-full max-w-full items-center gap-2 overflow-hidden font-mono text-xs font-semibold text-ellipsis whitespace-nowrap md:text-sm">
           {title}
         </div>
         <div>{address}</div>

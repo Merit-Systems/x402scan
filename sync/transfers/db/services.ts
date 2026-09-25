@@ -1,6 +1,6 @@
-import { transfersDb } from '@x402scan/transfers-db';
+import { transfersDb } from "@x402scan/transfers-db";
 
-import type { Prisma } from '@x402scan/transfers-db';
+import type { Prisma } from "@x402scan/transfers-db";
 
 /**
  * Create a new TransferEvent

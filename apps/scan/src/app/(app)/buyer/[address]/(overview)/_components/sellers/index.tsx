@@ -1,22 +1,22 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary } from "react-error-boundary";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { Section } from '@/app/_components/layout/page-utils';
+import { Section } from "@/app/_components/layout/page-utils";
 
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
-import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 
-import { columns } from './columns';
-import { BuyerSellersTable } from './table';
+import { columns } from "./columns";
+import { BuyerSellersTable } from "./table";
 
-import { BuyerSellersSortingProvider } from './sorting-provider';
+import { BuyerSellersSortingProvider } from "./sorting-provider";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
   address: string;
@@ -27,7 +27,7 @@ export const BuyerSellers: React.FC<Props> = ({ address }) => {
 
   void api.public.buyers.all.sellers.prefetch({
     sender: address,
-    sorting: { id: 'tx_count', desc: true },
+    sorting: { id: "tx_count", desc: true },
     pagination: {
       page_size: pageSize,
       page: 0,

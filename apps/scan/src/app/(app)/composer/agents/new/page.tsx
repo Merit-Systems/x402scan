@@ -1,17 +1,17 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
 
-import { CreateAgentForm } from '../../_components/new-agent/form';
-import { auth } from '@/auth';
-import z from 'zod';
+import { CreateAgentForm } from "../../_components/new-agent/form";
+import { auth } from "@/auth";
+import z from "zod";
 
 const initialResourceIdsSchema = z
   .union([z.uuid(), z.array(z.uuid())])
-  .transform(value => (Array.isArray(value) ? value : [value]))
+  .transform((value) => (Array.isArray(value) ? value : [value]))
   .default([]);
 
 export default async function NewAgentPage({
   searchParams,
-}: PageProps<'/composer/agents/new'>) {
+}: PageProps<"/composer/agents/new">) {
   const { resources } = await searchParams;
 
   const initialResourceIds = initialResourceIdsSchema.safeParse(resources);
@@ -19,7 +19,7 @@ export default async function NewAgentPage({
   const session = await auth();
 
   return (
-    <div className="flex w-full flex-1 h-0 flex-col overflow-y-auto relative">
+    <div className="relative flex h-0 w-full flex-1 flex-col overflow-y-auto">
       <Heading
         title="Create an Agent"
         description="Design an agent with x402 resources and custom behavior."

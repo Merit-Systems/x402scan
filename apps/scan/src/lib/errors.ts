@@ -1,25 +1,25 @@
 type ErrorType =
-  | 'bad_request'
-  | 'unauthorized'
-  | 'payment_required'
-  | 'forbidden'
-  | 'not_found'
-  | 'rate_limit'
-  | 'offline'
-  | 'server';
+  | "bad_request"
+  | "unauthorized"
+  | "payment_required"
+  | "forbidden"
+  | "not_found"
+  | "rate_limit"
+  | "offline"
+  | "server";
 
-type Surface = 'chat' | 'auth' | 'api' | 'database' | 'tool';
+type Surface = "chat" | "auth" | "api" | "database" | "tool";
 
 type ErrorCode = `${ErrorType}:${Surface}`;
 
-type ErrorVisibility = 'response' | 'log' | 'none';
+type ErrorVisibility = "response" | "log" | "none";
 
 const visibilityBySurface = {
-  database: 'log',
-  chat: 'response',
-  auth: 'response',
-  api: 'response',
-  tool: 'response',
+  database: "log",
+  chat: "response",
+  auth: "response",
+  api: "response",
+  tool: "response",
 } satisfies Record<Surface, ErrorVisibility>;
 
 export class ChatError extends Error {
@@ -30,7 +30,7 @@ export class ChatError extends Error {
   constructor(errorCode: ErrorCode, message?: string, cause?: string) {
     super();
 
-    const [type, surface] = errorCode.split(':');
+    const [type, surface] = errorCode.split(":");
 
     this.type = type as ErrorType;
     this.cause = cause;
@@ -56,7 +56,7 @@ export class ChatError extends Error {
 
     const { message, cause, statusCode } = this;
 
-    if (visibility === 'log') {
+    if (visibility === "log") {
       console.error({
         code,
         message,
@@ -64,7 +64,7 @@ export class ChatError extends Error {
       });
 
       return Response.json(
-        { code: '', message: 'Something went wrong. Please try again later.' },
+        { code: "", message: "Something went wrong. Please try again later." },
         { status: statusCode }
       );
     }
@@ -74,69 +74,69 @@ export class ChatError extends Error {
 }
 
 function getMessageByErrorCode(errorCode: ErrorCode): string {
-  if (errorCode.includes('database')) {
-    return 'An error occurred while executing a database query.';
+  if (errorCode.includes("database")) {
+    return "An error occurred while executing a database query.";
   }
 
   switch (errorCode) {
-    case 'bad_request:api':
+    case "bad_request:api":
       return "The request couldn't be processed. Please check your input and try again.";
 
-    case 'unauthorized:auth':
-      return 'You need to sign in before continuing.';
-    case 'forbidden:auth':
-      return 'Your account does not have access to this feature.';
+    case "unauthorized:auth":
+      return "You need to sign in before continuing.";
+    case "forbidden:auth":
+      return "Your account does not have access to this feature.";
 
-    case 'not_found:chat':
-      return 'The requested chat was not found. Please check the chat ID and try again.';
-    case 'forbidden:chat':
-      return 'This chat belongs to another user. Please check the chat ID and try again.';
-    case 'unauthorized:chat':
-      return 'You need to sign in to view this chat. Please sign in and try again.';
-    case 'offline:chat':
+    case "not_found:chat":
+      return "The requested chat was not found. Please check the chat ID and try again.";
+    case "forbidden:chat":
+      return "This chat belongs to another user. Please check the chat ID and try again.";
+    case "unauthorized:chat":
+      return "You need to sign in to view this chat. Please sign in and try again.";
+    case "offline:chat":
       return "We're having trouble sending your message. Please check your internet connection and try again.";
-    case 'payment_required:chat':
-      return 'Out of funds. Please deposit more funds to continue.';
-    case 'server:chat':
-      return 'An error occurred while processing your request. Please try again later.';
+    case "payment_required:chat":
+      return "Out of funds. Please deposit more funds to continue.";
+    case "server:chat":
+      return "An error occurred while processing your request. Please try again later.";
 
-    case 'bad_request:tool':
+    case "bad_request:tool":
       return "The tool request couldn't be processed. Please check your input and try again.";
-    case 'unauthorized:tool':
-      return 'You need to sign in to use this tool.';
-    case 'payment_required:tool':
-      return 'You do not have enough funds to use this tool. Please add more funds to continue.';
-    case 'forbidden:tool':
-      return 'You do not have access to use this tool.';
-    case 'not_found:tool':
-      return 'The requested tool was not found. Please check the tool ID and try again.';
-    case 'server:tool':
-      return 'An error occurred while executing the tool. Please try again later.';
-    case 'rate_limit:tool':
-      return 'You are using tools too quickly. Please wait and try again.';
-    case 'offline:tool':
+    case "unauthorized:tool":
+      return "You need to sign in to use this tool.";
+    case "payment_required:tool":
+      return "You do not have enough funds to use this tool. Please add more funds to continue.";
+    case "forbidden:tool":
+      return "You do not have access to use this tool.";
+    case "not_found:tool":
+      return "The requested tool was not found. Please check the tool ID and try again.";
+    case "server:tool":
+      return "An error occurred while executing the tool. Please try again later.";
+    case "rate_limit:tool":
+      return "You are using tools too quickly. Please wait and try again.";
+    case "offline:tool":
       return "We're having trouble connecting to the tool. Please check your internet connection and try again.";
 
     default:
-      return 'Something went wrong. Please try again later.';
+      return "Something went wrong. Please try again later.";
   }
 }
 
 function getStatusCodeByType(type: ErrorType) {
   switch (type) {
-    case 'bad_request':
+    case "bad_request":
       return 400;
-    case 'unauthorized':
+    case "unauthorized":
       return 401;
-    case 'payment_required':
+    case "payment_required":
       return 402;
-    case 'forbidden':
+    case "forbidden":
       return 403;
-    case 'not_found':
+    case "not_found":
       return 404;
-    case 'rate_limit':
+    case "rate_limit":
       return 429;
-    case 'offline':
+    case "offline":
       return 503;
     default:
       return 500;
@@ -146,20 +146,20 @@ function getStatusCodeByType(type: ErrorType) {
 function getTypeByStatusCode(statusCode: number): ErrorType {
   switch (statusCode) {
     case 400:
-      return 'bad_request';
+      return "bad_request";
     case 401:
-      return 'unauthorized';
+      return "unauthorized";
     case 402:
-      return 'payment_required';
+      return "payment_required";
     case 403:
-      return 'forbidden';
+      return "forbidden";
     case 404:
-      return 'not_found';
+      return "not_found";
     case 429:
-      return 'rate_limit';
+      return "rate_limit";
     case 503:
-      return 'offline';
+      return "offline";
     default:
-      return 'server';
+      return "server";
   }
 }

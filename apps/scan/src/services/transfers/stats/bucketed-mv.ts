@@ -1,10 +1,10 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { baseBucketedQuerySchema } from '../schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { baseBucketedQuerySchema } from "../schemas";
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 export const bucketedStatisticsMVInputSchema = baseBucketedQuerySchema;
 
@@ -66,7 +66,7 @@ const getBucketedStatisticsMVUncached = async (
     );
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   // Query the appropriate materialized view
   // Note: recipient_stats_bucketed tables don't have unique_sellers column,
@@ -104,8 +104,8 @@ const getBucketedStatisticsMVUncached = async (
 
 export const getBucketedStatisticsMV = createCachedArrayQuery({
   queryFn: getBucketedStatisticsMVUncached,
-  cacheKeyPrefix: 'bucketed-statistics-mv',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
-  tags: ['statistics'],
+  cacheKeyPrefix: "bucketed-statistics-mv",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
+  tags: ["statistics"],
 });

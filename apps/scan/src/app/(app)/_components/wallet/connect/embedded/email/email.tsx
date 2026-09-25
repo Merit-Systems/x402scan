@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
-import { useSignInWithEmail } from '@coinbase/cdp-hooks';
+import { useSignInWithEmail } from "@coinbase/cdp-hooks";
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { toast } from 'sonner';
-import { z } from 'zod';
+import { toast } from "sonner";
+import { z } from "zod";
 
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface Props {
   setFlowId: (flowId: string) => void;
 }
 
 export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   const { signInWithEmail } = useSignInWithEmail();
 
@@ -39,17 +39,17 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
       toast.success(`A One-Time Password has been sent to ${email}`);
     },
     onError: () => {
-      toast.error('Sign in failed');
+      toast.error("Sign in failed");
     },
   });
 
   const handleSignIn = () => {
     if (!email) {
-      toast.error('Email is required');
+      toast.error("Email is required");
       return;
     }
     if (!z.email().safeParse(email).success) {
-      toast.error('Invalid email');
+      toast.error("Invalid email");
       return;
     }
     signIn(email);
@@ -64,9 +64,9 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
           type="email"
           placeholder="richard@piedpiper.com"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           disabled={isSigningIn}
-          className={cn(signInError && 'border-destructive')}
+          className={cn(signInError && "border-destructive")}
         />
         {signInError && (
           <p className="text-sm text-red-500">{signInError.message}</p>
@@ -76,7 +76,7 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
         onClick={() => handleSignIn()}
         disabled={isSigningIn || !z.email().safeParse(email).success}
         className="w-full"
-        variant={'turbo'}
+        variant={"turbo"}
       >
         {isSigningIn ? (
           <>
@@ -84,7 +84,7 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
             Sending OTP...
           </>
         ) : (
-          'Send OTP'
+          "Send OTP"
         )}
       </Button>
     </div>

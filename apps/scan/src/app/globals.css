@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -444,7 +444,7 @@
     @apply font-sans;
   }
   :not(pre) > code {
-    @apply rounded bg-muted px-1 py-0.5 text-foreground font-mono text-[0.875em];
+    @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.875em] text-foreground;
   }
 }
 

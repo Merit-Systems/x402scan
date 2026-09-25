@@ -1,8 +1,8 @@
-import { Network } from '../types';
-import { allFacilitators } from './all';
+import { Network } from "../types";
+import { allFacilitators } from "./all";
 
 const getFacilitatorsByNetwork = function (network: Network) {
-  return allFacilitators.filter(f => f.addresses[network]);
+  return allFacilitators.filter((f) => f.addresses[network]);
 };
 
 export const baseFacilitators = getFacilitatorsByNetwork(Network.BASE);

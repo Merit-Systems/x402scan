@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion, useScroll, useTransform } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform } from "motion/react";
+import { useEffect, useState } from "react";
 
 export const LogoContainer = ({ children }: { children: React.ReactNode }) => {
   const { scrollY } = useScroll();
@@ -12,7 +12,7 @@ export const LogoContainer = ({ children }: { children: React.ReactNode }) => {
   const [isFixed, setIsFixed] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = scrollY.on('change', v => {
+    const unsubscribe = scrollY.on("change", (v) => {
       setIsFixed(v > 0);
     });
     return () => unsubscribe();
@@ -20,11 +20,11 @@ export const LogoContainer = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <motion.div
-      className="left-2 md:left-6 z-50 shrink-0 p-1 bg-card rounded-md"
+      className="left-2 z-50 shrink-0 rounded-md bg-card p-1 md:left-6"
       style={{
         height: size,
         width: size,
-        position: isFixed ? 'fixed' : 'absolute',
+        position: isFixed ? "fixed" : "absolute",
         top: top,
       }}
     >

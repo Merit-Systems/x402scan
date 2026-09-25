@@ -1,37 +1,37 @@
-import { Nav } from '@/app/(app)/_components/layout/nav';
-import { env } from '@/env';
-import { cleanExternalText } from '@/lib/utils';
-import { api } from '@/trpc/server';
-import type { Metadata } from 'next';
+import { Nav } from "@/app/(app)/_components/layout/nav";
+import { env } from "@/env";
+import { cleanExternalText } from "@/lib/utils";
+import { api } from "@/trpc/server";
+import type { Metadata } from "next";
 
 export default async function OriginLayout({
   children,
   params,
-}: LayoutProps<'/server/[id]'>) {
+}: LayoutProps<"/server/[id]">) {
   const { id } = await params;
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-1 flex-col">
       <Nav
         tabs={[
           {
-            label: 'Overview',
+            label: "Overview",
             href: `/server/${id}`,
           },
         ]}
       />
-      <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
+      <div className="flex flex-1 flex-col py-6 md:py-8">{children}</div>
     </div>
   );
 }
 
 export async function generateMetadata({
   params,
-}: LayoutProps<'/server/[id]'>): Promise<Metadata> {
+}: LayoutProps<"/server/[id]">): Promise<Metadata> {
   const { id } = await params;
   const origin = await api.public.origins.get(id);
 
   if (!origin) {
-    return { title: 'Server not found' };
+    return { title: "Server not found" };
   }
 
   const title = origin.title ? cleanExternalText(origin.title) : origin.origin;

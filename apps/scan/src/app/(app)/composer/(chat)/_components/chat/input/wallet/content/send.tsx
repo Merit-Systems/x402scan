@@ -1,32 +1,32 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
-import { Check, CheckCircle, Loader2 } from 'lucide-react';
+import { Check, CheckCircle, Loader2 } from "lucide-react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { useSession } from 'next-auth/react';
+import { useSession } from "next-auth/react";
 
-import { Button } from '@/components/ui/button';
-import { TokenInput } from '@/components/ui/token/token-input';
-import { Input } from '@/components/ui/input';
+import { Button } from "@/components/ui/button";
+import { TokenInput } from "@/components/ui/token/token-input";
+import { Input } from "@/components/ui/input";
 
-import { Chain } from '@/app/(app)/_components/chains';
+import { Chain } from "@/app/(app)/_components/chains";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { useWalletChain } from '@/app/(app)/_contexts/wallet-chain/hook';
+import { useWalletChain } from "@/app/(app)/_contexts/wallet-chain/hook";
 
-import { ethereumAddressSchema, solanaAddressSchema } from '@/lib/schemas';
-import { usdc } from '@/lib/tokens/usdc';
-import { formatAddress } from '@/lib/utils';
+import { ethereumAddressSchema, solanaAddressSchema } from "@/lib/schemas";
+import { usdc } from "@/lib/tokens/usdc";
+import { formatAddress } from "@/lib/utils";
 
-import { CHAIN_LABELS } from '@/types/chain';
+import { CHAIN_LABELS } from "@/types/chain";
 
-import { Chain as ChainType } from '@/types/chain';
+import { Chain as ChainType } from "@/types/chain";
 
 export const Send: React.FC = () => {
   const [amount, setAmount] = useState(0);
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState("");
 
   const { data: session } = useSession();
 
@@ -64,7 +64,7 @@ export const Send: React.FC = () => {
   const handleSubmit = useCallback(() => {
     const parseResult = schema.safeParse(address);
     if (!parseResult.success) {
-      toast.error('Invalid address');
+      toast.error("Invalid address");
       return;
     }
     const parsedAddress = parseResult.data;
@@ -96,7 +96,7 @@ export const Send: React.FC = () => {
         toAddress={address}
         onReset={() => {
           setAmount(0);
-          setAddress('');
+          setAddress("");
           reset();
         }}
       />
@@ -105,9 +105,9 @@ export const Send: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="gap-1 flex items-center">
+      <div className="flex items-center gap-1">
         <Chain chain={chain} iconClassName="size-4" />
-        <span className="font-bold text-sm">
+        <span className="text-sm font-bold">
           Send USDC on {CHAIN_LABELS[chain]}
         </span>
       </div>
@@ -126,12 +126,12 @@ export const Send: React.FC = () => {
         }}
       />
       <div className="flex flex-col gap-1">
-        <span className="font-medium text-sm">Address</span>
+        <span className="text-sm font-medium">Address</span>
         <Input
-          placeholder={chain === ChainType.SOLANA ? 'Solana Address' : '0x...'}
+          placeholder={chain === ChainType.SOLANA ? "Solana Address" : "0x..."}
           value={address}
-          onChange={e => setAddress(e.target.value)}
-          className="border-2 shadow-none placeholder:text-muted-foreground/60 font-mono"
+          onChange={(e) => setAddress(e.target.value)}
+          className="border-2 font-mono shadow-none placeholder:text-muted-foreground/60"
         />
       </div>
       <Button
@@ -157,7 +157,7 @@ export const Send: React.FC = () => {
             USDC sent
           </>
         ) : (
-          'Send USDC'
+          "Send USDC"
         )}
       </Button>
     </div>
@@ -172,11 +172,11 @@ interface Props {
 
 const WithdrawSuccess: React.FC<Props> = ({ amount, toAddress, onReset }) => {
   return (
-    <div className="flex flex-col gap-2 items-center justify-center p-4 bg-muted rounded-lg">
+    <div className="flex flex-col items-center justify-center gap-2 rounded-lg bg-muted p-4">
       <CheckCircle className="size-10 text-green-600" />
       <p className="text-center">
-        You have successfully sent{' '}
-        <span className="font-bold">{amount} USDC</span> to{' '}
+        You have successfully sent{" "}
+        <span className="font-bold">{amount} USDC</span> to{" "}
         <span className="font-bold">{formatAddress(toAddress)}</span>
       </p>
       <Button onClick={onReset}>Send Again</Button>

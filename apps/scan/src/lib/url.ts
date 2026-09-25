@@ -10,7 +10,7 @@ export const getOriginFromUrl = (url: string) => {
  */
 export const normalizeResourceUrl = (url: string): string => {
   const u = new URL(url);
-  u.search = '';
+  u.search = "";
   return u.toString();
 };
 
@@ -26,7 +26,7 @@ export const normalizeUrl = (url: string): string => {
   try {
     const parsed = new URL(url);
     // Remove trailing slash from pathname (unless it's just "/")
-    if (parsed.pathname !== '/' && parsed.pathname.endsWith('/')) {
+    if (parsed.pathname !== "/" && parsed.pathname.endsWith("/")) {
       parsed.pathname = parsed.pathname.slice(0, -1);
     }
     return parsed.toString();
@@ -51,17 +51,17 @@ export function urlMatchesDiscoveredResource(
 
     if (input.origin !== discovered.origin) return false;
 
-    const inputSegments = input.pathname.replace(/\/+$/, '').split('/');
+    const inputSegments = input.pathname.replace(/\/+$/, "").split("/");
     const discoveredSegments = discovered.pathname
-      .replace(/\/+$/, '')
-      .split('/');
+      .replace(/\/+$/, "")
+      .split("/");
 
     if (inputSegments.length !== discoveredSegments.length) return false;
 
     return discoveredSegments.every((seg, i) => {
       const decoded = decodeURIComponent(seg);
       return (
-        (decoded.startsWith('{') && decoded.endsWith('}')) ||
+        (decoded.startsWith("{") && decoded.endsWith("}")) ||
         seg === inputSegments[i]
       );
     });

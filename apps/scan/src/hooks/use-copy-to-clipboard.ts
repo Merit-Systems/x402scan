@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
 export const useCopyToClipboard = (onCopy?: () => void) => {
   const [isCopied, setIsCopied] = useState(false);

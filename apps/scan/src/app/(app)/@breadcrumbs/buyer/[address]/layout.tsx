@@ -1,14 +1,14 @@
-import { User, Wallet } from 'lucide-react';
+import { User, Wallet } from "lucide-react";
 
-import { Breadcrumb } from '../../_components/breadcrumb';
+import { Breadcrumb } from "../../_components/breadcrumb";
 
-import { formatAddress } from '@/lib/utils';
-import { Separator } from '../../_components/separator';
+import { formatAddress } from "@/lib/utils";
+import { Separator } from "../../_components/separator";
 
 export default async function BuyerBreadcrumbLayout({
   params,
   children,
-}: LayoutProps<'/buyer/[address]'>) {
+}: LayoutProps<"/buyer/[address]">) {
   const { address } = await params;
   return (
     <>

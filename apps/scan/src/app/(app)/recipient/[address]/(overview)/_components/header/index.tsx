@@ -1,16 +1,16 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { Card } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar } from '@/components/ui/avatar';
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar } from "@/components/ui/avatar";
 
-import { LoadingOverallRecipientStats } from './stats';
+import { LoadingOverallRecipientStats } from "./stats";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import { HydrateClient } from '@/trpc/server';
-import { LoadingHeaderButtons } from './buttons';
-import { HeaderCardContent } from './content';
+import { HydrateClient } from "@/trpc/server";
+import { LoadingHeaderButtons } from "./buttons";
+import { HeaderCardContent } from "./content";
 
 interface Props {
   address: string;
@@ -28,8 +28,8 @@ export const HeaderCard: React.FC<Props> = ({ address }) => {
 
 export const LoadingHeaderCard = () => {
   return (
-    <Card className={cn('relative mt-10 md:mt-12 mb-12')}>
-      <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
+    <Card className={cn("relative mt-10 md:mt-12 mb-12")}>
+      <Card className="absolute top-0 left-4 flex size-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-md border md:size-16">
         <Avatar
           src={undefined}
           className="size-full"
@@ -38,10 +38,10 @@ export const LoadingHeaderCard = () => {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-7">
-        <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
+        <div className="col-span-5 flex flex-col gap-4 p-4 pt-8 md:pt-10">
           <div className="">
-            <Skeleton className="w-36 h-[30px] my-[3px]" />
-            <Skeleton className="w-64 h-[16px] my-[4px]" />
+            <Skeleton className="my-[3px] h-[30px] w-36" />
+            <Skeleton className="my-[4px] h-[16px] w-64" />
           </div>
           <LoadingHeaderButtons />
         </div>

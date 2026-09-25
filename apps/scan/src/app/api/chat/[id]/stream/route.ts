@@ -1,8 +1,8 @@
-import { auth } from '@/auth';
-import { getChatStreamId } from '@/services/db/composer/chat';
-import { UI_MESSAGE_STREAM_HEADERS } from 'ai';
-import { after } from 'next/server';
-import { createResumableStreamContext } from 'resumable-stream';
+import { auth } from "@/auth";
+import { getChatStreamId } from "@/services/db/composer/chat";
+import { UI_MESSAGE_STREAM_HEADERS } from "ai";
+import { after } from "next/server";
+import { createResumableStreamContext } from "resumable-stream";
 
 export async function GET(
   _: Request,

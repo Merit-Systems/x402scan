@@ -1,24 +1,24 @@
-import type { Hono } from 'hono';
+import type { Hono } from "hono";
 
-import type { Context } from 'hono';
+import type { Context } from "hono";
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([
-  'transfer-encoding',
-  'content-length',
+  "transfer-encoding",
+  "content-length",
 ]);
-const REQUEST_HEADER_BLOCKLIST = new Set(['host', 'content-length']);
+const REQUEST_HEADER_BLOCKLIST = new Set(["host", "content-length"]);
 
 const extractRequestBody = async (request: Request) => {
-  const contentType = request.headers.get('content-type') ?? '';
-  if (contentType.includes('application/json')) {
+  const contentType = request.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json")) {
     return (await request.json()) as unknown;
-  } else if (contentType.includes('application/x-www-form-urlencoded')) {
+  } else if (contentType.includes("application/x-www-form-urlencoded")) {
     const formData = await request.formData();
     return Object.fromEntries(formData.entries());
-  } else if (contentType.includes('multipart/form-data')) {
+  } else if (contentType.includes("multipart/form-data")) {
     const formData = await request.formData();
     return Object.fromEntries(formData.entries());
-  } else if (contentType.includes('text/')) {
+  } else if (contentType.includes("text/")) {
     return await request.text();
   }
   return null;
@@ -33,114 +33,114 @@ interface ProxyErrorDetails {
   duration: number;
   timestamp: string;
   requestCompressionHeaders?: {
-    'accept-encoding': string | null;
-    'content-encoding': string | null;
-    'content-type': string | null;
-    'content-length': string | null;
+    "accept-encoding": string | null;
+    "content-encoding": string | null;
+    "content-type": string | null;
+    "content-length": string | null;
   };
   hasBody?: boolean;
   bodySize?: number;
   errorType?:
-    | 'DNS_ERROR'
-    | 'CONNECTION_ERROR'
-    | 'TIMEOUT_ERROR'
-    | 'SSL_ERROR'
-    | 'FETCH_ERROR';
+    | "DNS_ERROR"
+    | "CONNECTION_ERROR"
+    | "TIMEOUT_ERROR"
+    | "SSL_ERROR"
+    | "FETCH_ERROR";
   cause?: unknown;
 }
 
 type ExtractedResponseBody =
-  | { kind: 'json'; body: unknown }
-  | { kind: 'text'; body: string }
-  | { kind: 'buffer'; body: { type: 'Buffer'; data: number[] } }
-  | { kind: 'none'; body: null };
+  | { kind: "json"; body: unknown }
+  | { kind: "text"; body: string }
+  | { kind: "buffer"; body: { type: "Buffer"; data: number[] } }
+  | { kind: "none"; body: null };
 
 const extractResponseBody = async (
   response: Response
 ): Promise<ExtractedResponseBody> => {
-  const contentType = response.headers.get('content-type') ?? '';
-  const contentEncoding = response.headers.get('content-encoding');
+  const contentType = response.headers.get("content-type") ?? "";
+  const contentEncoding = response.headers.get("content-encoding");
 
-  console.log('[extractResponseBody] Starting', {
+  console.log("[extractResponseBody] Starting", {
     contentType,
     contentEncoding,
     bodyUsed: response.bodyUsed,
-    bodyLocked: response.body?.locked ?? 'unknown',
+    bodyLocked: response.body?.locked ?? "unknown",
   });
 
-  if (contentType.includes('application/json')) {
+  if (contentType.includes("application/json")) {
     try {
       const result = (await response.json()) as unknown;
-      console.log('[extractResponseBody] Successfully parsed JSON');
-      return { kind: 'json', body: result };
+      console.log("[extractResponseBody] Successfully parsed JSON");
+      return { kind: "json", body: result };
     } catch (error) {
-      console.error('[extractResponseBody] Failed to parse JSON', {
+      console.error("[extractResponseBody] Failed to parse JSON", {
         error: error instanceof Error ? error.message : String(error),
         bodyUsed: response.bodyUsed,
       });
-      return { kind: 'none', body: null };
+      return { kind: "none", body: null };
     }
-  } else if (contentType.includes('text/')) {
+  } else if (contentType.includes("text/")) {
     try {
       const result = await response.text();
-      console.log('[extractResponseBody] Successfully read text', {
+      console.log("[extractResponseBody] Successfully read text", {
         length: result.length,
         preview: result.substring(0, 100),
       });
-      return { kind: 'text', body: result };
+      return { kind: "text", body: result };
     } catch (error) {
-      console.error('[extractResponseBody] Failed to read text', {
+      console.error("[extractResponseBody] Failed to read text", {
         error: error instanceof Error ? error.message : String(error),
         errorName: error instanceof Error ? error.name : undefined,
         bodyUsed: response.bodyUsed,
       });
-      return { kind: 'none', body: null };
+      return { kind: "none", body: null };
     }
-  } else if (contentType.includes('application/octet-stream')) {
+  } else if (contentType.includes("application/octet-stream")) {
     try {
       const arrayBuffer = await response.arrayBuffer();
       // Convert ArrayBuffer to a base64-encoded string
       const result = {
-        type: 'Buffer' as const,
+        type: "Buffer" as const,
         data: Array.from(new Uint8Array(arrayBuffer)),
       };
-      console.log('[extractResponseBody] Successfully read arrayBuffer', {
+      console.log("[extractResponseBody] Successfully read arrayBuffer", {
         size: arrayBuffer.byteLength,
       });
-      return { kind: 'buffer', body: result };
+      return { kind: "buffer", body: result };
     } catch (error) {
-      console.error('[extractResponseBody] Failed to read arrayBuffer', {
+      console.error("[extractResponseBody] Failed to read arrayBuffer", {
         error: error instanceof Error ? error.message : String(error),
         bodyUsed: response.bodyUsed,
       });
-      return { kind: 'none', body: null };
+      return { kind: "none", body: null };
     }
   } else if (contentType) {
     try {
       const result = await response.text();
-      console.log('[extractResponseBody] Successfully read text (fallback)', {
+      console.log("[extractResponseBody] Successfully read text (fallback)", {
         length: result.length,
       });
-      return { kind: 'text', body: result };
+      return { kind: "text", body: result };
     } catch (error) {
-      console.error('[extractResponseBody] Failed to read text (fallback)', {
+      console.error("[extractResponseBody] Failed to read text (fallback)", {
         error: error instanceof Error ? error.message : String(error),
         bodyUsed: response.bodyUsed,
       });
-      return { kind: 'none', body: null };
+      return { kind: "none", body: null };
     }
   }
 
-  console.log('[extractResponseBody] No content type, returning null');
-  return { kind: 'none', body: null };
+  console.log("[extractResponseBody] No content type, returning null");
+  return { kind: "none", body: null };
 };
 
 async function proxyHandler(c: Context) {
   const startTime = Date.now();
-  const queryUrl = c.req.query('url');
+  const queryUrl = c.req.query("url");
 
   if (!queryUrl) {
-    return c.json({ error: 'Missing url parameter' }, 400);
+    return c.json({ error: "Missing url parameter" }, 400);
   }
 
   const url = decodeURIComponent(queryUrl);
@@ -149,7 +149,7 @@ async function proxyHandler(c: Context) {
   try {
     targetUrl = new URL(url);
   } catch {
-    return c.json({ error: 'Invalid url parameter' }, 400);
+    return c.json({ error: "Invalid url parameter" }, 400);
   }
 
   const upstreamHeaders = new Headers();
@@ -165,13 +165,13 @@ async function proxyHandler(c: Context) {
 
   const clonedRequest = c.req.raw.clone();
 
-  if (method !== 'GET' && method !== 'HEAD') {
+  if (method !== "GET" && method !== "HEAD") {
     const requestBody = await c.req.arrayBuffer();
     body = requestBody;
     requestBodySize = requestBody.byteLength;
   }
 
-  console.log('[Proxy Request]', {
+  console.log("[Proxy Request]", {
     method,
     url: targetUrl.toString(),
     requestBodySize,
@@ -181,13 +181,13 @@ async function proxyHandler(c: Context) {
   try {
     // Log request details including compression headers
     const requestCompressionHeaders = {
-      'accept-encoding': upstreamHeaders.get('accept-encoding'),
-      'content-encoding': upstreamHeaders.get('content-encoding'),
-      'content-type': upstreamHeaders.get('content-type'),
-      'content-length': upstreamHeaders.get('content-length'),
+      "accept-encoding": upstreamHeaders.get("accept-encoding"),
+      "content-encoding": upstreamHeaders.get("content-encoding"),
+      "content-type": upstreamHeaders.get("content-type"),
+      "content-length": upstreamHeaders.get("content-length"),
     };
 
-    console.log('[Proxy Fetch Start]', {
+    console.log("[Proxy Fetch Start]", {
       method,
       url: targetUrl.toString(),
       requestCompressionHeaders,
@@ -203,17 +203,17 @@ async function proxyHandler(c: Context) {
     });
 
     const fetchDuration = Date.now() - startTime;
-    const contentLength = upstreamResponse.headers.get('content-length');
+    const contentLength = upstreamResponse.headers.get("content-length");
     const responseBodySize = contentLength ? parseInt(contentLength) : null;
 
     const responseCompressionHeaders = {
-      'content-encoding': upstreamResponse.headers.get('content-encoding'),
-      'content-length': upstreamResponse.headers.get('content-length'),
-      'content-type': upstreamResponse.headers.get('content-type'),
-      'transfer-encoding': upstreamResponse.headers.get('transfer-encoding'),
+      "content-encoding": upstreamResponse.headers.get("content-encoding"),
+      "content-length": upstreamResponse.headers.get("content-length"),
+      "content-type": upstreamResponse.headers.get("content-type"),
+      "transfer-encoding": upstreamResponse.headers.get("transfer-encoding"),
     };
 
-    console.log('[Proxy Response]', {
+    console.log("[Proxy Response]", {
       method,
       url: targetUrl.toString(),
       status: upstreamResponse.status,
@@ -234,12 +234,12 @@ async function proxyHandler(c: Context) {
       // alongside a decompressed body, browsers will attempt to decode again and fail with
       // ERR_CONTENT_DECODING_FAILED. For zstd, undici generally does NOT transparently
       // decompress, so we preserve it to allow browsers to decode if supported.
-      if (lowerKey === 'content-encoding') {
+      if (lowerKey === "content-encoding") {
         const normalizedEncoding = value.trim().toLowerCase();
         if (
-          normalizedEncoding === 'br' ||
-          normalizedEncoding === 'gzip' ||
-          normalizedEncoding === 'deflate'
+          normalizedEncoding === "br" ||
+          normalizedEncoding === "gzip" ||
+          normalizedEncoding === "deflate"
         ) {
           return;
         }
@@ -249,17 +249,17 @@ async function proxyHandler(c: Context) {
         responseHeaders.set(key, value);
       }
     });
-    responseHeaders.set('url', targetUrl.toString());
+    responseHeaders.set("url", targetUrl.toString());
 
     // Log body state before cloning
-    console.log('[Proxy Before Clone]', {
+    console.log("[Proxy Before Clone]", {
       url: targetUrl.toString(),
       originalBodyUsed: upstreamResponse.bodyUsed,
-      originalBody: upstreamResponse.body ? 'present' : 'null',
-      originalBodyLocked: upstreamResponse.body?.locked ?? 'unknown',
+      originalBody: upstreamResponse.body ? "present" : "null",
+      originalBodyLocked: upstreamResponse.body?.locked ?? "unknown",
     });
 
-    const shareData = c.req.query('share_data') === 'true';
+    const shareData = c.req.query("share_data") === "true";
 
     // Strategy: If we need to read the body for logging (shareData), we clone and use clone for async.
     // Otherwise, we can use the original for return without cloning.
@@ -271,24 +271,24 @@ async function proxyHandler(c: Context) {
       // We need to read body for logging, so clone for async handler
       try {
         clonedUpstreamResponse = upstreamResponse.clone();
-        console.log('[Proxy After Clone]', {
+        console.log("[Proxy After Clone]", {
           url: targetUrl.toString(),
           originalBodyUsed: upstreamResponse.bodyUsed,
           clonedBodyUsed: clonedUpstreamResponse.bodyUsed,
-          clonedBody: clonedUpstreamResponse.body ? 'present' : 'null',
-          clonedBodyLocked: clonedUpstreamResponse.body?.locked ?? 'unknown',
+          clonedBody: clonedUpstreamResponse.body ? "present" : "null",
+          clonedBodyLocked: clonedUpstreamResponse.body?.locked ?? "unknown",
         });
         // Use original for return (clone is for async)
         returnResponse = upstreamResponse;
       } catch (cloneError) {
-        console.error('[Proxy Clone Error]', {
+        console.error("[Proxy Clone Error]", {
           url: targetUrl.toString(),
           error:
             cloneError instanceof Error
               ? cloneError.message
               : String(cloneError),
           originalBodyUsed: upstreamResponse.bodyUsed,
-          originalBody: upstreamResponse.body ? 'present' : 'null',
+          originalBody: upstreamResponse.body ? "present" : "null",
         });
         // If clone fails, don't run async handler to avoid consuming the body twice
         clonedUpstreamResponse = null;
@@ -306,14 +306,14 @@ async function proxyHandler(c: Context) {
           if (clonedUpstreamResponse.status === 402) {
             const upstreamX402Response =
               (await clonedUpstreamResponse.json()) as unknown;
-            console.log('[402 Response]', {
+            console.log("[402 Response]", {
               url: targetUrl.toString(),
               data: upstreamX402Response,
             });
           } else {
             const cleanedTargetUrl = (() => {
               const urlObj = new URL(targetUrl.toString());
-              urlObj.search = '';
+              urlObj.search = "";
               return urlObj.toString();
             })();
 
@@ -325,7 +325,7 @@ async function proxyHandler(c: Context) {
             try {
               requestBody = await extractRequestBody(clonedRequest);
             } catch (error) {
-              console.error('[Proxy Extract Request Body Error]', {
+              console.error("[Proxy Extract Request Body Error]", {
                 url: targetUrl.toString(),
                 error: error instanceof Error ? error.message : String(error),
               });
@@ -334,37 +334,37 @@ async function proxyHandler(c: Context) {
             try {
               requestHeaders = Object.fromEntries(clonedRequest.headers);
             } catch (error) {
-              console.error('[Proxy Extract Request Headers Error]', {
+              console.error("[Proxy Extract Request Headers Error]", {
                 url: targetUrl.toString(),
                 error: error instanceof Error ? error.message : String(error),
               });
             }
 
             try {
-              console.log('[Proxy Extract Response Body Start]', {
+              console.log("[Proxy Extract Response Body Start]", {
                 url: targetUrl.toString(),
                 clonedBodyUsed: clonedUpstreamResponse.bodyUsed,
                 clonedBodyLocked:
-                  clonedUpstreamResponse.body?.locked ?? 'unknown',
+                  clonedUpstreamResponse.body?.locked ?? "unknown",
               });
               const extractedResponseBody = await extractResponseBody(
                 clonedUpstreamResponse
               );
               responseBody = extractedResponseBody.body;
-              console.log('[Proxy Extract Response Body Success]', {
+              console.log("[Proxy Extract Response Body Success]", {
                 url: targetUrl.toString(),
                 responseBodyKind: extractedResponseBody.kind,
                 responseBodyIsNull: responseBody === null,
               });
             } catch (error) {
-              console.error('[Proxy Extract Response Body Error]', {
+              console.error("[Proxy Extract Response Body Error]", {
                 url: targetUrl.toString(),
                 error: error instanceof Error ? error.message : String(error),
                 errorName: error instanceof Error ? error.name : undefined,
                 errorStack: error instanceof Error ? error.stack : undefined,
                 clonedBodyUsed: clonedUpstreamResponse.bodyUsed,
                 clonedBodyLocked:
-                  clonedUpstreamResponse.body?.locked ?? 'unknown',
+                  clonedUpstreamResponse.body?.locked ?? "unknown",
               });
             }
 
@@ -373,7 +373,7 @@ async function proxyHandler(c: Context) {
                 clonedUpstreamResponse.headers
               );
             } catch (error) {
-              console.error('[Proxy Extract Response Headers Error]', {
+              console.error("[Proxy Extract Response Headers Error]", {
                 url: targetUrl.toString(),
                 error: error instanceof Error ? error.message : String(error),
               });
@@ -386,18 +386,18 @@ async function proxyHandler(c: Context) {
               duration: fetchDuration,
               url: targetUrl.toString(),
               requestContentType:
-                clonedRequest.headers.get('content-type') ?? '',
+                clonedRequest.headers.get("content-type") ?? "",
               responseContentType:
-                clonedUpstreamResponse.headers.get('content-type') ?? '',
+                clonedUpstreamResponse.headers.get("content-type") ?? "",
               requestBody,
               requestHeaders,
               responseBody,
               responseHeaders,
             };
-            console.log('[Proxy Data]', { cleanedTargetUrl, data });
+            console.log("[Proxy Data]", { cleanedTargetUrl, data });
           }
         } catch (error) {
-          console.error('[Proxy After Error]', {
+          console.error("[Proxy After Error]", {
             url: targetUrl.toString(),
             error: error instanceof Error ? error.message : String(error),
           });
@@ -406,12 +406,12 @@ async function proxyHandler(c: Context) {
     }
 
     // Log body state before returning
-    console.log('[Proxy Before Return]', {
+    console.log("[Proxy Before Return]", {
       url: targetUrl.toString(),
       originalBodyUsed: upstreamResponse.bodyUsed,
       returnBodyUsed: returnResponse.bodyUsed,
-      returnBody: returnResponse.body ? 'present' : 'null',
-      returnBodyLocked: returnResponse.body?.locked ?? 'unknown',
+      returnBody: returnResponse.body ? "present" : "null",
+      returnBodyLocked: returnResponse.body?.locked ?? "unknown",
     });
 
     return new Response(returnResponse.body, {
@@ -427,7 +427,7 @@ async function proxyHandler(c: Context) {
       method,
       url: targetUrl.toString(),
       error: error instanceof Error ? error.message : String(error),
-      errorName: error instanceof Error ? error.name : 'UnknownError',
+      errorName: error instanceof Error ? error.name : "UnknownError",
       errorStack: error instanceof Error ? error.stack : undefined,
       duration: errorDuration,
       timestamp: new Date().toISOString(),
@@ -435,10 +435,10 @@ async function proxyHandler(c: Context) {
 
     // Add request details for debugging
     const requestCompressionHeaders = {
-      'accept-encoding': upstreamHeaders.get('accept-encoding'),
-      'content-encoding': upstreamHeaders.get('content-encoding'),
-      'content-type': upstreamHeaders.get('content-type'),
-      'content-length': upstreamHeaders.get('content-length'),
+      "accept-encoding": upstreamHeaders.get("accept-encoding"),
+      "content-encoding": upstreamHeaders.get("content-encoding"),
+      "content-type": upstreamHeaders.get("content-type"),
+      "content-length": upstreamHeaders.get("content-length"),
     };
     errorDetails.requestCompressionHeaders = requestCompressionHeaders;
     errorDetails.hasBody = body !== undefined;
@@ -448,56 +448,56 @@ async function proxyHandler(c: Context) {
     if (error instanceof Error) {
       // Check for DNS errors
       if (
-        error.message.includes('ENOTFOUND') ||
-        error.message.includes('getaddrinfo')
+        error.message.includes("ENOTFOUND") ||
+        error.message.includes("getaddrinfo")
       ) {
-        errorDetails.errorType = 'DNS_ERROR';
+        errorDetails.errorType = "DNS_ERROR";
       }
       // Check for connection errors
       else if (
-        error.message.includes('ECONNREFUSED') ||
-        error.message.includes('ECONNRESET')
+        error.message.includes("ECONNREFUSED") ||
+        error.message.includes("ECONNRESET")
       ) {
-        errorDetails.errorType = 'CONNECTION_ERROR';
+        errorDetails.errorType = "CONNECTION_ERROR";
       }
       // Check for timeout errors
       else if (
-        error.message.includes('timeout') ||
-        error.message.includes('TIMEOUT')
+        error.message.includes("timeout") ||
+        error.message.includes("TIMEOUT")
       ) {
-        errorDetails.errorType = 'TIMEOUT_ERROR';
+        errorDetails.errorType = "TIMEOUT_ERROR";
       }
       // Check for SSL/TLS errors
       else if (
-        error.message.includes('certificate') ||
-        error.message.includes('SSL') ||
-        error.message.includes('TLS')
+        error.message.includes("certificate") ||
+        error.message.includes("SSL") ||
+        error.message.includes("TLS")
       ) {
-        errorDetails.errorType = 'SSL_ERROR';
+        errorDetails.errorType = "SSL_ERROR";
       }
       // Check for fetch-specific errors
-      else if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        errorDetails.errorType = 'FETCH_ERROR';
+      else if (error.name === "TypeError" && error.message.includes("fetch")) {
+        errorDetails.errorType = "FETCH_ERROR";
       }
     }
 
     // Check if error has a cause (Node.js 18+)
-    if (error instanceof Error && 'cause' in error) {
+    if (error instanceof Error && "cause" in error) {
       errorDetails.cause = error.cause;
     }
 
-    console.error('[Proxy Error]', errorDetails);
+    console.error("[Proxy Error]", errorDetails);
 
     const message =
-      error instanceof Error ? error.message : 'Unknown upstream error';
+      error instanceof Error ? error.message : "Unknown upstream error";
     return c.json({ error: message }, 502);
   }
 }
 
 export function registerProxyRouter(app: Hono) {
-  app.get('/api/proxy', proxyHandler);
-  app.post('/api/proxy', proxyHandler);
-  app.put('/api/proxy', proxyHandler);
-  app.patch('/api/proxy', proxyHandler);
-  app.delete('/api/proxy', proxyHandler);
+  app.get("/api/proxy", proxyHandler);
+  app.post("/api/proxy", proxyHandler);
+  app.put("/api/proxy", proxyHandler);
+  app.patch("/api/proxy", proxyHandler);
+  app.delete("/api/proxy", proxyHandler);
 }

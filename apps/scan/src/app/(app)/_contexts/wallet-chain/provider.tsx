@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { WalletChainContext } from './context';
+import { useState } from "react";
+import { WalletChainContext } from "./context";
 
-import { Chain } from '@/types/chain';
+import { Chain } from "@/types/chain";
 
-import type { ConnectedWallets } from '@/app/(app)/_hooks/use-connected-wallets';
-import type { SupportedChain } from '@/types/chain';
+import type { ConnectedWallets } from "@/app/(app)/_hooks/use-connected-wallets";
+import type { SupportedChain } from "@/types/chain";
 
 interface Props {
   children: React.ReactNode;

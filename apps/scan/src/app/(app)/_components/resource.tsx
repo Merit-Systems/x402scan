@@ -1,11 +1,11 @@
-import { Addresses } from '@/components/ui/address';
-import { Favicon } from '@/app/(app)/_components/favicon';
+import { Addresses } from "@/components/ui/address";
+import { Favicon } from "@/app/(app)/_components/favicon";
 
 import type {
   Accepts,
   ResourceOrigin,
   Resources,
-} from '@x402scan/scan-db/types';
+} from "@x402scan/scan-db/types";
 
 interface Props {
   resource: Resources & {
@@ -23,7 +23,7 @@ export const Resource: React.FC<Props> = ({ resource }) => {
       title={`${new URL(resource.origin.origin).hostname}${decodeURIComponent(new URL(resource.resource).pathname)}`}
       address={
         <Addresses
-          addresses={resource.accepts.map(accept => accept.payTo)}
+          addresses={resource.accepts.map((accept) => accept.payTo)}
           className="border-none p-0"
           hideTooltip
         />
@@ -47,7 +47,7 @@ const ResourceContainer = ({
     <div className="flex items-center gap-2">
       <Icon className="size-6" />
       <div>
-        <div className="text-sm font-mono font-semibold">{title}</div>
+        <div className="font-mono text-sm font-semibold">{title}</div>
         <div>{address}</div>
       </div>
     </div>

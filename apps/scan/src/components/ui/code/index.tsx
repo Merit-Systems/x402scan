@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from "react";
 
-import { Skeleton } from '../skeleton';
+import { Skeleton } from "../skeleton";
 
-import { highlight } from './shared';
+import { highlight } from "./shared";
 
-import type { JSX } from 'react';
-import type { BundledLanguage, Highlighter } from './shiki.bundle.ts';
+import type { JSX } from "react";
+import type { BundledLanguage, Highlighter } from "./shiki.bundle.ts";
 
 interface Props {
   value: string;
@@ -27,12 +27,12 @@ export const Code: React.FC<Props> = ({
   useLayoutEffect(() => {
     void highlight(value, lang, highlighter)
       .then(setNodes)
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         setNodes(
           <code
             className={
-              'w-full max-w-full overflow-x-auto p-4 whitespace-pre-wrap'
+              "w-full max-w-full overflow-x-auto p-4 whitespace-pre-wrap"
             }
           >
             {value}

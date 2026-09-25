@@ -7,9 +7,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
-import { formatTokenAmount } from '@/lib/token';
+import { formatTokenAmount } from "@/lib/token";
 
 interface Props {
   /** Whether the dialog is open */

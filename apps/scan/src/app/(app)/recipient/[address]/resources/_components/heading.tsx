@@ -1,4 +1,4 @@
-import { Heading } from '@/app/_components/layout/page-utils';
+import { Heading } from "@/app/_components/layout/page-utils";
 
 export const ResourcesHeading = () => {
   return (

@@ -1,30 +1,30 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 
 import {
   DefaultChatTransport,
   lastAssistantMessageIsCompleteWithToolCalls,
-} from 'ai';
-import { useChat as useAiChat } from '@ai-sdk/react';
+} from "ai";
+import { useChat as useAiChat } from "@ai-sdk/react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { languageModels } from '../_components/chat/input/model-select/models';
+import { languageModels } from "../_components/chat/input/model-select/models";
 
-import { clientCookieUtils } from '../chat/_lib/cookies/client';
+import { clientCookieUtils } from "../chat/_lib/cookies/client";
 
-import { convertToUIMessages } from '@/lib/utils';
+import { convertToUIMessages } from "@/lib/utils";
 
-import type { RouterOutputs } from '@/trpc/client';
-import type { ChatConfig, SelectedResource } from '../_types/chat-config';
-import type { LanguageModel } from '../_components/chat/input/model-select/types';
-import type { Message } from '@x402scan/scan-db/types';
+import type { RouterOutputs } from "@/trpc/client";
+import type { ChatConfig, SelectedResource } from "../_types/chat-config";
+import type { LanguageModel } from "../_components/chat/input/model-select/types";
+import type { Message } from "@x402scan/scan-db/types";
 
 interface Props {
   id: string;
   initialMessages: Message[];
-  agentConfig?: RouterOutputs['public']['agents']['get'];
+  agentConfig?: RouterOutputs["public"]["agents"]["get"];
   initialConfig?: ChatConfig;
 }
 
@@ -36,11 +36,12 @@ export const useChat = ({
 }: Props) => {
   const utils = api.useUtils();
 
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [model, setModel] = useState<LanguageModel>(
     initialConfig?.model
       ? (languageModels.find(
-          model => `${model.provider}/${model.modelId}` === initialConfig.model
+          (model) =>
+            `${model.provider}/${model.modelId}` === initialConfig.model
         ) ?? languageModels[0]!)
       : languageModels[0]!
   );
@@ -70,7 +71,7 @@ export const useChat = ({
         if (messages.length > 0) {
           window.history.replaceState(
             {},
-            '',
+            "",
             agentConfig
               ? `/composer/agent/${agentConfig.id}/chat/${id}`
               : `/composer/chat/${id}`
@@ -79,7 +80,7 @@ export const useChat = ({
         }
       },
       transport: new DefaultChatTransport({
-        api: '/api/chat',
+        api: "/api/chat",
         prepareSendMessagesRequest({ messages }) {
           const currentModel = modelRef.current;
           const currentSelectedResources = selectedResourcesRef.current;
@@ -89,7 +90,7 @@ export const useChat = ({
               model: `${currentModel.provider}/${currentModel.modelId}`,
               message: messages[messages.length - 1],
               resourceIds: currentSelectedResources.map(
-                resource => resource.id
+                (resource) => resource.id
               ),
               agentConfigurationId: agentConfig?.id,
             },
@@ -101,15 +102,15 @@ export const useChat = ({
 
   const errorMessage =
     error?.message ??
-    (status === 'ready' &&
+    (status === "ready" &&
     messages.length > 0 &&
-    messages[messages.length - 1]!.role === 'user'
-      ? 'The last message failed. Please regenerate the message to continue.'
+    messages[messages.length - 1]!.role === "user"
+      ? "The last message failed. Please regenerate the message to continue."
       : undefined);
 
   const sendChatMessage = (text: string) => {
-    if (status !== 'ready') {
-      toast.error('Please wait for the chat to be ready');
+    if (status !== "ready") {
+      toast.error("Please wait for the chat to be ready");
       return;
     }
     if (errorMessage) {
@@ -117,11 +118,11 @@ export const useChat = ({
       return;
     }
     if (!text.trim()) {
-      toast.error('Please enter a message');
+      toast.error("Please enter a message");
       return;
     }
     void sendMessage({ text });
-    setInput('');
+    setInput("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -138,7 +139,7 @@ export const useChat = ({
 
   const onSelectResource = (resource: SelectedResource) => {
     const newResources = [...selectedResources];
-    const existingIndex = newResources.findIndex(r => r.id === resource.id);
+    const existingIndex = newResources.findIndex((r) => r.id === resource.id);
     if (existingIndex !== -1) {
       newResources.splice(existingIndex, 1);
     } else {

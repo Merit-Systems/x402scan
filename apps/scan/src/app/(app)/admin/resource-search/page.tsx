@@ -1,12 +1,12 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { auth } from '@/auth';
-import { forbidden } from 'next/navigation';
-import { SearchContainer } from './_components/search-container';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { auth } from "@/auth";
+import { forbidden } from "next/navigation";
+import { SearchContainer } from "./_components/search-container";
 
 export default async function ResourceSearchPage() {
   const session = await auth();
 
-  if (session?.user.role !== 'admin') {
+  if (session?.user.role !== "admin") {
     forbidden();
   }
 

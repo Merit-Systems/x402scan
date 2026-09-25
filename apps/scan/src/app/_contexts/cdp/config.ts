@@ -1,5 +1,5 @@
-import { env } from '@/env';
-import type { Config } from '@coinbase/cdp-hooks';
+import { env } from "@/env";
+import type { Config } from "@coinbase/cdp-hooks";
 
 export const cdpConfig: Config = {
   projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID!,
@@ -8,7 +8,7 @@ export const cdpConfig: Config = {
   // through wagmi's reconnect, breaking wallet restoration on page load.
   disableAnalytics: true,
   ethereum: {
-    createOnLogin: 'eoa',
+    createOnLogin: "eoa",
   },
   solana: {
     createOnLogin: true,

@@ -1,24 +1,24 @@
-import { useWalletAccountTransactionSigner } from '@solana/react';
+import { useWalletAccountTransactionSigner } from "@solana/react";
 
-import { useX402FetchWithPriceConfirmation } from './use-fetch-with-price-confirmation';
-import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
+import { useX402FetchWithPriceConfirmation } from "./use-fetch-with-price-confirmation";
+import { fetchWithProxy } from "@/lib/x402/proxy-fetch";
 
 import {
   wrapFetchWithPayment,
   registerSvmX402Client,
-} from '@/lib/x402/wrap-fetch';
-import { env } from '@/env';
+} from "@/lib/x402/wrap-fetch";
+import { env } from "@/env";
 
-import type { UseMutationOptions } from '@tanstack/react-query';
-import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
-import type { UiWalletAccount } from '@wallet-standard/react';
+import type { UseMutationOptions } from "@tanstack/react-query";
+import type { FetchWithPaymentWrapper, X402FetchResponse } from "./types";
+import type { UiWalletAccount } from "@wallet-standard/react";
 
 interface UseSvmX402FetchWithConfirmationParams<TData = unknown> {
   targetUrl: string;
   value: bigint;
   account: UiWalletAccount;
   init?: RequestInit;
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
+  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
   isTool?: boolean;
 }
 
@@ -36,12 +36,12 @@ export const useSvmX402FetchWithConfirmation = <TData = unknown>({
 }: UseSvmX402FetchWithConfirmationParams<TData>) => {
   const transactionSigner = useWalletAccountTransactionSigner(
     account,
-    'solana:mainnet'
+    "solana:mainnet"
   );
 
-  const wrapperFn: FetchWithPaymentWrapper = baseFetch => {
+  const wrapperFn: FetchWithPaymentWrapper = (baseFetch) => {
     if (!transactionSigner) {
-      throw new Error('Solana wallet not available');
+      throw new Error("Solana wallet not available");
     }
 
     const client = registerSvmX402Client({

@@ -1,15 +1,15 @@
-import Link from 'next/link';
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, BookOpen, Terminal, Layers } from 'lucide-react';
-import { DiscoveryHubActions } from './_components/hub-actions';
+import Link from "next/link";
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight, BookOpen, Terminal, Layers } from "lucide-react";
+import { DiscoveryHubActions } from "./_components/hub-actions";
 
-import type { Metadata } from 'next';
-import type { Route } from 'next';
+import type { Metadata } from "next";
+import type { Route } from "next";
 
 export const metadata: Metadata = {
-  title: 'Sell to Agents',
-  description: 'Start onboarding agents as customers with x402 payments.',
+  title: "Sell to Agents",
+  description: "Start onboarding agents as customers with x402 payments.",
 };
 
 export default function DiscoveryPage() {
@@ -45,15 +45,15 @@ export default function DiscoveryPage() {
             <p className="text-sm text-muted-foreground">
               Add a few lines of code to enable pay-per-call, publish a
               discovery specification, and AI agents can start calling your API
-              with{' '}
+              with{" "}
               <a
                 href="https://www.x402.org"
-                className="underline hover:no-underline font-medium text-foreground"
+                className="font-medium text-foreground underline hover:no-underline"
                 target="_blank"
                 rel="noreferrer"
               >
                 x402
-              </a>{' '}
+              </a>{" "}
               payments.
             </p>
           </div>
@@ -81,10 +81,10 @@ export default function DiscoveryPage() {
           <h2 className="text-xl font-semibold">Your merchant pages</h2>
           <div className="space-y-3 text-sm text-muted-foreground">
             <p>
-              Every registered origin gets two pages on{' '}
+              Every registered origin gets two pages on{" "}
               <a
                 href="https://tryponcho.com"
-                className="underline hover:no-underline font-medium text-foreground"
+                className="font-medium text-foreground underline hover:no-underline"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -92,7 +92,7 @@ export default function DiscoveryPage() {
               </a>
               :
             </p>
-            <ul className="list-disc pl-5 space-y-2">
+            <ul className="list-disc space-y-2 pl-5">
               <li>
                 <strong>tryponcho.com/m/your-origin</strong> — your API
                 storefront. Share this link so anyone can try your API in one
@@ -145,8 +145,8 @@ function Step({
   description: string;
 }) {
   return (
-    <div className="flex gap-4 items-start">
-      <div className="flex items-center justify-center size-7 rounded-full bg-primary/10 text-primary text-sm font-semibold shrink-0 mt-0.5">
+    <div className="flex items-start gap-4">
+      <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
         {number}
       </div>
       <div className="space-y-1">
@@ -174,7 +174,7 @@ function NavCard({
         <CardContent className="flex flex-col gap-3 pt-5">
           <div className="text-primary">{icon}</div>
           <div className="space-y-1">
-            <h3 className="text-sm font-semibold flex items-center gap-1.5">
+            <h3 className="flex items-center gap-1.5 text-sm font-semibold">
               {title}
               <ArrowRight className="size-3.5" />
             </h3>

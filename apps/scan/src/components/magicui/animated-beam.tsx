@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { forwardRef, useEffect, useId, useState } from 'react';
+import { forwardRef, useEffect, useId, useState } from "react";
 
-import { motion } from 'motion/react';
+import { motion } from "motion/react";
 
-import { Card } from '../ui/card';
+import { Card } from "../ui/card";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { RefObject } from 'react';
+import type { RefObject } from "react";
 
 interface AnimatedBeamProps {
   className?: string;
@@ -28,7 +28,7 @@ interface AnimatedBeamProps {
   startYOffset?: number;
   endXOffset?: number;
   endYOffset?: number;
-  pathType?: 'curved' | 'angular'; // New prop for path style
+  pathType?: "curved" | "angular"; // New prop for path style
   isVertical?: boolean;
   repeatDelay?: number;
   beamWidth?: number;
@@ -44,29 +44,29 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   reverse = false, // Include the reverse prop
   duration = 10,
   delay = 0,
-  pathColor = 'var(--color-primary)',
+  pathColor = "var(--color-primary)",
   pathWidth = 2,
   pathOpacity = 0.2,
-  gradientStartColor = 'var(--color-primary)',
-  gradientStopColor = 'var(--color-primary)',
+  gradientStartColor = "var(--color-primary)",
+  gradientStopColor = "var(--color-primary)",
   startXOffset = 0,
   startYOffset = 0,
   endXOffset = 0,
   endYOffset = 0,
-  pathType = 'curved', // Default to curved
+  pathType = "curved", // Default to curved
   isVertical = false,
   repeatDelay = 0,
   beamWidth = 10,
   isFull = false,
 }) => {
   const id = useId();
-  const [pathD, setPathD] = useState('');
+  const [pathD, setPathD] = useState("");
   const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 });
   const [gradientCoordinates, setGradientCoordinates] = useState({
-    x1: ['10%', '110%'],
-    x2: ['0%', '100%'],
-    y1: ['0%', '0%'],
-    y2: ['0%', '0%'],
+    x1: ["10%", "110%"],
+    x2: ["0%", "100%"],
+    y1: ["0%", "0%"],
+    y2: ["0%", "0%"],
   });
 
   useEffect(() => {
@@ -94,14 +94,14 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
           isVertical
             ? reverse
               ? {
-                  x1: ['0%', '0%'],
-                  x2: ['0%', '0%'],
+                  x1: ["0%", "0%"],
+                  x2: ["0%", "0%"],
                   y1: [`100%`, `-${beamWidth}%`],
                   y2: [`${100 + beamWidth}%`, `0%`],
                 }
               : {
-                  x1: ['0%', '0%'],
-                  x2: ['0%', '0%'],
+                  x1: ["0%", "0%"],
+                  x2: ["0%", "0%"],
                   y1: [`0%`, `${100 + beamWidth}%`],
                   y2: [`-${beamWidth}%`, `100%`],
                 }
@@ -109,19 +109,19 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
               ? {
                   x1: [`100%`, `-${beamWidth}%`],
                   x2: [`${100 + beamWidth}%`, `0%`],
-                  y1: ['0%', '0%'],
-                  y2: ['0%', '0%'],
+                  y1: ["0%", "0%"],
+                  y2: ["0%", "0%"],
                 }
               : {
                   x1: [`0%`, `${100 + beamWidth}%`],
                   x2: [`-${beamWidth}%`, `100%`],
-                  y1: ['0%', '0%'],
-                  y2: ['0%', '0%'],
+                  y1: ["0%", "0%"],
+                  y2: ["0%", "0%"],
                 }
         );
 
-        let d = '';
-        if (pathType === 'angular') {
+        let d = "";
+        if (pathType === "angular") {
           // Create angular path with rounded corners
           const controlPointY = (startY + endY) / 2;
           const cornerRadius = 8;
@@ -164,7 +164,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
     };
 
     // Initialize ResizeObserver
-    const resizeObserver = new ResizeObserver(entries => {
+    const resizeObserver = new ResizeObserver((entries) => {
       // For all entries, recalculate the path
       entries.forEach(() => {
         updatePath();
@@ -205,7 +205,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
       height={svgDimensions.height}
       xmlns="http://www.w3.org/2000/svg"
       className={cn(
-        'pointer-events-none absolute top-0 left-0 transform-gpu stroke-2',
+        "pointer-events-none absolute top-0 left-0 transform-gpu stroke-2",
         className
       )}
       viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}
@@ -218,9 +218,9 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         strokeLinecap="round"
         transition={{
           repeat: Infinity,
-          repeatType: 'loop',
+          repeatType: "loop",
           duration: 2,
-          ease: 'linear',
+          ease: "linear",
         }}
         className="transition-all duration-500"
       />
@@ -239,7 +239,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
           strokeLinecap="round"
           filter={`url(#${id}-glow)`}
           style={{
-            animation: 'beam-glow-pulse 1.5s ease-in-out infinite',
+            animation: "beam-glow-pulse 1.5s ease-in-out infinite",
             opacity: 0.7,
           }}
         />
@@ -263,12 +263,12 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         <motion.linearGradient
           className="transform-gpu"
           id={id}
-          gradientUnits={'userSpaceOnUse'}
+          gradientUnits={"userSpaceOnUse"}
           initial={{
-            x1: '0%',
-            x2: '0%',
-            y1: '0%',
-            y2: '0%',
+            x1: "0%",
+            x2: "0%",
+            y1: "0%",
+            y2: "0%",
           }}
           animate={{
             x1: gradientCoordinates.x1,
@@ -323,7 +323,7 @@ export const Circle = forwardRef<
     <Card
       ref={ref}
       className={cn(
-        'bg-card z-10 flex items-center justify-center rounded-full border-2 p-2',
+        "bg-card z-10 flex items-center justify-center rounded-full border-2 p-2",
         className
       )}
     >
@@ -332,4 +332,4 @@ export const Circle = forwardRef<
   );
 });
 
-Circle.displayName = 'Circle';
+Circle.displayName = "Circle";

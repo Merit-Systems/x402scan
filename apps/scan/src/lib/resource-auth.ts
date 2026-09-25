@@ -9,11 +9,11 @@
  *
  * Pure module — safe to import from both server DB code and client components.
  */
-import { z } from 'zod';
+import { z } from "zod";
 
-import type { Prisma } from '@x402scan/scan-db';
+import type { Prisma } from "@x402scan/scan-db";
 
-export const FREE_AUTH_MODES = ['siwx', 'unprotected', 'apiKey'] as const;
+export const FREE_AUTH_MODES = ["siwx", "unprotected", "apiKey"] as const;
 
 export type FreeAuthMode = (typeof FREE_AUTH_MODES)[number];
 

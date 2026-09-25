@@ -1,6 +1,6 @@
-import { partnersDb, Tables } from '@x402scan/partners-db';
-import type { PartnerData } from '@x402scan/partners-db';
-import { createPartner } from './create';
+import { partnersDb, Tables } from "@x402scan/partners-db";
+import type { PartnerData } from "@x402scan/partners-db";
+import { createPartner } from "./create";
 
 /**
  * Finds a partner by name, or creates a new one if not found.
@@ -24,7 +24,7 @@ export const findOrCreatePartner = async (
 
   const resultSet = await partnersDb.query({
     query,
-    format: 'JSONEachRow',
+    format: "JSONEachRow",
     query_params: { name },
   });
 
@@ -35,7 +35,7 @@ export const findOrCreatePartner = async (
     const partner = rows[0];
     if (!partner) {
       // This shouldn't happen, but TypeScript needs this check
-      throw new Error('Partner data is undefined');
+      throw new Error("Partner data is undefined");
     }
 
     // Update merit_contact if it's different
@@ -62,8 +62,8 @@ export const findOrCreatePartner = async (
     name,
     email:
       options?.email ??
-      `${name.toLowerCase().replace(/\s+/g, '.')}@placeholder.com`,
-    organization: options?.organization ?? 'Placeholder Organization',
+      `${name.toLowerCase().replace(/\s+/g, ".")}@placeholder.com`,
+    organization: options?.organization ?? "Placeholder Organization",
     merit_contact,
   });
 };

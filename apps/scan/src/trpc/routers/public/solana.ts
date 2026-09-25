@@ -2,11 +2,11 @@ import {
   getSolanaNativeBalance,
   getSolanaTokenBalance,
   getSolanaTokenBalanceSchema,
-} from '@/services/solana/balance';
+} from "@/services/solana/balance";
 
-import { createTRPCRouter, publicProcedure } from '../../trpc';
+import { createTRPCRouter, publicProcedure } from "../../trpc";
 
-import { solanaAddressSchema } from '@/lib/schemas';
+import { solanaAddressSchema } from "@/lib/schemas";
 
 export const solanaRouter = createTRPCRouter({
   balance: publicProcedure

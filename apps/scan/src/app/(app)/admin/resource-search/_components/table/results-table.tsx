@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useMemo, useState, useCallback, memo } from 'react';
+import { useMemo, useState, useCallback, memo } from "react";
 
-import { Badge } from '@/components/ui/badge';
-import { DataTable } from '@/components/ui/data-table';
+import { Badge } from "@/components/ui/badge";
+import { DataTable } from "@/components/ui/data-table";
 
-import { ResourceExecutorModal } from '@/app/(app)/admin/tags/_components/resource-executor-modal';
+import { ResourceExecutorModal } from "@/app/(app)/admin/tags/_components/resource-executor-modal";
 
-import { useResourceSearchSorting } from '@/app/(app)/_contexts/sorting/resource-search/hook';
+import { useResourceSearchSorting } from "@/app/(app)/_contexts/sorting/resource-search/hook";
 
-import { createColumns } from './columns';
+import { createColumns } from "./columns";
 
-import type { Row } from '@tanstack/react-table';
-import type { FilteredSearchResult } from '@/services/resource-search/types';
+import type { Row } from "@tanstack/react-table";
+import type { FilteredSearchResult } from "@/services/resource-search/types";
 
 interface ResultsTableProps {
   results: FilteredSearchResult[];
@@ -36,7 +36,7 @@ const ResultsTableComponent = ({
       let comparison = 0;
 
       switch (sorting.id) {
-        case 'filterMatches': {
+        case "filterMatches": {
           const aPercent =
             a.filterAnswers.length > 0
               ? a.filterMatches / a.filterAnswers.length
@@ -48,7 +48,7 @@ const ResultsTableComponent = ({
           comparison = aPercent - bPercent;
           break;
         }
-        case 'title': {
+        case "title": {
           const aTitle = a.origin.title ?? a.origin.origin;
           const bTitle = b.origin.title ?? b.origin.origin;
           comparison = aTitle.localeCompare(bTitle);
@@ -81,7 +81,7 @@ const ResultsTableComponent = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-semibold">
-            {results.length} {results.length === 1 ? 'Result' : 'Results'}
+            {results.length} {results.length === 1 ? "Result" : "Results"}
           </h3>
           {!isLoading && results.length > 0 && (
             <Badge variant="secondary">{results.length} resources</Badge>
@@ -109,6 +109,6 @@ const ResultsTableComponent = ({
   );
 };
 
-ResultsTableComponent.displayName = 'ResultsTable';
+ResultsTableComponent.displayName = "ResultsTable";
 
 export const ResultsTable = memo(ResultsTableComponent);

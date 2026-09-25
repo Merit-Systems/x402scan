@@ -1,8 +1,8 @@
-import { SortingProvider } from '../base/provider';
-import { WalletSpendingSortingContext } from './context';
+import { SortingProvider } from "../base/provider";
+import { WalletSpendingSortingContext } from "./context";
 
-import type { WalletSpendingSortId } from './context';
-import type { SortType } from '../base/types';
+import type { WalletSpendingSortId } from "./context";
+import type { SortType } from "../base/types";
 
 export const WalletSpendingSortingProvider = ({
   children,

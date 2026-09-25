@@ -1,4 +1,4 @@
-import { PROBE_TIMEOUT_MS } from './utils';
+import { PROBE_TIMEOUT_MS } from "./utils";
 
 /**
  * A favicon that resolves server-side but that browsers refuse to render on
@@ -8,7 +8,7 @@ export interface BlockedFavicon {
   /** The favicon URL discovery resolved. */
   url: string;
   /** The `Cross-Origin-Resource-Policy` value that blocks it. */
-  policy: 'same-origin' | 'same-site';
+  policy: "same-origin" | "same-site";
 }
 
 /**
@@ -31,19 +31,19 @@ export async function detectBlockedFavicon(
   try {
     const url = new URL(faviconUrl);
     const response = await fetch(url, {
-      method: 'HEAD',
+      method: "HEAD",
       signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
     });
     if (!response.ok) return null;
 
     const policy = response.headers
-      .get('cross-origin-resource-policy')
+      .get("cross-origin-resource-policy")
       ?.trim()
       .toLowerCase();
 
     // `same-site` blocks us too — x402scan is never same-site with a merchant
     // origin — so both restrictive values are reported.
-    if (policy === 'same-origin' || policy === 'same-site') {
+    if (policy === "same-origin" || policy === "same-site") {
       return { url: faviconUrl, policy };
     }
     return null;

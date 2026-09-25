@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-import { Loader2, SearchX, Search } from 'lucide-react';
+import { Loader2, SearchX, Search } from "lucide-react";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 import {
   CommandDialog,
@@ -13,33 +13,33 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 
-import { SearchContext } from './context';
-import { Origin } from '@/app/(app)/_components/origins';
-import { Resource } from '@/app/(app)/_components/resource';
+import { SearchContext } from "./context";
+import { Origin } from "@/app/(app)/_components/origins";
+import { Resource } from "@/app/(app)/_components/resource";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { mixedAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from "@/lib/schemas";
 
-import type { Route } from 'next';
+import type { Route } from "next";
 
 export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setIsOpen(isOpen => !isOpen);
+        setIsOpen((isOpen) => !isOpen);
       }
     };
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
   }, []);
 
   const input = {
@@ -59,7 +59,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
   const handleSelect = <T extends string>(route: Route<T>) => {
     router.push(route);
     setIsOpen(false);
-    setSearch('');
+    setSearch("");
   };
 
   return (
@@ -76,7 +76,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
           onValueChange={setSearch}
         />
         <CommandList>
-          <CommandEmpty className="flex flex-col items-center justify-center gap-2 p-8 text-center text-muted-foreground text-sm">
+          <CommandEmpty className="flex flex-col items-center justify-center gap-2 p-8 text-center text-sm text-muted-foreground">
             {isLoadingOrigins || isLoadingResources ? (
               <>
                 <Loader2 className="size-10 animate-spin" />
@@ -116,7 +116,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
           )}
           {(origins?.length ?? 0) > 0 && (
             <CommandGroup heading="Origins">
-              {origins?.map(origin => (
+              {origins?.map((origin) => (
                 <CommandItem
                   key={origin.id}
                   value={origin.origin}
@@ -126,8 +126,8 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
                     origin={origin}
                     addresses={Array.from(
                       new Set(
-                        origin.resources.flatMap(resource =>
-                          resource.accepts.map(accept => accept.payTo)
+                        origin.resources.flatMap((resource) =>
+                          resource.accepts.map((accept) => accept.payTo)
                         )
                       )
                     )}
@@ -138,7 +138,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
           )}
           {(resources?.length ?? 0) > 0 && (
             <CommandGroup heading="Resources">
-              {resources?.map(resource => (
+              {resources?.map((resource) => (
                 <CommandItem
                   key={resource.id}
                   value={resource.resource}

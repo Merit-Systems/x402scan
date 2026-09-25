@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { api } from '@/trpc/client';
-import { AgentCard } from '../lib/agent-card';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { api } from "@/trpc/client";
+import { AgentCard } from "../lib/agent-card";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
   userId: string;
@@ -24,7 +24,7 @@ export const YourAgentsContent: React.FC<Props> = ({ userId }) => {
 
   return (
     <>
-      {yourAgents.items.map(agent => (
+      {yourAgents.items.map((agent) => (
         <AgentCard
           key={agent.id}
           agentConfiguration={agent}

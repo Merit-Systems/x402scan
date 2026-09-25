@@ -1,4 +1,4 @@
-import { env } from '@/env';
+import { env } from "@/env";
 
 export interface SearchResultEndpoint {
   method: string;
@@ -49,23 +49,23 @@ interface ExternalSearchResponse {
  */
 export async function searchDiscover(query: string): Promise<SearchResult[]> {
   if (!env.AGENTCASH_URL) {
-    throw new Error('AGENTCASH_URL is not set');
+    throw new Error("AGENTCASH_URL is not set");
   }
   if (!env.AGENTCASH_SEARCH_API_KEY) {
-    throw new Error('AGENTCASH_SEARCH_API_KEY is not set');
+    throw new Error("AGENTCASH_SEARCH_API_KEY is not set");
   }
 
-  const url = new URL('/api/external/search/results', env.AGENTCASH_URL);
-  url.searchParams.set('q', query);
-  url.searchParams.set('protocol', 'x402');
-  url.searchParams.set('limit', '20');
+  const url = new URL("/api/external/search/results", env.AGENTCASH_URL);
+  url.searchParams.set("q", query);
+  url.searchParams.set("protocol", "x402");
+  url.searchParams.set("limit", "20");
   // broad=true would include resources without usage signals; pure embedding
   // similarity then surfaces low-quality origins. Restricting to hasUsage
   // resources cuts the noise.
-  url.searchParams.set('broad', 'false');
+  url.searchParams.set("broad", "false");
 
   const res = await fetch(url, {
-    method: 'GET',
+    method: "GET",
     headers: {
       Authorization: `Bearer ${env.AGENTCASH_SEARCH_API_KEY}`,
     },
@@ -93,7 +93,7 @@ export async function searchDiscover(query: string): Promise<SearchResult[]> {
     byOrigin.set(row.originUrl, {
       origin: row.originUrl,
       title: row.originTitle || row.originUrl,
-      description: '',
+      description: "",
       favicon: row.favicon,
       protocols: row.protocols,
       endpoint,

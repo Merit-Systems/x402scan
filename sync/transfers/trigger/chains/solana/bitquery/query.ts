@@ -1,11 +1,11 @@
-import { USDC_MULTIPLIER } from '@/trigger/lib/constants';
+import { USDC_MULTIPLIER } from "@/trigger/lib/constants";
 import type {
   Facilitator,
   FacilitatorConfig,
   SolanaBitquerySentResponse,
   SyncConfig,
   TransferEventData,
-} from '@/trigger/types';
+} from "@/trigger/types";
 
 export function buildQuery(
   config: SyncConfig,
@@ -65,7 +65,7 @@ export function transformResponse(
 ): TransferEventData[] {
   const transfers = data.solana.sent;
 
-  return transfers.map(transfer => ({
+  return transfers.map((transfer) => ({
     address: transfer.currency.address,
     transaction_from: facilitatorConfig.address,
     sender: transfer.sender.address,

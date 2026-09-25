@@ -1,11 +1,11 @@
-import { logger } from '@trigger.dev/sdk/v3';
-import { BigQuery } from '@google-cloud/bigquery';
+import { logger } from "@trigger.dev/sdk/v3";
+import { BigQuery } from "@google-cloud/bigquery";
 import type {
   SyncConfig,
   Facilitator,
   TransferEventData,
   FacilitatorConfig,
-} from '../../types';
+} from "../../types";
 
 export async function fetchBigQuery(
   config: SyncConfig,

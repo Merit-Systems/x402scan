@@ -1,4 +1,4 @@
-import type { Facilitator } from '../types';
+import type { Facilitator } from "../types";
 
 // NOTE(shafu): CHAT GPT GENERATED crap, don't ask me how it works
 
@@ -10,22 +10,22 @@ type FindDuplicateId<
   infer First extends Facilitator,
   ...infer Rest extends readonly Facilitator[],
 ]
-  ? First['id'] extends Seen
-    ? First['id'] // Found a duplicate ID
-    : FindDuplicateId<Rest, Seen | First['id']>
+  ? First["id"] extends Seen
+    ? First["id"] // Found a duplicate ID
+    : FindDuplicateId<Rest, Seen | First["id"]>
   : never;
 
 // Find duplicate address+token pairs within the same id:chain
 type ExtractAddressTokenPairs<F extends Facilitator> =
-  F['addresses'] extends Record<infer C, infer Addrs>
+  F["addresses"] extends Record<infer C, infer Addrs>
     ? Addrs extends readonly [
         infer A extends { address: string; token: { address: string } },
         ...infer RestAddrs,
       ]
       ?
-          | `${F['id']}:${C & string}:${A['address']}:${A['token']['address']}`
+          | `${F["id"]}:${C & string}:${A["address"]}:${A["token"]["address"]}`
           | ExtractAddressTokenPairs<
-              { id: F['id']; addresses: Record<C, RestAddrs> } & Facilitator
+              { id: F["id"]; addresses: Record<C, RestAddrs> } & Facilitator
             >
       : never
     : never;

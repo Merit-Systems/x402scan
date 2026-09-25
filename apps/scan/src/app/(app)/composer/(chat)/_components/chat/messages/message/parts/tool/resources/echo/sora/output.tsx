@@ -1,15 +1,15 @@
-import type { JsonValue } from '@/components/ai-elements/json-viewer';
-import { JsonViewer } from '@/components/ai-elements/json-viewer';
-import type { OutputComponent } from '../../types';
+import type { JsonValue } from "@/components/ai-elements/json-viewer";
+import { JsonViewer } from "@/components/ai-elements/json-viewer";
+import type { OutputComponent } from "../../types";
 
-import z from 'zod';
-import { api } from '@/trpc/client';
-import { useEffect, useState } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
+import z from "zod";
+import { api } from "@/trpc/client";
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const createSoraVideoOutputSchema = z.object({
   id: z.string(),
-  object: z.literal('video'),
+  object: z.literal("video"),
   created_at: z.number().int(),
   status: z.string(),
   completed_at: z.number().int().nullable(),
@@ -24,7 +24,7 @@ const createSoraVideoOutputSchema = z.object({
 
 export const SoraOutput: OutputComponent = ({ output, errorText }) => {
   if (errorText) {
-    return <div className="text-destructive text-sm">{errorText}</div>;
+    return <div className="text-sm text-destructive">{errorText}</div>;
   }
 
   const parseResult = createSoraVideoOutputSchema.safeParse(output);
@@ -34,7 +34,7 @@ export const SoraOutput: OutputComponent = ({ output, errorText }) => {
     try {
       data = JSON.parse(output as string) as JsonValue;
     } catch {
-      return <div className="text-destructive text-sm">Invalid output</div>;
+      return <div className="text-sm text-destructive">Invalid output</div>;
     }
     return <JsonViewer data={data} />;
   }
@@ -58,23 +58,23 @@ const SoraVideoDisplay: React.FC<{ id: string }> = ({ id }) => {
   useEffect(() => {
     if (
       task &&
-      ['completed', 'failed', 'cancelled', 'expired'].includes(task.status)
+      ["completed", "failed", "cancelled", "expired"].includes(task.status)
     ) {
       setIsTaskFetched(true);
     }
   }, [task, id]);
 
   if (taskError) {
-    return <div className="text-destructive text-sm">{taskError.message}</div>;
+    return <div className="text-sm text-destructive">{taskError.message}</div>;
   }
 
   if (isTaskLoading || !isTaskFetched) {
     return <Skeleton className="h-48 w-72" />;
   }
 
-  if (task?.status !== 'completed') {
+  if (task?.status !== "completed") {
     return (
-      <div className="text-destructive text-sm">Failed to generate video</div>
+      <div className="text-sm text-destructive">Failed to generate video</div>
     );
   }
 

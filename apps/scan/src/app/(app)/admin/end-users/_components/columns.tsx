@@ -1,37 +1,37 @@
-'use client';
+"use client";
 
-import { User, Calendar, Wallet } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Copyable } from '@/components/ui/copyable';
-import { format } from 'date-fns';
+import { User, Calendar, Wallet } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Copyable } from "@/components/ui/copyable";
+import { format } from "date-fns";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
 
-type EndUser = RouterOutputs['admin']['endUsers']['list'][number];
+type EndUser = RouterOutputs["admin"]["endUsers"]["list"][number];
 
 const AuthMethodBadge = ({
   method,
 }: {
-  method: EndUser['authenticationMethods'][number];
+  method: EndUser["authenticationMethods"][number];
 }) => {
-  if (method.type === 'email') {
+  if (method.type === "email") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-xs">
+      <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs text-primary">
         Email: {method.email}
       </span>
     );
   }
-  if (method.type === 'sms') {
+  if (method.type === "sms") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-500/10 text-green-600 text-xs">
+      <span className="inline-flex items-center gap-1 rounded-md bg-green-500/10 px-2 py-0.5 text-xs text-green-600">
         SMS: {method.phoneNumber}
       </span>
     );
   }
-  if (method.type === 'jwt') {
+  if (method.type === "jwt") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-600 text-xs">
+      <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-2 py-0.5 text-xs text-purple-600">
         JWT
       </span>
     );
@@ -41,7 +41,7 @@ const AuthMethodBadge = ({
 
 export const columns: ExtendedColumnDef<EndUser>[] = [
   {
-    accessorKey: 'userId',
+    accessorKey: "userId",
     header: () => (
       <div className="flex items-center gap-2">
         <User className="size-4" />
@@ -52,7 +52,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
       <Copyable
         value={row.original.userId}
         toastMessage="User ID copied"
-        className="text-xs font-mono font-medium truncate max-w-[200px] block"
+        className="block max-w-[200px] truncate font-mono text-xs font-medium"
       >
         {row.original.userId}
       </Copyable>
@@ -61,7 +61,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'authenticationMethods',
+    accessorKey: "authenticationMethods",
     header: () => (
       <div className="flex items-center gap-2">
         <span className="text-xs font-medium">Authentication</span>
@@ -78,7 +78,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'evmAccounts',
+    accessorKey: "evmAccounts",
     header: () => (
       <div className="flex items-center gap-2">
         <Wallet className="size-4" />
@@ -96,7 +96,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
               key={idx}
               value={account}
               toastMessage="Address copied"
-              className="text-xs font-mono truncate max-w-[150px] block"
+              className="block max-w-[150px] truncate font-mono text-xs"
             >
               {account}
             </Copyable>
@@ -108,7 +108,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'evmSmartAccounts',
+    accessorKey: "evmSmartAccounts",
     header: () => (
       <div className="flex items-center gap-2">
         <Wallet className="size-4" />
@@ -126,7 +126,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
               key={idx}
               value={account}
               toastMessage="Address copied"
-              className="text-xs font-mono truncate max-w-[150px] block"
+              className="block max-w-[150px] truncate font-mono text-xs"
             >
               {account}
             </Copyable>
@@ -138,7 +138,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'solanaAccounts',
+    accessorKey: "solanaAccounts",
     header: () => (
       <div className="flex items-center gap-2">
         <Wallet className="size-4" />
@@ -156,7 +156,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
               key={idx}
               value={account}
               toastMessage="Address copied"
-              className="text-xs font-mono truncate max-w-[150px] block"
+              className="block max-w-[150px] truncate font-mono text-xs"
             >
               {account}
             </Copyable>
@@ -168,7 +168,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: "createdAt",
     header: () => (
       <div className="flex items-center gap-2">
         <Calendar className="size-4" />
@@ -178,8 +178,8 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
     cell: ({ row }) => {
       const date = new Date(row.original.createdAt);
       return (
-        <span className="text-xs font-mono">
-          {format(date, 'MMM d, yyyy HH:mm')}
+        <span className="font-mono text-xs">
+          {format(date, "MMM d, yyyy HH:mm")}
         </span>
       );
     },

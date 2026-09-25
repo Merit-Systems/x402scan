@@ -1,28 +1,28 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 
-import { Body, Heading } from '@/app/_components/layout/page-utils';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
 
 import {
   LatestTransactionsTable,
   LoadingLatestTransactionsTable,
-} from '../_components/transactions/table';
+} from "../_components/transactions/table";
 
-import { TransfersSortingProvider } from '@/app/(app)/_contexts/sorting/transfers/provider';
-import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
+import { TransfersSortingProvider } from "@/app/(app)/_contexts/sorting/transfers/provider";
+import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { facilitatorIdMap } from '@/lib/facilitators';
+import { facilitatorIdMap } from "@/lib/facilitators";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export default async function TransactionsPage({
   params,
-}: PageProps<'/facilitator/[id]/transactions'>) {
+}: PageProps<"/facilitator/[id]/transactions">) {
   const { id } = await params;
 
   const facilitator = facilitatorIdMap.get(id);
@@ -66,11 +66,11 @@ export default async function TransactionsPage({
 
 export const generateMetadata = async ({
   params,
-}: PageProps<'/facilitator/[id]/transactions'>): Promise<Metadata> => {
+}: PageProps<"/facilitator/[id]/transactions">): Promise<Metadata> => {
   const { id } = await params;
   const facilitator = facilitatorIdMap.get(id);
   if (!facilitator) {
-    return { title: 'Facilitator not found' };
+    return { title: "Facilitator not found" };
   }
   return {
     title: `Transactions | ${facilitator.name}`,

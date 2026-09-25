@@ -5,10 +5,10 @@ on:
     branches:
       - main
     paths:
-      - 'sync/transfers/**'
-      - 'packages/external/facilitators/**'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/deploy-sync.yml'
+      - "sync/transfers/**"
+      - "packages/external/facilitators/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/deploy-sync.yml"
 
 jobs:
   deploy:

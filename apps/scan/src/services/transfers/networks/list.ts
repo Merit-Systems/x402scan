@@ -1,20 +1,20 @@
-import { baseQuerySchema } from '../schemas';
-import z from 'zod';
-import { chainSchema, sortingSchema } from '@/lib/schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { Prisma } from '@x402scan/transfers-db';
-import type { Chain } from '@/types/chain';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
-import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
+import { baseQuerySchema } from "../schemas";
+import z from "zod";
+import { chainSchema, sortingSchema } from "@/lib/schemas";
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { Prisma } from "@x402scan/transfers-db";
+import type { Chain } from "@/types/chain";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
+import { CHAIN_LABELS, CHAIN_ICONS } from "@/types/chain";
 
 const listTopNetworksSortIds = [
-  'tx_count',
-  'total_amount',
-  'latest_block_timestamp',
-  'unique_buyers',
-  'unique_sellers',
-  'unique_facilitators',
+  "tx_count",
+  "total_amount",
+  "latest_block_timestamp",
+  "unique_buyers",
+  "unique_sellers",
+  "unique_facilitators",
 ] as const;
 
 export type NetworksSortId = (typeof listTopNetworksSortIds)[number];
@@ -24,7 +24,7 @@ export const listTopNetworksInputSchema = baseQuerySchema.extend({
   endDate: z.date().optional(),
   limit: z.number().default(100),
   sorting: sortingSchema(listTopNetworksSortIds).default({
-    id: 'tx_count',
+    id: "tx_count",
     desc: true,
   }),
 });
@@ -51,15 +51,15 @@ const listTopNetworksUncached = async (
   const tableName = `stats_aggregated_${mvTimeframe}`;
 
   const sortColumnMap = {
-    tx_count: 'tx_count',
-    total_amount: 'total_amount',
-    latest_block_timestamp: 'latest_block_timestamp',
-    unique_buyers: 'unique_buyers',
-    unique_sellers: 'unique_sellers',
-    unique_facilitators: 'unique_facilitators',
+    tx_count: "tx_count",
+    total_amount: "total_amount",
+    latest_block_timestamp: "latest_block_timestamp",
+    unique_buyers: "unique_buyers",
+    unique_sellers: "unique_sellers",
+    unique_facilitators: "unique_facilitators",
   } satisfies Record<NetworksSortId, string>;
   const sortColumn = sortColumnMap[sorting.id as NetworksSortId];
-  const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
+  const sortDirection = Prisma.raw(sorting.desc ? "DESC" : "ASC");
 
   // Build WHERE clause for materialized view
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
@@ -68,7 +68,7 @@ const listTopNetworksUncached = async (
     conditions.push(Prisma.sql`AND chain = ${chain}`);
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   const sql = Prisma.sql`
     SELECT 
@@ -102,7 +102,7 @@ const listTopNetworksUncached = async (
   );
 
   // Map results to include network metadata
-  return results.map(row => ({
+  return results.map((row) => ({
     chain: row.chain,
     label: CHAIN_LABELS[row.chain],
     icon: CHAIN_ICONS[row.chain],
@@ -117,9 +117,9 @@ const listTopNetworksUncached = async (
 
 export const listTopNetworks = createCachedArrayQuery({
   queryFn: listTopNetworksUncached,
-  cacheKeyPrefix: 'networks-list',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['latest_block_timestamp'],
+  cacheKeyPrefix: "networks-list",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["latest_block_timestamp"],
 
-  tags: ['networks'],
+  tags: ["networks"],
 });

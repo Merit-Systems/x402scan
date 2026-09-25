@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Check, ChevronRight, Copy, Terminal } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { cn } from '@/lib/utils';
-import { AGENT_PROMPT } from '../../_constants/prompts';
+import { useState } from "react";
+import { Check, ChevronRight, Copy, Terminal } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { cn } from "@/lib/utils";
+import { AGENT_PROMPT } from "../../_constants/prompts";
 
 export function QuickstartPromptCard() {
   const [expanded, setExpanded] = useState(false);
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
-    toast.success('Copied prompt for agents');
+    toast.success("Copied prompt for agents");
   });
 
   return (
     <Card
       className={cn(
-        'overflow-hidden cursor-pointer transition-colors hover:border-foreground/20',
-        expanded && 'border-foreground/20'
+        "overflow-hidden cursor-pointer transition-colors hover:border-foreground/20",
+        expanded && "border-foreground/20"
       )}
       onClick={() => setExpanded(!expanded)}
     >
@@ -29,15 +29,15 @@ export function QuickstartPromptCard() {
           <span>Paste into Claude Code, Cursor, or Codex.</span>
           <ChevronRight
             className={cn(
-              'size-3.5 transition-transform text-muted-foreground/60',
-              expanded && 'rotate-90'
+              "size-3.5 transition-transform text-muted-foreground/60",
+              expanded && "rotate-90"
             )}
           />
         </div>
         <Button
           size="sm"
           className="shrink-0 gap-1"
-          onClick={e => {
+          onClick={(e) => {
             e.stopPropagation();
             void copyToClipboard(AGENT_PROMPT);
           }}
@@ -47,12 +47,12 @@ export function QuickstartPromptCard() {
           ) : (
             <Copy className="size-3.5" />
           )}
-          {isCopied ? 'Copied' : 'Copy prompt'}
+          {isCopied ? "Copied" : "Copy prompt"}
         </Button>
       </div>
 
       {expanded && (
-        <div className="border-t bg-muted/50 px-4 py-3 text-sm text-muted-foreground leading-relaxed">
+        <div className="border-t bg-muted/50 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
           {AGENT_PROMPT}
         </div>
       )}

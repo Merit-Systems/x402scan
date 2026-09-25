@@ -1,4 +1,4 @@
-import ogs from 'open-graph-scraper';
+import ogs from "open-graph-scraper";
 
 /**
  * Parses Open Graph data from an HTML string

@@ -1,7 +1,7 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import type { Prisma } from '@x402scan/scan-db';
-import type { ParsedX402Response } from '@/lib/x402';
+import type { Prisma } from "@x402scan/scan-db";
+import type { ParsedX402Response } from "@/lib/x402";
 
 const toPrismaJson = (response: ParsedX402Response): Prisma.InputJsonValue => {
   // Parsed x402 responses are JSON-safe by schema validation, but Prisma's

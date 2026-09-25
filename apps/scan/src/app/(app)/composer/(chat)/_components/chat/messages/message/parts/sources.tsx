@@ -3,9 +3,9 @@ import {
   Sources,
   SourcesContent,
   Source,
-} from '@/components/ai-elements/sources';
+} from "@/components/ai-elements/sources";
 
-import type { SourceUrlUIPart } from 'ai';
+import type { SourceUrlUIPart } from "ai";
 
 interface Props {
   parts: SourceUrlUIPart[];

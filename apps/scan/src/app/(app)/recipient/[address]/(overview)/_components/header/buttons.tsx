@@ -1,9 +1,9 @@
-import { Plus, TestTubeDiagonal } from 'lucide-react';
+import { Plus, TestTubeDiagonal } from "lucide-react";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   hasOrigins: boolean;
@@ -34,7 +34,7 @@ export const HeaderButtons: React.FC<Props> = ({ hasOrigins, address }) => {
 export const LoadingHeaderButtons = () => {
   return (
     <ButtonsContainer>
-      <Skeleton className="h-8 md:h-9 w-24" />
+      <Skeleton className="h-8 w-24 md:h-9" />
     </ButtonsContainer>
   );
 };

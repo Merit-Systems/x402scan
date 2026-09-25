@@ -1,5 +1,5 @@
-import { createEnv } from '@t3-oss/env-nextjs';
-import { z } from 'zod';
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 export const env = createEnv({
   server: {
@@ -12,7 +12,7 @@ export const env = createEnv({
     HIDE_TRPC_LOGS: z.coerce.boolean().optional(),
     GITHUB_TOKEN: z.string().optional(),
     CRON_SECRET:
-      process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+      process.env.NEXT_PUBLIC_NODE_ENV === "development"
         ? z.string().optional()
         : z.string(),
     FREEPIK_API_KEY: z.string().optional(),
@@ -27,7 +27,7 @@ export const env = createEnv({
     TRANSFERS_DB_URL_REPLICA_5: z.url().optional(),
     REDIS_URL: z.string().optional(),
     REDIS_DISABLE: z.coerce.boolean().optional().default(false),
-    ECHO_APP_ID: z.string().default('7fed205e-3aa5-44af-83a3-f7ae5e49dba4'),
+    ECHO_APP_ID: z.string().default("7fed205e-3aa5-44af-83a3-f7ae5e49dba4"),
     ECHO_PROXY_URL: z.url().optional(),
     PARTNERS_CLICKHOUSE_URL: z.string().url().optional(),
     PARTNERS_CLICKHOUSE_USER: z.string().optional(),
@@ -50,37 +50,37 @@ export const env = createEnv({
       .url()
       .default(
         process.env.NEXT_PUBLIC_APP_URL ??
-          (process.env.VERCEL_ENV === 'production'
+          (process.env.VERCEL_ENV === "production"
             ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-            : process.env.VERCEL_ENV === 'preview'
+            : process.env.VERCEL_ENV === "preview"
               ? `https://${process.env.VERCEL_BRANCH_URL}`
-              : 'http://localhost:3000')
+              : "http://localhost:3000")
       ),
     NEXT_PUBLIC_PROXY_URL: z.url(),
     NEXT_PUBLIC_NODE_ENV: z
-      .enum(['development', 'production'])
-      .default('development'),
+      .enum(["development", "production"])
+      .default("development"),
     NEXT_PUBLIC_CDP_PROJECT_ID: z.string().optional(),
     NEXT_PUBLIC_CDP_APP_ID: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
-    NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default('true'),
+    NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default("true"),
     NEXT_PUBLIC_SOLANA_RPC_URL: z.url(),
     NEXT_PUBLIC_BASE_RPC_URL: z.url().optional(),
     NEXT_PUBLIC_VERCEL_ENV: z
-      .enum(['development', 'preview', 'production'])
+      .enum(["development", "preview", "production"])
       .optional(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
       process.env.NEXT_PUBLIC_APP_URL ??
-      (process.env.VERCEL_ENV === 'production'
+      (process.env.VERCEL_ENV === "production"
         ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-        : process.env.VERCEL_ENV === 'preview'
+        : process.env.VERCEL_ENV === "preview"
           ? `https://${process.env.VERCEL_BRANCH_URL}`
-          : 'http://localhost:3000'),
+          : "http://localhost:3000"),
     NEXT_PUBLIC_PROXY_URL: process.env.NEXT_PUBLIC_PROXY_URL,
-    NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV ?? 'development',
+    NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV ?? "development",
     NEXT_PUBLIC_CDP_PROJECT_ID: process.env.NEXT_PUBLIC_CDP_PROJECT_ID,
     NEXT_PUBLIC_CDP_APP_ID: process.env.NEXT_PUBLIC_CDP_APP_ID,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,

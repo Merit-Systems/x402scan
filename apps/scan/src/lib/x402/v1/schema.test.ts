@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { parseX402Response, getOutputSchema, isV2Response } from '../index';
+import { describe, it, expect } from "vitest";
+import { parseX402Response, getOutputSchema, isV2Response } from "../index";
 
 // Helper for v1 tests: parse and narrow to the V1 branch of the union.
 function parseV1<T>(data: T) {
@@ -8,7 +8,7 @@ function parseV1<T>(data: T) {
     return result;
   }
   if (isV2Response(result.data)) {
-    return { success: false as const, errors: ['Not a V1 response'] };
+    return { success: false as const, errors: ["Not a V1 response"] };
   }
   return { success: true as const, data: result.data };
 }
@@ -26,8 +26,8 @@ const rawBodies = [
   `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base","maxAmountRequired":"2000000","resource":"http://api.aixbt.tech/v1/agents/indigo","description":"Find what's gaining traction before the rest of the market catches on.","mimeType":"","payTo":"0x8E4B195c14f20e1Ba4C40234F471E1781f293b45","maxTimeoutSeconds":60,"asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","outputSchema":{"input":{"type":"http","method":"POST","discoverable":true,"bodyType":"json","bodyFields":{"messages":{"type":"array","description":"Array of conversation messages with role and content","items":{"type":"object","properties":{"role":{"type":"string","enum":["user","assistant"],"description":"The role of the message sender"},"content":{"type":"string","description":"The message content"}},"required":["role","content"]},"minItems":1}}},"output":{"status":{"type":"number","description":"HTTP status code"},"error":{"type":"string","description":"Error message if request failed"},"data":{"type":"object","properties":{"text":{"type":"string","description":"Response text from the Indigo agent"}},"required":["text"]}}},"extra":{"name":"USD Coin","version":"2"}}]}`,
 ];
 
-describe('parseV1', () => {
-  it('should handle x402 responses with lenient parsing', () => {
+describe("parseV1", () => {
+  it("should handle x402 responses with lenient parsing", () => {
     const responseWithError = JSON.parse(rawBodies[1]!) as unknown;
     const result = parseV1(responseWithError);
 
@@ -35,15 +35,15 @@ describe('parseV1', () => {
     if (result.success) {
       expect(result.data.x402Version).toBe(1);
       expect(result.data.accepts).toHaveLength(1);
-      expect(result.data.error).toBe('X-PAYMENT header is required');
+      expect(result.data.error).toBe("X-PAYMENT header is required");
     } else {
       // If parsing fails, it should provide error information
       expect(result.errors).toBeDefined();
     }
   });
 
-  it('should default x402Version to 1 when missing', () => {
-    const invalidData = { invalid: 'data' };
+  it("should default x402Version to 1 when missing", () => {
+    const invalidData = { invalid: "data" };
     const result = parseV1(invalidData);
 
     // x402Version defaults to 1 via z3.literal(1).default(1)
@@ -53,12 +53,12 @@ describe('parseV1', () => {
     }
   });
 
-  it('should handle null or undefined input', () => {
+  it("should handle null or undefined input", () => {
     expect(parseV1(null).success).toBe(false);
     expect(parseV1(undefined).success).toBe(false);
   });
 
-  it('should parse empty object with defaulted x402Version', () => {
+  it("should parse empty object with defaulted x402Version", () => {
     const result = parseV1({});
     // x402Version defaults to 1, accepts is optional, error is nullish
     expect(result.success).toBe(true);
@@ -68,8 +68,8 @@ describe('parseV1', () => {
   });
 });
 
-describe('parseV1 with normalized schemas', () => {
-  it('should normalize Gloria AI response with queryParams', () => {
+describe("parseV1 with normalized schemas", () => {
+  it("should normalize Gloria AI response with queryParams", () => {
     const response = JSON.parse(rawBodies[1]!) as unknown;
     const result = parseV1(response);
 
@@ -82,7 +82,7 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should reject empty payTo field', () => {
+  it("should reject empty payTo field", () => {
     const response = JSON.parse(rawBodies[0]!) as unknown;
     const result = parseV1(response);
 
@@ -93,7 +93,7 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should extract field information from API responses', () => {
+  it("should extract field information from API responses", () => {
     const response = JSON.parse(rawBodies[5]!) as unknown;
     const result = parseV1(response);
 
@@ -102,12 +102,12 @@ describe('parseV1 with normalized schemas', () => {
       const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
       expect(inputSchema?.bodyFields?.prompt).toBeDefined();
-      expect(inputSchema?.bodyType).toBe('json');
+      expect(inputSchema?.bodyType).toBe("json");
       expect(inputSchema?.queryParams).toBeUndefined();
     }
   });
 
-  it('should handle various API response formats', () => {
+  it("should handle various API response formats", () => {
     const response = JSON.parse(rawBodies[6]!) as unknown;
     const result = parseV1(response);
 
@@ -115,15 +115,15 @@ describe('parseV1 with normalized schemas', () => {
     if (result.success) {
       const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
-      expect(inputSchema?.bodyFields?.prompt).toEqual({ type: 'string' });
+      expect(inputSchema?.bodyFields?.prompt).toEqual({ type: "string" });
       expect(inputSchema?.bodyFields?.walletAddress).toEqual({
-        type: 'string',
+        type: "string",
       });
-      expect(inputSchema?.bodyType).toBe('json');
+      expect(inputSchema?.bodyType).toBe("json");
     }
   });
 
-  it('should handle GET requests without body fields', () => {
+  it("should handle GET requests without body fields", () => {
     const response = JSON.parse(rawBodies[3]!) as unknown;
     const result = parseV1(response);
 
@@ -135,7 +135,7 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should return error for empty accepts array', () => {
+  it("should return error for empty accepts array", () => {
     const invalidResponse = { x402Version: 1, accepts: [] };
     const result = parseV1(invalidResponse);
 
@@ -146,20 +146,20 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should accept response without outputSchema (optional field)', () => {
+  it("should accept response without outputSchema (optional field)", () => {
     const response = {
       x402Version: 1,
       accepts: [
         {
-          scheme: 'exact',
-          network: 'base',
-          maxAmountRequired: '1000',
-          resource: 'https://example.com',
-          description: 'test',
-          mimeType: 'json',
-          payTo: '0x123',
+          scheme: "exact",
+          network: "base",
+          maxAmountRequired: "1000",
+          resource: "https://example.com",
+          description: "test",
+          mimeType: "json",
+          payTo: "0x123",
           maxTimeoutSeconds: 60,
-          asset: '0x456',
+          asset: "0x456",
         },
       ],
     };
@@ -173,8 +173,8 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should handle completely invalid input', () => {
-    const result = parseV1('not an object');
+  it("should handle completely invalid input", () => {
+    const result = parseV1("not an object");
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -182,28 +182,28 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should handle camelCase field names in outputSchema', () => {
+  it("should handle camelCase field names in outputSchema", () => {
     const response = {
       x402Version: 1,
       accepts: [
         {
-          scheme: 'exact',
-          network: 'base',
-          maxAmountRequired: '1000',
-          resource: 'https://example.com',
-          description: 'test',
-          mimeType: 'application/json',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "exact",
+          network: "base",
+          maxAmountRequired: "1000",
+          resource: "https://example.com",
+          description: "test",
+          mimeType: "application/json",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
           outputSchema: {
             input: {
-              type: 'http',
-              method: 'POST',
-              queryParams: { test: 'value' },
-              bodyFields: { body: 'test' },
-              bodyType: 'json',
-              headerFields: { auth: 'bearer' },
+              type: "http",
+              method: "POST",
+              queryParams: { test: "value" },
+              bodyFields: { body: "test" },
+              bodyType: "json",
+              headerFields: { auth: "bearer" },
             },
           },
         },
@@ -216,35 +216,35 @@ describe('parseV1 with normalized schemas', () => {
     if (result.success) {
       const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
-      expect(inputSchema?.queryParams?.test).toEqual({ type: 'value' });
-      expect(inputSchema?.bodyFields?.body).toEqual({ type: 'test' });
-      expect(inputSchema?.bodyType).toBe('json');
-      expect(inputSchema?.headerFields?.auth).toEqual({ type: 'bearer' });
+      expect(inputSchema?.queryParams?.test).toEqual({ type: "value" });
+      expect(inputSchema?.bodyFields?.body).toEqual({ type: "test" });
+      expect(inputSchema?.bodyType).toBe("json");
+      expect(inputSchema?.headerFields?.auth).toEqual({ type: "bearer" });
     }
   });
 
-  it('should strip snake_case field names (schema uses camelCase)', () => {
+  it("should strip snake_case field names (schema uses camelCase)", () => {
     const response = {
       x402Version: 1,
       accepts: [
         {
-          scheme: 'exact',
-          network: 'base',
-          maxAmountRequired: '1000',
-          resource: 'https://example.com',
-          description: 'test',
-          mimeType: 'application/json',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "exact",
+          network: "base",
+          maxAmountRequired: "1000",
+          resource: "https://example.com",
+          description: "test",
+          mimeType: "application/json",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
           outputSchema: {
             input: {
-              type: 'http',
-              method: 'POST',
-              query_params: { test: 'value' },
-              body_fields: { body: 'test' },
-              body_type: 'json',
-              header_fields: { auth: 'bearer' },
+              type: "http",
+              method: "POST",
+              query_params: { test: "value" },
+              body_fields: { body: "test" },
+              body_type: "json",
+              header_fields: { auth: "bearer" },
             },
           },
         },
@@ -265,7 +265,7 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should handle aixbt Indigo agent with nested array items schema', () => {
+  it("should handle aixbt Indigo agent with nested array items schema", () => {
     const response = JSON.parse(rawBodies[8]!) as unknown;
     const result = parseV1(response);
 
@@ -277,7 +277,7 @@ describe('parseV1 with normalized schemas', () => {
 
       // Verify input schema structure
       expect(inputSchema).toBeDefined();
-      expect(inputSchema?.bodyType).toBe('json');
+      expect(inputSchema?.bodyType).toBe("json");
       const messagesField = inputSchema?.bodyFields?.messages as
         | {
             type: string;
@@ -286,9 +286,9 @@ describe('parseV1 with normalized schemas', () => {
           }
         | undefined;
       expect(messagesField).toBeDefined();
-      expect(messagesField?.type).toBe('array');
+      expect(messagesField?.type).toBe("array");
       expect(messagesField?.description).toBe(
-        'Array of conversation messages with role and content'
+        "Array of conversation messages with role and content"
       );
 
       // Verify nested items with properties
@@ -306,21 +306,21 @@ describe('parseV1 with normalized schemas', () => {
           }
         | undefined;
       expect(messagesItems).toBeDefined();
-      expect(messagesItems?.type).toBe('object');
+      expect(messagesItems?.type).toBe("object");
       expect(messagesItems?.properties).toBeDefined();
 
       // Verify role property with enum
       const roleProperty = messagesItems?.properties.role;
       expect(roleProperty).toBeDefined();
-      expect(roleProperty?.type).toBe('string');
-      expect(roleProperty?.enum).toEqual(['user', 'assistant']);
-      expect(roleProperty?.description).toBe('The role of the message sender');
+      expect(roleProperty?.type).toBe("string");
+      expect(roleProperty?.enum).toEqual(["user", "assistant"]);
+      expect(roleProperty?.description).toBe("The role of the message sender");
 
       // Verify content property
       const contentProperty = messagesItems?.properties.content;
       expect(contentProperty).toBeDefined();
-      expect(contentProperty?.type).toBe('string');
-      expect(contentProperty?.description).toBe('The message content');
+      expect(contentProperty?.type).toBe("string");
+      expect(contentProperty?.description).toBe("The message content");
 
       // Verify output schema structure
       const typedOutputSchema = outputSchema as
@@ -336,33 +336,33 @@ describe('parseV1 with normalized schemas', () => {
           }
         | undefined;
       expect(typedOutputSchema).toBeDefined();
-      expect(typedOutputSchema?.status?.type).toBe('number');
-      expect(typedOutputSchema?.error?.type).toBe('string');
-      expect(typedOutputSchema?.data?.type).toBe('object');
-      expect(typedOutputSchema?.data?.properties?.text?.type).toBe('string');
+      expect(typedOutputSchema?.status?.type).toBe("number");
+      expect(typedOutputSchema?.error?.type).toBe("string");
+      expect(typedOutputSchema?.data?.type).toBe("object");
+      expect(typedOutputSchema?.data?.properties?.text?.type).toBe("string");
     }
   });
 });
 
-describe('schema validation edge cases', () => {
-  it('should handle minimal valid responses', () => {
+describe("schema validation edge cases", () => {
+  it("should handle minimal valid responses", () => {
     const minimalResponse = {
       x402Version: 1,
       accepts: [
         {
-          scheme: 'exact',
-          network: 'base',
-          maxAmountRequired: '1000',
-          resource: 'https://example.com',
-          description: 'test',
-          mimeType: 'application/json',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "exact",
+          network: "base",
+          maxAmountRequired: "1000",
+          resource: "https://example.com",
+          description: "test",
+          mimeType: "application/json",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
           outputSchema: {
             input: {
-              type: 'http',
-              method: 'GET',
+              type: "http",
+              method: "GET",
             },
           },
         },
@@ -380,19 +380,19 @@ describe('schema validation edge cases', () => {
     }
   });
 
-  it('should handle error fields in responses', () => {
+  it("should handle error fields in responses", () => {
     const responseWithError = JSON.parse(rawBodies[0]!) as unknown;
     const result = parseV1(responseWithError);
 
     // The function should handle responses with error fields
     if (result.success) {
-      expect(result.data.error).toBe('No X-PAYMENT header provided');
+      expect(result.data.error).toBe("No X-PAYMENT header provided");
     } else {
       expect(result.errors).toBeDefined();
     }
   });
 
-  it('should handle array inputs gracefully', () => {
+  it("should handle array inputs gracefully", () => {
     const arrayInput = [1, 2, 3];
     const parseResult = parseV1(arrayInput);
 

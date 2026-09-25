@@ -1,21 +1,21 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import { Input } from '@/components/ui/input';
-import { TokenInput } from '@/components/ui/token/token-input';
+import { Input } from "@/components/ui/input";
+import { TokenInput } from "@/components/ui/token/token-input";
 
-import { useWalletChain } from '../../../../../_contexts/wallet-chain/hook';
+import { useWalletChain } from "../../../../../_contexts/wallet-chain/hook";
 
-import { usdc } from '@/lib/tokens/usdc';
+import { usdc } from "@/lib/tokens/usdc";
 
-import { Chain, CHAIN_ICONS, CHAIN_LABELS } from '@/types/chain';
-import { WithdrawEVM } from './evm';
-import { WithdrawSolana } from './svm';
-import { WithdrawSuccess } from './success';
+import { Chain, CHAIN_ICONS, CHAIN_LABELS } from "@/types/chain";
+import { WithdrawEVM } from "./evm";
+import { WithdrawSolana } from "./svm";
+import { WithdrawSuccess } from "./success";
 
 export const Withdraw: React.FC = () => {
-  const [toAddress, setToAddress] = useState('');
+  const [toAddress, setToAddress] = useState("");
   const [amount, setAmount] = useState(0);
   const [isSuccessful, setIsSuccessful] = useState(false);
 
@@ -28,7 +28,7 @@ export const Withdraw: React.FC = () => {
         toAddress={toAddress}
         onReset={() => {
           setIsSuccessful(false);
-          setToAddress('');
+          setToAddress("");
           setAmount(0);
         }}
       />
@@ -37,16 +37,16 @@ export const Withdraw: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="gap-1 flex items-center justify-between">
+      <div className="flex items-center justify-between gap-1">
         <div className="flex items-center gap-1">
           <Image
             src={CHAIN_ICONS[chain]}
             alt={CHAIN_LABELS[chain]}
             height={16}
             width={16}
-            className="size-4 inline-block mr-1 rounded-full"
+            className="mr-1 inline-block size-4 rounded-full"
           />
-          <span className="font-bold text-sm">
+          <span className="text-sm font-bold">
             Send USDC on {CHAIN_LABELS[chain]}
           </span>
         </div>
@@ -63,12 +63,12 @@ export const Withdraw: React.FC = () => {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <span className="font-medium text-sm">Address</span>
+        <span className="text-sm font-medium">Address</span>
         <Input
-          placeholder={chain === Chain.SOLANA ? 'Solana Address' : '0x...'}
+          placeholder={chain === Chain.SOLANA ? "Solana Address" : "0x..."}
           value={toAddress}
-          onChange={e => setToAddress(e.target.value)}
-          className="border-2 shadow-none placeholder:text-muted-foreground/60 font-mono"
+          onChange={(e) => setToAddress(e.target.value)}
+          className="border-2 font-mono shadow-none placeholder:text-muted-foreground/60"
         />
       </div>
       {chain === Chain.SOLANA ? (

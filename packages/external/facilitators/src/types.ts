@@ -1,6 +1,6 @@
-import type { FacilitatorConfig } from 'x402/types';
+import type { FacilitatorConfig } from "x402/types";
 
-export type { FacilitatorConfig } from 'x402/types';
+export type { FacilitatorConfig } from "x402/types";
 export type FacilitatorConfigConstructor<Props = void> = (
   requirements: Props
 ) => FacilitatorConfig;
@@ -39,7 +39,7 @@ export interface Token {
 }
 
 export enum Network {
-  BASE = 'base',
-  POLYGON = 'polygon',
-  SOLANA = 'solana',
+  BASE = "base",
+  POLYGON = "polygon",
+  SOLANA = "solana",
 }

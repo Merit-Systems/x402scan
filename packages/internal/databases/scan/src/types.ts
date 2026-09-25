@@ -30,7 +30,7 @@ export type {
   ResourceMetrics,
   InviteCode,
   InviteRedemption,
-} from '../generated/prisma/browser';
+} from "../generated/prisma/browser";
 
 export {
   Role,
@@ -41,4 +41,4 @@ export {
   Visibility,
   InviteCodeStatus,
   RedemptionStatus,
-} from '../generated/prisma/browser';
+} from "../generated/prisma/browser";

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { useSiwe } from '@/app/(app)/_hooks/sign-in/use-siwe';
-import { useSiws } from '@/app/(app)/_hooks/sign-in/use-siws';
+import { useSiwe } from "@/app/(app)/_hooks/sign-in/use-siwe";
+import { useSiws } from "@/app/(app)/_hooks/sign-in/use-siws";
 
-import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+import { useSolanaWallet } from "@/app/_contexts/solana/hook";
 
-import type { UiWalletAccount } from '@wallet-standard/react';
-import type { ConnectedWallets } from '@/app/(app)/_hooks/use-connected-wallets';
+import type { UiWalletAccount } from "@wallet-standard/react";
+import type { ConnectedWallets } from "@/app/(app)/_hooks/use-connected-wallets";
 
 interface Props {
   connectedWallets: ConnectedWallets;
@@ -58,23 +58,23 @@ interface VerifyProps {
 
 const VerifyContent: React.FC<VerifyProps> = ({ signIn, isPending }) => {
   return (
-    <div className="flex flex-col gap-4 pt-4 ">
+    <div className="flex flex-col gap-4 pt-4">
       <div className="px-4">
         <Button
           onClick={() => signIn()}
           disabled={isPending}
-          className="w-full h-12 md:h-12"
+          className="h-12 w-full md:h-12"
           variant="turbo"
         >
           {isPending ? (
             <Loader2 className="size-4 animate-spin" />
           ) : (
-            'Sign Message'
+            "Sign Message"
           )}
         </Button>
       </div>
-      <div className="p-4 bg-muted border-t">
-        <p className="text-muted-foreground text-xs text-center font-mono">
+      <div className="border-t bg-muted p-4">
+        <p className="text-center font-mono text-xs text-muted-foreground">
           Sign a message to confirm you own this wallet. This will refresh the
           page.
         </p>

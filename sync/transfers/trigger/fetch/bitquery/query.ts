@@ -1,7 +1,7 @@
 import {
   DEFAULT_CONTRACT_ADDRESS,
   USDC_MULTIPLIER,
-} from '@/trigger/lib/constants';
+} from "@/trigger/lib/constants";
 import type {
   SyncConfig,
   EvmChainConfig,
@@ -9,8 +9,8 @@ import type {
   TransferEventData,
   BitQueryTransferRowStream,
   FacilitatorConfig,
-} from '@/trigger/types';
-import { PaginationStrategy, QueryProvider } from '@/trigger/types';
+} from "@/trigger/types";
+import { PaginationStrategy, QueryProvider } from "@/trigger/types";
 
 export function buildQuery(
   config: SyncConfig,
@@ -64,7 +64,7 @@ export function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  return data.map(item => ({
+  return data.map((item) => ({
     address: item.Transfer.Currency?.SmartContract || DEFAULT_CONTRACT_ADDRESS,
     transaction_from: item.Transaction.From,
     sender: item.Transfer.Sender,
@@ -82,7 +82,7 @@ export function transformResponse(
 export function createEvmChainConfig(params: EvmChainConfig): SyncConfig {
   return {
     ...params,
-    apiUrl: 'https://streaming.bitquery.io/graphql',
+    apiUrl: "https://streaming.bitquery.io/graphql",
     paginationStrategy: PaginationStrategy.TIME_WINDOW,
     provider: QueryProvider.BITQUERY,
     timeWindowInMs: 7 * 24 * 60 * 60 * 1000, // 1 week
@@ -90,6 +90,6 @@ export function createEvmChainConfig(params: EvmChainConfig): SyncConfig {
     transformResponse,
     maxDurationInSeconds: 300,
     limit: 20_000,
-    machine: 'medium-1x',
+    machine: "medium-1x",
   };
 }

@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { columns } from './columns';
+import { columns } from "./columns";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { useAgentsSorting } from '@/app/(app)/_contexts/sorting/agents/hook';
+import { useAgentsSorting } from "@/app/(app)/_contexts/sorting/agents/hook";
 
-import type { RouterInputs } from '@/trpc/client';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+import type { RouterInputs } from "@/trpc/client";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
 interface Props {
   input: Omit<
-    RouterInputs['public']['agents']['list'],
-    'sorting' | 'pagination'
+    RouterInputs["public"]["agents"]["list"],
+    "sorting" | "pagination"
   >;
   limit?: number;
 }

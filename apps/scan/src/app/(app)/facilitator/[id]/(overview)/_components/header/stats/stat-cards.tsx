@@ -1,6 +1,6 @@
-import { Suspense } from 'react';
-import { HydrateClient } from '@/trpc/server';
-import { StatsCardsContent, LoadingStatsCards } from './content';
+import { Suspense } from "react";
+import { HydrateClient } from "@/trpc/server";
+import { StatsCardsContent, LoadingStatsCards } from "./content";
 
 interface Props {
   id: string;
