@@ -1,0 +1,50 @@
+import Link from "next/link";
+import { ArrowRight, Plus } from "lucide-react";
+
+import { DiscoveryPageHeader } from "@/app/(app)/(home)/discovery/_components/page-header";
+import { QuickstartPromptCard } from "@/app/(app)/(home)/discovery/quickstart/_components/prompt-card";
+import { TryDiscovery } from "@/app/(app)/(home)/integration-spec/try-discovery";
+import { buttonVariants } from "@/components/ui/button";
+
+export const metadata = {
+  title: "Provider quickstart",
+  description:
+    "Use a coding agent to make your API discoverable and payable through x402.",
+};
+
+<DiscoveryPageHeader
+  title="Quickstart with your agent"
+  description="Paste one prompt into your coding agent. It figures out where you are and walks you through everything."
+/>
+
+<div className="mb-10" data-not-typeset>
+  <QuickstartPromptCard />
+</div>
+
+## Test your API
+
+Run discovery against your origin to see what x402scan resolves before you register.
+
+<div className="mt-3 mb-10" data-not-typeset>
+  <TryDiscovery />
+</div>
+
+## When the agent finishes
+
+1. Your `/openapi.json` should describe each payable route with `x-payment-info` and a `402` response.
+2. The runtime should challenge unpaid requests with a valid x402 payment response.
+3. The agent should stop and ask before registering. Review the origin and routes it plans to list, then approve — registering publishes a listing agents will call and pay for.
+
+<div className="mt-6 flex flex-wrap gap-2 border-t pt-6" data-not-typeset>
+  <Link href="/resources/register" className={buttonVariants({ size: "lg" })}>
+    <Plus className="size-3.5" />
+    Add your API
+  </Link>
+  <Link
+    href="/discovery/spec"
+    className={buttonVariants({ size: "lg", variant: "outline" })}
+  >
+    Read the discovery spec
+    <ArrowRight className="size-3.5" />
+  </Link>
+</div>
