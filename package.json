@@ -6,7 +6,6 @@
     "@merit-systems/oxlint-config": "catalog:foundation",
     "@merit-systems/taze-config": "catalog:foundation",
     "@merit-systems/typescript-config": "catalog:foundation",
-    "@oxlint/plugins": "1.78.0",
     "knip": "^5.80.0",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
