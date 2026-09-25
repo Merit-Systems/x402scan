@@ -1,24 +1,22 @@
-import { Nav } from "@/app/(app)/_components/layout/nav";
 import { env } from "@/env";
 import { cleanExternalText } from "@/lib/utils";
 import { api } from "@/trpc/server";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 export default async function OriginLayout({
-  children,
   params,
+  children,
 }: LayoutProps<"/server/[id]">) {
   const { id } = await params;
+  const origin = await api.public.origins.get(id);
+
+  if (!origin) {
+    notFound();
+  }
+
   return (
     <div className="flex flex-1 flex-col">
-      <Nav
-        tabs={[
-          {
-            label: "Overview",
-            href: `/server/${id}`,
-          },
-        ]}
-      />
       <div className="flex flex-1 flex-col py-6 md:py-8">{children}</div>
     </div>
   );

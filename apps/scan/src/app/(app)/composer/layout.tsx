@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { Nav } from "../_components/layout/nav";
+import { Subnav } from "../_components/layout/subnav";
 import { auth } from "@/auth";
 import { notFound } from "next/navigation";
 
@@ -24,7 +24,7 @@ export default async function ComposerLayout({
   }
   return (
     <div className="flex flex-1 flex-col">
-      <Nav
+      <Subnav
         tabs={[
           {
             label: "Home",
