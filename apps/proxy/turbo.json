@@ -4,6 +4,8 @@
   "tasks": {
     "dev": {
       "description": "Start proxy server in development mode",
+      "cache": false,
+      "persistent": true,
       "passThroughEnv": ["PORT"]
     },
     "build": {
@@ -12,6 +14,8 @@
     },
     "start": {
       "description": "Start proxy server in production mode",
+      "cache": false,
+      "persistent": true,
       "passThroughEnv": ["PORT"]
     }
   }

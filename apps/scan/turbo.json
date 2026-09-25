@@ -45,6 +45,7 @@
     },
     "build:deploy": {
       "description": "Build x402 scan app with database migrations",
+      "cache": false,
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "NEXT_PUBLIC_*",
@@ -110,8 +111,27 @@
         "VERCEL_BRANCH_URL"
       ]
     },
+    "ui:integrity": {
+      "cache": false,
+      "inputs": [
+        "components.json",
+        "package.json",
+        "tsconfig.json",
+        "src/components/**",
+        "src/app/globals.css",
+        "$TURBO_ROOT$/foundation.config.ts",
+        "$TURBO_ROOT$/pnpm-lock.yaml"
+      ],
+      "passThroughEnv": [
+        "ACTIONS_ID_TOKEN_REQUEST_TOKEN",
+        "ACTIONS_ID_TOKEN_REQUEST_URL"
+      ],
+      "outputs": []
+    },
     "dev": {
       "description": "Start x402 scan app in development mode",
+      "cache": false,
+      "persistent": true,
       "passThroughEnv": [
         "NEXT_PUBLIC_*",
         "NEXT_RUNTIME",
@@ -152,6 +172,8 @@
     },
     "start": {
       "description": "Start the built x402 scan app",
+      "cache": false,
+      "persistent": true,
       "passThroughEnv": [
         "NEXT_PUBLIC_*",
         "NEXT_RUNTIME",

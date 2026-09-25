@@ -45,7 +45,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
     buttonRefs[hoveredTabIndex ?? -1]?.getBoundingClientRect();
 
   return (
-    <div className="no-scrollbar sticky top-0 z-10 w-full max-w-full overflow-x-auto overflow-y-hidden border-b bg-card px-2 pt-2.5 md:px-6">
+    <div className="sticky top-0 z-10 no-scrollbar w-full max-w-full overflow-x-auto overflow-y-hidden border-b bg-card px-2 pt-2.5 md:px-6">
       <nav
         className="relative h-full w-full bg-card"
         ref={navRef}

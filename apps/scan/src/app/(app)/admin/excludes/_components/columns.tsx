@@ -1,11 +1,11 @@
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Ban, CheckCircle, XCircle } from "lucide-react";
 import type { RouterOutputs } from "@/trpc/client";
 import { Favicon } from "@/app/(app)/_components/favicon";
 
-export const columns: ColumnDef<
+export const columns: ExtendedColumnDef<
   RouterOutputs["admin"]["resources"]["excludes"]["searchResources"][number]
 >[] = [
   {

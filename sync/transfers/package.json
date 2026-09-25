@@ -9,26 +9,27 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
+    "deploy": "trigger deploy",
     "types:check": "tsc --noEmit",
     "test": "vitest run",
     "probe:channels": "tsx scripts/probe-channels.ts"
   },
   "dependencies": {
-    "@coinbase/cdp-sdk": "^1.38.4",
+    "@coinbase/cdp-sdk": "catalog:coinbase",
     "@google-cloud/bigquery": "^8.1.1",
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
     "@trigger.dev/sdk": "catalog:trigger",
     "@x402scan/transfers-db": "workspace:*",
     "bottleneck": "^2.19.5",
-    "bs58": "^6.0.0",
+    "bs58": "catalog:",
     "facilitators": "workspace:*",
     "p-limit": "^7.2.0"
   },
   "devDependencies": {
     "@trigger.dev/build": "catalog:trigger",
     "@types/node": "catalog:",
-    "@x402scan/typescript-config": "workspace:*",
+    "@merit-systems/typescript-config": "catalog:foundation",
     "trigger.dev": "catalog:trigger",
     "typescript": "catalog:",
     "vitest": "catalog:",

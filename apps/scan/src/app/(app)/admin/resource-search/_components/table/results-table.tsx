@@ -3,7 +3,7 @@
 import { useMemo, useState, useCallback, memo } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable, type DataTableRow } from "@/components/ui/data-table";
 
 import { ResourceExecutorModal } from "@/app/(app)/admin/tags/_components/resource-executor-modal";
 
@@ -11,7 +11,6 @@ import { useResourceSearchSorting } from "@/app/(app)/_contexts/sorting/resource
 
 import { createColumns } from "./columns";
 
-import type { Row } from "@tanstack/react-table";
 import type { FilteredSearchResult } from "@/services/resource-search/types";
 
 interface ResultsTableProps {
@@ -62,9 +61,12 @@ const ResultsTableComponent = ({
     return sorted;
   }, [results, sorting]);
 
-  const handleRowClick = useCallback((row: Row<FilteredSearchResult>) => {
-    setSelectedResourceId(row.original.id);
-  }, []);
+  const handleRowClick = useCallback(
+    (row: DataTableRow<FilteredSearchResult>) => {
+      setSelectedResourceId(row.original.id);
+    },
+    []
+  );
 
   const handleModalClose = useCallback((open: boolean) => {
     if (!open) {
