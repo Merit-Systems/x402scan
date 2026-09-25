@@ -43,12 +43,6 @@ export const getAllExcludedResources = async () => {
   });
 };
 
-export const deleteExcludedResource = async (id: string) => {
-  return await scanDb.excludedResource.delete({
-    where: { id },
-  });
-};
-
 export const deleteExcludedResourceByResourceId = async (
   resourceId: string
 ) => {
