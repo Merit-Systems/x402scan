@@ -937,8 +937,11 @@ function PostRegistrationDialog({
                   </Button>
                 </form>
               ) : (
-                <Button asChild className="flex-1">
-                  <a href={MERCHANT_EMAIL_URL}>Email {MERCHANT_EMAIL} &rarr;</a>
+                <Button
+                  className="flex-1"
+                  render={<a href={MERCHANT_EMAIL_URL} />}
+                >
+                  Email {MERCHANT_EMAIL} &rarr;
                 </Button>
               )}
             </ChecklistStep>
