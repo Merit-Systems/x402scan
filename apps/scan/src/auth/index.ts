@@ -41,7 +41,7 @@ declare module "next-auth" {
 const { handlers, auth: uncachedAuth } = NextAuth({
   providers,
   adapter: {
-    ...PrismaAdapter(scanDb as Parameters<typeof PrismaAdapter>[0]),
+    ...PrismaAdapter(scanDb),
     getUser: async (id) => {
       const user = await scanDb.user.findUnique({
         where: { id },
@@ -52,7 +52,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
       }
       return {
         ...user,
-        email: user?.email ?? "",
+        email: user.email ?? "",
       };
     },
     getSessionAndUser: async (sessionToken) => {
@@ -106,17 +106,13 @@ const { handlers, auth: uncachedAuth } = NextAuth({
           throw new Error("No user ID found in token");
         }
 
-        const createdSession = await scanDb.session.create({
+        await scanDb.session.create({
           data: {
             sessionToken: sessionToken,
             userId: params.token.sub,
             expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
           },
         });
-
-        if (!createdSession) {
-          throw new Error("Failed to create session");
-        }
 
         return sessionToken;
       }

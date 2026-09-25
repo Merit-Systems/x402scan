@@ -2,11 +2,15 @@ import { scanDb } from "@x402scan/scan-db";
 
 import type { Prisma } from "@x402scan/scan-db";
 import type { ParsedX402Response } from "@/lib/x402";
+import { jsonObjectSchema } from "@/lib/json";
 
 const toPrismaJson = (response: ParsedX402Response): Prisma.InputJsonValue => {
-  // Parsed x402 responses are JSON-safe by schema validation, but Prisma's
-  // structural JSON input type requires nested objects to have index signatures.
-  return response as Prisma.InputJsonValue;
+  const serialized = JSON.stringify(response);
+  const parsed = jsonObjectSchema.safeParse(JSON.parse(serialized));
+  if (!parsed.success) {
+    throw new Error("Parsed x402 response is not JSON-safe");
+  }
+  return parsed.data;
 };
 
 export const upsertResourceResponse = async (

@@ -27,7 +27,7 @@ export const addInviteCodeToPartner = async (
       throw new Error(`Partner with id ${partnerId} not found`);
     }
 
-    const currentInviteCodes = partner.invite_codes || [];
+    const currentInviteCodes = partner.invite_codes;
 
     // Only add if not already present
     if (!currentInviteCodes.includes(inviteCodeId)) {

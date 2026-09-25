@@ -11,22 +11,17 @@ import { CACHE_DURATION_MINUTES } from "./cache-constants";
  */
 const MAX_KEY_LENGTH = 1024;
 
-/**
- * Cache context that can be passed from tRPC to control cache behavior
- */
 interface CacheContext {
   isWarmingCache?: boolean;
 }
 
-/**
- * Detects a trailing CacheContext argument. The producer (tRPC context)
- * always supplies `isWarmingCache` as a boolean, which distinguishes the
- * context object from ordinary query arguments.
- */
 const cacheContextSchema = z.looseObject({
   isWarmingCache: z.boolean(),
 });
 
+/**
+ * Cache context that can be passed from tRPC to control cache behavior
+ */
 /**
  * Redis TTL is 2x the cache duration to provide buffer time.
  * This ensures cache doesn't expire while the next warming cycle is running.
@@ -234,17 +229,16 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
   tags?: string[];
 }) => {
   return async (...allArgs: [...TInput, CacheContext?]): Promise<TOutput> => {
-    // Extract context from last argument if present
     const contextParse = cacheContextSchema.safeParse(
       allArgs[allArgs.length - 1]
     );
     const ctx: CacheContext = contextParse.success ? contextParse.data : {};
-    // TS cannot re-derive TInput from the variadic [...TInput, CacheContext?]
-    // tuple after slicing, so this is asserted once here.
+    // TypeScript cannot re-derive the variadic tuple after removing its
+    // optional trailing cache context.
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const args = (
       contextParse.success ? allArgs.slice(0, -1) : allArgs.slice()
     ) as TInput;
-
     const cacheKey = config.createCacheKey(...args);
     const rawKey = `${config.cacheKeyPrefix}:${cacheKey}`;
     // Hash oversized keys to prevent Redis "ERR key too long" errors.
@@ -270,20 +264,21 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
 /**
  * Generic cached query wrapper for single items with dates
  */
-export const createCachedQuery = <TInput extends unknown[], TOutput>(config: {
+export const createCachedQuery = <
+  TInput extends unknown[],
+  TOutput extends object,
+>(config: {
   queryFn: (...args: TInput) => Promise<TOutput>;
   cacheKeyPrefix: string;
   createCacheKey: (...args: TInput) => string;
-  dateFields: (keyof NonNullable<TOutput>)[];
+  dateFields: (keyof TOutput)[];
   revalidate?: number;
   tags?: string[];
 }) => {
   return createCachedQueryBase({
     ...config,
-    serialize: (data) =>
-      serializeDates(data as NonNullable<TOutput>, config.dateFields),
-    deserialize: (data) =>
-      deserializeDates(data as NonNullable<TOutput>, config.dateFields),
+    serialize: (data) => serializeDates(data, config.dateFields),
+    deserialize: (data) => deserializeDates(data, config.dateFields),
   });
 };
 
@@ -374,6 +369,19 @@ type CacheKeyParamValue =
   | readonly CacheKeyParamValue[]
   | { readonly [key: string]: CacheKeyParamValue };
 
+const cacheKeyParamValueSchema: z.ZodType<CacheKeyParamValue> = z.lazy(() =>
+  z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.null(),
+    z.undefined(),
+    z.date(),
+    z.array(cacheKeyParamValueSchema),
+    z.record(z.string(), cacheKeyParamValueSchema),
+  ])
+);
+
 /**
  * Narrow a param value to a nested params object. Only sound after Date and
  * array values have been handled — the remaining non-primitive member of
@@ -425,22 +433,14 @@ const normalizeCacheKeyValue = (
  * Prisma where clauses, ...) and every entry is normalized through
  * CacheKeyParamValue before being serialized.
  */
-// Object.entries on a generic param object yields `any` values; this is the
-// one place caller-owned params enter the cache-key domain, so the entries are
-// asserted into it here rather than at every use site.
-// oxlint-disable-next-line typescript/no-unnecessary-type-parameters
-const cacheKeyEntries = <T extends object>(
-  params: T
-): [string, CacheKeyParamValue | undefined][] =>
-  Object.entries(params) as [string, CacheKeyParamValue | undefined][];
-
-// The generic preserves compatibility with structurally typed query inputs
-// that intentionally do not declare a string index signature.
+// The generic accepts structurally typed query inputs without requiring a
+// meaningless index signature at every call site.
 // oxlint-disable-next-line typescript/no-unnecessary-type-parameters
 export const createStandardCacheKey = <T extends object>(params: T): string => {
   const normalized: Record<string, CacheKeyParamValue> = {};
+  const entries = z.record(z.string(), cacheKeyParamValueSchema).parse(params);
 
-  for (const [key, value] of cacheKeyEntries(params)) {
+  for (const [key, value] of Object.entries(entries)) {
     if (value === undefined) {
       // Skip undefined values
       continue;

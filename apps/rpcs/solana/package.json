@@ -9,6 +9,7 @@
     "dev": "portless",
     "dev:app": "wrangler dev src/index.ts --local",
     "deploy": "wrangler deploy src/index.ts",
+    "test": "vitest run",
     "types:check": "tsc --noEmit"
   },
   "devDependencies": {
@@ -16,7 +17,11 @@
     "@merit-systems/typescript-config": "catalog:foundation",
     "portless": "catalog:",
     "typescript": "catalog:",
+    "vitest": "catalog:",
     "wrangler": "^4.2.0"
+  },
+  "dependencies": {
+    "zod": "catalog:"
   },
   "portless": {
     "name": "solana-rpc.x402scan",

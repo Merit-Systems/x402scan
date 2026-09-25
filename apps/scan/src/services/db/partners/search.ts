@@ -24,6 +24,5 @@ export const searchPartners = async (
     query_params: { searchTerm: `%${lowerSearchTerm}%` },
   });
 
-  const data = await resultSet.json();
-  return data as PartnerData[];
+  return resultSet.json<PartnerData>();
 };

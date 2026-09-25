@@ -1,4 +1,4 @@
-import { sortingSchema } from "@/lib/schemas";
+import { z } from "zod";
 
 interface TableSorting<SortId extends string> {
   id: SortId;
@@ -6,6 +6,13 @@ interface TableSorting<SortId extends string> {
 }
 
 type SearchParams = Record<string, string | string[] | undefined>;
+
+export function isSortId<SortId extends string>(
+  value: string,
+  sortIds: readonly SortId[]
+): value is SortId {
+  return sortIds.some((sortId) => sortId === value);
+}
 
 export function parseTableSorting<SortId extends string>(
   searchParams: SearchParams,
@@ -15,18 +22,15 @@ export function parseTableSorting<SortId extends string>(
 ): TableSorting<SortId> {
   const sortParam = params.sort ?? "s";
   const directionParam = params.direction ?? "sd";
-  const parsed = sortingSchema(sortIds).safeParse({
-    id: searchParams[sortParam],
-    desc: searchParams[directionParam] !== "asc",
-  });
-
-  if (!parsed.success) {
+  const id = searchParams[sortParam];
+  const parsedId = z.string().safeParse(id);
+  if (!parsedId.success || !isSortId(parsedId.data, sortIds)) {
     return defaultSorting;
   }
 
   return {
-    id: parsed.data.id as SortId,
-    desc: parsed.data.desc,
+    id: parsedId.data,
+    desc: searchParams[directionParam] !== "asc",
   };
 }
 

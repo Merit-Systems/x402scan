@@ -1,3 +1,5 @@
+import { webSocketMessageDataSchema } from "./websocket-message";
+
 interface Env {
   HELIUS_API_KEY: string;
   CORS_ALLOW_ORIGIN?: string;
@@ -171,9 +173,16 @@ function handleWebSocket(
 
   // Client to upstream forwarding
   server.addEventListener("message", (event) => {
+    const parsedData = webSocketMessageDataSchema.safeParse(event.data);
+    if (!parsedData.success) {
+      cleanup();
+      server.close(1003, "unsupported_message_type");
+      return;
+    }
+    const data = parsedData.data;
     if (isUpstreamConnected && upstream.readyState === WebSocket.OPEN) {
       try {
-        upstream.send(event.data as string | ArrayBuffer);
+        upstream.send(data);
       } catch {
         cleanup();
         try {
@@ -197,15 +206,22 @@ function handleWebSocket(
       if (bufferedData.length === 0) {
         startBufferTimeout();
       }
-      bufferedData.push(event.data as string | ArrayBuffer);
+      bufferedData.push(data);
     }
   });
 
   // Upstream to client forwarding
   upstream.addEventListener("message", (event) => {
+    const parsedData = webSocketMessageDataSchema.safeParse(event.data);
+    if (!parsedData.success) {
+      cleanup();
+      upstream.close(1003, "unsupported_message_type");
+      return;
+    }
+    const data = parsedData.data;
     if (server.readyState === WebSocket.OPEN) {
       try {
-        server.send(event.data as string | ArrayBuffer);
+        server.send(data);
       } catch {
         cleanup();
         try {

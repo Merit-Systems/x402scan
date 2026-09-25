@@ -4,7 +4,6 @@ import { listResourcesWithPagination } from "@/services/db/resources/resource";
 import { serializeAccepts } from "@/lib/token";
 
 import type { z } from "zod";
-import type { SupportedChain } from "@/types/chain";
 
 export async function handleOriginResources(
   id: string,
@@ -15,9 +14,7 @@ export async function handleOriginResources(
     {
       where: {
         originId: id,
-        accepts: chain
-          ? { some: { network: chain as SupportedChain } }
-          : undefined,
+        accepts: chain ? { some: { network: chain } } : undefined,
       },
     },
     { page, page_size }

@@ -8,7 +8,5 @@ export const listPartners = async (): Promise<PartnerData[]> => {
     query,
     format: "JSONEachRow",
   });
-  const data = await resultSet.json();
-
-  return data as PartnerData[];
+  return resultSet.json<PartnerData>();
 };

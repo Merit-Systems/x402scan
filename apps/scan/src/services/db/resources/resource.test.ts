@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { upsertResourceSchema } from "./resource-schema";
+import {
+  normalizeKnownAcceptNetworks,
+  upsertResourceSchema,
+} from "./resource-schema";
 
 const validAccepts = [
   {
@@ -14,6 +17,15 @@ const validAccepts = [
 ];
 
 describe("upsertResourceSchema", () => {
+  it("keeps known networks and drops unknown networks from mixed accepts", () => {
+    expect(
+      normalizeKnownAcceptNetworks([
+        { network: "eip155:8453", marker: "supported" },
+        { network: "eip155:999999", marker: "unknown" },
+      ])
+    ).toEqual([{ network: "base", marker: "supported" }]);
+  });
+
   it("defaults method to empty string when omitted", () => {
     const result = upsertResourceSchema.safeParse({
       resource: "https://api.example.com/foo",
@@ -24,9 +36,10 @@ describe("upsertResourceSchema", () => {
     });
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.method).toBe("");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.method).toBe("");
   });
 
   it("preserves explicit method", () => {
@@ -40,9 +53,10 @@ describe("upsertResourceSchema", () => {
     });
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.method).toBe("POST");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.method).toBe("POST");
   });
 
   it("accepts non-exact x402 schemes for supported networks", () => {
@@ -66,10 +80,11 @@ describe("upsertResourceSchema", () => {
     });
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.accepts[0]?.scheme).toBe("upto");
-      expect(result.data.accepts[0]?.network).toBe("base");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.accepts[0]?.scheme).toBe("upto");
+    expect(result.data.accepts[0]?.network).toBe("base");
   });
 
   // Regression: stable-apartment.vercel.app advertised a payTo with valid hex
@@ -96,10 +111,11 @@ describe("upsertResourceSchema", () => {
     });
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.accepts[0]?.payTo).toBe(
-        "0x742d35cc6634c0532925a3b844bc9e7595f2bd18"
-      );
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.accepts[0]?.payTo).toBe(
+      "0x742d35cc6634c0532925a3b844bc9e7595f2bd18"
+    );
   });
 });

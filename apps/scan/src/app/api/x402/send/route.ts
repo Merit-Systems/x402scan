@@ -17,8 +17,10 @@ const createSendHandler = (sendRouter: typeof router) =>
       (body: { amount: number; address: string }) => body.amount.toString(),
       {
         maxPrice: "1000",
-        payTo: (_req, body) =>
-          (body as { address: string } | undefined)?.address ?? "",
+        payTo: (_req, body) => {
+          const parsed = sendUsdcBodySchema.safeParse(body);
+          return parsed.success ? parsed.data.address : "";
+        },
       }
     )
     .method("POST")

@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { z } from "zod";
 import { parseX402Response, getOutputSchema, isV2Response } from "../index";
 
 // Helper for v1 tests: parse and narrow to the V1 branch of the union.
@@ -31,15 +32,13 @@ describe("parseV1", () => {
     const responseWithError = JSON.parse(rawBodies[1]) as unknown;
     const result = parseV1(responseWithError);
 
-    // The function should handle responses with error fields, even if strict parsing fails
-    if (result.success) {
-      expect(result.data.x402Version).toBe(1);
-      expect(result.data.accepts).toHaveLength(1);
-      expect(result.data.error).toBe("X-PAYMENT header is required");
-    } else {
-      // If parsing fails, it should provide error information
-      expect(result.errors).toBeDefined();
+    expect(result.success).toBe(true);
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.x402Version).toBe(1);
+    expect(result.data.accepts).toHaveLength(1);
+    expect(result.data.error).toBe("X-PAYMENT header is required");
   });
 
   it("should default x402Version to 1 when missing", () => {
@@ -48,9 +47,10 @@ describe("parseV1", () => {
 
     // x402Version defaults to 1 via z3.literal(1).default(1)
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.x402Version).toBe(1);
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.x402Version).toBe(1);
   });
 
   it("should handle null or undefined input", () => {
@@ -62,9 +62,10 @@ describe("parseV1", () => {
     const result = parseV1({});
     // x402Version defaults to 1, accepts is optional, error is nullish
     expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.x402Version).toBe(1);
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.data.x402Version).toBe(1);
   });
 });
 
@@ -74,12 +75,13 @@ describe("parseV1 with normalized schemas", () => {
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const inputSchema = getOutputSchema(result.data)?.input;
-      expect(inputSchema).toBeDefined();
-      expect(inputSchema?.queryParams?.feed_categories).toBeDefined();
-      expect(inputSchema?.bodyFields).toBeUndefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const inputSchema = getOutputSchema(result.data)?.input;
+    expect(inputSchema).toBeDefined();
+    expect(inputSchema?.queryParams?.feed_categories).toBeDefined();
+    expect(inputSchema?.bodyFields).toBeUndefined();
   });
 
   it("should reject empty payTo field", () => {
@@ -88,9 +90,10 @@ describe("parseV1 with normalized schemas", () => {
 
     // V1 schema validates payTo - empty string is rejected
     expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.errors).toBeDefined();
+    if (result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.errors).toBeDefined();
   });
 
   it("should extract field information from API responses", () => {
@@ -98,13 +101,14 @@ describe("parseV1 with normalized schemas", () => {
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const inputSchema = getOutputSchema(result.data)?.input;
-      expect(inputSchema).toBeDefined();
-      expect(inputSchema?.bodyFields?.prompt).toBeDefined();
-      expect(inputSchema?.bodyType).toBe("json");
-      expect(inputSchema?.queryParams).toBeUndefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const inputSchema = getOutputSchema(result.data)?.input;
+    expect(inputSchema).toBeDefined();
+    expect(inputSchema?.bodyFields?.prompt).toBeDefined();
+    expect(inputSchema?.bodyType).toBe("json");
+    expect(inputSchema?.queryParams).toBeUndefined();
   });
 
   it("should handle various API response formats", () => {
@@ -112,15 +116,16 @@ describe("parseV1 with normalized schemas", () => {
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const inputSchema = getOutputSchema(result.data)?.input;
-      expect(inputSchema).toBeDefined();
-      expect(inputSchema?.bodyFields?.prompt).toEqual({ type: "string" });
-      expect(inputSchema?.bodyFields?.walletAddress).toEqual({
-        type: "string",
-      });
-      expect(inputSchema?.bodyType).toBe("json");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const inputSchema = getOutputSchema(result.data)?.input;
+    expect(inputSchema).toBeDefined();
+    expect(inputSchema?.bodyFields?.prompt).toEqual({ type: "string" });
+    expect(inputSchema?.bodyFields?.walletAddress).toEqual({
+      type: "string",
+    });
+    expect(inputSchema?.bodyType).toBe("json");
   });
 
   it("should handle GET requests without body fields", () => {
@@ -128,11 +133,12 @@ describe("parseV1 with normalized schemas", () => {
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const inputSchema = getOutputSchema(result.data)?.input;
-      expect(inputSchema?.queryParams).toBeUndefined();
-      expect(inputSchema?.bodyFields).toBeUndefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const inputSchema = getOutputSchema(result.data)?.input;
+    expect(inputSchema?.queryParams).toBeUndefined();
+    expect(inputSchema?.bodyFields).toBeUndefined();
   });
 
   it("should return error for empty accepts array", () => {
@@ -140,10 +146,11 @@ describe("parseV1 with normalized schemas", () => {
     const result = parseV1(invalidResponse);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const outputSchema = getOutputSchema(result.data);
-      expect(outputSchema).toBeUndefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const outputSchema = getOutputSchema(result.data);
+    expect(outputSchema).toBeUndefined();
   });
 
   it("should accept response without outputSchema (optional field)", () => {
@@ -167,19 +174,21 @@ describe("parseV1 with normalized schemas", () => {
 
     // outputSchema is optional in the schema
     expect(result.success).toBe(true);
-    if (result.success) {
-      const outputSchema = getOutputSchema(result.data);
-      expect(outputSchema).toBeUndefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const outputSchema = getOutputSchema(result.data);
+    expect(outputSchema).toBeUndefined();
   });
 
   it("should handle completely invalid input", () => {
     const result = parseV1("not an object");
 
     expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.errors.length).toBeGreaterThan(0);
+    if (result.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(result.errors.length).toBeGreaterThan(0);
   });
 
   it("should handle camelCase field names in outputSchema", () => {
@@ -213,14 +222,15 @@ describe("parseV1 with normalized schemas", () => {
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const inputSchema = getOutputSchema(result.data)?.input;
-      expect(inputSchema).toBeDefined();
-      expect(inputSchema?.queryParams?.test).toEqual({ type: "value" });
-      expect(inputSchema?.bodyFields?.body).toEqual({ type: "test" });
-      expect(inputSchema?.bodyType).toBe("json");
-      expect(inputSchema?.headerFields?.auth).toEqual({ type: "bearer" });
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const inputSchema = getOutputSchema(result.data)?.input;
+    expect(inputSchema).toBeDefined();
+    expect(inputSchema?.queryParams?.test).toEqual({ type: "value" });
+    expect(inputSchema?.bodyFields?.body).toEqual({ type: "test" });
+    expect(inputSchema?.bodyType).toBe("json");
+    expect(inputSchema?.headerFields?.auth).toEqual({ type: "bearer" });
   });
 
   it("should strip snake_case field names (schema uses camelCase)", () => {
@@ -254,15 +264,16 @@ describe("parseV1 with normalized schemas", () => {
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const inputSchema = getOutputSchema(result.data)?.input;
-      expect(inputSchema).toBeDefined();
-      // snake_case fields are stripped by zod's "strip" mode
-      expect(inputSchema?.queryParams).toBeUndefined();
-      expect(inputSchema?.bodyFields).toBeUndefined();
-      expect(inputSchema?.bodyType).toBeUndefined();
-      expect(inputSchema?.headerFields).toBeUndefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const inputSchema = getOutputSchema(result.data)?.input;
+    expect(inputSchema).toBeDefined();
+    // snake_case fields are stripped by zod's "strip" mode
+    expect(inputSchema?.queryParams).toBeUndefined();
+    expect(inputSchema?.bodyFields).toBeUndefined();
+    expect(inputSchema?.bodyType).toBeUndefined();
+    expect(inputSchema?.headerFields).toBeUndefined();
   });
 
   it("should handle aixbt Indigo agent with nested array items schema", () => {
@@ -270,77 +281,83 @@ describe("parseV1 with normalized schemas", () => {
     const result = parseV1(response);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const schema = getOutputSchema(result.data);
-      const inputSchema = schema?.input;
-      const outputSchema = schema?.output;
-
-      // Verify input schema structure
-      expect(inputSchema).toBeDefined();
-      expect(inputSchema?.bodyType).toBe("json");
-      const messagesField = inputSchema?.bodyFields?.messages as
-        | {
-            type: string;
-            description: string;
-            items: unknown;
-          }
-        | undefined;
-      expect(messagesField).toBeDefined();
-      expect(messagesField?.type).toBe("array");
-      expect(messagesField?.description).toBe(
-        "Array of conversation messages with role and content"
-      );
-
-      // Verify nested items with properties
-      const messagesItems = messagesField?.items as
-        | {
-            type: string;
-            properties: Record<
-              string,
-              {
-                type: string;
-                enum?: string[];
-                description?: string;
-              }
-            >;
-          }
-        | undefined;
-      expect(messagesItems).toBeDefined();
-      expect(messagesItems?.type).toBe("object");
-      expect(messagesItems?.properties).toBeDefined();
-
-      // Verify role property with enum
-      const roleProperty = messagesItems?.properties.role;
-      expect(roleProperty).toBeDefined();
-      expect(roleProperty?.type).toBe("string");
-      expect(roleProperty?.enum).toEqual(["user", "assistant"]);
-      expect(roleProperty?.description).toBe("The role of the message sender");
-
-      // Verify content property
-      const contentProperty = messagesItems?.properties.content;
-      expect(contentProperty).toBeDefined();
-      expect(contentProperty?.type).toBe("string");
-      expect(contentProperty?.description).toBe("The message content");
-
-      // Verify output schema structure
-      const typedOutputSchema = outputSchema as
-        | {
-            status?: { type: string };
-            error?: { type: string };
-            data?: {
-              type: string;
-              properties?: {
-                text?: { type: string };
-              };
-            };
-          }
-        | undefined;
-      expect(typedOutputSchema).toBeDefined();
-      expect(typedOutputSchema?.status?.type).toBe("number");
-      expect(typedOutputSchema?.error?.type).toBe("string");
-      expect(typedOutputSchema?.data?.type).toBe("object");
-      expect(typedOutputSchema?.data?.properties?.text?.type).toBe("string");
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const schema = getOutputSchema(result.data);
+    const inputSchema = schema?.input;
+    const outputSchema = schema?.output;
+
+    // Verify input schema structure
+    expect(inputSchema).toBeDefined();
+    expect(inputSchema?.bodyType).toBe("json");
+    const messagesField = z
+      .object({
+        type: z.string(),
+        description: z.string(),
+        items: z.unknown(),
+      })
+      .optional()
+      .parse(inputSchema?.bodyFields?.messages);
+    expect(messagesField).toBeDefined();
+    expect(messagesField?.type).toBe("array");
+    expect(messagesField?.description).toBe(
+      "Array of conversation messages with role and content"
+    );
+
+    // Verify nested items with properties
+    const messagesItems = z
+      .object({
+        type: z.string(),
+        properties: z.record(
+          z.string(),
+          z.object({
+            type: z.string(),
+            enum: z.array(z.string()).optional(),
+            description: z.string().optional(),
+          })
+        ),
+      })
+      .optional()
+      .parse(messagesField?.items);
+    expect(messagesItems).toBeDefined();
+    expect(messagesItems?.type).toBe("object");
+    expect(messagesItems?.properties).toBeDefined();
+
+    // Verify role property with enum
+    const roleProperty = messagesItems?.properties.role;
+    expect(roleProperty).toBeDefined();
+    expect(roleProperty?.type).toBe("string");
+    expect(roleProperty?.enum).toEqual(["user", "assistant"]);
+    expect(roleProperty?.description).toBe("The role of the message sender");
+
+    // Verify content property
+    const contentProperty = messagesItems?.properties.content;
+    expect(contentProperty).toBeDefined();
+    expect(contentProperty?.type).toBe("string");
+    expect(contentProperty?.description).toBe("The message content");
+
+    // Verify output schema structure
+    const typedOutputSchema = z
+      .object({
+        status: z.object({ type: z.string() }).optional(),
+        error: z.object({ type: z.string() }).optional(),
+        data: z
+          .object({
+            type: z.string(),
+            properties: z
+              .object({ text: z.object({ type: z.string() }).optional() })
+              .optional(),
+          })
+          .optional(),
+      })
+      .optional()
+      .parse(outputSchema);
+    expect(typedOutputSchema).toBeDefined();
+    expect(typedOutputSchema?.status?.type).toBe("number");
+    expect(typedOutputSchema?.error?.type).toBe("string");
+    expect(typedOutputSchema?.data?.type).toBe("object");
+    expect(typedOutputSchema?.data?.properties?.text?.type).toBe("string");
   });
 });
 
@@ -372,24 +389,24 @@ describe("schema validation edge cases", () => {
     const result = parseV1(minimalResponse);
 
     expect(result.success).toBe(true);
-    if (result.success) {
-      const inputSchema = getOutputSchema(result.data)?.input;
-      expect(inputSchema).toBeDefined();
-      expect(inputSchema?.queryParams).toBeUndefined();
-      expect(inputSchema?.bodyFields).toBeUndefined();
+    if (!result.success) {
+      throw new Error("Unexpected parse result");
     }
+    const inputSchema = getOutputSchema(result.data)?.input;
+    expect(inputSchema).toBeDefined();
+    expect(inputSchema?.queryParams).toBeUndefined();
+    expect(inputSchema?.bodyFields).toBeUndefined();
   });
 
-  it("should handle error fields in responses", () => {
+  it("should report invalid accepts alongside response errors", () => {
     const responseWithError = JSON.parse(rawBodies[0]) as unknown;
     const result = parseV1(responseWithError);
 
-    // The function should handle responses with error fields
+    expect(result.success).toBe(false);
     if (result.success) {
-      expect(result.data.error).toBe("No X-PAYMENT header provided");
-    } else {
-      expect(result.errors).toBeDefined();
+      throw new Error("Unexpected parse result");
     }
+    expect(result.errors).toBeDefined();
   });
 
   it("should handle array inputs gracefully", () => {
@@ -397,8 +414,9 @@ describe("schema validation edge cases", () => {
     const parseResult = parseV1(arrayInput);
 
     expect(parseResult.success).toBe(false);
-    if (!parseResult.success) {
-      expect(parseResult.errors.length).toBeGreaterThan(0);
+    if (parseResult.success) {
+      throw new Error("Unexpected parse result");
     }
+    expect(parseResult.errors.length).toBeGreaterThan(0);
   });
 });

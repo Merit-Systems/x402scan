@@ -28,13 +28,13 @@ import { cdpClient } from "../client";
 
 import { getSolanaTokenBalance } from "@/services/solana/balance";
 import { solanaRpc } from "@/services/rpc/solana";
+import { solanaAddressSchema } from "@/lib/schemas";
 
 import { cdpResultFromPromise } from "../../result";
 
 import type { Chain } from "@/types/chain";
 import type { TransactionModifyingSigner } from "@solana/kit";
 import type { NetworkServerWallet } from "./types";
-import type { SolanaAddress } from "@/types/address";
 
 export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
   name: string
@@ -45,7 +45,8 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
     });
   };
 
-  const getAddress = async () => (await getAccount()).address as SolanaAddress;
+  const getAddress = async () =>
+    solanaAddressSchema.parse((await getAccount()).address);
 
   return {
     address: () =>
@@ -60,7 +61,7 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
         getAddress().then((walletAddress) =>
           getSolanaTokenBalance({
             ownerAddress: walletAddress,
-            tokenMint: token.address as SolanaAddress,
+            tokenMint: solanaAddressSchema.parse(token.address),
           })
         ),
         (e) => ({

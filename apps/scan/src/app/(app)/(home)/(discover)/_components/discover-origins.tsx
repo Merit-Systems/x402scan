@@ -317,6 +317,8 @@ function getServiceHref(item: ServiceItem): Route {
     throw new Error("A service row must have at least one origin");
   }
 
+  // Next's generated Route union cannot model an identifier interpolated at runtime.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return `/server/${origin.id}` as Route;
 }
 

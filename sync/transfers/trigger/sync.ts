@@ -16,6 +16,10 @@ import { collapseTransferChains } from "./lib/collapse";
 
 import type { Facilitator, FacilitatorConfig, SyncConfig } from "./types";
 
+const FACILITATOR_NETWORKS = new Map<string, Network>(
+  Object.values(Network).map((network) => [network, network])
+);
+
 function normalizeAddress(chain: string, address: string): string {
   return chain === Network.SOLANA.toString() ? address : address.toLowerCase();
 }
@@ -103,9 +107,11 @@ async function syncFacilitator(
   facilitator: Facilitator,
   now: Date
 ) {
-  for (const facilitatorConfig of facilitator.addresses[
-    syncConfig.chain as Network
-  ] ?? []) {
+  const network = FACILITATOR_NETWORKS.get(syncConfig.chain);
+  if (network === undefined) {
+    throw new Error(`Unsupported network: ${syncConfig.chain}`);
+  }
+  for (const facilitatorConfig of facilitator.addresses[network] ?? []) {
     if (!facilitatorConfig.enabled) {
       logger.log(
         `[${syncConfig.chain}] Sync is disabled for ${facilitator.id}`
@@ -203,7 +209,7 @@ async function syncFacilitator(
     });
 
     logger.log(
-      `[${syncConfig.chain}] Most recent transfer: ${mostRecentTransfer[0]?.block_timestamp?.toISOString()}`
+      `[${syncConfig.chain}] Most recent transfer: ${mostRecentTransfer[0]?.block_timestamp.toISOString()}`
     );
 
     // Start from 1 second after the most recent transfer to avoid re-fetching it
