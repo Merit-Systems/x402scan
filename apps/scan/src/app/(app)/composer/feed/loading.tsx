@@ -1,5 +1,5 @@
-import { Body, Heading } from "@/app/_components/layout/page-utils";
-import { LoadingFeedTable } from "../_components/feed-table";
+import { Body, Heading } from "@/app/(app)/_components/layout/page-utils";
+import { LoadingFeedTable } from "./_components/table";
 
 export default function LoadingFeedPage() {
   return (

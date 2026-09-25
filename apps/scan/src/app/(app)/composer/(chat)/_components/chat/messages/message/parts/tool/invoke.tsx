@@ -1,4 +1,4 @@
-import { ResourceFetch } from "@/app/(app)/_components/resource-fetch";
+import { ResourceFetch } from "@/app/(app)/composer/(chat)/_components/resource-fetch";
 import { Button } from "@/components/ui/button";
 import { Loading } from "@/components/ui/loading";
 import { Skeleton } from "@/components/ui/skeleton";
