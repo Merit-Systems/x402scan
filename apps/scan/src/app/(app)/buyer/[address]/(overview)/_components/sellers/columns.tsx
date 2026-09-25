@@ -8,7 +8,7 @@ import { SellerChart, LoadingSellerChart } from "./chart";
 import { Seller, SellerSkeleton } from "@/app/(app)/_components/seller";
 import { Facilitators } from "@/app/(app)/_components/facilitator";
 
-import { formatCompactAgo } from "@/lib/utils";
+import { cn, formatCompactAgo } from "@/lib/utils";
 import { formatTokenAmount } from "@/lib/token";
 
 import type { DataTableColumnDef } from "@/components/ui/data-table";
@@ -22,7 +22,11 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "recipient",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Server" />
+      <DataTableColumnHeader
+        column={column}
+        title="Server"
+        className="text-left"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
@@ -38,7 +42,11 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "chart",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Activity" />
+      <DataTableColumnHeader
+        column={column}
+        title="Activity"
+        className="text-center"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => <SellerChart addresses={[row.original.recipient]} />,
@@ -48,17 +56,21 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "tx_count",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Txns" />
+      <DataTableColumnHeader
+        column={column}
+        title="Txns"
+        className="text-center"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <Cell>
         {row.original.tx_count.toLocaleString(undefined, {
           notation: "compact",
           maximumFractionDigits: 2,
           minimumFractionDigits: 0,
         })}
-      </div>
+      </Cell>
     ),
     size: 100,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -66,13 +78,17 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "total_amount",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Volume" />
+      <DataTableColumnHeader
+        column={column}
+        title="Volume"
+        className="text-center"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <Cell>
         {formatTokenAmount(BigInt(Math.round(row.original.total_amount)))}
-      </div>
+      </Cell>
     ),
     size: 100,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -80,15 +96,19 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "latest_block_timestamp",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Latest" />
+      <DataTableColumnHeader
+        column={column}
+        title="Latest"
+        className="text-center"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <Cell>
         {row.original.latest_block_timestamp
           ? formatCompactAgo(row.original.latest_block_timestamp)
           : "–"}
-      </div>
+      </Cell>
     ),
     size: 100,
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
@@ -96,7 +116,11 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "chains",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Chain" />
+      <DataTableColumnHeader
+        column={column}
+        title="Chain"
+        className="text-center"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
@@ -112,7 +136,11 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "facilitator_ids",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Facilitator" />
+      <DataTableColumnHeader
+        column={column}
+        title="Facilitator"
+        className="text-center"
+      />
     ),
     enableSorting: false,
     cell: ({ row }) => (
@@ -125,3 +153,15 @@ export const columns: DataTableColumnDef<ColumnType>[] = [
     meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
 ];
+
+const Cell = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={cn("text-center type-caption", className)}>{children}</div>
+  );
+};

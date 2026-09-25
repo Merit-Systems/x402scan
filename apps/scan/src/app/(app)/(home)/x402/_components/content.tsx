@@ -90,7 +90,7 @@ const jsonLd = [
 
 export function X402Content() {
   return (
-    <>
+    <div data-slot="documentation">
       <JsonLd data={jsonLd} />
       <Heading
         title="x402"
@@ -189,6 +189,6 @@ export function X402Content() {
           </div>
         </Section>
       </Body>
-    </>
+    </div>
   );
 }

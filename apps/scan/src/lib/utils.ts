@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 
 import { Chain } from "@/types/chain";
 import { clsx, type ClassValue } from "clsx";
-import { formatDistanceToNow, formatISO } from "date-fns";
+import { format, formatDistanceToNow, formatISO } from "date-fns";
 
 import type { Message } from "@x402scan/scan-db/types";
 import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai";
@@ -29,6 +29,19 @@ export const formatCurrency = (
     ...options,
   });
 };
+
+const compactNumberFormatter = new Intl.NumberFormat("en", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+
+export function formatNumber(value: number): string {
+  return compactNumberFormatter.format(value);
+}
+
+export function formatChartTimestamp(timestamp: string): string {
+  return format(new Date(timestamp), "MMM d h:mm a");
+}
 
 interface FormatCompactAgoOptions {
   addSuffix?: boolean;
