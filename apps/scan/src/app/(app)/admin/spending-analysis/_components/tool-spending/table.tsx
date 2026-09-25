@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { DataTable } from "@/components/ui/data-table";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 import { createToolSpendingColumns } from "./columns";
 import { api, type RouterOutputs } from "@/trpc/client";
 import { WalletBreakdownModal } from "../wallet-spending/breakdown-modal";
-import { useToolSpendingSorting } from "@/app/(app)/_contexts/sorting/tool-spending/hook";
+import { useToolSpendingSorting } from "@/app/(app)/admin/_contexts/sorting/tool-spending/hook";
 
 type ToolSpending =
   RouterOutputs["admin"]["spending"]["byTool"]["items"][number];
@@ -33,17 +33,18 @@ export const ToolSpendingTable = () => {
 
   return (
     <div className="space-y-4">
-      <DataTable
+      <LoadableDataTable
         columns={columns}
         data={tools}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        onRowClick={(row) =>
-          setModalState({ type: "breakdown", tool: row.original })
-        }
-        page={page}
-        onPageChange={setPage}
-        hasNextPage={hasNextPage}
+        onRowClick={(tool) => setModalState({ type: "breakdown", tool })}
+        pagination={{
+          pageIndex: page,
+          pageSize: PAGE_SIZE,
+          pageCount: hasNextPage ? page + 2 : page + 1,
+        }}
+        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
         getRowId={(row, index) => row?.resourceId ?? `loading-${index}`}
       />
 

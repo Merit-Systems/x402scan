@@ -1,39 +1,28 @@
 "use client";
 
-import {
-  ArrowLeftRight,
-  Calendar,
-  DollarSign,
-  Globe,
-  Server,
-  User,
-} from "lucide-react";
-
 import Link from "next/link";
 import Image from "next/image";
 
+import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
-
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
-
-import { FacilitatorsSortingContext } from "@/app/(app)/_contexts/sorting/facilitators/context";
 
 import { formatCompactAgo } from "@/lib/utils";
 import { formatTokenAmount } from "@/lib/token";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 import { Chains } from "@/app/(app)/_components/chains";
 
 type ColumnType =
   RouterOutputs["public"]["facilitators"]["list"]["items"][number];
 
-export const columns: ExtendedColumnDef<ColumnType>[] = [
+export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "facilitator_name",
-    header: () => (
-      <HeaderCell Icon={Server} label="Facilitator" className="justify-start" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Facilitator" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <Link
         href={`/facilitator/${row.original.facilitator_id}`}
@@ -54,17 +43,22 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </Link>
     ),
     size: 250,
-    loading: () => (
-      <div className="flex items-center gap-1">
-        <Skeleton className="size-4 rounded-full" />
-        <Skeleton className="h-4 w-16" />
-        <Skeleton className="size-2 rounded-full" />
-      </div>
-    ),
+    meta: {
+      loadingCell: (
+        <div className="flex items-center gap-1">
+          <Skeleton className="size-4 rounded-full" />
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="size-2 rounded-full" />
+        </div>
+      ),
+    },
   },
   {
     accessorKey: "chains",
-    header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Chain" />
+    ),
+    enableSorting: false,
     cell: ({ row }) => (
       <Chains
         chains={row.original.chains}
@@ -73,20 +67,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto size-4" />,
+    meta: { loadingCell: <Skeleton className="mx-auto size-4" /> },
   },
   {
     accessorKey: "transactions",
-    header: () => (
-      <HeaderCell
-        Icon={ArrowLeftRight}
-        label="Transactions"
-        className="mx-auto"
-        sorting={{
-          sortContext: FacilitatorsSortingContext,
-          sortKey: "tx_count",
-        }}
-      />
+    id: "tx_count",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Transactions" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -94,20 +81,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "volume",
-    header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Volume"
-        className="mx-auto"
-        sorting={{
-          sortContext: FacilitatorsSortingContext,
-          sortKey: "total_amount",
-        }}
-      />
+    id: "total_amount",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Volume" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -115,20 +95,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150, // Fixed width for transaction count
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "sellers",
-    header: () => (
-      <HeaderCell
-        Icon={User}
-        label="Sellers"
-        className="mx-auto"
-        sorting={{
-          sortContext: FacilitatorsSortingContext,
-          sortKey: "unique_sellers",
-        }}
-      />
+    id: "unique_sellers",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Sellers" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -136,20 +109,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "buyers",
-    header: () => (
-      <HeaderCell
-        Icon={User}
-        label="Buyers"
-        className="mx-auto"
-        sorting={{
-          sortContext: FacilitatorsSortingContext,
-          sortKey: "unique_buyers",
-        }}
-      />
+    id: "unique_buyers",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Buyers" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -157,20 +123,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "latest_block_timestamp",
-    header: () => (
-      <HeaderCell
-        Icon={Calendar}
-        label="Latest"
-        className="ml-auto"
-        sorting={{
-          sortContext: FacilitatorsSortingContext,
-          sortKey: "latest_block_timestamp",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Latest" />
     ),
     cell: ({ row }) => (
       <div className="text-right font-mono text-xs">
@@ -180,6 +138,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150, // Fixed width for buyers count
-    loading: () => <Skeleton className="ml-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="ml-auto h-4 w-16" /> },
   },
 ];

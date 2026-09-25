@@ -1,5 +1,3 @@
-import { DiscoverSearchProvider } from "./_components/discover-search-context";
-
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,5 +11,5 @@ export default function DiscoverLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <DiscoverSearchProvider>{children}</DiscoverSearchProvider>;
+  return children;
 }

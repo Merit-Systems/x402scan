@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Activity,
-  ArrowLeftRight,
-  Calendar,
-  DollarSign,
-  Globe,
-  Server,
-  User,
-} from "lucide-react";
-
+import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { SellerChart, LoadingSellerChart } from "./chart";
@@ -20,21 +11,20 @@ import { Facilitators } from "@/app/(app)/_components/facilitator";
 import { formatCompactAgo } from "@/lib/utils";
 import { formatTokenAmount } from "@/lib/token";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
-import { BuyerSellersSortingContext } from "./sorting-provider";
 import { Chains } from "@/app/(app)/_components/chains";
 
 type ColumnType =
   RouterOutputs["public"]["buyers"]["all"]["sellers"]["items"][number];
 
-export const columns: ExtendedColumnDef<ColumnType>[] = [
+export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "recipient",
-    header: () => (
-      <HeaderCell Icon={Server} label="Server" className="mr-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Server" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <Seller
         address={row.original.recipient}
@@ -43,30 +33,24 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 225,
-    loading: () => <SellerSkeleton />,
+    meta: { loadingCell: <SellerSkeleton /> },
   },
   {
     accessorKey: "chart",
-    header: () => (
-      <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Activity" />
     ),
+    enableSorting: false,
     cell: ({ row }) => <SellerChart addresses={[row.original.recipient]} />,
     size: 100,
-    loading: () => <LoadingSellerChart />,
+    meta: { loadingCell: <LoadingSellerChart /> },
   },
   {
     accessorKey: "tx_count",
-    header: () => (
-      <HeaderCell
-        Icon={ArrowLeftRight}
-        label="Txns"
-        className="mx-auto"
-        sorting={{
-          sortContext: BuyerSellersSortingContext,
-          sortKey: "tx_count",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Txns" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.tx_count.toLocaleString(undefined, {
@@ -77,42 +61,28 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "total_amount",
-    header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Volume"
-        className="mx-auto"
-        sorting={{
-          sortContext: BuyerSellersSortingContext,
-          sortKey: "total_amount",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Volume" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {formatTokenAmount(BigInt(Math.round(row.original.total_amount)))}
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "latest_block_timestamp",
-    header: () => (
-      <HeaderCell
-        Icon={Calendar}
-        label="Latest"
-        sorting={{
-          sortContext: BuyerSellersSortingContext,
-          sortKey: "latest_block_timestamp",
-        }}
-        className="mx-auto"
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Latest" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.latest_block_timestamp
@@ -121,11 +91,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "chains",
-    header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Chain" />
+    ),
+    enableSorting: false,
     cell: ({ row }) => (
       <Chains
         chains={row.original.chains}
@@ -134,13 +107,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto size-4" />,
+    meta: { loadingCell: <Skeleton className="mx-auto size-4" /> },
   },
   {
     accessorKey: "facilitator_ids",
-    header: () => (
-      <HeaderCell Icon={User} label="Facilitator" className="mx-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Facilitator" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <Facilitators
         ids={row.original.facilitator_ids}
@@ -148,6 +122,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 100,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
 ];

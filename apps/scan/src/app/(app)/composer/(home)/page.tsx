@@ -9,11 +9,19 @@ import { Feed } from "./_components/feed";
 import { YourAgents } from "./_components/your-agents";
 import { api, HydrateClient } from "@/trpc/server";
 import { ActivityTimeframe } from "@/types/timeframes";
-import { defaultToolsSorting } from "@/app/(app)/_contexts/sorting/tools/default";
 import { auth } from "@/auth";
+import { parseTableSorting } from "@/lib/table-state";
+import { DEFAULT_TOOLS_SORTING, TOOL_SORT_IDS } from "@/lib/table-sort-options";
 
-export default async function ComposerPage() {
+export default async function ComposerPage({
+  searchParams,
+}: PageProps<"/composer">) {
   const session = await auth();
+  const sorting = parseTableSorting(
+    await searchParams,
+    TOOL_SORT_IDS,
+    DEFAULT_TOOLS_SORTING
+  );
 
   // Prefetch all data for hydration
   const prefetches = [
@@ -31,7 +39,7 @@ export default async function ComposerPage() {
         page: 0,
         page_size: 10,
       },
-      sorting: defaultToolsSorting,
+      sorting,
     }),
     // Overall Stats
     api.public.agents.activity.overall.prefetch({
@@ -78,7 +86,7 @@ export default async function ComposerPage() {
         <Suspense fallback={<LoadingAgents />}>
           <Agents />
         </Suspense>
-        <Tools />
+        <Tools sorting={sorting} />
         <Feed />
         <OverallStats />
       </Body>

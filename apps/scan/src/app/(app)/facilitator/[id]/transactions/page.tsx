@@ -9,21 +9,29 @@ import {
   LoadingLatestTransactionsTable,
 } from "../_components/transactions/table";
 
-import { TransfersSortingProvider } from "@/app/(app)/_contexts/sorting/transfers/provider";
-import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
-
 import { api, HydrateClient } from "@/trpc/server";
 
 import { facilitatorIdMap } from "@/lib/facilitators";
 
 import { ActivityTimeframe } from "@/types/timeframes";
+import { parseTableSorting } from "@/lib/table-state";
+import {
+  DEFAULT_TRANSFERS_SORTING,
+  TRANSFERS_SORT_IDS,
+} from "@/lib/table-sort-options";
 
 import type { Metadata } from "next";
 
 export default async function TransactionsPage({
   params,
+  searchParams,
 }: PageProps<"/facilitator/[id]/transactions">) {
   const { id } = await params;
+  const sorting = parseTableSorting(
+    await searchParams,
+    TRANSFERS_SORT_IDS,
+    DEFAULT_TRANSFERS_SORTING
+  );
 
   const facilitator = facilitatorIdMap.get(id);
 
@@ -40,7 +48,7 @@ export default async function TransactionsPage({
     },
     facilitatorIds: [id],
     timeframe: ActivityTimeframe.ThirtyDays,
-    sorting: defaultTransfersSorting,
+    sorting,
   });
 
   return (
@@ -50,15 +58,20 @@ export default async function TransactionsPage({
         description="Transactions made through this facilitator"
       />
       <Body>
-        <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
-          <Suspense
-            fallback={
-              <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
-            }
-          >
-            <LatestTransactionsTable facilitatorId={id} pageSize={pageSize} />
-          </Suspense>
-        </TransfersSortingProvider>
+        <Suspense
+          fallback={
+            <LoadingLatestTransactionsTable
+              loadingRowCount={pageSize}
+              sorting={sorting}
+            />
+          }
+        >
+          <LatestTransactionsTable
+            facilitatorId={id}
+            pageSize={pageSize}
+            sorting={sorting}
+          />
+        </Suspense>
       </Body>
     </HydrateClient>
   );
