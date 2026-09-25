@@ -214,12 +214,12 @@ payload digests for every query across all modes. The complete paginated log
 export matched all 175 distinct returned origin executions, with no extra
 unreturned executions, missing completions, or query failures.
 
-| Query | Redis cold executions / 20 | Next cold executions / 20 | Redis warm median | Next warm median | Uncached warm median |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Overall stats | 1 | 18 | 45 ms | 49 ms | 69 ms |
-| Stats chart | 1 | 18 | 47 ms | 42 ms | 51 ms |
-| Sellers | 1 | 18 | 41 ms | 44 ms | 77 ms |
-| Recent transfers | 1 | 17 | 41 ms | 57 ms | 52 ms |
+| Query            | Redis cold executions / 20 | Next cold executions / 20 | Redis warm median | Next warm median | Uncached warm median |
+| ---------------- | -------------------------: | ------------------------: | ----------------: | ---------------: | -------------------: |
+| Overall stats    |                          1 |                        18 |             45 ms |            49 ms |                69 ms |
+| Stats chart      |                          1 |                        18 |             47 ms |            42 ms |                51 ms |
+| Sellers          |                          1 |                        18 |             41 ms |            44 ms |                77 ms |
+| Recent transfers |                          1 |                        17 |             41 ms |            57 ms |                52 ms |
 
 Across 100 requests per mode, the new Redis helper made **5 database attempts**,
 Next **89**, and uncached reads **125**. Both caches avoided additional origin
