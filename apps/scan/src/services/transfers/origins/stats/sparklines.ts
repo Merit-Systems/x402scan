@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { chainSchema, timeframeSchema } from "@/lib/schemas";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
@@ -24,8 +24,9 @@ type RecipientTransactionSparklinesInput = z.infer<
   typeof recipientTransactionSparklinesInputSchema
 >;
 
-const listRecipientTransactionSparklineRows = createCachedArrayQuery({
-  queryFn: async (input: RecipientTransactionSparklinesInput) => {
+const listRecipientTransactionSparklineRows = cachedQuery(
+  "recipientTransactionSparklineRows",
+  async (input: RecipientTransactionSparklinesInput) => {
     if (input.recipients.length === 0) return [];
 
     const tableName = `recipient_stats_bucketed_${getMaterializedViewSuffix(input.timeframe)}`;
@@ -45,12 +46,8 @@ const listRecipientTransactionSparklineRows = createCachedArrayQuery({
     `;
 
     return queryRaw(sql, z.array(recipientTransactionSparklineRowSchema));
-  },
-  cacheKeyPrefix: "recipient-transaction-sparklines",
-  createCacheKey: createStandardCacheKey,
-  dateFields: ["bucket"],
-  tags: ["statistics", "recipients"],
-});
+  }
+);
 
 export async function getOriginTransactionSparklines(input: {
   chain?: RecipientTransactionSparklinesInput["chain"];

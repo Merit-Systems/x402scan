@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedQuery, createStandardCacheKey } from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { getMaterializedViewSuffix } from "@/lib/time-range";
 import { queryRaw } from "@/services/transfers/client";
 
@@ -119,10 +119,7 @@ const getOverallStatisticsMVUncached = async (
   );
 };
 
-export const getOverallStatisticsMV = createCachedQuery({
-  queryFn: getOverallStatisticsMVUncached,
-  cacheKeyPrefix: "overall-statistics-mv",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["latest_block_timestamp"],
-  tags: ["statistics"],
-});
+export const getOverallStatisticsMV = cachedQuery(
+  "getOverallStatisticsMV",
+  getOverallStatisticsMVUncached
+);

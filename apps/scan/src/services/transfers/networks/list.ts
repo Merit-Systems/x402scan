@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { chainSchema, sortingSchema } from "@/lib/schemas";
 import {
   DEFAULT_NETWORKS_SORTING,
@@ -114,11 +114,7 @@ const listTopNetworksUncached = async (
   }));
 };
 
-export const listTopNetworks = createCachedArrayQuery({
-  queryFn: listTopNetworksUncached,
-  cacheKeyPrefix: "networks-list",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["latest_block_timestamp"],
-
-  tags: ["networks"],
-});
+export const listTopNetworks = cachedQuery(
+  "listTopNetworks",
+  listTopNetworksUncached
+);
