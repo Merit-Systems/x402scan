@@ -33,7 +33,7 @@ export const Stepper: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="scrollbar-hide flex w-full items-center gap-2 overflow-x-auto">
+      <div className="flex w-full items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {steps.map((step, index) => (
           <React.Fragment key={index}>
             <Step
@@ -101,7 +101,9 @@ const Step: React.FC<StepProps> = ({
   onClick,
 }) => {
   return (
-    <div
+    <button
+      type="button"
+      disabled={!onClick}
       className={cn(
         "flex items-center shrink-0",
         onClick && "cursor-pointer",
@@ -135,6 +137,6 @@ const Step: React.FC<StepProps> = ({
           {title}
         </span>
       )}
-    </div>
+    </button>
   );
 };

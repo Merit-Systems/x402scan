@@ -17,9 +17,7 @@ export const Origin: React.FC<OriginProps> = ({
 }) => {
   return (
     <OriginsContainer
-      Icon={({ className }) => (
-        <Favicon url={origin.favicon} className={className} />
-      )}
+      icon={<Favicon url={origin.favicon} className="size-6" />}
       title={new URL(origin.origin).hostname}
       address={
         <Addresses
@@ -34,15 +32,15 @@ export const Origin: React.FC<OriginProps> = ({
 };
 
 interface OriginsContainerProps {
-  Icon: ({ className }: { className: string }) => React.ReactNode;
+  icon: React.ReactNode;
   title: React.ReactNode;
   address: React.ReactNode;
 }
 
-const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
+const OriginsContainer = ({ icon, title, address }: OriginsContainerProps) => {
   return (
     <div className="flex w-full items-center gap-2 overflow-hidden">
-      <Icon className="size-6" />
+      {icon}
       <div className="flex-1 overflow-hidden">
         <div className="flex w-full max-w-full items-center gap-2 overflow-hidden font-mono text-xs font-semibold text-ellipsis whitespace-nowrap md:text-sm">
           {title}

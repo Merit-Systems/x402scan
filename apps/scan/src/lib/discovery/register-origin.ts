@@ -226,7 +226,7 @@ export async function registerResourcesFromDiscovery(
         ? await getCachedProbeResult(probeSessionId, resourceUrl)
         : null;
       let advisory: EndpointMethodAdvisory;
-      let probeWarnings: AuditWarning[] = [];
+      let probeWarnings: AuditWarning[];
 
       if (cached) {
         advisory = cached.advisory;
