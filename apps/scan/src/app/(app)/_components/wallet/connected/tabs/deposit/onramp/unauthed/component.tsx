@@ -14,7 +14,7 @@ interface Props {
 export const NoSessionContent: React.FC<Props> = ({ onSignIn, isPending }) => {
   return (
     <div className="flex flex-col gap-2">
-      <Button variant="turbo" onClick={onSignIn} disabled={isPending}>
+      <Button variant="default" onClick={onSignIn} disabled={isPending}>
         {isPending ? (
           <>
             <Loader2 className="size-4 animate-spin" />

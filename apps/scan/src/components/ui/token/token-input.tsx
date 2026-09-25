@@ -39,7 +39,7 @@ type Props = {
     balance: number | undefined;
     isLoading: boolean;
   };
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "size">;
 
 export const TokenInput: React.FC<Props> = ({
   onChange,

@@ -9,7 +9,7 @@ type Props = React.HTMLAttributes<HTMLDivElement>;
 export function X402V2Badge({ className, ...props }: Props) {
   return (
     <Badge
-      variant="fancy"
+      variant="default"
       className={cn(
         "text-[10px] font-semibold size-fit px-2 py-0.5 relative overflow-hidden border-none shrink-0",
         className

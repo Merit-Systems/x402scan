@@ -29,7 +29,7 @@ export const FetchState: React.FC<Props> = ({
 }) => {
   return (
     <Button
-      variant="primaryOutline"
+      variant="outline"
       size="lg"
       className="w-full"
       disabled={isPending || !allRequiredFieldsFilled || isLoading}

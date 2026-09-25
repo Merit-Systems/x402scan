@@ -5,7 +5,7 @@ import React, { Suspense } from "react";
 import { Globe, Server } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/image-avatar";
 
 import { OverallRecipientStats, LoadingOverallRecipientStats } from "./stats";
 

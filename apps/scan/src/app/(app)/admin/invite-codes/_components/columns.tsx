@@ -76,7 +76,7 @@ export const createColumns = (
       if (!note) return codeElement;
       return (
         <Tooltip>
-          <TooltipTrigger asChild>{codeElement}</TooltipTrigger>
+          <TooltipTrigger render={codeElement} />
           <TooltipContent side="right" className="max-w-[300px]">
             <p className="text-xs">{note}</p>
           </TooltipContent>
@@ -238,11 +238,11 @@ export const createColumns = (
 
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" className="h-8 w-8 p-0" />}
+          >
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem

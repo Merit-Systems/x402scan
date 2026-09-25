@@ -96,8 +96,8 @@ export function X402Content() {
         title="x402"
         description="An HTTP-native payment standard for paid APIs and agentic commerce."
         actions={
-          <Button asChild size="sm">
-            <Link href="/">Discover services</Link>
+          <Button size="sm" render={<Link href="/" />}>
+            Discover services
           </Button>
         }
       />
@@ -180,11 +180,11 @@ export function X402Content() {
           description="Register an x402-compatible API so agents and developers can discover what it does, what it costs, and how to call it."
         >
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Button asChild>
-              <Link href="/resources/register">Add your API</Link>
+            <Button render={<Link href="/resources/register" />}>
+              Add your API
             </Button>
-            <Button asChild variant="outline">
-              <Link href="/discovery">Become discoverable</Link>
+            <Button variant="outline" render={<Link href="/discovery" />}>
+              Become discoverable
             </Button>
           </div>
         </Section>

@@ -7,7 +7,7 @@ import { Server } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Addresses } from "@/components/ui/address";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/image-avatar";
 
 import { FacilitatorChart, LoadingFacilitatorChart } from "./chart";
 import { FacilitatorStats, LoadingFacilitatorStats } from "./stats";

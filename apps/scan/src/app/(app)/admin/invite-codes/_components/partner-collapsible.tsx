@@ -192,7 +192,7 @@ export const PartnerCollapsible = ({
           {meritContacts.length > 0 ? (
             <Select
               value={partnerMeritContact}
-              onValueChange={setPartnerMeritContact}
+              onValueChange={(value) => setPartnerMeritContact(value ?? "")}
             >
               <SelectTrigger id="partnerMeritContact" className="w-full">
                 <SelectValue placeholder="Select a Merit contact" />

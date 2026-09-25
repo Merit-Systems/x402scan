@@ -117,11 +117,9 @@ export const ControlMenu = ({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
-            <MoreVertical className="size-4" />
-            Control Menu
-          </Button>
+        <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
+          <MoreVertical className="size-4" />
+          Control Menu
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem

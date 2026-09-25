@@ -21,19 +21,21 @@ export const RefreshButton: React.FC<{ origin: string }> = ({ origin }) => {
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => handleRefresh()}
-          disabled={isRegistering}
-        >
-          {isRegistering ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <RefreshCw className="size-4" />
-          )}
-        </Button>
+      <TooltipTrigger
+        render={
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => handleRefresh()}
+            disabled={isRegistering}
+          />
+        }
+      >
+        {isRegistering ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <RefreshCw className="size-4" />
+        )}
       </TooltipTrigger>
       <TooltipContent>
         <p>Re-sync server resources from discovery manifest</p>

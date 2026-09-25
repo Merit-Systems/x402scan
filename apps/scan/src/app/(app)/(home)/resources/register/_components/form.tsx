@@ -388,7 +388,7 @@ export const RegisterResourceForm = () => {
         {hasDiscoveryResources ? (
           <div className="flex gap-2">
             <Button
-              variant="turbo"
+              variant="default"
               disabled={
                 isLoading ||
                 isBatchTestLoading ||
@@ -436,7 +436,7 @@ export const RegisterResourceForm = () => {
           </div>
         ) : (
           <Button
-            variant="turbo"
+            variant="default"
             disabled={
               manualTargets.length === 0 ||
               isLoading ||
@@ -563,12 +563,14 @@ export const RegisterResourceForm = () => {
 
         return (
           <Collapsible defaultOpen>
-            <CollapsibleTrigger asChild>
-              <button className="flex items-center gap-1 text-xs text-red-600 transition-colors hover:text-red-700 dark:text-red-500">
-                <ChevronDown className="size-3" />
-                {failedResources.length} endpoint
-                {failedResources.length === 1 ? "" : "s"} with errors
-              </button>
+            <CollapsibleTrigger
+              render={
+                <button className="flex items-center gap-1 text-xs text-red-600 transition-colors hover:text-red-700 dark:text-red-500" />
+              }
+            >
+              <ChevronDown className="size-3" />
+              {failedResources.length} endpoint
+              {failedResources.length === 1 ? "" : "s"} with errors
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-2 pt-2">
               <p className="text-xs text-muted-foreground">
@@ -619,13 +621,15 @@ export const RegisterResourceForm = () => {
 
         return (
           <Collapsible>
-            <CollapsibleTrigger asChild>
-              <button className="flex items-center gap-1 text-xs text-yellow-600 transition-colors hover:text-yellow-700 dark:text-yellow-500">
-                <ChevronDown className="size-3" />
-                {resourcesWithWarnings.length} endpoint
-                {resourcesWithWarnings.length === 1 ? "" : "s"} with warnings
-                (Not blocking)
-              </button>
+            <CollapsibleTrigger
+              render={
+                <button className="flex items-center gap-1 text-xs text-yellow-600 transition-colors hover:text-yellow-700 dark:text-yellow-500" />
+              }
+            >
+              <ChevronDown className="size-3" />
+              {resourcesWithWarnings.length} endpoint
+              {resourcesWithWarnings.length === 1 ? "" : "s"} with warnings (Not
+              blocking)
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-2 pt-2">
               <p className="text-xs text-muted-foreground">
@@ -672,12 +676,14 @@ export const RegisterResourceForm = () => {
           so only true leftovers land here. */}
       {!activeBulkResult && skippedResources.length > 0 && (
         <Collapsible>
-          <CollapsibleTrigger asChild>
-            <button className="flex items-center gap-1 text-xs text-yellow-600 transition-colors hover:text-yellow-700 dark:text-yellow-500">
-              <ChevronDown className="size-3" />
-              {skippedResources.length} unprotected endpoint
-              {skippedResources.length === 1 ? "" : "s"} skipped
-            </button>
+          <CollapsibleTrigger
+            render={
+              <button className="flex items-center gap-1 text-xs text-yellow-600 transition-colors hover:text-yellow-700 dark:text-yellow-500" />
+            }
+          >
+            <ChevronDown className="size-3" />
+            {skippedResources.length} unprotected endpoint
+            {skippedResources.length === 1 ? "" : "s"} skipped
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-2 pt-2">
             <p className="text-xs text-muted-foreground">
@@ -931,8 +937,11 @@ function PostRegistrationDialog({
                   </Button>
                 </form>
               ) : (
-                <Button asChild className="flex-1">
-                  <a href={MERCHANT_EMAIL_URL}>Email {MERCHANT_EMAIL} &rarr;</a>
+                <Button
+                  className="flex-1"
+                  render={<a href={MERCHANT_EMAIL_URL} />}
+                >
+                  Email {MERCHANT_EMAIL} &rarr;
                 </Button>
               )}
             </ChecklistStep>
@@ -1229,14 +1238,14 @@ function ProbeResult({
         ) : (
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="relative shrink-0 cursor-help">
-                  <Favicon
-                    url={null}
-                    className="size-8 rounded-md border bg-background"
-                  />
-                  <CircleHelp className="absolute -top-1 -right-1 size-3 text-muted-foreground" />
-                </div>
+              <TooltipTrigger
+                render={<div className="relative shrink-0 cursor-help" />}
+              >
+                <Favicon
+                  url={null}
+                  className="size-8 rounded-md border bg-background"
+                />
+                <CircleHelp className="absolute -top-1 -right-1 size-3 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent side="right">
                 Add a favicon to help your API stand out

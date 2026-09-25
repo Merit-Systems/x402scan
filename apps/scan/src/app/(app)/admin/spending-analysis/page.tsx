@@ -30,10 +30,10 @@ export default async function ToolSpendingAnalysisPage() {
         <Body>
           <Tabs defaultValue="by-wallet" className="w-full">
             <TabsList className="mb-4">
-              <TabsTrigger value="by-wallet" variant="underline">
+              <TabsTrigger value="by-wallet" appearance="default">
                 By Wallet
               </TabsTrigger>
-              <TabsTrigger value="by-tool" variant="underline">
+              <TabsTrigger value="by-tool" appearance="default">
                 By Tool
               </TabsTrigger>
             </TabsList>
