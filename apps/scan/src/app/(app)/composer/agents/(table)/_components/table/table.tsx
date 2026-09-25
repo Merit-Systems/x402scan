@@ -1,6 +1,7 @@
 "use client";
-
 import { useState } from "react";
+
+import Link from "next/link";
 
 import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 
@@ -14,7 +15,7 @@ import { columns } from "./columns";
 
 import type { AgentSortId } from "@/lib/table-sort-options";
 import type { TableSorting } from "@/lib/table-state";
-import type { RouterInputs } from "@/trpc/client";
+import type { RouterInputs, RouterOutputs } from "@/trpc/client";
 
 interface Props {
   input: Omit<
@@ -51,7 +52,8 @@ export const AgentsTable: React.FC<Props> = ({
     <DataTable
       columns={columns}
       data={agents.items}
-      getRowHref={({ id }) => `/composer/agent/${id}`}
+      rowLinkComponent={Link}
+      getRowHref={getAgentHref}
       getRowLabel={({ name }) => `Open ${name}`}
       pageSize={10}
       manualSorting={true}
@@ -87,3 +89,9 @@ export const LoadingAgentsTable = ({
     />
   );
 };
+
+function getAgentHref(
+  agent: RouterOutputs["public"]["agents"]["list"]["items"][number]
+) {
+  return `/composer/agent/${agent.id}` as const;
+}

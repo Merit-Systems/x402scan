@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 import {
   ResponsiveCollection,
@@ -36,7 +35,6 @@ interface FacilitatorOriginsProps {
 }
 
 export function FacilitatorOrigins({ origins }: FacilitatorOriginsProps) {
-  const router = useRouter();
   return (
     <ResponsiveCollection
       data={origins.items}
@@ -46,9 +44,7 @@ export function FacilitatorOrigins({ origins }: FacilitatorOriginsProps) {
         columns: facilitatorServerColumns,
         getRowHref,
         getRowLabel: (item) => `Open ${getServerName(item)}`,
-        onRowMouseEnter: (item) => {
-          router.prefetch(getRowHref(item));
-        },
+        rowLinkComponent: Link,
         pageSize: PAGE_SIZE,
       }}
     />
