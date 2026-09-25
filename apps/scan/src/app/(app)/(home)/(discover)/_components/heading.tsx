@@ -1,47 +1,47 @@
 import Link from "next/link";
 
-import { Plus } from "lucide-react";
+import { BookOpen, Plus } from "lucide-react";
 
-import { HeadingContainer } from "../../../../_components/layout/page-utils";
-
-import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/logo";
+import { buttonVariants } from "@/components/ui/button";
+import { Logo } from "@/components/ui/logo";
 
 import { DiscoverSearchInput, DiscoverSearchSubmit } from "./discover-search";
 
 export const DiscoverHeading = () => {
   return (
-    <HeadingContainer className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-2">
-            <Logo className="size-8" />
-            <h1 className="font-mono text-2xl font-bold md:text-4xl">
-              x402scan
-            </h1>
+    <section className="flex flex-col gap-8">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <Logo className="size-10" />
+            <h1 className="type-product-title">x402scan</h1>
           </div>
-          <Link href="/resources/register" className="hidden shrink-0 md:block">
-            <Button size="sm" className="h-9">
-              <Plus className="size-4" />
-              Add your API
-            </Button>
+          <p className="max-w-xl text-muted-foreground">
+            Explore services, activity, and infrastructure across the x402
+            economy.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/resources/register"
+            className={buttonVariants({ size: "lg" })}
+          >
+            <Plus className="size-3.5" />
+            Add your API
+          </Link>
+          <Link
+            href="/discovery"
+            className={buttonVariants({ size: "lg", variant: "outline" })}
+          >
+            <BookOpen className="size-3.5" />
+            Read the docs
           </Link>
         </div>
-        <p className="text-sm text-muted-foreground">
-          The x402 block explorer, analytics dashboard and marketplace for paid
-          APIs and agentic commerce
-        </p>
       </div>
-      <div className="flex flex-col items-center gap-2 md:flex-row">
+      <div className="flex max-w-2xl flex-col items-center gap-2 md:flex-row">
         <DiscoverSearchInput />
         <DiscoverSearchSubmit />
       </div>
-      <Link href="/resources/register" className="md:hidden">
-        <Button size="sm" className="h-9 w-full">
-          <Plus className="size-4" />
-          Add your API
-        </Button>
-      </Link>
-    </HeadingContainer>
+    </section>
   );
 };
