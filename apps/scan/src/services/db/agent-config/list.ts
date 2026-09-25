@@ -2,10 +2,7 @@ import { z } from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { sortingSchema, timeframeSchema } from "@/lib/schemas";
 import {
@@ -149,10 +146,7 @@ const listTopAgentConfigurationsUncached = async (
   });
 };
 
-export const listTopAgentConfigurations = createCachedPaginatedQuery({
-  queryFn: listTopAgentConfigurationsUncached,
-  cacheKeyPrefix: "agent-config:list",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["createdAt"],
-  tags: ["agent-configuration"],
-});
+export const listTopAgentConfigurations = cachedQuery(
+  "listTopAgentConfigurations",
+  listTopAgentConfigurationsUncached
+);

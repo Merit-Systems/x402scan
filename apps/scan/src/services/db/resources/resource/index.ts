@@ -2,11 +2,7 @@ import { z } from "zod";
 
 import { scanDb } from "@x402scan/scan-db";
 
-import {
-  createCachedArrayQuery,
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { jsonObjectSchema } from "@/lib/json";
 import { toPaginatedResponse } from "@/lib/pagination";
 import { supportedChainSchema } from "@/lib/schemas";
@@ -193,13 +189,11 @@ export const listResourcesUncached = async (
   });
 };
 
-export const listResources = createCachedArrayQuery({
-  queryFn: listResourcesUncached,
-  cacheKeyPrefix: "resources:list",
-  createCacheKey: (where) => createStandardCacheKey({ where }),
-  dateFields: [],
-  tags: ["resources"],
-});
+export const listResources = cachedQuery(
+  "listResources",
+  listResourcesUncached,
+  { tags: ["resources"] }
+);
 
 export type ResourceSortId = "lastUpdated" | "toolCalls";
 
@@ -268,13 +262,11 @@ export const listResourcesWithPaginationUncached = async (
   });
 };
 
-export const listResourcesWithPagination = createCachedPaginatedQuery({
-  queryFn: listResourcesWithPaginationUncached,
-  cacheKeyPrefix: "resources:list-paginated",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: [],
-  tags: ["resources"],
-});
+export const listResourcesWithPagination = cachedQuery(
+  "listResourcesWithPagination",
+  listResourcesWithPaginationUncached,
+  { tags: ["resources"] }
+);
 
 export const searchResourcesSchema = z.object({
   search: z.string().optional(),
@@ -366,13 +358,11 @@ const searchResourcesUncached = async (
   });
 };
 
-export const searchResources = createCachedArrayQuery({
-  queryFn: searchResourcesUncached,
-  cacheKeyPrefix: "resources:search",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: [],
-  tags: ["resources"],
-});
+export const searchResources = cachedQuery(
+  "searchResources",
+  searchResourcesUncached,
+  { tags: ["resources"] }
+);
 
 export const listResourcesForTools = async (resourceIds: string[]) => {
   return scanDb.resources.findMany({

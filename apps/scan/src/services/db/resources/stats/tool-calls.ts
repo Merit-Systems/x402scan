@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
 import { firstTransfer } from "@/services/facilitator/constants";
 
@@ -83,10 +83,8 @@ const getBucketedToolCallsUncached = async (
   return bucketedToolCallsResultSchema.parse(rawResult);
 };
 
-export const getBucketedToolCalls = createCachedArrayQuery({
-  queryFn: getBucketedToolCallsUncached,
-  cacheKeyPrefix: "bucketed-tool-calls",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["bucket_start"],
-  tags: ["resource-statistics", "resources", "tool-calls"],
-});
+export const getBucketedToolCalls = cachedQuery(
+  "getBucketedToolCalls",
+  getBucketedToolCallsUncached,
+  { tags: ["resources"] }
+);

@@ -3,10 +3,7 @@ import { z } from "zod";
 import { Prisma } from "@x402scan/scan-db";
 import { scanDb } from "@x402scan/scan-db";
 
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from "@/lib/cache";
+import { cachedQuery } from "@/lib/cache/query";
 import { toPaginatedResponse } from "@/lib/pagination";
 
 import { queryRaw } from "../query";
@@ -159,10 +156,7 @@ const getAgentConfigFeedUncached = async (
   });
 };
 
-export const getAgentConfigFeed = createCachedPaginatedQuery({
-  queryFn: getAgentConfigFeedUncached,
-  cacheKeyPrefix: "agent-config:feed",
-  createCacheKey: (input) => createStandardCacheKey(input),
-  dateFields: ["createdAt"],
-  tags: ["agent-configuration", "feed"],
-});
+export const getAgentConfigFeed = cachedQuery(
+  "getAgentConfigFeed",
+  getAgentConfigFeedUncached
+);
