@@ -2,6 +2,13 @@ import { describe, it, expect } from "vitest";
 import { outputSchemaV1 } from "@/lib/x402/v1";
 import { convertOpenApiSchemaToV1 } from "./openapi-to-v1";
 
+function requireDefined<T>(value: T | undefined): T {
+  if (value === undefined) {
+    throw new Error("Expected test value to be defined");
+  }
+  return value;
+}
+
 describe("convertOpenApiSchemaToV1", () => {
   it("converts a bare JSON Schema (POST requestBody) to v1 format", () => {
     const schema = {
@@ -16,16 +23,15 @@ describe("convertOpenApiSchemaToV1", () => {
       required: ["publicationSlug", "postSlug"],
     };
 
-    const result = convertOpenApiSchemaToV1(schema, "GET");
-    expect(result).toBeDefined();
-    expect(result!.input.method).toBe("POST");
-    expect(result!.input.bodyFields).toBeDefined();
-    expect(result!.input.bodyFields!.publicationSlug).toEqual({
+    const result = requireDefined(convertOpenApiSchemaToV1(schema, "GET"));
+    const bodyFields = requireDefined(result.input.bodyFields);
+    expect(result.input.method).toBe("POST");
+    expect(bodyFields.publicationSlug).toEqual({
       type: "string",
       required: true,
       description: "The publication slug",
     });
-    expect(result!.input.bodyFields!.postSlug).toEqual({
+    expect(bodyFields.postSlug).toEqual({
       type: "string",
       required: true,
       description: "The post slug",
@@ -51,16 +57,15 @@ describe("convertOpenApiSchemaToV1", () => {
       ],
     };
 
-    const result = convertOpenApiSchemaToV1(schema, "GET");
-    expect(result).toBeDefined();
-    expect(result!.input.method).toBe("GET");
-    expect(result!.input.queryParams).toBeDefined();
-    expect(result!.input.queryParams!.q).toEqual({
+    const result = requireDefined(convertOpenApiSchemaToV1(schema, "GET"));
+    const queryParams = requireDefined(result.input.queryParams);
+    expect(result.input.method).toBe("GET");
+    expect(queryParams.q).toEqual({
       type: "string",
       required: true,
       description: "Search query",
     });
-    expect(result!.input.queryParams!.limit).toEqual({
+    expect(queryParams.limit).toEqual({
       type: "integer",
     });
   });
@@ -83,13 +88,12 @@ describe("convertOpenApiSchemaToV1", () => {
       ],
     };
 
-    const result = convertOpenApiSchemaToV1(schema, "POST");
-    expect(result).toBeDefined();
-    expect(result!.input.method).toBe("POST");
-    expect(result!.input.bodyFields).toBeDefined();
-    expect(result!.input.bodyFields!.name).toEqual({ type: "string" });
-    expect(result!.input.headerFields).toBeDefined();
-    expect(result!.input.headerFields!["X-Api-Version"]).toEqual({
+    const result = requireDefined(convertOpenApiSchemaToV1(schema, "POST"));
+    expect(result.input.method).toBe("POST");
+    expect(requireDefined(result.input.bodyFields).name).toEqual({
+      type: "string",
+    });
+    expect(requireDefined(result.input.headerFields)["X-Api-Version"]).toEqual({
       type: "string",
       required: true,
     });
@@ -108,9 +112,8 @@ describe("convertOpenApiSchemaToV1", () => {
       },
     };
 
-    const result = convertOpenApiSchemaToV1(schema, "PUT");
-    expect(result).toBeDefined();
-    expect(result!.input.method).toBe("PUT");
+    const result = requireDefined(convertOpenApiSchemaToV1(schema, "PUT"));
+    expect(result.input.method).toBe("PUT");
   });
 
   it("overrides GET to POST when body fields exist", () => {
@@ -119,9 +122,8 @@ describe("convertOpenApiSchemaToV1", () => {
       properties: { data: { type: "string" } },
     };
 
-    const result = convertOpenApiSchemaToV1(schema, "GET");
-    expect(result).toBeDefined();
-    expect(result!.input.method).toBe("POST");
+    const result = requireDefined(convertOpenApiSchemaToV1(schema, "GET"));
+    expect(result.input.method).toBe("POST");
   });
 
   it("handles enum fields in properties", () => {
@@ -136,9 +138,8 @@ describe("convertOpenApiSchemaToV1", () => {
       },
     };
 
-    const result = convertOpenApiSchemaToV1(schema, "POST");
-    expect(result).toBeDefined();
-    expect(result!.input.bodyFields!.status).toEqual({
+    const result = requireDefined(convertOpenApiSchemaToV1(schema, "POST"));
+    expect(requireDefined(result.input.bodyFields).status).toEqual({
       type: "string",
       enum: ["active", "inactive"],
       description: "Filter by status",
@@ -155,9 +156,10 @@ describe("convertOpenApiSchemaToV1", () => {
       properties: { result: { type: "string" } },
     };
 
-    const result = convertOpenApiSchemaToV1(inputSchema, "POST", outputSchema);
-    expect(result).toBeDefined();
-    expect(result!.output).toEqual(outputSchema);
+    const result = requireDefined(
+      convertOpenApiSchemaToV1(inputSchema, "POST", outputSchema)
+    );
+    expect(result.output).toEqual(outputSchema);
   });
 
   it("produces output that passes outputSchemaV1 validation", () => {
@@ -193,9 +195,9 @@ describe("convertOpenApiSchemaToV1", () => {
       ],
     };
 
-    const result = convertOpenApiSchemaToV1(schema, "GET");
-    expect(result).toBeDefined();
-    expect(result!.input.queryParams).toBeDefined();
-    expect(Object.keys(result!.input.queryParams!)).toEqual(["valid"]);
+    const result = requireDefined(convertOpenApiSchemaToV1(schema, "GET"));
+    expect(Object.keys(requireDefined(result.input.queryParams))).toEqual([
+      "valid",
+    ]);
   });
 });

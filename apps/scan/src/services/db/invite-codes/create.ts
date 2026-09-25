@@ -23,7 +23,7 @@ export const createInviteCodeSchema = z.object({
   note: z.string().optional(),
   partnerName: z.string().optional(),
   partnerMeritContact: z.string().optional(),
-  partnerEmail: z.string().email().optional(),
+  partnerEmail: z.email().optional(),
   partnerOrganization: z.string().min(1).optional(),
 });
 

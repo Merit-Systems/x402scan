@@ -11,6 +11,21 @@
       "cache": false,
       "passThroughEnv": ["TRANSFERS_DB_URL"]
     },
+    "db:format": {
+      "description": "Format the transfers database Prisma schema",
+      "cache": false,
+      "passThroughEnv": ["TRANSFERS_DB_URL"]
+    },
+    "dev": {
+      "description": "Watch the transfers database package",
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": [
+        "TRANSFERS_DB_URL",
+        "TRANSFERS_DB_URL_REPLICA_*",
+        "NODE_ENV"
+      ]
+    },
     "studio": {
       "description": "Start Prisma Studio for the transfers database",
       "cache": false,

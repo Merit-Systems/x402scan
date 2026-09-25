@@ -49,6 +49,11 @@ interface BucketedTimeframeProps {
   creationDate: Date | (() => Promise<Date>);
 }
 
+const CREATION_DATE_PERIODS = new Set<number>([
+  ActivityTimeframe.AllTime,
+  ActivityTimeframe.ThirtyDays,
+]);
+
 export const getBucketedTimeRangeFromTimeframe = async ({
   period,
   creationDate,
@@ -57,10 +62,7 @@ export const getBucketedTimeRangeFromTimeframe = async ({
   const endDate = now;
 
   // Handle All Time (0) and ThirtyDays - use creation date as start
-  if (
-    period === ActivityTimeframe.AllTime ||
-    period === ActivityTimeframe.ThirtyDays
-  ) {
+  if (CREATION_DATE_PERIODS.has(period)) {
     return {
       startDate:
         creationDate instanceof Date ? creationDate : await creationDate(),
