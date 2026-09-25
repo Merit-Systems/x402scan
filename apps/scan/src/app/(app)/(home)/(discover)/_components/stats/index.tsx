@@ -1,9 +1,10 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 
 import { ErrorBoundary } from "react-error-boundary";
 
 import { OverallCharts, LoadingOverallCharts } from "./charts";
 
+import { StatsCardGrid } from "@/components/stats-card-grid";
 import { api } from "@/trpc/server";
 
 import type { ActivityTimeframe } from "@/types/timeframes";
@@ -15,7 +16,7 @@ interface Props {
   timeframe: ActivityTimeframe;
 }
 
-export const OverallStatsContent: React.FC<Props> = ({ chain, timeframe }) => {
+export function OverallStatsContent({ chain, timeframe }: Props) {
   void api.public.stats.overall.prefetch({
     timeframe,
     chain,
@@ -31,20 +32,16 @@ export const OverallStatsContent: React.FC<Props> = ({ chain, timeframe }) => {
       fallback={<p>There was an error loading the activity data</p>}
     >
       <Suspense fallback={<LoadingOverallStatsContent />}>
-        <StatsGrid>
+        <StatsCardGrid className="grid-cols-2 md:grid-cols-4">
           <OverallCharts chain={chain} timeframe={timeframe} />
-        </StatsGrid>
+        </StatsCardGrid>
       </Suspense>
     </ErrorBoundary>
   );
-};
+}
 
 export const LoadingOverallStatsContent = () => (
-  <StatsGrid>
+  <StatsCardGrid className="grid-cols-2 md:grid-cols-4">
     <LoadingOverallCharts />
-  </StatsGrid>
-);
-
-const StatsGrid = ({ children }: { children: React.ReactNode }) => (
-  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">{children}</div>
+  </StatsCardGrid>
 );
