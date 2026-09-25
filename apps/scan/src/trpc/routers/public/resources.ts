@@ -10,7 +10,6 @@ import {
 
 import {
   getResource,
-  getResourceByAddress,
   listResources,
   listResourcesWithPagination,
   searchResources,
@@ -19,8 +18,6 @@ import {
 } from "@/services/db/resources/resource";
 
 import { scanDb } from "@x402scan/scan-db";
-
-import { mixedAddressSchema } from "@/lib/schemas";
 
 import { registerEndpoint } from "@/lib/discovery/register-endpoint";
 import { registerResourcesFromDiscovery } from "@/lib/discovery/register-origin";
@@ -94,17 +91,6 @@ export const resourcesRouter = createTRPCRouter({
           pagination
         );
       }),
-    byAddress: publicProcedure
-      .input(mixedAddressSchema)
-      .query(async ({ input }) => {
-        return await listResources({
-          accepts: {
-            some: {
-              payTo: input,
-            },
-          },
-        });
-      }),
   },
   getById: publicProcedure.input(z.string()).query(async ({ input }) => {
     return await scanDb.resources.findUnique({
@@ -121,11 +107,6 @@ export const resourcesRouter = createTRPCRouter({
       },
     });
   }),
-  getResourceByAddress: publicProcedure
-    .input(mixedAddressSchema)
-    .query(async ({ input }) => {
-      return await getResourceByAddress(input);
-    }),
   search: publicProcedure
     .input(searchResourcesSchema)
     .query(async ({ input }) => {

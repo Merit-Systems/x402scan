@@ -281,19 +281,6 @@ export const listResourcesWithPagination = createCachedPaginatedQuery({
   tags: ["resources"],
 });
 
-export const getResourceByAddress = async (address: string) => {
-  return await scanDb.resources.findFirst({
-    where: {
-      deprecatedAt: null,
-      accepts: {
-        some: {
-          payTo: address.toLowerCase(),
-        },
-      },
-    },
-  });
-};
-
 export const searchResourcesSchema = z.object({
   search: z.string().optional(),
   limit: z.number().optional().default(10),
