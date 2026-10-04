@@ -5,5 +5,7 @@ export { PROBE_TIMEOUT_MS } from './constants';
 export {
   buildMinimalSampleFromInputSchema,
   buildMinimalQueryParamsFromInputSchema,
+  declaredRequestExample,
+  selectProbeBody,
 } from './build-minimal-sample';
 export { hasPathParameters } from './path-params';
