@@ -465,3 +465,26 @@ describe('selectProbeBody', () => {
     expect(selectProbeBody({}, synthesized)).toEqual(synthesized);
   });
 });
+
+describe('declared example media and method binding', () => {
+  it('does not reinterpret a form example as the JSON probe body', () => {
+    const document = { paths: { '/submit': { post: { requestBody: {
+      content: {
+        'application/json': { schema: { type: 'object' } },
+        'application/x-www-form-urlencoded': { example: { note: 'form-only' } },
+      },
+    } } } } };
+    expect(declaredRequestExample(document, '/submit', 'POST')).toBeUndefined();
+  });
+
+  it('uses the same method preference as the existing probe when unspecified', () => {
+    const operation = (note: string) => ({ requestBody: { content: {
+      'application/json': { example: { note } },
+    } } });
+    const document = { paths: { '/submit': {
+      put: operation('put'), get: operation('get'),
+    } } };
+    expect(declaredRequestExample(document, '/submit')).toEqual({ note: 'get' });
+    expect(declaredRequestExample(document, '/submit', 'PUT')).toEqual({ note: 'put' });
+  });
+});

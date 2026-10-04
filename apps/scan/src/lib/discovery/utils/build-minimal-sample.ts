@@ -12,7 +12,7 @@ import { openApiInputAdvisorySchema } from './json-schema';
 import type { JsonLikeValue, JsonSchemaNode } from './json-schema';
 import type { JsonObject, JsonValue } from '@/lib/json';
 
-const HTTP_METHODS = ['post', 'put', 'patch', 'delete', 'get', 'head'] as const;
+const HTTP_METHODS = ['post', 'get', 'put', 'patch', 'delete', 'head'] as const;
 
 const MAX_DEPTH = 5;
 
@@ -120,9 +120,8 @@ export function buildMinimalSampleFromInputSchema(
   const effectiveSchema =
     wrappedSchema ?? advisory.data.requestBody ?? advisory.data;
 
-  // A merchant-declared object example is a body the server already accepted
-  // as a shape. Property defaults (including the URI placeholder) are only
-  // for specs that do not provide one.
+  // Keep the merchant's declared JSON object intact. Property defaults
+  // (including the URI placeholder) are only for specs without an example.
   const declared =
     declaredObjectExample(media) ?? declaredObjectExample(effectiveSchema);
   if (declared) return declared;
@@ -181,10 +180,7 @@ function mediaTypeExample(requestBody: unknown): JsonObject | undefined {
   const jsonMedia = content['application/json'];
   const fromJson = declaredObjectExample(jsonMedia);
   if (fromJson) return fromJson;
-  for (const media of Object.values(content)) {
-    const found = declaredObjectExample(media);
-    if (found) return found;
-  }
+  // The probe sends JSON. Never reinterpret another media type as JSON.
   return undefined;
 }
 
