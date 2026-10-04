@@ -115,8 +115,15 @@ const lenientParameterListSchema = z
  *      @agentcash/discovery
  *   3. Direct JSON Schema with `properties`/`type` at top level
  */
+/** JSON media type as x402scan receives it, including a sibling example. */
+export interface OpenApiJsonMediaType {
+  schema?: JsonSchemaNode;
+  example?: JsonValue;
+  examples?: JsonValue;
+}
+
 export interface OpenApiInputAdvisory extends JsonSchemaNode {
-  body?: { content?: { 'application/json'?: { schema?: JsonSchemaNode } } };
+  body?: { content?: { 'application/json'?: OpenApiJsonMediaType } };
   requestBody?: JsonSchemaNode;
   parameters?: OpenApiParameter[];
 }
@@ -131,6 +138,9 @@ export const openApiInputAdvisorySchema: z.ZodType<OpenApiInputAdvisory> =
             'application/json': z
               .looseObject({
                 schema: jsonSchemaNodeSchema.optional().catch(undefined),
+                // A bad example must not discard the schema used for synthesis.
+                example: jsonValueSchema.optional().catch(undefined),
+                examples: jsonValueSchema.optional().catch(undefined),
               })
               .optional()
               .catch(undefined),
