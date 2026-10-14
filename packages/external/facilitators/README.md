@@ -126,6 +126,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
 | **three.ws**         | SOLANA        | ✅ Yes    | No                           |
+| **X Pay**             | BASE          | No        | Yes - merchant API key       |
 
 ### Import Individual Facilitators
 
@@ -158,7 +159,7 @@ import {
 } from 'facilitators';
 
 // Facilitators requiring setup
-import { aurracloud, thirdweb, questflow } from 'facilitators';
+import { aurracloud, thirdweb, questflow, xpay } from 'facilitators';
 
 aurracloud({
   apiKey: process.env.AURRACLOUD_API_KEY,
@@ -276,3 +277,14 @@ enum Network {
   SOLANA = 'solana',
 }
 ```
+
+### X Pay authentication
+
+X Pay requires a merchant API key for verification and settlement. Capabilities remain public.
+
+```typescript
+const facilitator = xpay({ apiKey: process.env.XPAY_API_KEY! });
+```
+
+[Integration guide and onboarding](https://facilitator-xpay.llc/docs). Keep API keys on your server.
+
