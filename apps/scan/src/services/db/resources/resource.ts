@@ -7,14 +7,12 @@ import { toPaginatedResponse } from '@/lib/pagination';
 
 import { supportedChainSchema } from '@/lib/schemas';
 
-import { SUPPORTED_CHAINS } from '@/types/chain';
-
 import { upsertResourceSchema } from './resource-schema';
+import { selectStorableAccepts } from './storable-accepts';
 import { ensureOriginExists, freeAuthModeFilters } from './origin';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { Prisma } from '@x402scan/scan-db';
-import type { SupportedChain } from '@/types/chain';
 
 import {
   createCachedArrayQuery,
@@ -32,12 +30,20 @@ export const upsertResource = async (
     return;
   }
   const baseResource = parsedResourceInput.data;
-  const supportedAccepts = baseResource.accepts.filter(accept =>
-    SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
-  );
-  const unsupportedAccepts = baseResource.accepts.filter(
-    accept => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
-  );
+  const { storable: supportedAccepts, skipped: skippedAccepts } =
+    selectStorableAccepts(baseResource.accepts);
+  const unsupportedAccepts = skippedAccepts
+    .filter(s => s.reason === 'unsupported_network')
+    .map(({ accept }) => accept);
+  if (skippedAccepts.some(s => s.reason !== 'unsupported_network')) {
+    console.warn(
+      `[upsertResource] skipped accepts for ${baseResource.resource}:`,
+      skippedAccepts
+        .filter(s => s.reason !== 'unsupported_network')
+        .map(s => `${s.accept.network}:${s.reason}`)
+        .join(', ')
+    );
+  }
   if (supportedAccepts.length === 0) {
     return;
   }
