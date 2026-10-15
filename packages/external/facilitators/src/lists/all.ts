@@ -31,6 +31,7 @@ import {
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  shinjukustaitionFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -70,6 +71,7 @@ const FACILITATORS = validateUniqueFacilitators([
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  shinjukustaitionFacilitator,
 ]);
 
 // Some facilitators take facilitator-specific props in their config
