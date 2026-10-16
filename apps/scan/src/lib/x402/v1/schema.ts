@@ -48,14 +48,22 @@ const namedNetwork = z3.enum([
 
 const networkSchemaV1 = z3.union([
   namedNetwork,
+  // Any well-formed CAIP-2 EVM identifier is accepted, even for chain ids
+  // that don't have a human-friendly entry in `ChainIdToNetwork` yet. This
+  // mirrors `normalizeChainId` in `../index.ts`, which already falls back to
+  // the raw `eip155:<id>` string (`ChainIdToNetwork[id] ?? chainId`) instead
+  // of rejecting the response outright. Without this fallback, a single
+  // unrecognized-but-valid chain id in `accepts[]` fails the whole v1 array
+  // parse via Zod, which surfaces to integrators as an opaque "No valid x402
+  // response found" even though the 402 challenge itself is fully spec
+  // compliant (see Merit-Systems/x402scan#782 for the same failure mode on a
+  // different chain).
   z3
     .string()
-    .refine(
-      v =>
-        v.startsWith('eip155:') && !!ChainIdToNetwork[Number(v.split(':')[1])],
-      { message: 'Invalid network' }
-    )
-    .transform(v => ChainIdToNetwork[Number(v.split(':')[1])]),
+    .refine(v => v.startsWith('eip155:') && !Number.isNaN(Number(v.split(':')[1])), {
+      message: 'Invalid network',
+    })
+    .transform(v => ChainIdToNetwork[Number(v.split(':')[1])] ?? v),
 ]);
 
 export const paymentRequirementsSchemaV1 = PaymentRequirementsV1Schema.extend({
