@@ -1,6 +1,8 @@
 import {
   checkEndpointSchema,
+  getOpenAPI,
   getWarningsForL3,
+  isOpenApiParseFailure,
   validatePaymentRequiredDetailed,
 } from '@agentcash/discovery';
 import type {
@@ -13,8 +15,10 @@ import { z } from 'zod';
 import {
   buildMinimalSampleFromInputSchema,
   buildMinimalQueryParamsFromInputSchema,
+  declaredRequestExample,
   hasPathParameters,
   PROBE_TIMEOUT_MS,
+  selectProbeBody,
 } from './utils';
 import { jsonValueSchema } from '@/lib/json';
 
@@ -138,6 +142,39 @@ function pickInputSchemaFromSpec(
 }
 
 /**
+ * The discovery advisory does not carry the OpenAPI media-type example.
+ * A failed lookup leaves synthesis unchanged. This does not send a payment.
+ */
+export async function declaredBodyFromOpenApi(
+  url: string,
+  method?: string
+): Promise<JsonObject | undefined> {
+  let origin: string;
+  let path: string;
+  try {
+    const parsed = new URL(url);
+    origin = parsed.origin;
+    path = parsed.pathname || '/';
+  } catch {
+    return undefined;
+  }
+
+  try {
+    const result = await getOpenAPI(
+      origin,
+      undefined,
+      AbortSignal.timeout(PROBE_TIMEOUT_MS)
+    );
+    if (!result.isOk()) return undefined;
+    const source = result.value;
+    if (!source || isOpenApiParseFailure(source)) return undefined;
+    return declaredRequestExample(source.raw, path, method);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * Accepts entries from a raw 402 body: any JSON object advertising a string
  * `payTo`. Invalid entries are dropped instead of failing the whole parse,
  * matching how leniently the wire format is treated elsewhere. Requiring a
@@ -232,7 +269,8 @@ async function probeX402EndpointOnce(
   }
 
   // Fallback: re-probe with a body and/or query params from OpenAPI spec.
-  // Priority: merchant-provided sample > schema-derived minimal sample > {}
+  // Priority: merchant-provided sample, then the document's media-type
+  // example, then a schema-derived minimal sample.
   let fallbackBody: JsonObject = sampleBody ?? {};
   let probeUrl = url;
 
@@ -243,7 +281,11 @@ async function probeX402EndpointOnce(
       signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
     });
     const inputSchema = pickInputSchemaFromSpec(spec, preferredMethod);
-    fallbackBody = buildMinimalSampleFromInputSchema(inputSchema) ?? {};
+    // Discovery 1.7.5 keeps the JSON schema and drops the media-type example.
+    // Recover that example from the raw document before synthesizing defaults.
+    const synthesized = buildMinimalSampleFromInputSchema(inputSchema);
+    const declared = await declaredBodyFromOpenApi(url, preferredMethod);
+    fallbackBody = selectProbeBody(declared, synthesized);
 
     // Also sample required query params (for GET endpoints).
     const queryParams = buildMinimalQueryParamsFromInputSchema(inputSchema);

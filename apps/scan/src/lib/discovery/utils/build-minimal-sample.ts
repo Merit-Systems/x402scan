@@ -12,6 +12,8 @@ import { openApiInputAdvisorySchema } from './json-schema';
 import type { JsonLikeValue, JsonSchemaNode } from './json-schema';
 import type { JsonObject, JsonValue } from '@/lib/json';
 
+const HTTP_METHODS = ['post', 'get', 'put', 'patch', 'delete', 'head'] as const;
+
 const MAX_DEPTH = 5;
 
 function sampleValue(
@@ -113,12 +115,147 @@ export function buildMinimalSampleFromInputSchema(
   const advisory = openApiInputAdvisorySchema.safeParse(inputSchema);
   if (!advisory.success) return undefined;
 
-  const wrappedSchema =
-    advisory.data.body?.content?.['application/json']?.schema;
+  const media = advisory.data.body?.content?.['application/json'];
+  const wrappedSchema = media?.schema;
   const effectiveSchema =
     wrappedSchema ?? advisory.data.requestBody ?? advisory.data;
 
+  // Keep the merchant's declared JSON object intact. Property defaults
+  // (including the URI placeholder) are only for specs without an example.
+  const declared =
+    declaredObjectExample(media) ?? declaredObjectExample(effectiveSchema);
+  if (declared) return declared;
+
   return buildMinimalSample(effectiveSchema);
+}
+
+function isJsonObject(value: unknown): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** Pulls a probe body from one example entry. Does not fetch externalValue. */
+function exampleValue(entry: unknown): JsonObject | undefined {
+  if (!isJsonObject(entry)) return undefined;
+  if ('value' in entry) {
+    return isJsonObject(entry.value) && Object.keys(entry.value).length > 0
+      ? entry.value
+      : undefined;
+  }
+  if (
+    'externalValue' in entry ||
+    'summary' in entry ||
+    'description' in entry ||
+    '$ref' in entry
+  ) {
+    return undefined;
+  }
+  return Object.keys(entry).length > 0 ? entry : undefined;
+}
+
+/** A non-empty JSON object example. Empty objects fall through to synthesis. */
+function declaredObjectExample(carrier: unknown): JsonObject | undefined {
+  if (!isJsonObject(carrier)) return undefined;
+
+  const direct = isJsonObject(carrier.example) ? carrier.example : undefined;
+  if (direct && Object.keys(direct).length > 0) return direct;
+
+  const examples = carrier.examples;
+  const entries = Array.isArray(examples)
+    ? examples
+    : isJsonObject(examples)
+      ? Object.values(examples)
+      : [];
+  for (const entry of entries) {
+    const found = exampleValue(entry);
+    if (found) return found;
+  }
+  return undefined;
+}
+
+function mediaTypeExample(requestBody: unknown): JsonObject | undefined {
+  if (!isJsonObject(requestBody) || !isJsonObject(requestBody.content)) {
+    return undefined;
+  }
+  const content = requestBody.content;
+  const jsonMedia = content['application/json'];
+  const fromJson = declaredObjectExample(jsonMedia);
+  if (fromJson) return fromJson;
+  // The probe sends JSON. Never reinterpret another media type as JSON.
+  return undefined;
+}
+
+function pathPattern(specPath: string): RegExp {
+  const source = specPath
+    .split(/(\{[^}]+\})/)
+    .map(part =>
+      part.startsWith('{') && part.endsWith('}')
+        ? '[^/]+'
+        : part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    )
+    .join('');
+  return new RegExp(`^${source}$`);
+}
+
+function matchPathItem(
+  paths: Record<string, unknown>,
+  targetPath: string
+): Record<string, unknown> | undefined {
+  if (Object.prototype.hasOwnProperty.call(paths, targetPath)) {
+    const exact = paths[targetPath];
+    return isJsonObject(exact) ? exact : undefined;
+  }
+  for (const [specPath, entry] of Object.entries(paths)) {
+    if (!isJsonObject(entry)) continue;
+    if (pathPattern(specPath).test(targetPath)) return entry;
+  }
+  return undefined;
+}
+
+/**
+ * Reads an OpenAPI operation's requestBody media-type example.
+ * `@agentcash/discovery` 1.7.5 returns only the JSON schema, so callers that
+ * hold the raw document use this before synthesizing a probe body.
+ * `externalValue` examples are not fetched.
+ */
+export function declaredRequestExample(
+  document: unknown,
+  path: string,
+  method?: string
+): JsonObject | undefined {
+  if (!isJsonObject(document) || !isJsonObject(document.paths)) {
+    return undefined;
+  }
+  const pathItem = matchPathItem(document.paths, path);
+  if (!pathItem) return undefined;
+
+  const names = method ? [method.toLowerCase()] : [...HTTP_METHODS];
+  for (const name of names) {
+    const operation = pathItem[name];
+    if (!isJsonObject(operation)) continue;
+    const fromMedia = mediaTypeExample(operation.requestBody);
+    if (fromMedia) return fromMedia;
+    const requestBody = isJsonObject(operation.requestBody)
+      ? operation.requestBody
+      : undefined;
+    const content = isJsonObject(requestBody?.content)
+      ? requestBody.content
+      : undefined;
+    const jsonMedia = isJsonObject(content?.['application/json'])
+      ? content['application/json']
+      : undefined;
+    const fromSchema = declaredObjectExample(jsonMedia?.schema);
+    if (fromSchema) return fromSchema;
+  }
+  return undefined;
+}
+
+/** Declared example wins. Synthesis is the fallback, never a mix of the two. */
+export function selectProbeBody(
+  declared: JsonObject | undefined,
+  synthesized: JsonObject | undefined
+): JsonObject {
+  if (declared && Object.keys(declared).length > 0) return declared;
+  return synthesized ?? {};
 }
 
 const scalarJsonSchema = z.union([
