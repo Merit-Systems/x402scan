@@ -12,6 +12,7 @@ import { registerExactEvmScheme } from '@x402/evm/exact/client';
 import { x402Client, wrapFetchWithPayment } from '@x402/fetch';
 import { ExactSvmScheme } from '@x402/svm/exact/client';
 import { ExactSvmSchemeV1 } from '@x402/svm/exact/v1/client';
+import { withSvmMemoComputeBudget } from './svm-compute-budget';
 
 export { x402Client, wrapFetchWithPayment };
 export { registerExactEvmScheme };
@@ -52,7 +53,10 @@ export function registerSvmX402Client(params: {
   const client = new x402Client();
 
   // v2
-  client.register('solana:*', new ExactSvmScheme(signer, { rpcUrl }));
+  client.register(
+    'solana:*',
+    new ExactSvmScheme(withSvmMemoComputeBudget(signer), { rpcUrl })
+  );
 
   // v1
   client.registerV1('solana', new ExactSvmSchemeV1(signer, { rpcUrl }));
