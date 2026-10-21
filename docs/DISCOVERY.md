@@ -37,10 +37,20 @@ Supported URLs:
 For each paid operation:
 - declare `x-payment-info`
 - include a `402` response in `responses`
-- include `x-payment-info.protocols` (for example `"x402"`)
 - include valid pricing metadata via `x-payment-info.price`:
   - fixed: `{ mode: "fixed", currency: "USD", amount: "0.05" }`
   - dynamic: `{ mode: "dynamic", currency: "USD", min: "0.01", max: "1.00" }`
+- include `x-payment-info.protocols` as an **array of protocol objects**, for example `[{ "x402": {} }]`
+  - a plain string array such as `["x402"]` is only accepted by the legacy flat format (`pricingMode` + string `price`); combined with the structured `price` object above it fails validation and the operation is treated as having no payment info
+
+Example:
+
+```json
+"x-payment-info": {
+  "price": { "mode": "fixed", "currency": "USD", "amount": "0.05" },
+  "protocols": [{ "x402": {} }]
+}
+```
 
 ### Auth requirements
 
