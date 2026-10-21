@@ -1,6 +1,7 @@
 import { discoverOriginSchema } from '@agentcash/discovery';
 
 import { endpointDescription } from '@/lib/discovery/endpoint-description';
+import { describeOpenApiFailure } from '@/lib/discovery/openapi-blocked';
 import { getOriginFromUrl } from '@/lib/url';
 import { isLocalUrl, isTunnelUrl } from '@/lib/url-helpers';
 import {
@@ -82,7 +83,10 @@ export async function fetchDiscoveryDocument(
       success: false,
       resources: [],
 
-      error: discovered.message ?? 'No discovery document found',
+      error:
+        discovered.message ??
+        (await describeOpenApiFailure(origin, headers)) ??
+        'No discovery document found',
     };
   }
 
