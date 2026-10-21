@@ -26,9 +26,8 @@ export async function describeOpenApiFailure(
       return (
         `No discovery document found: Cloudflare answered ${url} with a ` +
         `bot challenge (HTTP ${response.status}), so the request never ` +
-        'reached your server. ' +
-        'Allow automated requests to /openapi.json, for example with a WAF ' +
-        'skip rule, then try again.'
+        'reached your server. Allow automated requests to /openapi.json in ' +
+        'your Cloudflare security settings, then try again.'
       );
     }
     if (!response.ok) {
