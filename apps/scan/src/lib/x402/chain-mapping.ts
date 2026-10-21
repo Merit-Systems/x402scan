@@ -7,6 +7,7 @@ const EvmNetworkToChainId = {
   'abstract-testnet': 11124,
   'base-sepolia': 84532,
   base: 8453,
+  arc: 5042,
   'avalanche-fuji': 43113,
   avalanche: 43114,
   iotex: 4689,

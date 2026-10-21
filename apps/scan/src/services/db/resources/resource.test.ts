@@ -14,6 +14,36 @@ const validAccepts = [
 ];
 
 describe('upsertResourceSchema', () => {
+  it('normalizes an Arc Mainnet Gateway offer for seller discovery', () => {
+    const result = upsertResourceSchema.safeParse({
+      resource: 'https://api-staging.aomi.dev/v1/task/build',
+      method: 'POST',
+      type: 'http',
+      x402Version: 2,
+      lastUpdated: new Date(),
+      accepts: [
+        {
+          scheme: 'exact',
+          network: 'eip155:5042',
+          payTo: '0x1234567890123456789012345678901234567890',
+          maxAmountRequired: '10000',
+          maxTimeoutSeconds: 300,
+          asset: '0x3600000000000000000000000000000000000000',
+          extra: { name: 'GatewayWalletBatched', version: '1' },
+        },
+      ],
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.accepts[0]?.network).toBe('arc');
+      expect(result.data.accepts[0]?.extra).toEqual({
+        name: 'GatewayWalletBatched',
+        version: '1',
+      });
+    }
+  });
+
   it('defaults method to empty string when omitted', () => {
     const result = upsertResourceSchema.safeParse({
       resource: 'https://api.example.com/foo',

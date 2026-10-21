@@ -33,7 +33,6 @@ import {
 } from '@/services/db/resources/tag';
 
 import { convertTokenAmount } from '@/lib/token';
-import { usdc } from '@/lib/tokens/usdc';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import {
   getResourceVerificationStatus,
@@ -41,7 +40,6 @@ import {
 } from '@/services/verification/accepts-verification';
 
 import type { Prisma } from '@x402scan/scan-db';
-import type { SupportedChain } from '@/types/chain';
 import { verifyAnyOwnershipProof } from '@/lib/ownership-proof';
 
 export const resourcesRouter = createTRPCRouter({
@@ -57,10 +55,7 @@ export const resourcesRouter = createTRPCRouter({
       ...resource,
       accepts: resource.accepts.map(accept => ({
         ...accept,
-        maxAmountRequired: convertTokenAmount(
-          accept.maxAmountRequired,
-          usdc(accept.network as SupportedChain).decimals
-        ),
+        maxAmountRequired: convertTokenAmount(accept.maxAmountRequired),
       })),
     };
   }),
