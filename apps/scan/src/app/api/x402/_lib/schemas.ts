@@ -1,4 +1,5 @@
 import z from 'zod';
+import { DISCOVERABLE_CHAINS } from '@/types/chain';
 
 // ── Reusable primitives ──────────────────────────────
 
@@ -22,6 +23,11 @@ const chainFilterSchema = z
   .enum(['base', 'solana'])
   .optional()
   .describe('Filter by chain');
+
+const resourceChainFilterSchema = z
+  .enum(DISCOVERABLE_CHAINS)
+  .optional()
+  .describe('Filter resource listings by chain');
 
 const timeframeSchema = z.coerce
   .number()
@@ -89,7 +95,7 @@ export const facilitatorStatsQuerySchema = z.object({
 });
 
 export const resourcesListQuerySchema = paginationSchema.extend({
-  chain: chainFilterSchema,
+  chain: resourceChainFilterSchema,
 });
 
 export const resourcesSearchQuerySchema = paginationSchema.extend({
@@ -98,11 +104,11 @@ export const resourcesSearchQuerySchema = paginationSchema.extend({
   chains: z
     .string()
     .optional()
-    .describe('Comma-separated chains to filter by (base, solana)'),
+    .describe('Comma-separated chains to filter by (base, solana, arc)'),
 });
 
 export const originResourcesQuerySchema = paginationSchema.extend({
-  chain: chainFilterSchema,
+  chain: resourceChainFilterSchema,
 });
 
 // ── Registry endpoints ─────────────────────────────
@@ -123,5 +129,5 @@ export const registryRegisterOriginBodySchema = z.object({
 
 export const registryOriginQuerySchema = paginationSchema.extend({
   url: z.string().url().describe('Origin URL to list registered resources for'),
-  chain: chainFilterSchema,
+  chain: resourceChainFilterSchema,
 });

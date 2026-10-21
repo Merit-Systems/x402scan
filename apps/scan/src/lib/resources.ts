@@ -20,7 +20,7 @@ import type { FreeAuthMode } from '@/lib/resource-auth';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { DISCOVERABLE_CHAINS } from '@/types/chain';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { verifyAcceptsOwnership } from '@/services/verification/accepts-verification';
 import { outputSchemaV1 } from '@/lib/x402/v1';
@@ -142,7 +142,7 @@ export function validateResource(
 
   // Unsupported networks
   const hasSupported = x402Options.some(opt =>
-    (SUPPORTED_CHAINS as readonly string[]).includes(
+    (DISCOVERABLE_CHAINS as readonly string[]).includes(
       normalizeChainId(opt.network)
     )
   );
@@ -152,7 +152,7 @@ export function validateResource(
     );
     return {
       valid: false,
-      error: `No supported networks. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]`,
+      error: `No discoverable networks. Got: [${advertisedNetworks.join(', ')}]. Discoverable: [${(DISCOVERABLE_CHAINS as readonly string[]).join(', ')}]`,
     };
   }
 
@@ -469,6 +469,27 @@ export const registerResource = async (
     );
   }
 
+  const parsedPaymentRequiredBody = parseX402Response(
+    advisory.paymentRequiredBody
+  );
+  if (!parsedPaymentRequiredBody.success) {
+    return {
+      success: false as const,
+      data: advisory.paymentRequiredBody,
+      error: {
+        type: 'parseResponse' as const,
+        parseErrors: parsedPaymentRequiredBody.errors,
+      },
+      warnings,
+    };
+  }
+
+  // Discovery's payment option drops `extra`. Preserve it from the same
+  // validated 402 offer so Gateway scheme details remain visible in listings.
+  const rawV2Accepts =
+    parsedPaymentRequiredBody.data.x402Version === 2
+      ? (parsedPaymentRequiredBody.data.accepts ?? [])
+      : [];
   const allMappedAccepts = x402Options.map(opt => ({
     scheme: opt.scheme ?? 'exact',
     network: normalizeChainId(opt.network) as AcceptsNetwork,
@@ -478,11 +499,20 @@ export const registerResource = async (
     asset: opt.asset,
     maxTimeoutSeconds: opt.maxTimeoutSeconds ?? 60,
     outputSchema: outputSchemaForDb,
-    extra: undefined,
+    extra:
+      rawV2Accepts.find(
+        raw =>
+          raw.scheme === (opt.scheme ?? 'exact') &&
+          normalizeChainId(raw.network) === normalizeChainId(opt.network) &&
+          raw.amount ===
+            (('amount' in opt ? opt.amount : opt.maxAmountRequired) ?? '0') &&
+          raw.asset === opt.asset &&
+          raw.payTo === opt.payTo
+      )?.extra ?? undefined,
   }));
 
   const mappedAccepts = allMappedAccepts.filter(accept =>
-    (SUPPORTED_CHAINS as readonly string[]).includes(accept.network)
+    (DISCOVERABLE_CHAINS as readonly string[]).includes(accept.network)
   );
 
   // This should never fire since validateResource already checked, but
@@ -497,23 +527,8 @@ export const registerResource = async (
       error: {
         type: 'parseResponse' as const,
         parseErrors: [
-          `No supported networks advertised. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]. Testnets are not indexed.`,
+          `No discoverable networks advertised. Got: [${advertisedNetworks.join(', ')}]. Discoverable: [${(DISCOVERABLE_CHAINS as readonly string[]).join(', ')}]. Testnets are not indexed.`,
         ],
-      },
-      warnings,
-    };
-  }
-
-  const parsedPaymentRequiredBody = parseX402Response(
-    advisory.paymentRequiredBody
-  );
-  if (!parsedPaymentRequiredBody.success) {
-    return {
-      success: false as const,
-      data: advisory.paymentRequiredBody,
-      error: {
-        type: 'parseResponse' as const,
-        parseErrors: parsedPaymentRequiredBody.errors,
       },
       warnings,
     };

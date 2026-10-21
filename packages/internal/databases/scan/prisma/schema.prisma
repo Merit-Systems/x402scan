@@ -116,6 +116,7 @@ enum AcceptsNetwork {
   iotex
   solana_devnet
   solana
+  arc
   polygon
   optimism
 }

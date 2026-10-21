@@ -3,9 +3,9 @@ import { z } from 'zod';
 import { scanDb } from '@x402scan/scan-db';
 
 import { parseX402Response, type ParsedX402Response } from '@/lib/x402';
-import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
+import { mixedAddressSchema, optionalOriginChainSchema } from '@/lib/schemas';
 import { FREE_AUTH_MODES, isFreeResource } from '@/lib/resource-auth';
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { DISCOVERABLE_CHAINS } from '@/types/chain';
 
 import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
 import type { MixedAddress } from '@/types/address';
@@ -16,7 +16,7 @@ export const freeAuthModeFilters: Prisma.ResourcesWhereInput[] =
     metadata: { path: ['authMode'], equals: mode },
   }));
 
-const SUPPORTED_ACCEPT_NETWORKS = SUPPORTED_CHAINS.map(
+const DISCOVERABLE_ACCEPT_NETWORKS = DISCOVERABLE_CHAINS.map(
   chain => chain as AcceptsNetwork
 );
 
@@ -24,14 +24,14 @@ function getDisplayableAcceptsWhere({
   chain,
   address,
 }: {
-  chain?: z.infer<typeof optionalChainSchema>;
+  chain?: z.infer<typeof optionalOriginChainSchema>;
   address?: z.infer<typeof mixedAddressSchema>;
 }): Prisma.AcceptsWhereInput {
   return {
     payTo: address,
     ...(chain
       ? { network: chain }
-      : { network: { in: SUPPORTED_ACCEPT_NETWORKS } }),
+      : { network: { in: DISCOVERABLE_ACCEPT_NETWORKS } }),
   };
 }
 
@@ -155,7 +155,7 @@ export const getOriginResourceCount = async (origin: string) => {
 };
 
 export const listOriginsSchema = z.object({
-  chain: optionalChainSchema,
+  chain: optionalOriginChainSchema,
   address: mixedAddressSchema.optional(),
 });
 
@@ -181,7 +181,7 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
 };
 
 export const listOriginsWithResourcesSchema = z.object({
-  chain: optionalChainSchema,
+  chain: optionalOriginChainSchema,
   address: mixedAddressSchema.optional(),
   originIds: z.array(z.uuid()).optional(),
 });

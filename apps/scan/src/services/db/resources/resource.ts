@@ -5,16 +5,16 @@ import { jsonObjectSchema } from '@/lib/json';
 import { z } from 'zod';
 import { toPaginatedResponse } from '@/lib/pagination';
 
-import { supportedChainSchema } from '@/lib/schemas';
+import { discoverableChainSchema } from '@/lib/schemas';
 
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { DISCOVERABLE_CHAINS } from '@/types/chain';
 
 import { upsertResourceSchema } from './resource-schema';
 import { ensureOriginExists, freeAuthModeFilters } from './origin';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { Prisma } from '@x402scan/scan-db';
-import type { SupportedChain } from '@/types/chain';
+import type { DiscoverableChain } from '@/types/chain';
 
 import {
   createCachedArrayQuery,
@@ -33,10 +33,10 @@ export const upsertResource = async (
   }
   const baseResource = parsedResourceInput.data;
   const supportedAccepts = baseResource.accepts.filter(accept =>
-    SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+    DISCOVERABLE_CHAINS.includes(accept.network as DiscoverableChain)
   );
   const unsupportedAccepts = baseResource.accepts.filter(
-    accept => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+    accept => !DISCOVERABLE_CHAINS.includes(accept.network as DiscoverableChain)
   );
   if (supportedAccepts.length === 0) {
     return;
@@ -301,7 +301,7 @@ export const searchResourcesSchema = z.object({
   resourceIds: z.array(z.string()).optional(),
   showExcluded: z.boolean().optional().default(false),
   showDeprecated: z.boolean().optional().default(false),
-  chains: z.array(supportedChainSchema).optional(),
+  chains: z.array(discoverableChainSchema).optional(),
 });
 
 const searchResourcesUncached = async (
