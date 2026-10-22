@@ -4,7 +4,7 @@ import { USDC_BASE_TOKEN } from '../constants';
 import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const centralcity: FacilitatorConfig = {
-  url: 'https://centralcity.ai/api/public/x402',
+  url: 'https://centralcity.ai/api/public/feed/services',
 };
 
 export const centralcityFacilitator = {
