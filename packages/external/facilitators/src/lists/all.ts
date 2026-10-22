@@ -31,6 +31,7 @@ import {
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  centralcityFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -70,6 +71,7 @@ const FACILITATORS = validateUniqueFacilitators([
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  centralcityFacilitator,
 ]);
 
 // Some facilitators take facilitator-specific props in their config
