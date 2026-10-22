@@ -37,10 +37,24 @@ Supported URLs:
 For each paid operation:
 - declare `x-payment-info`
 - include a `402` response in `responses`
-- include `x-payment-info.protocols` (for example `"x402"`)
+- include `x-payment-info.protocols` as an array of protocol objects (not strings)
 - include valid pricing metadata via `x-payment-info.price`:
   - fixed: `{ mode: "fixed", currency: "USD", amount: "0.05" }`
   - dynamic: `{ mode: "dynamic", currency: "USD", min: "0.01", max: "1.00" }`
+
+`x402scan` reads these fields with `@agentcash/discovery` 1.7.5. Two shapes fail silently (the route can still look paid, with `price` / `protocols` empty):
+
+- `protocols: ["x402"]` beside the structured `price` object above does not match the protocol-object schema. Parsing then drops that price as well, so neither field is returned. A legacy flat string `price` (not this object) still accepts `"x402"`.
+- A security scheme with `"type": "apiKey"` that applies to the operation — its own `security`, or top-level `security` when the operation omits `security` — classifies that paid route as `apiKey+paid` instead of `paid`. A scheme that is only declared under `components.securitySchemes` does not. A scheme named `siwx` stays `paid` when `x-payment-info` is present.
+
+Minimal object form:
+
+```json
+"protocols": [
+  { "x402": { "version": 2, "networks": ["..."] } },
+  { "mpp": { "method": "tempo", "intent": "charge", "currency": "USD" } }
+]
+```
 
 ### Auth requirements
 
