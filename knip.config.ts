@@ -12,6 +12,8 @@ const config: KnipConfig = {
       ignoreDependencies: ["@merit-systems/typescript-config"],
     },
     "apps/scan": {
+      // The disposable log exporter uses the operator's authenticated Vercel CLI.
+      ignoreBinaries: ["vercel"],
       entry: [
         "oxlint.config.ts",
         "src/app/**/{error,layout,loading,not-found,page,template,default,forbidden,global-not-found,global-error}.{js,jsx,ts,tsx,mdx}",

@@ -79,6 +79,8 @@ and is not a PostgreSQL execution-plan measurement.
 
 Export logs for the exact preview deployment and the full test interval:
 
+The exporter requires an authenticated Vercel CLI on the operator's `PATH`.
+
 ```sh
 node apps/scan/scripts/cache-benchmark-export-logs.mjs DEPLOYMENT_ID RUN_ID /tmp/cache-logs.jsonl 30m
 node apps/scan/scripts/cache-benchmark-logs.mjs RUN_ID /tmp/cache-logs.jsonl /tmp/cache-counts.json
