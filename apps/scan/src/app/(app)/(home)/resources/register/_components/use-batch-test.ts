@@ -8,7 +8,7 @@ import type { RouterInputs } from "@/trpc/client";
 import type { TestedResource, FailedResource } from "@/types/batch-test";
 import type { DiscoveredResource } from "@/types/discovery";
 
-export interface BatchTestProgress {
+interface BatchTestProgress {
   checked: number;
   total: number;
 }

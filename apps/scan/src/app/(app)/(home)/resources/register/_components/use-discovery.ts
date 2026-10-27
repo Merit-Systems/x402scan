@@ -31,7 +31,7 @@ interface OriginPreview {
 }
 
 /** Invalid-resource badge info keyed by composite resource key. */
-export interface InvalidResourceStatus {
+interface InvalidResourceStatus {
   invalid: boolean;
   reason?: string;
 }

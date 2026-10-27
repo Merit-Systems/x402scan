@@ -18,6 +18,7 @@ build/
 # Generated files
 generated/
 **/generated/**
+.foundation-dts-*.json
 
 # Coverage reports
 coverage/

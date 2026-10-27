@@ -12,7 +12,7 @@ catalog:
   motion: ^13.1.1
   server-only: ^0.0.1
   superjson: ^2.2.6
-  typescript: ^6.0.3
+  typescript: ^7.0.2
   zod: ^4.4.3
   tsx: ^4.21.0
   tsup: ^8.5.1
@@ -28,20 +28,22 @@ catalog:
 
 catalogs:
   foundation:
-    "@merit-systems/foundation": 0.34.0
-    "@merit-systems/oxfmt-config": 0.34.0
-    "@merit-systems/oxlint-config": 0.34.0
-    "@merit-systems/taze-config": 0.34.0
-    "@merit-systems/tsdown-config": 0.34.0
-    "@merit-systems/typescript-config": 0.34.0
+    "@merit-systems/foundation": 0.35.0
+    "@merit-systems/oxfmt-config": 0.35.0
+    "@merit-systems/oxlint-config": 0.35.0
+    "@merit-systems/taze-config": 0.35.0
+    "@merit-systems/tsdown-config": 0.35.0
+    "@merit-systems/typescript-config": 0.35.0
   bundling:
-    tsdown: 0.22.14
+    # 0.23.2 needs the TS7.1 beta API; retain Foundation's stable TS7.0
+    # declaration adapter until it supports TS7.0 or stable TS7.1 is validated.
+    tsdown: 0.23.1
   env:
     "@t3-oss/env-core": ^0.13.10
     "@t3-oss/env-nextjs": ^0.13.10
     dotenv: ^17.2.3
   next:
-    next: &NEXT_VERSION ^16.1.5
+    next: &NEXT_VERSION 16.4.3
     "@next/mdx": *NEXT_VERSION
     next-themes: ^0.4.6
   prisma:
