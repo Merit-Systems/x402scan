@@ -17,8 +17,10 @@ import type { TransferEventData } from '@/trigger/types';
 // the origin leg's sender and log_index, the terminal leg's recipient, and
 // the terminal leg's amount (what the merchant actually received). When a
 // proxy fans out into several transfers, the one closest in amount to the
-// incoming payment is the settlement; the rest (fee payouts) and any legs
-// that don't pair up cleanly are kept as-is rather than guessed at.
+// incoming payment is the settlement. The pass-through's other outgoing legs
+// (fee payouts, splits) are the rest of that same payment, so they are dropped
+// rather than counted as payments of their own (issue #1314). Legs that don't
+// pair up cleanly are kept as-is rather than guessed at.
 export function collapseTransferChains(
   batch: TransferEventData[]
 ): TransferEventData[] {
@@ -65,6 +67,17 @@ function collapseTx(legs: TransferEventData[]): TransferEventData[] {
     return received !== undefined && sent !== undefined && received < sent;
   };
 
+  // A leg a pass-through sends after funds reached it is part of forwarding
+  // that payment. One sent before is paid from its own balance, so it stays.
+  const isForwardedRemainder = (leg: TransferEventData) => {
+    const received = firstReceived.get(leg.sender);
+    return (
+      isPassThrough(leg.sender) &&
+      received !== undefined &&
+      position.get(leg)! > received
+    );
+  };
+
   const consumed = new Set<TransferEventData>();
   const result: TransferEventData[] = [];
 
@@ -103,9 +116,10 @@ function collapseTx(legs: TransferEventData[]): TransferEventData[] {
   }
 
   for (const leg of sorted) {
-    if (!consumed.has(leg)) {
-      result.push(leg);
+    if (consumed.has(leg) || isForwardedRemainder(leg)) {
+      continue;
     }
+    result.push(leg);
   }
 
   return result;
