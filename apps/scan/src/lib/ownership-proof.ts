@@ -286,3 +286,45 @@ export async function verifyAnyOwnershipProof(
 
   return { verified, recoveredAddresses, verifiedAddresses };
 }
+
+export interface ProvenRecipient {
+  /** Lowercased EVM address, matching how transfers store recipients */
+  address: string;
+  proof: string;
+}
+
+/**
+ * Find the signers of ownership proofs that are not among the origin's payTo
+ * addresses (EVM only; Solana signatures can't be recovered).
+ *
+ * A merchant paid through a facilitator's proxy advertises the proxy as payTo,
+ * while its own wallet receives the funds. A proof signed by that wallet ties
+ * it to the origin, so its transfers can be attributed there.
+ *
+ * @param ownershipProofs - Array of signature strings
+ * @param origin - The origin string that was signed
+ * @param payToAddresses - payTo addresses from the origin's accepts
+ * @returns One entry per distinct recovered signer that is not a payTo
+ */
+export async function recoverRecipientsFromProofs(
+  ownershipProofs: string[],
+  origin: string,
+  payToAddresses: string[]
+): Promise<ProvenRecipient[]> {
+  const payTos = new Set(payToAddresses.map(payTo => payTo.toLowerCase()));
+  const recipients = new Map<string, string>();
+
+  for (const proof of ownershipProofs) {
+    if (!proof.startsWith('0x')) continue;
+
+    const signer = await recoverProofSigner(proof as `0x${string}`, origin);
+    if (!signer) continue;
+
+    const address = signer.toLowerCase();
+    if (!payTos.has(address) && !recipients.has(address)) {
+      recipients.set(address, proof);
+    }
+  }
+
+  return [...recipients].map(([address, proof]) => ({ address, proof }));
+}

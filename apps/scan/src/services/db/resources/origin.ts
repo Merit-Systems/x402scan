@@ -171,10 +171,15 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
         deprecatedAt: null,
         OR: [{ accepts: { some: acceptsWhere } }, ...freeAuthModeFilters],
       };
+  const hasResource: Prisma.ResourceOriginWhereInput = {
+    resources: { some: resourceFilter },
+  };
+  // An address can also belong to an origin as a proven recipient (paid
+  // through a proxy that is the origin's payTo).
   const origins = await scanDb.resourceOrigin.findMany({
-    where: {
-      resources: { some: resourceFilter },
-    },
+    where: address
+      ? { OR: [hasResource, { recipients: { some: { address } } }] }
+      : hasResource,
     orderBy: { createdAt: 'desc' },
   });
   return origins;
@@ -360,13 +365,22 @@ export const getOriginPayToAddresses = async (
           },
         },
       },
+      recipients: {
+        select: {
+          address: true,
+        },
+      },
     },
   });
 
   if (!origin) return [];
 
-  const addresses = origin.resources
-    .flatMap(resource => resource.accepts.map(accept => accept.payTo))
+  const addresses = [
+    ...origin.resources.flatMap(resource =>
+      resource.accepts.map(accept => accept.payTo)
+    ),
+    ...origin.recipients.map(recipient => recipient.address),
+  ]
     .map(payTo => mixedAddressSchema.safeParse(payTo))
     .filter(parsed => parsed.success)
     .map(parsed => parsed.data);
