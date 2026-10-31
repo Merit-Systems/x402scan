@@ -62,12 +62,12 @@ If you know of a resource that is not yet listed, you can add it by visiting [ht
 
 ### Add Facilitators
 
-If you know of another facilitator that is not listed, you can add it to [`facilitators/config.ts`](https://github.com/Merit-Systems/x402scan/blob/main/facilitators/config.ts) and the dashboard will automatically update.
+If you know of another facilitator that is not listed, you can add it to [`packages/external/facilitators/src/facilitators/`](https://github.com/Merit-Systems/x402scan/tree/main/packages/external/facilitators/src/facilitators) and the dashboard will automatically update.
 
 To add a new facilitator:
 
-1. Add the facilitator logo to `facilitators/images/`
-2. Add the facilitator configuration to the `_FACILITATORS` array in `facilitators/config.ts`:
+1. Add the facilitator logo to `apps/scan/public/`
+2. Add a facilitator module in `packages/external/facilitators/src/facilitators/`, export it from `index.ts` there, and add it to `packages/external/facilitators/src/lists/all.ts`:
 
 ```typescript
 {
