@@ -10,7 +10,7 @@ export const shinjukustaition: FacilitatorConfig = {
 export const shinjukustaitionFacilitator = {
   id: 'shinjuku-staition',
   metadata: {
-    name: 'Shinjuku Shielded',
+    name: 'Shinjuku Shield',
     image: 'https://x402scan.com/shinjuku-staition.png',
     docsUrl: 'https://shinjukustaition.com',
     color: '#D22B23',
@@ -23,12 +23,6 @@ export const shinjukustaitionFacilitator = {
         address: 'zM8c2oE4QibuKc93sgCpA6i564vDygXGa67S1ag4rX2',
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2026-09-29'),
-      },
-      {
-        // `shielded-exact` settler / fee payer
-        address: '6LhX4sv2JM4YXPgBQx9eemzXYJtNwyHM6JxkPiGV3dZS',
-        tokens: [USDC_SOLANA_TOKEN],
-        dateOfFirstTransaction: new Date('2026-09-28'),
       },
     ],
   },
