@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { HeaderCard, LoadingHeaderCard } from './_components/header';
 import { api, HydrateClient } from '@/trpc/server';
 import { notFound } from 'next/navigation';
+import { resolveServerOriginId } from '@/lib/resolve-server-origin-id';
 import { Body } from '@/app/_components/layout/page-utils';
 import {
   LoadingOriginResources,
@@ -13,7 +14,8 @@ import { ActivityTimeframe } from '@/types/timeframes';
 export default async function OriginPage({
   params,
 }: PageProps<'/server/[id]'>) {
-  const { id } = await params;
+  const { id: idParam } = await params;
+  const id = await resolveServerOriginId(idParam);
   const origin = await api.public.origins.get(id);
   if (!origin) {
     return notFound();

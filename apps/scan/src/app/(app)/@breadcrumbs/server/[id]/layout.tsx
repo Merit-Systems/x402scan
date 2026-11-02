@@ -6,12 +6,14 @@ import { Separator } from '../../_components/separator';
 import { api } from '@/trpc/server';
 import { cleanExternalText, truncateAtDelimiter } from '@/lib/utils';
 import { notFound } from 'next/navigation';
+import { resolveServerOriginId } from '@/lib/resolve-server-origin-id';
 
 export default async function OriginLayout({
   params,
   children,
 }: LayoutProps<'/server/[id]'>) {
-  const { id } = await params;
+  const { id: idParam } = await params;
+  const id = await resolveServerOriginId(idParam);
   const origin = await api.public.origins.get(id);
   if (!origin) {
     return notFound();
