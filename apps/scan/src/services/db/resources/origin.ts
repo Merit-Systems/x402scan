@@ -318,6 +318,25 @@ export const searchOrigins = async (
   });
 };
 
+/** Resolve a /server/[id] param to an origin UUID.
+ * Accepts a UUID as-is, or a hostname slug matched against ResourceOrigin.origin.
+ */
+export const findOriginIdByParam = async (
+  idOrHostname: string
+): Promise<string | null> => {
+  if (z.uuid().safeParse(idOrHostname).success) {
+    return idOrHostname;
+  }
+
+  const candidates = [`https://${idOrHostname}`, `http://${idOrHostname}`];
+  const origin = await scanDb.resourceOrigin.findFirst({
+    where: { origin: { in: candidates } },
+    select: { id: true },
+  });
+
+  return origin?.id ?? null;
+};
+
 export const getOrigin = async (id: string) => {
   const origin = await scanDb.resourceOrigin.findUnique({
     where: { id },
