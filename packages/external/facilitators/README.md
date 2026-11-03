@@ -126,6 +126,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
 | **three.ws**         | SOLANA        | ✅ Yes    | No                           |
+| **BotPay**           | BASE          | No        | Yes - API key & HMAC secret  |
 
 ### Import Individual Facilitators
 
@@ -158,7 +159,7 @@ import {
 } from 'facilitators';
 
 // Facilitators requiring setup
-import { aurracloud, thirdweb, questflow } from 'facilitators';
+import { aurracloud, botpay, thirdweb, questflow } from 'facilitators';
 
 aurracloud({
   apiKey: process.env.AURRACLOUD_API_KEY,
@@ -170,6 +171,11 @@ questflow({
 
 thirdweb({
   secretKey: process.env.THIRDWEB_SECRET_KEY,
+});
+
+botpay({
+  apiKey: process.env.BOTPAY_API_KEY,
+  apiSecret: process.env.BOTPAY_API_SECRET,
 });
 ```
 
