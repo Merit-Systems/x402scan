@@ -1,0 +1,37 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Parameterized x402 fixture",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/entity/{entityId}/profile": {
+      "get": {
+        "summary": "Retrieve an entity profile",
+        "parameters": [
+          {
+            "name": "entityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9:-]+$",
+              "example": "entity:example:12345"
+            }
+          }
+        ],
+        "x-payment-info": {
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.005"
+          },
+          "protocols": [{ "x402": {} }]
+        },
+        "responses": {
+          "402": { "description": "Payment required" }
+        }
+      }
+    }
+  }
+}
