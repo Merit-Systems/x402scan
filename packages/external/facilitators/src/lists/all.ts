@@ -31,6 +31,7 @@ import {
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  voltplayFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
