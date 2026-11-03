@@ -30,7 +30,6 @@ export const payaiFacilitator = {
       },
       {
         address: 'CjNFTjvBhbJJd2B5ePPMHRLx1ELZpa8dwQgGL727eKww',
-        deprecated: true,
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2025-12-08'),
       },
