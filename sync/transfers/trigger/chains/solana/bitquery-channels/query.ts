@@ -33,8 +33,7 @@ const DISTRIBUTE_DISCRIMINATOR = 7;
 // 7 mint, 8 token_program, 9 event_authority, 10 self_program, 11.. recipients.
 const DISTRIBUTE_PAYER_INDEX = 1;
 const DISTRIBUTE_ESCROW_INDEX = 3;
-const DISTRIBUTE_NON_PAYOUT_DESTINATIONS = [4, 5, 6] as const;
-const DISTRIBUTE_MIN_ACCOUNTS = 11;
+const DISTRIBUTE_FIXED_ACCOUNTS = 11;
 
 const ACCOUNTS_CHUNK = 100;
 const PARSED_TX_CHUNK = 25;
@@ -216,14 +215,20 @@ export function extractPayouts(
   let logIndex = 0;
   for (const { instruction, index } of channelInstructions) {
     if (bs58.decode(instruction.data)[0] !== DISTRIBUTE_DISCRIMINATOR) continue;
-    if (instruction.accounts.length < DISTRIBUTE_MIN_ACCOUNTS) continue;
+    if (instruction.accounts.length <= DISTRIBUTE_FIXED_ACCOUNTS) continue;
 
     const payer = instruction.accounts[DISTRIBUTE_PAYER_INDEX]!.toBase58();
     const escrow = instruction.accounts[DISTRIBUTE_ESCROW_INDEX]!.toBase58();
-    const nonPayoutDestinations = new Set(
-      DISTRIBUTE_NON_PAYOUT_DESTINATIONS.map(i =>
-        instruction.accounts[i]!.toBase58()
-      )
+    // Merchant payouts are exactly the legs to the dynamic recipient tail
+    // (accounts 11..). Payer refunds, the payee implicit remainder, and the
+    // treasury residual are not payments to the merchant. Matching the tail
+    // (rather than excluding accounts 4-6) also handles clients that pass a
+    // recipient's ATA as the treasury account: observed live from pay.sh,
+    // where treasury_token_account equals the recipient ATA.
+    const payoutDestinations = new Set(
+      instruction.accounts
+        .slice(DISTRIBUTE_FIXED_ACCOUNTS)
+        .map(account => account.toBase58())
     );
 
     const inner =
@@ -231,9 +236,7 @@ export function extractPayouts(
         ?.instructions ?? [];
     for (const leg of inner.flatMap(parseTokenTransfers)) {
       if (leg.source !== escrow) continue;
-      // Refunds to the payer and any payee/treasury remainders are not
-      // payments to the merchant; only recipient (payTo) legs are indexed.
-      if (nonPayoutDestinations.has(leg.destination)) continue;
+      if (!payoutDestinations.has(leg.destination)) continue;
 
       events.push({
         address: context.facilitatorConfig.token.address,
