@@ -34,7 +34,7 @@ async function main() {
 
   const connection = new Connection(rpcUrl, 'confirmed');
   const tx = await connection.getParsedTransaction(signature, {
-    maxSupportedTransactionVersion: 0,
+    maxSupportedTransactionVersion: 1,
   });
   if (!tx) {
     console.error(`Transaction ${signature} not found on ${rpcUrl}`);
