@@ -31,6 +31,7 @@ import {
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  agentpayFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
