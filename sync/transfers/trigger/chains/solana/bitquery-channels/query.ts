@@ -100,7 +100,7 @@ export async function transformResponse(
   for (let i = 0; i < candidateSignatures.length; i += PARSED_TX_CHUNK) {
     const chunk = candidateSignatures.slice(i, i + PARSED_TX_CHUNK);
     const parsed = await connection.getParsedTransactions(chunk, {
-      maxSupportedTransactionVersion: 0,
+      maxSupportedTransactionVersion: 1,
     });
     parsed.forEach((tx, index) => {
       if (!tx || tx.meta?.err) return;
