@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useChain } from '../../../_contexts/chain/hook';
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { LISTED_CHAINS } from '@/types/chain';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 
 import type { Chain } from '@/types/chain';
@@ -54,7 +54,7 @@ export const ChainSelector = () => {
           <Globe className="size-4" />
           All
         </Button>
-        {SUPPORTED_CHAINS.map(value => (
+        {LISTED_CHAINS.map(value => (
           <Button
             key={value}
             variant="ghost"

@@ -18,6 +18,7 @@ const EvmNetworkToChainId = {
   story: 1514,
   educhain: 41923,
   'skale-base-sepolia': 324705682,
+  robinhood: 4663,
 } satisfies Record<string, number>;
 
 const SvmNetworkToChainId = {

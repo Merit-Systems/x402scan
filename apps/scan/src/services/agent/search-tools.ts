@@ -35,6 +35,14 @@ export async function searchX402Tools(
   const toolDefinitions: X402ToolResponse[] = [];
   for (const resource of resources) {
     if (resource.accepts) {
+      // Only payable accepts become tool options; other listed networks
+      // (e.g. robinhood) would also fail the v1 network parse below.
+      const payableAccepts = resource.accepts.filter(accept =>
+        SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+      );
+      if (resource.accepts.length > 0 && payableAccepts.length === 0) {
+        continue;
+      }
       const parsedAccepts = z3
         .array(
           paymentRequirementsSchemaV1.extend({
@@ -42,7 +50,7 @@ export async function searchX402Tools(
           })
         )
         .safeParse(
-          resource.accepts.map(accept =>
+          payableAccepts.map(accept =>
             coerceAcceptForV1Schema({
               x402Version: resource.x402Version,
               accept,

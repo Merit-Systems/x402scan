@@ -5,6 +5,7 @@ const NETWORK_COLORS = {
   [Chain.SOLANA]: 'hsl(271, 100%, 71%)',
   [Chain.POLYGON]: 'hsl(272, 55%, 50%)',
   [Chain.OPTIMISM]: 'hsl(0, 91%, 71%)',
+  [Chain.ROBINHOOD]: 'hsl(72, 100%, 50%)',
 } satisfies Record<Chain, string>;
 
 export const networks = Object.values(Chain).map(chain => ({

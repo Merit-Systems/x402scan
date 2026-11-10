@@ -28,6 +28,7 @@ export const upsertResourceSchema = z.object({
           'iotex',
           'solana_devnet',
           'solana',
+          'robinhood',
         ]),
         z
           .string()
