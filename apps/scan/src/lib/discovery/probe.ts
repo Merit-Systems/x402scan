@@ -171,9 +171,12 @@ function sleep(ms: number): Promise<void> {
  * Strategy:
  *   1. Probe with no body (works for servers whose paywall fires before
  *      request validation).
- *   2. If that yields no x402 advisory and a merchant-provided sampleBody is
- *      available, re-probe with it. This handles servers that validate input
- *      before the paywall and would otherwise return 400 to a bare probe.
+ *   2. If that yields no x402 advisory and the endpoint validates input before
+ *      the paywall (bare probe returns 400/422) while an OpenAPI input
+ *      schema exists, derive a minimal valid body via
+ *      buildMinimalSampleFromInputSchema and re-probe to reach the 402
+ *      paywall (Issue #1247). A merchant-provided sampleBody takes priority
+ *      over the schema-derived sample.
  *
  * @param preferredMethod - HTTP method from OpenAPI discovery. When provided
  *   it is preferred over what the probe lands on so probe-method drift
