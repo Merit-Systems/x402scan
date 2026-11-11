@@ -7,7 +7,7 @@ import { toPaginatedResponse } from '@/lib/pagination';
 
 import { listedChainSchema } from '@/lib/schemas';
 
-import { LISTED_CHAINS } from '@/types/chain';
+import { LISTED_CHAINS, SUPPORTED_CHAINS } from '@/types/chain';
 
 import { upsertResourceSchema } from './resource-schema';
 import { ensureOriginExists, freeAuthModeFilters } from './origin';
@@ -302,6 +302,10 @@ export const searchResourcesSchema = z.object({
   showExcluded: z.boolean().optional().default(false),
   showDeprecated: z.boolean().optional().default(false),
   chains: z.array(listedChainSchema).optional(),
+  // Only accepts on networks that can be paid (SUPPORTED_CHAINS) are returned,
+  // and resources whose accepts are all on other listed networks are left out
+  // before `take`. Free resources are unaffected.
+  payableOnly: z.boolean().optional(),
 });
 
 const searchResourcesUncached = async (
@@ -315,9 +319,14 @@ const searchResourcesUncached = async (
     showExcluded,
     showDeprecated,
     chains,
+    payableOnly,
   } = input;
   const acceptsFilter: Prisma.AcceptsWhereInput =
     chains !== undefined ? { network: { in: chains } } : {};
+  const displayedAccepts: Prisma.AcceptsWhereInput = {
+    payTo: { not: '' },
+    network: payableOnly ? { in: [...SUPPORTED_CHAINS] } : undefined,
+  };
   return await scanDb.resources.findMany({
     where: {
       // Include paid resources (with accepts) and free resources
@@ -363,15 +372,21 @@ const searchResourcesUncached = async (
       ...(resourceIds ? { id: { in: resourceIds } } : undefined),
       excluded: showExcluded ? undefined : { is: null },
       deprecatedAt: showDeprecated ? undefined : null,
+      // With payableOnly, leave out paid resources that have no payable
+      // accept, so they don't take a place in the `take` window.
+      NOT: payableOnly
+        ? {
+            accepts: {
+              some: { payTo: { not: '' } },
+              none: displayedAccepts,
+            },
+          }
+        : undefined,
     },
     include: {
       origin: true,
       accepts: {
-        where: {
-          payTo: {
-            not: '',
-          },
-        },
+        where: displayedAccepts,
       },
       _count: {
         select: {

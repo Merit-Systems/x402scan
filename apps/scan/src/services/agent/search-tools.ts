@@ -30,19 +30,14 @@ interface X402ToolResponse {
 export async function searchX402Tools(
   input: z.infer<typeof searchResourcesSchema>
 ) {
-  const resources = await searchResources(input);
+  // Only payable accepts become tool options (other listed networks, e.g.
+  // robinhood, would also fail the v1 network parse below). Filtering them in
+  // the query keeps `limit` usable resources in the window.
+  const resources = await searchResources({ ...input, payableOnly: true });
 
   const toolDefinitions: X402ToolResponse[] = [];
   for (const resource of resources) {
     if (resource.accepts) {
-      // Only payable accepts become tool options; other listed networks
-      // (e.g. robinhood) would also fail the v1 network parse below.
-      const payableAccepts = resource.accepts.filter(accept =>
-        SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
-      );
-      if (resource.accepts.length > 0 && payableAccepts.length === 0) {
-        continue;
-      }
       const parsedAccepts = z3
         .array(
           paymentRequirementsSchemaV1.extend({
@@ -50,7 +45,7 @@ export async function searchX402Tools(
           })
         )
         .safeParse(
-          payableAccepts.map(accept =>
+          resource.accepts.map(accept =>
             coerceAcceptForV1Schema({
               x402Version: resource.x402Version,
               accept,
