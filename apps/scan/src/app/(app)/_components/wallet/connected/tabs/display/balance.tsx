@@ -10,6 +10,8 @@ import { usdc } from '@/lib/tokens/usdc';
 import { Skeleton } from '@/components/ui/skeleton';
 import { solanaAddressSchema } from '@/lib/schemas';
 
+import type { SupportedEVMChain } from '@/types/chain';
+
 interface Props {
   address: string;
 }
@@ -35,7 +37,7 @@ const SolanaBalance: React.FC<Props> = ({ address }) => {
 };
 
 type EvmBalanceProps = {
-  chain: Chain;
+  chain: SupportedEVMChain;
 } & Props;
 
 const EvmBalance: React.FC<EvmBalanceProps> = ({ chain }) => {

@@ -7,6 +7,9 @@ import {
   formatPricingLabel,
 } from './utils';
 import { Methods } from '@/types/x402';
+import { serializeAccepts } from '@/lib/token';
+
+const usdgAddress = '0x5fc5360d0400a0fd4f2af552add042d716f1d168';
 
 describe('parseMinFromPriceString', () => {
   it('parses integer min from range', () => {
@@ -261,6 +264,61 @@ describe('getMaxUsdcAmount', () => {
         },
       ])
     ).toBeNull();
+  });
+
+  it.each([usdgAddress, usdgAddress.toUpperCase()])(
+    'counts Robinhood Chain USDG accepts at %s',
+    asset => {
+      expect(
+        getMaxUsdcAmount([
+          { network: 'robinhood', asset, maxAmountRequired: 0.01 },
+        ])
+      ).toBe(0.01);
+    }
+  );
+
+  it('ignores other Robinhood Chain assets', () => {
+    expect(
+      getMaxUsdcAmount([
+        {
+          network: 'robinhood',
+          asset: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+          maxAmountRequired: 1,
+        },
+      ])
+    ).toBeNull();
+  });
+
+  it('takes the USDC/USDG maximum and ignores custom assets', () => {
+    expect(
+      getMaxUsdcAmount([
+        { network: 'robinhood', asset: usdgAddress, maxAmountRequired: 0.1 },
+        {
+          network: 'base',
+          asset: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+          maxAmountRequired: 0.05,
+        },
+        {
+          network: 'robinhood',
+          asset: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+          maxAmountRequired: 100,
+        },
+      ])
+    ).toBe(0.1);
+  });
+
+  it('formats serialized USDG as fixed and dynamic dollar labels', () => {
+    const accepts = serializeAccepts([
+      { network: 'robinhood', asset: usdgAddress, maxAmountRequired: 10_000n },
+    ]);
+    const maxUsdAmount = getMaxUsdcAmount(accepts);
+
+    expect(formatPricingLabel({ maxUsdAmount, isDynamic: false })).toBe(
+      '$0.01'
+    );
+    expect(formatPricingLabel({ maxUsdAmount, isDynamic: true })).toBe(
+      'Up to $0.01'
+    );
   });
 
   it('ignores non-finite USDC amounts', () => {

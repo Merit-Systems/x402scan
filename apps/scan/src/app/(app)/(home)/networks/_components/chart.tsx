@@ -40,6 +40,8 @@ export const NetworksChart = () => {
         'polygon-amount': 0,
         'optimism-transactions': 0,
         'optimism-amount': 0,
+        'robinhood-transactions': 0,
+        'robinhood-amount': 0,
       } satisfies Record<NetworkKey, number>;
       for (const network of networks) {
         const stats = item.networks[network.chain];

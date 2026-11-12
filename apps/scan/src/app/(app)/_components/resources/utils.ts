@@ -14,6 +14,7 @@ interface PricingAccept {
 }
 
 const UNKNOWN_PAID_LABEL = 'Paid';
+const ROBINHOOD_USDG_ADDRESS = '0x5fc5360d0400a0fd4f2af552add042d716f1d168';
 
 function hasUsdPriceMarker(price: string): boolean {
   return /^\s*\$/.test(price) || /\bUSD\s*$/i.test(price);
@@ -64,6 +65,9 @@ function isKnownUsdcAccept(accept: PricingAccept): boolean {
   }
   if (accept.network === 'solana') {
     return accept.asset === USDC_ADDRESS.solana;
+  }
+  if (accept.network === 'robinhood') {
+    return accept.asset.toLowerCase() === ROBINHOOD_USDG_ADDRESS;
   }
   return false;
 }

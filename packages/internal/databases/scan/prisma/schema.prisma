@@ -118,6 +118,7 @@ enum AcceptsNetwork {
   solana
   polygon
   optimism
+  robinhood
 }
 
 model Accepts {

@@ -10,12 +10,14 @@ import { cdpResultFromPromise } from '../../result';
 
 import { convertTokenAmount } from '@/lib/token';
 
-import type { EvmChain } from '@/types/chain';
+import type { SupportedEVMChain } from '@/types/chain';
 import type { Address } from 'viem';
 import type { NetworkServerWallet } from './types';
 
 export const evmServerWallet =
-  <T extends EvmChain>(chain: T): NetworkServerWallet<EvmChain> =>
+  <T extends SupportedEVMChain>(
+    chain: T
+  ): NetworkServerWallet<SupportedEVMChain> =>
   (name: string) => {
     const getAccount = async () => {
       return await cdpClient.evm.getOrCreateAccount({ name });
