@@ -202,6 +202,9 @@ describe('fetchDiscoveryDocument operation-level registry metadata', () => {
           openApiResponse({
             openapi: '3.1.0',
             paths: {
+              '/v1/paid': {
+                get: {},
+              },
               '/v1/control/consume': {
                 post: {
                   security: [],
@@ -260,5 +263,47 @@ describe('fetchDiscoveryDocument operation-level registry metadata', () => {
         registryEligible: false,
       }),
     ]);
+  });
+
+  it('fails closed when registration metadata has no usable paths', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          openApiResponse({ openapi: '3.1.0', info: { title: 'error' } })
+        )
+      )
+    );
+
+    const result = await fetchDiscoveryDocument(ORIGIN, false, true);
+
+    expect(result.success).toBe(false);
+    expect(result.resources).toEqual([]);
+    expect(result.error).toMatch(/metadata is invalid/i);
+  });
+
+  it('fails closed when metadata paths do not contain every discovered operation', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          openApiResponse({
+            openapi: '3.1.0',
+            paths: {
+              '/v1/paid': { get: {} },
+              '/v1/control/consume': { get: {} },
+            },
+          })
+        )
+      )
+    );
+
+    const result = await fetchDiscoveryDocument(ORIGIN, false, true);
+
+    expect(result.success).toBe(false);
+    expect(result.resources).toEqual([]);
+    expect(result.error).toMatch(
+      /does not match the discovered operation set/i
+    );
   });
 });

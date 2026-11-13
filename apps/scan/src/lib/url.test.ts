@@ -94,4 +94,33 @@ describe('selectDiscoveredResourceForRegistration', () => {
     expect(selected?.excluded).toBe(false);
     expect(selected?.resource.url).toBe(ORIGIN + '/items/special');
   });
+
+  it('prefers the exact path over a template when the input has query and hash', () => {
+    const resources: DiscoveredResource[] = [
+      {
+        url: ORIGIN + '/items/{id}',
+        method: 'GET',
+        authMode: 'paid',
+        queryParametersSchema: { required: ['templateOnly'] },
+      },
+      {
+        url: ORIGIN + '/items/search',
+        method: 'GET',
+        authMode: 'paid',
+        queryParametersSchema: { required: ['language'] },
+      },
+    ];
+
+    const selected = selectDiscoveredResourceForRegistration(
+      ORIGIN + '/items/search?language=en#section',
+      resources,
+      'GET'
+    );
+
+    expect(selected?.excluded).toBe(false);
+    expect(selected?.resource.url).toBe(ORIGIN + '/items/search');
+    expect(selected?.resource.queryParametersSchema).toEqual({
+      required: ['language'],
+    });
+  });
 });

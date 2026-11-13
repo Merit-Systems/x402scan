@@ -19,6 +19,7 @@ export async function registerEndpoint(
     originMetadataFallback?: { title?: string; description?: string };
     queryParametersSchema?: JsonValue;
     registryEligible?: boolean;
+    method?: string;
   }
 ) {
   // 0. Reject ephemeral tunnel URLs
@@ -47,7 +48,7 @@ export async function registerEndpoint(
   // 1. Probe the endpoint for a 402 response
   const probeResult = await probeX402Endpoint(
     url,
-    undefined,
+    options?.method,
     undefined,
     options?.queryParametersSchema
   );

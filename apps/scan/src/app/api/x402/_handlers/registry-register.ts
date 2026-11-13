@@ -67,6 +67,7 @@ export async function handleRegistryRegister(
     registryEligible: selected.excluded
       ? false
       : selected.resource.registryEligible,
+    method: selected.resource.method,
   });
 
   try {

@@ -3,7 +3,10 @@ import { probeX402Endpoint } from './probe';
 import { getCachedProbeResult } from './probe-cache';
 import { getRegistrationErrorMessage } from './utils';
 import { registerResource, registerFreeResource } from '@/lib/resources';
-import { deprecateStaleResources } from '@/services/db/resources/resource';
+import {
+  deprecateExplicitlyExcludedResources,
+  deprecateStaleResources,
+} from '@/services/db/resources/resource';
 import {
   getOriginResourceCount,
   upsertOrigin,
@@ -452,6 +455,16 @@ export async function registerResourcesFromDiscovery(
   }
 
   let deprecated = 0;
+
+  if (source === 'openapi' && excludedResources.length > 0) {
+    const explicitlyExcluded = excludedResources.map(resource => ({
+      url: normalizeResourceUrl(resource.url),
+      method: resource.method ?? '',
+    }));
+    deprecated +=
+      await deprecateExplicitlyExcludedResources(explicitlyExcluded);
+  }
+
   if (originId) {
     // Build active list directly from successful registration results, not
     // the discovery input — skipped/failed endpoints must not keep stale
@@ -466,7 +479,7 @@ export async function registerResourcesFromDiscovery(
         method: r.method,
       })),
     ];
-    deprecated = await deprecateStaleResources(originId, activeResources);
+    deprecated += await deprecateStaleResources(originId, activeResources);
   }
 
   const notifiedOrigins = new Set<string>();

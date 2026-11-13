@@ -44,7 +44,9 @@ const registryOpenApiMetadataSchema = z.looseObject({
     )
     .optional()
     .catch(undefined),
-  paths: z.record(z.string(), registryPathItemSchema).optional().catch({}),
+  paths: z
+    .record(z.string(), registryPathItemSchema)
+    .refine(paths => Object.keys(paths).length > 0),
 });
 
 type RegistryPathItem = z.infer<typeof registryPathItemSchema>;
@@ -221,6 +223,28 @@ export async function fetchDiscoveryDocument(
   const openApiPaths = rawOpenApi
     ? normalizedOpenApiPathMap(rawOpenApi)
     : undefined;
+
+  if (requireOperationMetadata && discovered.source === 'openapi') {
+    if (!openApiPaths || openApiPaths.size === 0) {
+      return {
+        success: false,
+        resources: [],
+        error: 'OpenAPI operation metadata contains no usable paths',
+      };
+    }
+    const missingOperation = discovered.endpoints.find(endpoint => {
+      const pathItem = openApiPaths.get(normalizeDiscoveryPath(endpoint.path));
+      return !operationForMethod(pathItem, endpoint.method);
+    });
+    if (missingOperation) {
+      return {
+        success: false,
+        resources: [],
+        error:
+          'OpenAPI operation metadata does not match the discovered operation set',
+      };
+    }
+  }
 
   const resources: DiscoveredResource[] = discovered.endpoints.flatMap(
     endpoint => {

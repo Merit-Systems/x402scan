@@ -28,10 +28,10 @@ describe('registerEndpoint registry metadata', () => {
     expect(registerResource).not.toHaveBeenCalled();
   });
 
-  it('passes trusted conditional query metadata into the probe', async () => {
+  it('passes the selected operation method with its trusted query metadata', async () => {
     vi.mocked(probeX402Endpoint).mockResolvedValue({
       success: true,
-      advisory: { method: 'GET' } as never,
+      advisory: { method: 'POST' } as never,
       warnings: [],
     });
     vi.mocked(registerResource).mockResolvedValue({
@@ -43,11 +43,12 @@ describe('registerEndpoint registry metadata', () => {
     const schema = { anyOf: [{ required: ['symbols'] }] };
     await registerEndpoint('https://merchant.test/v1/paid', {
       queryParametersSchema: schema,
+      method: 'POST',
     });
 
     expect(probeX402Endpoint).toHaveBeenCalledWith(
       'https://merchant.test/v1/paid',
-      undefined,
+      'POST',
       undefined,
       schema
     );

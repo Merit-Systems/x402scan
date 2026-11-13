@@ -72,6 +72,20 @@ export function urlMatchesDiscoveredResource(
   }
 }
 
+function normalizeUrlForPathIdentity(url: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.search = '';
+    parsed.hash = '';
+    if (parsed.pathname !== '/' && parsed.pathname.endsWith('/')) {
+      parsed.pathname = parsed.pathname.slice(0, -1);
+    }
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 /**
  * Resolve a discovered resource for a concrete URL without allowing route
  * ordering or OpenAPI templates to bypass an explicit registry exclusion.
@@ -98,7 +112,9 @@ export function selectDiscoveredResourceForRegistration(
   if (excluded) return { resource: excluded, excluded: true };
 
   const exact = matches.find(
-    resource => normalizeUrl(resource.url) === normalizeUrl(inputUrl)
+    resource =>
+      normalizeUrlForPathIdentity(resource.url) ===
+      normalizeUrlForPathIdentity(inputUrl)
   );
   return { resource: exact ?? matches[0]!, excluded: false };
 }

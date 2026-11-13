@@ -177,6 +177,7 @@ export const resourcesRouter = createTRPCRouter({
         registryEligible: selected.excluded
           ? false
           : selected.resource.registryEligible,
+        method: selected.resource.method,
       });
       try {
         if (result.success && result.resource?.origin?.id) {
