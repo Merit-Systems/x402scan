@@ -3,6 +3,7 @@
  */
 
 import type { AuthMode } from '@agentcash/discovery';
+import type { JsonValue } from '@/lib/json';
 
 /**
  * A discovered resource with URL and optional HTTP method.
@@ -25,6 +26,10 @@ export interface DiscoveredResource {
   pricingMode?: string;
   /** Price string from discovery doc (e.g. "50-300.00 USD"). */
   price?: string;
+  /** Trusted operation-level conditional query schema from same-origin OpenAPI. */
+  queryParametersSchema?: JsonValue;
+  /** Explicit marketplace/registry eligibility; false keeps operation discoverable but unlisted. */
+  registryEligible?: boolean;
   /**
    * Display description from the openapi operation's summary/description
    * (folded by the discovery package), placeholder-filtered.

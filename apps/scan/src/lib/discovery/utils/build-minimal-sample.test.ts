@@ -200,3 +200,86 @@ describe('buildMinimalQueryParamsFromInputSchema', () => {
     });
   });
 });
+
+describe('buildMinimalQueryParamsFromInputSchema supplemental query schema', () => {
+  const inputSchema = {
+    parameters: [
+      {
+        name: 'blockchain',
+        in: 'query',
+        required: true,
+        schema: { type: 'string', example: 'ethereum' },
+      },
+      {
+        name: 'symbols',
+        in: 'query',
+        required: false,
+        schema: { type: 'string', example: 'weth' },
+      },
+      {
+        name: 'contracts',
+        in: 'query',
+        required: false,
+        schema: {
+          type: 'string',
+          example: '0x0000000000000000000000000000000000000000',
+        },
+      },
+    ],
+  };
+
+  it('samples the first anyOf selector without changing parameter required flags', () => {
+    const supplemental = {
+      type: 'object',
+      required: ['blockchain'],
+      anyOf: [{ required: ['symbols'] }, { required: ['contracts'] }],
+    };
+    expect(
+      buildMinimalQueryParamsFromInputSchema(inputSchema, supplemental)
+    ).toEqual({
+      blockchain: 'ethereum',
+      symbols: 'weth',
+    });
+    expect(inputSchema.parameters[1]!.required).toBe(false);
+    expect(inputSchema.parameters[2]!.required).toBe(false);
+  });
+
+  it('supports oneOf and validates every declared branch', () => {
+    expect(
+      buildMinimalQueryParamsFromInputSchema(inputSchema, {
+        type: 'object',
+        required: ['blockchain'],
+        oneOf: [{ required: ['contracts'] }, { required: ['symbols'] }],
+      })
+    ).toEqual({
+      blockchain: 'ethereum',
+      contracts: '0x0000000000000000000000000000000000000000',
+    });
+
+    expect(
+      buildMinimalQueryParamsFromInputSchema(inputSchema, {
+        anyOf: [{ required: ['symbols'] }, { required: ['undeclared'] }],
+      })
+    ).toBeUndefined();
+  });
+
+  it('fails closed on ambiguous or malformed supplemental branch declarations', () => {
+    expect(
+      buildMinimalQueryParamsFromInputSchema(inputSchema, {
+        anyOf: [{ required: ['symbols'] }],
+        oneOf: [{ required: ['contracts'] }],
+      })
+    ).toBeUndefined();
+    expect(
+      buildMinimalQueryParamsFromInputSchema(inputSchema, { anyOf: [] })
+    ).toBeUndefined();
+    expect(
+      buildMinimalQueryParamsFromInputSchema(inputSchema, { anyOf: null })
+    ).toBeUndefined();
+    expect(
+      buildMinimalQueryParamsFromInputSchema(inputSchema, {
+        required: ['undeclared'],
+      })
+    ).toBeUndefined();
+  });
+});

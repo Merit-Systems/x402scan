@@ -13,6 +13,7 @@ import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
 import { scrapeOriginData } from '@/services/scraper';
 
 import type { FreeAuthMode } from '@/lib/resource-auth';
+import type { JsonValue } from '@/lib/json';
 import type {
   AuditWarning,
   AuthMode,
@@ -123,6 +124,8 @@ export async function registerResourcesFromDiscovery(
     pricingMode?: string;
     price?: string;
     description?: string;
+    queryParametersSchema?: JsonValue;
+    registryEligible?: boolean;
   }[],
   source: string | undefined,
   originInfo?: { title: string; description?: string },
@@ -184,10 +187,12 @@ export async function registerResourcesFromDiscovery(
   // that arm would let a batch whose paid probes all failed transiently
   // register catalog rows, set originId, and deprecate every existing paid
   // row. Catalog rows alone must never create or sustain a server page.
-  const catalogResources = resources.filter(r =>
+  const eligibleResources = resources.filter(r => r.registryEligible !== false);
+  const excludedResources = resources.filter(r => r.registryEligible === false);
+  const catalogResources = eligibleResources.filter(r =>
     isOpenApiDeclaredFree(r.authMode, source)
   );
-  const mainResources = resources.filter(
+  const mainResources = eligibleResources.filter(
     r => !isOpenApiDeclaredFree(r.authMode, source)
   );
 
@@ -235,7 +240,9 @@ export async function registerResourcesFromDiscovery(
       } else {
         const probeResult = await probeX402Endpoint(
           resourceUrl,
-          resource.method
+          resource.method,
+          undefined,
+          resource.queryParametersSchema
         );
 
         if (!probeResult.success) {
@@ -326,8 +333,21 @@ export async function registerResourcesFromDiscovery(
 
   // Collection below indexes results back to their input resource — keep the
   // two passes aligned.
-  const orderedResources = [...mainResources, ...catalogResources];
-  const results = [...mainResults, ...catalogResults];
+  const excludedResults = excludedResources.map(resource => ({
+    status: 'fulfilled' as const,
+    value: {
+      success: false as const,
+      url: resource.url,
+      error: 'Excluded from registry by OpenAPI operation metadata',
+      skipped: true as const,
+    },
+  }));
+  const orderedResources = [
+    ...mainResources,
+    ...catalogResources,
+    ...excludedResources,
+  ];
+  const results = [...mainResults, ...catalogResults, ...excludedResults];
 
   const successfulResults: {
     url: string;

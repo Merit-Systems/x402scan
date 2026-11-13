@@ -310,3 +310,41 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
     expect(result.total).toBe(3);
   });
 });
+
+describe('registerResourcesFromDiscovery — explicit registry exclusion', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('skips an OpenAPI public control-plane endpoint marked registryEligible=false', async () => {
+    const result = await registerResourcesFromDiscovery(
+      [
+        { url: ORIGIN + '/v1/rooms', method: 'POST', authMode: 'paid' },
+        {
+          url: ORIGIN + '/v1/control/consume',
+          method: 'POST',
+          authMode: 'unprotected',
+          registryEligible: false,
+        },
+      ],
+      'openapi'
+    );
+
+    expect(result.registered).toBe(1);
+    expect(result.publicCount).toBe(0);
+    expect(result.skipped).toBe(1);
+    expect(result.skippedDetails).toEqual([
+      expect.objectContaining({
+        url: ORIGIN + '/v1/control/consume',
+        error: 'Excluded from registry by OpenAPI operation metadata',
+      }),
+    ]);
+    expect(registerFreeResource).not.toHaveBeenCalledWith(
+      ORIGIN + '/v1/control/consume',
+      expect.anything()
+    );
+    expect(deprecateStaleResources).toHaveBeenCalledWith('origin-1', [
+      { url: ORIGIN + '/v1/rooms', method: 'POST' },
+    ]);
+  });
+});

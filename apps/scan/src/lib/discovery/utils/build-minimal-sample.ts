@@ -14,6 +14,18 @@ import type { JsonObject, JsonValue } from '@/lib/json';
 
 const MAX_DEPTH = 5;
 
+const supplementalQueryBranchSchema = z.looseObject({
+  required: z.array(z.string().min(1)).min(1),
+});
+
+const supplementalQueryRequirementsSchema = z
+  .looseObject({
+    required: z.array(z.string().min(1)).optional(),
+    anyOf: z.array(supplementalQueryBranchSchema).min(1).optional(),
+    oneOf: z.array(supplementalQueryBranchSchema).min(1).optional(),
+  })
+  .refine(value => !(value.anyOf && value.oneOf));
+
 function sampleValue(
   schema: JsonSchemaNode,
   depth: number
@@ -147,7 +159,8 @@ function queryParamValue(value: JsonValue): string {
  * otherwise fills with type-appropriate values.
  */
 export function buildMinimalQueryParamsFromInputSchema(
-  inputSchema: JsonLikeValue
+  inputSchema: JsonLikeValue,
+  supplementalQuerySchema?: JsonLikeValue
 ): Record<string, string> | undefined {
   const advisory = openApiInputAdvisorySchema.safeParse(inputSchema);
   if (!advisory.success) return undefined;
@@ -156,10 +169,41 @@ export function buildMinimalQueryParamsFromInputSchema(
   if (!parameters || parameters.length === 0) return undefined;
 
   const result: Record<string, string> = {};
+  const required = new Set(
+    parameters
+      .filter(param => param.in === 'query' && param.required === true)
+      .map(param => param.name)
+  );
+
+  if (supplementalQuerySchema !== undefined) {
+    const parsed = supplementalQueryRequirementsSchema.safeParse(
+      supplementalQuerySchema
+    );
+    if (!parsed.success) return undefined;
+
+    const queryNames = new Set(
+      parameters.filter(param => param.in === 'query').map(param => param.name)
+    );
+
+    for (const name of parsed.data.required ?? []) {
+      if (!queryNames.has(name)) return undefined;
+      required.add(name);
+    }
+
+    const branches = parsed.data.anyOf ?? parsed.data.oneOf;
+    if (branches) {
+      for (const branch of branches) {
+        if (branch.required.some(name => !queryNames.has(name))) {
+          return undefined;
+        }
+      }
+      for (const name of branches[0]!.required) required.add(name);
+    }
+  }
 
   for (const param of parameters) {
     if (param.in !== 'query') continue;
-    if (!param.required) continue;
+    if (!required.has(param.name)) continue;
 
     if (param.schema) {
       const value = sampleValue(param.schema, 0);

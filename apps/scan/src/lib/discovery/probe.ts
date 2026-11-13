@@ -184,13 +184,15 @@ function sleep(ms: number): Promise<void> {
 export async function probeX402Endpoint(
   url: string,
   preferredMethod?: string,
-  sampleBody?: JsonObject
+  sampleBody?: JsonObject,
+  supplementalQuerySchema?: JsonValue
 ): Promise<ProbeX402Result> {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     const result = await probeX402EndpointOnce(
       url,
       preferredMethod,
-      sampleBody
+      sampleBody,
+      supplementalQuerySchema
     );
 
     // Retry on rate limiting (429/503) with exponential backoff.
@@ -214,7 +216,8 @@ export async function probeX402Endpoint(
 async function probeX402EndpointOnce(
   url: string,
   preferredMethod?: string,
-  sampleBody?: JsonObject
+  sampleBody?: JsonObject,
+  supplementalQuerySchema?: JsonValue
 ): Promise<ProbeX402Result> {
   const noBody = await checkEndpointSchema({
     url,
@@ -246,7 +249,10 @@ async function probeX402EndpointOnce(
     fallbackBody = buildMinimalSampleFromInputSchema(inputSchema) ?? {};
 
     // Also sample required query params (for GET endpoints).
-    const queryParams = buildMinimalQueryParamsFromInputSchema(inputSchema);
+    const queryParams = buildMinimalQueryParamsFromInputSchema(
+      inputSchema,
+      supplementalQuerySchema
+    );
     if (queryParams) {
       const u = new URL(url);
       for (const [key, value] of Object.entries(queryParams)) {

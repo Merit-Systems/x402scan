@@ -11,7 +11,7 @@ export async function handleRegistryRegisterOrigin(
   body: z.infer<typeof registryRegisterOriginBodySchema>
 ) {
   const { origin } = body;
-  const discoveryResult = await fetchDiscoveryDocument(origin);
+  const discoveryResult = await fetchDiscoveryDocument(origin, false, true);
 
   if (!discoveryResult.success) {
     return jsonResponse(
