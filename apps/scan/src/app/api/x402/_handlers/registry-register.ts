@@ -2,7 +2,7 @@ import type { registryRegisterBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { jsonObjectSchema } from '@/lib/json';
 import { registerEndpoint } from '@/lib/discovery/register-endpoint';
-import { urlMatchesDiscoveredResource } from '@/lib/url';
+import { selectDiscoveredResourceForRegistration } from '@/lib/url';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -24,7 +24,7 @@ export async function handleRegistryRegister(
   const origin = new URL(body.url).origin;
 
   // Discovery document (openapi.json) is required before we probe the endpoint.
-  const discoveryResult = await fetchDiscoveryDocument(origin);
+  const discoveryResult = await fetchDiscoveryDocument(origin, false, true);
 
   if (!discoveryResult.success) {
     return jsonResponse(
@@ -41,11 +41,12 @@ export async function handleRegistryRegister(
     );
   }
 
-  const urlInSpec = discoveryResult.resources.some(r =>
-    urlMatchesDiscoveredResource(body.url, r.url)
+  const selected = selectDiscoveredResourceForRegistration(
+    body.url,
+    discoveryResult.resources
   );
 
-  if (!urlInSpec) {
+  if (!selected) {
     return jsonResponse(
       {
         success: false,
@@ -61,7 +62,13 @@ export async function handleRegistryRegister(
 
   const contactEmail = discoveryResult.contactEmail;
 
-  const result = await registerEndpoint(body.url);
+  const result = await registerEndpoint(body.url, {
+    queryParametersSchema: selected.resource.queryParametersSchema,
+    registryEligible: selected.excluded
+      ? false
+      : selected.resource.registryEligible,
+    method: selected.resource.method,
+  });
 
   try {
     if (result.success && result.resource?.origin?.id) {

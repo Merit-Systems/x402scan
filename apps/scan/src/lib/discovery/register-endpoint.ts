@@ -3,6 +3,8 @@ import { registerResource } from '@/lib/resources';
 import { discoverSiblingResources } from './discover-siblings';
 import { isTunnelUrl } from '@/lib/url-helpers';
 
+import type { JsonValue } from '@/lib/json';
+
 /**
  * Single orchestrator for registering a single x402 resource.
  *
@@ -15,6 +17,9 @@ export async function registerEndpoint(
   options?: {
     notifyNewServer?: boolean;
     originMetadataFallback?: { title?: string; description?: string };
+    queryParametersSchema?: JsonValue;
+    registryEligible?: boolean;
+    method?: string;
   }
 ) {
   // 0. Reject ephemeral tunnel URLs
@@ -29,8 +34,24 @@ export async function registerEndpoint(
     };
   }
 
+  if (options?.registryEligible === false) {
+    return {
+      success: false as const,
+      error: {
+        type: 'registryExcluded' as const,
+        message:
+          'This endpoint is explicitly excluded from x402scan registry/catalog registration.',
+      },
+    };
+  }
+
   // 1. Probe the endpoint for a 402 response
-  const probeResult = await probeX402Endpoint(url);
+  const probeResult = await probeX402Endpoint(
+    url,
+    options?.method,
+    undefined,
+    options?.queryParametersSchema
+  );
 
   if (!probeResult.success) {
     return {

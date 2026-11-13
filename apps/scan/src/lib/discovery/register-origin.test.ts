@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { probeX402Endpoint } from './probe';
 import { registerResourcesFromDiscovery } from './register-origin';
 import { registerFreeResource, registerResource } from '@/lib/resources';
-import { deprecateStaleResources } from '@/services/db/resources/resource';
+import {
+  deprecateExplicitlyExcludedResources,
+  deprecateStaleResources,
+} from '@/services/db/resources/resource';
 import { getOriginResourceCount } from '@/services/db/resources/origin';
 
 vi.mock('./probe', () => ({
@@ -49,6 +52,7 @@ vi.mock('@/lib/resources', () => ({
 }));
 
 vi.mock('@/services/db/resources/resource', () => ({
+  deprecateExplicitlyExcludedResources: vi.fn(() => Promise.resolve(0)),
   deprecateStaleResources: vi.fn(() => Promise.resolve(0)),
 }));
 
@@ -227,6 +231,7 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
     expect(result.failed).toBe(1);
     expect(result.publicCount).toBe(0);
     expect(result.skipped).toBe(1);
+    expect(deprecateExplicitlyExcludedResources).not.toHaveBeenCalled();
     expect(deprecateStaleResources).not.toHaveBeenCalled();
   });
 
@@ -308,5 +313,79 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
     expect(result.skipped).toBe(0);
     expect(result.failed).toBe(0);
     expect(result.total).toBe(3);
+  });
+});
+
+describe('registerResourcesFromDiscovery — explicit registry exclusion', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('skips an OpenAPI public control-plane endpoint marked registryEligible=false', async () => {
+    const result = await registerResourcesFromDiscovery(
+      [
+        { url: ORIGIN + '/v1/rooms', method: 'POST', authMode: 'paid' },
+        {
+          url: ORIGIN + '/v1/control/consume',
+          method: 'POST',
+          authMode: 'unprotected',
+          registryEligible: false,
+        },
+      ],
+      'openapi'
+    );
+
+    expect(result.registered).toBe(1);
+    expect(result.publicCount).toBe(0);
+    expect(result.skipped).toBe(1);
+    expect(result.skippedDetails).toEqual([
+      expect.objectContaining({
+        url: ORIGIN + '/v1/control/consume',
+        error: 'Excluded from registry by OpenAPI operation metadata',
+      }),
+    ]);
+    expect(registerFreeResource).not.toHaveBeenCalledWith(
+      ORIGIN + '/v1/control/consume',
+      expect.anything()
+    );
+    expect(deprecateExplicitlyExcludedResources).toHaveBeenCalledWith([
+      { url: ORIGIN + '/v1/control/consume', method: 'POST' },
+    ]);
+    expect(deprecateStaleResources).toHaveBeenCalledWith('origin-1', [
+      { url: ORIGIN + '/v1/rooms', method: 'POST' },
+    ]);
+  });
+
+  it('retires explicitly excluded identities even when every operation opts out', async () => {
+    vi.mocked(deprecateExplicitlyExcludedResources).mockResolvedValueOnce(2);
+
+    const result = await registerResourcesFromDiscovery(
+      [
+        {
+          url: ORIGIN + '/v1/old-paid',
+          method: 'GET',
+          authMode: 'paid',
+          registryEligible: false,
+        },
+        {
+          url: ORIGIN + '/v1/control',
+          method: 'POST',
+          authMode: 'unprotected',
+          registryEligible: false,
+        },
+      ],
+      'openapi'
+    );
+
+    expect(probeX402Endpoint).not.toHaveBeenCalled();
+    expect(registerResource).not.toHaveBeenCalled();
+    expect(registerFreeResource).not.toHaveBeenCalled();
+    expect(deprecateExplicitlyExcludedResources).toHaveBeenCalledWith([
+      { url: ORIGIN + '/v1/old-paid', method: 'GET' },
+      { url: ORIGIN + '/v1/control', method: 'POST' },
+    ]);
+    expect(deprecateStaleResources).not.toHaveBeenCalled();
+    expect(result.deprecated).toBe(2);
+    expect(result.skipped).toBe(2);
   });
 });

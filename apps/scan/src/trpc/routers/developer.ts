@@ -2,8 +2,11 @@ import z from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
-import { getOriginFromUrl } from '@/lib/url';
-import { jsonObjectSchema, type JsonObject } from '@/lib/json';
+import {
+  getOriginFromUrl,
+  selectDiscoveredResourceForRegistration,
+} from '@/lib/url';
+import { jsonObjectSchema, type JsonObject, type JsonValue } from '@/lib/json';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
@@ -25,7 +28,8 @@ import {
 async function testSingleResource(
   url: string,
   method?: string,
-  sampleBody?: string
+  sampleBody?: string,
+  queryParametersSchema?: JsonValue
 ) {
   try {
     let parsedSampleBody: JsonObject | undefined;
@@ -52,7 +56,12 @@ async function testSingleResource(
       parsedSampleBody = parsed.data;
     }
 
-    const result = await probeX402Endpoint(url, method, parsedSampleBody);
+    const result = await probeX402Endpoint(
+      url,
+      method,
+      parsedSampleBody,
+      queryParametersSchema
+    );
 
     if (!result.success) {
       const failure: FailedResource = {
@@ -236,9 +245,39 @@ export const developerRouter = createTRPCRouter({
       );
       // Probe sequentially to avoid overwhelming the merchant's server.
       // Concurrent probes to the same origin can trigger rate limiting (503s).
+      const trustedResourcesByOrigin = new Map<
+        string,
+        Awaited<ReturnType<typeof fetchDiscoveryDocument>>
+      >();
+
+      async function trustedResourceFor(
+        url: string,
+        method: string | undefined
+      ) {
+        const origin = new URL(url).origin;
+        let discovery = trustedResourcesByOrigin.get(origin);
+        if (!discovery) {
+          discovery = await fetchDiscoveryDocument(origin, false, true);
+          trustedResourcesByOrigin.set(origin, discovery);
+        }
+        if (!discovery.success) return undefined;
+        return selectDiscoveredResourceForRegistration(
+          url,
+          discovery.resources,
+          method
+        );
+      }
+
       const testResults = [];
       for (const r of probeableResources) {
-        const result = await testSingleResource(r.url, r.method, r.sampleBody);
+        const trustedResource = await trustedResourceFor(r.url, r.method);
+        if (trustedResource?.excluded) continue;
+        const result = await testSingleResource(
+          r.url,
+          r.method,
+          r.sampleBody,
+          trustedResource?.resource.queryParametersSchema
+        );
         // Cache successful probes server-side so registration can reuse them
         // without the advisory data ever round-tripping through the client.
         if (result.success) {

@@ -1,3 +1,5 @@
+import type { DiscoveredResource } from '@/types/discovery';
+
 export const getOriginFromUrl = (url: string) => {
   return new URL(url).origin;
 };
@@ -68,4 +70,51 @@ export function urlMatchesDiscoveredResource(
   } catch {
     return false;
   }
+}
+
+function normalizeUrlForPathIdentity(url: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.search = '';
+    parsed.hash = '';
+    if (parsed.pathname !== '/' && parsed.pathname.endsWith('/')) {
+      parsed.pathname = parsed.pathname.slice(0, -1);
+    }
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * Resolve a discovered resource for a concrete URL without allowing route
+ * ordering or OpenAPI templates to bypass an explicit registry exclusion.
+ *
+ * If any compatible match is explicitly excluded, the result is excluded.
+ * Otherwise exact URL matches are preferred over template matches.
+ */
+export function selectDiscoveredResourceForRegistration(
+  inputUrl: string,
+  resources: DiscoveredResource[],
+  method?: string
+): { resource: DiscoveredResource; excluded: boolean } | undefined {
+  const matches = resources.filter(resource => {
+    if (!urlMatchesDiscoveredResource(inputUrl, resource.url)) return false;
+    if (!method || !resource.method) return true;
+    return resource.method === method;
+  });
+
+  if (matches.length === 0) return undefined;
+
+  const excluded = matches.find(
+    resource => resource.registryEligible === false
+  );
+  if (excluded) return { resource: excluded, excluded: true };
+
+  const exact = matches.find(
+    resource =>
+      normalizeUrlForPathIdentity(resource.url) ===
+      normalizeUrlForPathIdentity(inputUrl)
+  );
+  return { resource: exact ?? matches[0]!, excluded: false };
 }

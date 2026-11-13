@@ -24,7 +24,6 @@ import { mixedAddressSchema } from '@/lib/schemas';
 
 import { registerEndpoint } from '@/lib/discovery/register-endpoint';
 import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
-import { urlMatchesDiscoveredResource } from '@/lib/url';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -35,6 +34,7 @@ import {
 import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
 import { fetchDiscoveryDocument } from '@/services/discovery';
+import { selectDiscoveredResourceForRegistration } from '@/lib/url';
 import {
   getResourceVerificationStatus,
   getOriginVerificationStatus,
@@ -142,7 +142,7 @@ export const resourcesRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       const origin = new URL(input.url).origin;
-      const discoveryResult = await fetchDiscoveryDocument(origin);
+      const discoveryResult = await fetchDiscoveryDocument(origin, false, true);
 
       if (!discoveryResult.success) {
         return {
@@ -156,11 +156,12 @@ export const resourcesRouter = createTRPCRouter({
         };
       }
 
-      const urlInSpec = discoveryResult.resources.some(r =>
-        urlMatchesDiscoveredResource(input.url, r.url)
+      const selected = selectDiscoveredResourceForRegistration(
+        input.url,
+        discoveryResult.resources
       );
 
-      if (!urlInSpec) {
+      if (!selected) {
         return {
           success: false as const,
           error: {
@@ -171,7 +172,13 @@ export const resourcesRouter = createTRPCRouter({
         };
       }
 
-      const result = await registerEndpoint(input.url);
+      const result = await registerEndpoint(input.url, {
+        queryParametersSchema: selected.resource.queryParametersSchema,
+        registryEligible: selected.excluded
+          ? false
+          : selected.resource.registryEligible,
+        method: selected.resource.method,
+      });
       try {
         if (result.success && result.resource?.origin?.id) {
           revalidatePath(`/server/${result.resource.origin.id}`);
@@ -201,7 +208,11 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      const discoveryResult = await fetchDiscoveryDocument(input.origin);
+      const discoveryResult = await fetchDiscoveryDocument(
+        input.origin,
+        false,
+        true
+      );
 
       if (!discoveryResult.success) {
         return {

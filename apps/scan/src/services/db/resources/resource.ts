@@ -415,6 +415,44 @@ export const listResourcesForTools = async (resourceIds: string[]) => {
  * - If ALL active resources would be deprecated, no deprecation occurs (likely
  *   a URL normalization mismatch rather than a legitimate removal of every endpoint).
  */
+export const deprecateExplicitlyExcludedResources = async (
+  excludedResources: { url: string; method: string }[]
+) => {
+  if (excludedResources.length === 0) return 0;
+
+  const unique = [
+    ...new Map(
+      excludedResources.map(resource => [
+        resource.method + '::' + resource.url,
+        resource,
+      ])
+    ).values(),
+  ];
+
+  const existing = await scanDb.resources.findMany({
+    where: {
+      deprecatedAt: null,
+      OR: unique.map(resource => ({
+        resource: resource.url,
+        method: resource.method,
+      })),
+    },
+    select: { id: true },
+  });
+
+  const parsedExisting = z
+    .array(z.object({ id: z.string() }))
+    .safeParse(existing);
+  if (!parsedExisting.success || parsedExisting.data.length === 0) return 0;
+
+  const result = await scanDb.resources.updateMany({
+    where: { id: { in: parsedExisting.data.map(resource => resource.id) } },
+    data: { deprecatedAt: new Date() },
+  });
+
+  return result.count;
+};
+
 export const deprecateStaleResources = async (
   originId: string,
   activeResources: { url: string; method: string }[]
