@@ -3,12 +3,14 @@ import { env } from '@/env';
 import { cleanExternalText } from '@/lib/utils';
 import { api } from '@/trpc/server';
 import type { Metadata } from 'next';
+import { resolveServerOriginId } from '@/lib/resolve-server-origin-id';
 
 export default async function OriginLayout({
   children,
   params,
 }: LayoutProps<'/server/[id]'>) {
-  const { id } = await params;
+  const { id: idParam } = await params;
+  const id = await resolveServerOriginId(idParam);
   return (
     <div className="flex flex-col flex-1">
       <Nav
@@ -27,7 +29,8 @@ export default async function OriginLayout({
 export async function generateMetadata({
   params,
 }: LayoutProps<'/server/[id]'>): Promise<Metadata> {
-  const { id } = await params;
+  const { id: idParam } = await params;
+  const id = await resolveServerOriginId(idParam);
   const origin = await api.public.origins.get(id);
 
   if (!origin) {

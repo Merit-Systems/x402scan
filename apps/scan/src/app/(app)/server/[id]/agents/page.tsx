@@ -4,11 +4,13 @@ import { AgentsSortingProvider } from '@/app/(app)/_contexts/sorting/agents/prov
 import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
 import { AgentsTable } from '@/app/(app)/_components/agents/table';
 import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
+import { resolveServerOriginId } from '@/lib/resolve-server-origin-id';
 
 export default async function OriginAgentsPage({
   params,
 }: PageProps<'/server/[id]/agents'>) {
-  const { id } = await params;
+  const { id: idParam } = await params;
+  const id = await resolveServerOriginId(idParam);
   return (
     <TimeRangeProvider initialTimeframe={ALL_TIME_TIMEFRAME}>
       <AgentsSortingProvider initialSorting={defaultAgentsSorting}>
