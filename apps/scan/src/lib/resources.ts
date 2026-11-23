@@ -20,7 +20,7 @@ import type { FreeAuthMode } from '@/lib/resource-auth';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { LISTED_CHAINS } from '@/types/chain';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { verifyAcceptsOwnership } from '@/services/verification/accepts-verification';
 import { outputSchemaV1 } from '@/lib/x402/v1';
@@ -142,9 +142,7 @@ export function validateResource(
 
   // Unsupported networks
   const hasSupported = x402Options.some(opt =>
-    (SUPPORTED_CHAINS as readonly string[]).includes(
-      normalizeChainId(opt.network)
-    )
+    (LISTED_CHAINS as readonly string[]).includes(normalizeChainId(opt.network))
   );
   if (!hasSupported) {
     const advertisedNetworks = Array.from(
@@ -152,7 +150,7 @@ export function validateResource(
     );
     return {
       valid: false,
-      error: `No supported networks. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]`,
+      error: `No supported networks. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(LISTED_CHAINS as readonly string[]).join(', ')}]`,
     };
   }
 
@@ -482,7 +480,7 @@ export const registerResource = async (
   }));
 
   const mappedAccepts = allMappedAccepts.filter(accept =>
-    (SUPPORTED_CHAINS as readonly string[]).includes(accept.network)
+    (LISTED_CHAINS as readonly string[]).includes(accept.network)
   );
 
   // This should never fire since validateResource already checked, but
@@ -497,7 +495,7 @@ export const registerResource = async (
       error: {
         type: 'parseResponse' as const,
         parseErrors: [
-          `No supported networks advertised. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]. Testnets are not indexed.`,
+          `No supported networks advertised. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(LISTED_CHAINS as readonly string[]).join(', ')}]. Testnets are not indexed.`,
         ],
       },
       warnings,

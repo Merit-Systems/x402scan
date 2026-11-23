@@ -1,7 +1,7 @@
-import { optionalSupportedChainSchema } from '@/lib/schemas';
+import { listedChainSchema } from '@/lib/schemas';
 
 export const parseChain = (chain: string | string[] | null | undefined) => {
-  const result = optionalSupportedChainSchema.safeParse(chain);
+  const result = listedChainSchema.optional().safeParse(chain);
   if (!result.success) {
     return undefined;
   }
