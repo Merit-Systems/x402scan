@@ -5,7 +5,7 @@ import { scanDb } from '@x402scan/scan-db';
 import { parseX402Response, type ParsedX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
 import { FREE_AUTH_MODES, isFreeResource } from '@/lib/resource-auth';
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { LISTED_CHAINS } from '@/types/chain';
 
 import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
 import type { MixedAddress } from '@/types/address';
@@ -16,7 +16,7 @@ export const freeAuthModeFilters: Prisma.ResourcesWhereInput[] =
     metadata: { path: ['authMode'], equals: mode },
   }));
 
-const SUPPORTED_ACCEPT_NETWORKS = SUPPORTED_CHAINS.map(
+const LISTED_ACCEPT_NETWORKS = LISTED_CHAINS.map(
   chain => chain as AcceptsNetwork
 );
 
@@ -31,7 +31,7 @@ function getDisplayableAcceptsWhere({
     payTo: address,
     ...(chain
       ? { network: chain }
-      : { network: { in: SUPPORTED_ACCEPT_NETWORKS } }),
+      : { network: { in: LISTED_ACCEPT_NETWORKS } }),
   };
 }
 

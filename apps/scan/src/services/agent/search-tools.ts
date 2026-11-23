@@ -30,7 +30,10 @@ interface X402ToolResponse {
 export async function searchX402Tools(
   input: z.infer<typeof searchResourcesSchema>
 ) {
-  const resources = await searchResources(input);
+  // Only payable accepts become tool options (other listed networks, e.g.
+  // robinhood, would also fail the v1 network parse below). Filtering them in
+  // the query keeps `limit` usable resources in the window.
+  const resources = await searchResources({ ...input, payableOnly: true });
 
   const toolDefinitions: X402ToolResponse[] = [];
   for (const resource of resources) {

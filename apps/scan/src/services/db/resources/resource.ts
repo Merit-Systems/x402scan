@@ -5,16 +5,16 @@ import { jsonObjectSchema } from '@/lib/json';
 import { z } from 'zod';
 import { toPaginatedResponse } from '@/lib/pagination';
 
-import { supportedChainSchema } from '@/lib/schemas';
+import { listedChainSchema } from '@/lib/schemas';
 
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { LISTED_CHAINS, SUPPORTED_CHAINS } from '@/types/chain';
 
 import { upsertResourceSchema } from './resource-schema';
 import { ensureOriginExists, freeAuthModeFilters } from './origin';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { Prisma } from '@x402scan/scan-db';
-import type { SupportedChain } from '@/types/chain';
+import type { ListedChain } from '@/types/chain';
 
 import {
   createCachedArrayQuery,
@@ -33,10 +33,10 @@ export const upsertResource = async (
   }
   const baseResource = parsedResourceInput.data;
   const supportedAccepts = baseResource.accepts.filter(accept =>
-    SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+    LISTED_CHAINS.includes(accept.network as ListedChain)
   );
   const unsupportedAccepts = baseResource.accepts.filter(
-    accept => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+    accept => !LISTED_CHAINS.includes(accept.network as ListedChain)
   );
   if (supportedAccepts.length === 0) {
     return;
@@ -301,7 +301,11 @@ export const searchResourcesSchema = z.object({
   resourceIds: z.array(z.string()).optional(),
   showExcluded: z.boolean().optional().default(false),
   showDeprecated: z.boolean().optional().default(false),
-  chains: z.array(supportedChainSchema).optional(),
+  chains: z.array(listedChainSchema).optional(),
+  // Only accepts on networks that can be paid (SUPPORTED_CHAINS) are returned,
+  // and resources whose accepts are all on other listed networks are left out
+  // before `take`. Free resources are unaffected.
+  payableOnly: z.boolean().optional(),
 });
 
 const searchResourcesUncached = async (
@@ -315,9 +319,14 @@ const searchResourcesUncached = async (
     showExcluded,
     showDeprecated,
     chains,
+    payableOnly,
   } = input;
   const acceptsFilter: Prisma.AcceptsWhereInput =
     chains !== undefined ? { network: { in: chains } } : {};
+  const displayedAccepts: Prisma.AcceptsWhereInput = {
+    payTo: { not: '' },
+    network: payableOnly ? { in: [...SUPPORTED_CHAINS] } : undefined,
+  };
   return await scanDb.resources.findMany({
     where: {
       // Include paid resources (with accepts) and free resources
@@ -363,15 +372,21 @@ const searchResourcesUncached = async (
       ...(resourceIds ? { id: { in: resourceIds } } : undefined),
       excluded: showExcluded ? undefined : { is: null },
       deprecatedAt: showDeprecated ? undefined : null,
+      // With payableOnly, leave out paid resources that have no payable
+      // accept, so they don't take a place in the `take` window.
+      NOT: payableOnly
+        ? {
+            accepts: {
+              some: { payTo: { not: '' } },
+              none: displayedAccepts,
+            },
+          }
+        : undefined,
     },
     include: {
       origin: true,
       accepts: {
-        where: {
-          payTo: {
-            not: '',
-          },
-        },
+        where: displayedAccepts,
       },
       _count: {
         select: {
