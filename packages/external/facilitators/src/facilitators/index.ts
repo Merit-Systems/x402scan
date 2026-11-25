@@ -32,3 +32,4 @@ export { fluxa, fluxaFacilitator } from './fluxa';
 export { figment, figmentFacilitator } from './figment';
 export { threews, threewsFacilitator } from './threews';
 export { braveFacilitator } from './brave';
+export { agentpay, agentpayFacilitator } from './agentpay';
