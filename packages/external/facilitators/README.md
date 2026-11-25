@@ -75,6 +75,7 @@ The following facilitators currently support resource discovery:
 - **Ultravioleta DAO** - Community-driven multichain facilitator
 - **RelAI** - AI infrastructure platform
 - **three.ws** - Self-hosted Solana facilitator for the three.ws agent economy
+- **M2MCent** - Base Mainnet x402 V2 facilitator with programmable Escrow V2 and 1,062 deterministic MCP nodes
 
 ### Enumerate All Discoverable Facilitators
 
@@ -126,6 +127,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
 | **three.ws**         | SOLANA        | ✅ Yes    | No                           |
+| **M2MCent**          | BASE          | ✅ Yes    | No                           |
 
 ### Import Individual Facilitators
 
