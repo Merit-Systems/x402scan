@@ -32,6 +32,7 @@ import {
   figmentFacilitator,
   threewsFacilitator,
   braveFacilitator,
+  m2mcentFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -72,6 +73,7 @@ const FACILITATORS = validateUniqueFacilitators([
   figmentFacilitator,
   threewsFacilitator,
   braveFacilitator,
+  m2mcentFacilitator,
 ]);
 
 // Some facilitators take facilitator-specific props in their config

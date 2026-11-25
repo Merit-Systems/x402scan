@@ -13,5 +13,6 @@ export { anyspendDiscovery } from '../facilitators/anyspend';
 export { relaiDiscovery } from '../facilitators/relai';
 export { fluxaDiscovery } from '../facilitators/fluxa';
 export { threewsDiscovery } from '../facilitators/threews';
+export { m2mcentDiscovery } from '../facilitators/m2mcent';
 
 export { discoverableFacilitators } from './facilitators';
