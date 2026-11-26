@@ -28,6 +28,7 @@ import {
   normalizeChainId,
   parseX402Response,
   getOutputSchema,
+  getDescription,
   type OutputSchema,
   type ParsedX402Response,
 } from '@/lib/x402';
@@ -360,6 +361,26 @@ export async function registerFreeResource(
   }
 }
 
+/**
+ * The description to store on a resource's accepts rows. Resource search matches
+ * "Accepts".description, so it must hold the offer's own description: v2 carries it in
+ * resource.description, v1 in accepts[].description. Falls back to the discovery
+ * document's description, then to ''.
+ */
+export function getOfferDescription(
+  paymentRequiredBody: EndpointMethodAdvisory['paymentRequiredBody'],
+  fallback?: string
+): string {
+  const parsed = paymentRequiredBody
+    ? parseX402Response(paymentRequiredBody)
+    : undefined;
+  return (
+    (parsed?.success ? getDescription(parsed.data) : undefined) ??
+    fallback ??
+    ''
+  );
+}
+
 export const registerResource = async (
   url: string,
   advisory: EndpointMethodAdvisory,
@@ -469,8 +490,14 @@ export const registerResource = async (
     );
   }
 
+  const offerDescription = getOfferDescription(
+    advisory.paymentRequiredBody,
+    options.description
+  );
+
   const allMappedAccepts = x402Options.map(opt => ({
     scheme: opt.scheme ?? 'exact',
+    description: offerDescription,
     network: normalizeChainId(opt.network) as AcceptsNetwork,
     maxAmountRequired:
       ('amount' in opt ? opt.amount : opt.maxAmountRequired) ?? '0',
