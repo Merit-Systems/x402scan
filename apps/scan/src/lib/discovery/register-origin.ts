@@ -217,7 +217,12 @@ export async function registerResourcesFromDiscovery(
       }
 
       if (resource.authMode === 'siwx') {
-        return registerAsFree(resource, 'siwx');
+        // Paid x402 + SIWX resources must be probed and registered through
+        // registerResource() so payment options are persisted; only free SIWX
+        // rows register without probing via registerAsFree().
+        if (!(resource.pricingMode || resource.price)) {
+          return registerAsFree(resource, 'siwx');
+        }
       }
 
       // Check server-side probe cache (from the batch test). This skips
@@ -265,7 +270,12 @@ export async function registerResourcesFromDiscovery(
       // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
       if (advisory.authMode === 'siwx') {
-        return registerAsFree(resource, 'siwx');
+        // Paid x402 + SIWX resources must be probed and registered through
+        // registerResource() so payment options are persisted; only free SIWX
+        // rows register without probing via registerAsFree().
+        if (!(resource.pricingMode || resource.price)) {
+          return registerAsFree(resource, 'siwx');
+        }
       }
 
       const result = await registerResource(resourceUrl, advisory, {
