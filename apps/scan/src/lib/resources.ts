@@ -22,7 +22,10 @@ import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 import { fetchDiscoveryDocument } from '@/services/discovery';
-import { verifyAcceptsOwnership } from '@/services/verification/accepts-verification';
+import {
+  syncOriginRecipients,
+  verifyAcceptsOwnership,
+} from '@/services/verification/accepts-verification';
 import { outputSchemaV1 } from '@/lib/x402/v1';
 import {
   normalizeChainId,
@@ -626,18 +629,19 @@ export const registerResource = async (
   const ownershipTask = async () => {
     try {
       const discoveryResult = await fetchDiscoveryDocument(origin);
-      if (
-        discoveryResult.success &&
-        discoveryResult.ownershipProofs &&
-        discoveryResult.ownershipProofs.length > 0
-      ) {
+      if (!discoveryResult.success) return;
+
+      const ownershipProofs = discoveryResult.ownershipProofs ?? [];
+      if (ownershipProofs.length > 0) {
         const acceptIds = resource.accepts.map(accept => accept.id);
         await verifyAcceptsOwnership({
           acceptIds,
-          ownershipProofs: discoveryResult.ownershipProofs,
+          ownershipProofs,
           origin,
         });
       }
+      // Runs without proofs too, so removing a proof drops its recipient.
+      await syncOriginRecipients(resource.origin.id, origin, ownershipProofs);
     } catch (error) {
       console.error(
         'Ownership verification failed during registration:',

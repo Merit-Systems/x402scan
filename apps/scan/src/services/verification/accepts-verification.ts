@@ -1,6 +1,9 @@
 import { scanDb } from '@x402scan/scan-db';
 
-import { verifyOwnershipProofMultichain } from '@/lib/ownership-proof';
+import {
+  recoverRecipientsFromProofs,
+  verifyOwnershipProofMultichain,
+} from '@/lib/ownership-proof';
 
 export interface VerificationResult {
   acceptId: string;
@@ -132,6 +135,52 @@ export async function verifyAcceptsOwnership(
   }
 
   return results;
+}
+
+/**
+ * Replace an origin's proven recipients with the signers of its current
+ * ownership proofs that are not one of its payTo addresses.
+ *
+ * Their transfers are then attributed to the origin through payto_origin_map,
+ * alongside transfers to its payTo addresses. Recipients whose proof was
+ * removed from the discovery document are dropped.
+ *
+ * @param originId - Origin ID
+ * @param origin - The origin string the proofs sign
+ * @param ownershipProofs - Proofs from the origin's discovery document
+ * @returns Addresses now recorded as recipients of the origin
+ */
+export async function syncOriginRecipients(
+  originId: string,
+  origin: string,
+  ownershipProofs: string[]
+): Promise<string[]> {
+  const accepts = await scanDb.accepts.findMany({
+    where: { resourceRel: { originId } },
+    select: { payTo: true },
+  });
+
+  const recipients = await recoverRecipientsFromProofs(
+    ownershipProofs,
+    origin,
+    accepts.map(accept => accept.payTo)
+  );
+  const addresses = recipients.map(recipient => recipient.address);
+
+  await scanDb.$transaction([
+    scanDb.originRecipient.deleteMany({
+      where: { originId, address: { notIn: addresses } },
+    }),
+    ...recipients.map(({ address, proof }) =>
+      scanDb.originRecipient.upsert({
+        where: { originId_address: { originId, address } },
+        create: { originId, address, proof },
+        update: { proof, verifiedAt: new Date() },
+      })
+    ),
+  ]);
+
+  return addresses;
 }
 
 /**
