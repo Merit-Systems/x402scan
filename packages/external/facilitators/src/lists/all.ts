@@ -72,6 +72,7 @@ const FACILITATORS = validateUniqueFacilitators([
   figmentFacilitator,
   threewsFacilitator,
   braveFacilitator,
+  paystageFacilitator,
 ]);
 
 // Some facilitators take facilitator-specific props in their config
