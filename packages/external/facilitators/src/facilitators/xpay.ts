@@ -34,4 +34,3 @@ export const xpayFacilitator = {
     ],
   },
 } as const satisfies Facilitator<XPayConfig>;
-
