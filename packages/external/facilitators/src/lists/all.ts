@@ -31,6 +31,7 @@ import {
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  xpayFacilitator,
   braveFacilitator,
 } from '../facilitators';
 
@@ -71,6 +72,7 @@ const FACILITATORS = validateUniqueFacilitators([
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  xpayFacilitator,
   braveFacilitator,
 ]);
 

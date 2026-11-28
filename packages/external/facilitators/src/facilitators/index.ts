@@ -31,4 +31,5 @@ export { cascade, cascadeFacilitator } from './cascade';
 export { fluxa, fluxaFacilitator } from './fluxa';
 export { figment, figmentFacilitator } from './figment';
 export { threews, threewsFacilitator } from './threews';
+export { xpay, xpayFacilitator } from './xpay';
 export { braveFacilitator } from './brave';
